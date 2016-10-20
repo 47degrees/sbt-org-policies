@@ -3,7 +3,7 @@ import de.heikoseeberger.sbtheader.license.Apache2_0
 import Resolver.sonatypeRepo
 
 val dev = Seq(Dev("47 Degrees (twitter: @47deg)", "47 Degrees"))
-val gh  = GitHubSettings("com.fortysevendeg", "sbt-catalysts-ext", "com.fortysevendeg", apache)
+val gh  = GitHubSettings("com.fortysevendeg", "sbt-catalysts-ext", "47 Degrees", apache)
 
 lazy val artifactSettings = Seq(
   name := gh.proj,
@@ -24,7 +24,10 @@ lazy val pluginSettings = Seq(
   addSbtPlugin("org.typelevel" % "sbt-catalysts" % "0.1.12"),
   // Additional Plugins:
   addSbtPlugin("de.heikoseeberger" % "sbt-header"    % "1.6.0"),
-  addSbtPlugin("com.eed3si9n"      % "sbt-buildinfo" % "0.6.1")
+  addSbtPlugin("com.eed3si9n"      % "sbt-buildinfo" % "0.6.1"),
+  libraryDependencies <+= (sbtVersion) { sv =>
+    "org.scala-sbt" % "scripted-plugin" % sv
+  }
 )
 
 lazy val gpgFolder = sys.env.getOrElse("PGP_FOLDER", ".")

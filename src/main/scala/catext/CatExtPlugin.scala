@@ -16,10 +16,9 @@
 
 package catext
 
-import sbtcatalysts._
 import sbt.Keys._
 import sbt._
-import scala.util.Try
+import ScriptedPlugin._
 import scala.collection.immutable.ListMap
 import complete.DefaultParsers._
 import com.typesafe.sbt.pgp.PgpKeys._
@@ -48,6 +47,24 @@ trait CatExtSettings {
     pgpPublicRing := file(s"$gpgFolder/pubring.gpg"),
     pgpSecretRing := file(s"$gpgFolder/secring.gpg")
   )
+
+  lazy val testScriptedSettings =
+    ScriptedPlugin.scriptedSettings ++ Seq(
+      scriptedDependencies <<= (compile in Test) map { (analysis) =>
+        Unit
+      },
+      scriptedLaunchOpts := {
+        scriptedLaunchOpts.value ++
+          Seq(
+            "-Xmx2048M",
+            "-XX:MaxPermSize=512M",
+            "-XX:ReservedCodeCacheSize=256m",
+            "-XX:+UseConcMarkSweepGC",
+            "-Dplugin.version=" + version.value,
+            "-Dscala.version=" + scalaVersion.value
+          )
+      }
+    )
 
   lazy val miscSettings = Seq(
     shellPrompt := { s: State =>
