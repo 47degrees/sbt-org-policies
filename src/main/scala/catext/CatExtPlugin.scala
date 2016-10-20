@@ -99,7 +99,12 @@ trait CatExtTasks extends CatExtKeys {
         case Some(v) => println(s"${args.head} = $v")
         case _       => println(s"${args.head} not found")
       }
-    }
+    },
+    publishSnapshot := Def.taskDyn {
+      if (isSnapshot.value) Def.task {
+        publishSigned.value
+      } else Def.task(println("Actual version is not a Snapshot. Skipping publish."))
+    }.value
   )
 
   private[this] def formatDep(k: String, org: String, art: String, ver: String): String =

@@ -2,9 +2,12 @@ import sbt.Keys._
 import de.heikoseeberger.sbtheader.license.Apache2_0
 import Resolver.sonatypeRepo
 
+val dev = Seq(Dev("47 Degrees (twitter: @47deg)", "47 Degrees"))
+val gh  = GitHubSettings("com.fortysevendeg", "sbt-catalysts-ext", "com.fortysevendeg", apache)
+
 lazy val artifactSettings = Seq(
-  name := "sbt-catalysts-ext",
-  organization := "com.fortysevendeg",
+  name := gh.proj,
+  organization := gh.org,
   organizationName := "47 Degrees",
   homepage := Option(url("http://www.47deg.com")),
   organizationHomepage := Some(new URL("http://47deg.com")),
@@ -24,6 +27,14 @@ lazy val pluginSettings = Seq(
   addSbtPlugin("com.eed3si9n"      % "sbt-buildinfo" % "0.6.1")
 )
 
+lazy val gpgFolder = sys.env.getOrElse("PGP_FOLDER", ".")
+
+lazy val pgpSettings = Seq(
+  pgpPassphrase := Some(sys.env.getOrElse("PGP_PASSPHRASE", "").toCharArray),
+  pgpPublicRing := file(s"$gpgFolder/pubring.gpg"),
+  pgpSecretRing := file(s"$gpgFolder/secring.gpg")
+)
+
 lazy val miscSettings = Seq(
   shellPrompt := { s: State =>
     val c     = scala.Console
@@ -37,7 +48,14 @@ lazy val miscSettings = Seq(
   scalafmtConfig in ThisBuild := Some(file(".scalafmt"))
 )
 
-lazy val allSettings = artifactSettings ++ pluginSettings ++ miscSettings ++ reformatOnCompileSettings
+lazy val allSettings = artifactSettings ++
+    pluginSettings ++
+    miscSettings ++
+    reformatOnCompileSettings ++
+    sharedReleaseProcess ++
+    pgpSettings ++
+    credentialSettings ++
+    sharedPublishSettings(gh, dev)
 
 lazy val `sbt-catalysts-ext` = (project in file("."))
   .settings(moduleName := "sbt-catalysts-ext")
