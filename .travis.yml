@@ -1,15 +1,21 @@
 language: scala
-
 scala:
 - 2.10.6
-
 jdk:
 - oraclejdk8
-
 cache:
   directories:
   - $HOME/.ivy2/cache
   - $HOME/.sbt/boot/
-
 script:
 - sbt ++$TRAVIS_SCALA_VERSION clean compile
+before_install:
+- openssl aes-256-cbc -K $encrypted_d99539043071_key -iv $encrypted_d99539043071_iv
+  -in secring.gpg.enc -out secring.gpg -d
+after_success:
+- if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then
+     sbt compile publishSigned;
+  fi
+- if [ "$TRAVIS_PULL_REQUEST" = "true" ]; then
+     echo "Not in master branch, skipping deploy and release";
+  fi
