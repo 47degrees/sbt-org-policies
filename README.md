@@ -1,15 +1,15 @@
-[![Build Status](https://travis-ci.org/47deg/sbt-catalysts-ext.svg?branch=master)](https://travis-ci.org/47deg/sbt-catalysts-ext)
+[![Build Status](https://travis-ci.org/47deg/sbt-catalysts-extras.svg?branch=master)](https://travis-ci.org/47deg/sbt-catalysts-extras)
 
-# sbt-catalysts-ext
+# sbt-catalysts-extras
 
-**sbt-catalysts-ext** is an SBT plugin that extends the [sbt-catalyst](https://github.com/typelevel/sbt-catalysts) plugin, providing more dependencies and settings outside from Typelevel org.
+**sbt-catalysts-extras** is an SBT plugin that extends the [sbt-catalyst](https://github.com/typelevel/sbt-catalysts) plugin, providing more dependencies and settings outside from Typelevel org.
 
 ## Installation
 
 Add the following line to `project/plugins.sbt`:
 
 ```scala
-addSbtPlugin("com.fortysevendeg" % "sbt-catalysts-ext" % "0.0.2")
+addSbtPlugin("com.fortysevendeg" % "sbt-catalysts-extras" % "0.0.3")
 ```
 
 See some examples about how to use it in the [Typelevel sbt-catalyst](https://github.com/typelevel/sbt-catalysts#quick-example).
@@ -32,7 +32,7 @@ Settings ready to be used in your project:
 
 ## Extra-Tasks
 
-When using different versions of this plugin you might want to know quickly, without having to look at the source code, what are the libraries and versions available to include in your project. `sbt-catalysts-ext` bring these tasks:
+When using different versions of this plugin you might want to know quickly, without having to look at the source code, what are the libraries and versions available to include in your project. `sbt-catalysts-extras` bring these tasks:
 
 * `allLibraries`: Task to get all the available libraries.
 * `searchDep`: Task to search a dependency by name.

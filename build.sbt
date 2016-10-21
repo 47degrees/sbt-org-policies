@@ -3,7 +3,7 @@ import de.heikoseeberger.sbtheader.license.Apache2_0
 import Resolver.sonatypeRepo
 
 val dev = Seq(Dev("47 Degrees (twitter: @47deg)", "47 Degrees"))
-val gh  = GitHubSettings("com.fortysevendeg", "sbt-catalysts-ext", "47 Degrees", apache)
+val gh  = GitHubSettings("com.fortysevendeg", "sbt-catalysts-extras", "47 Degrees", apache)
 
 lazy val artifactSettings = Seq(
   name := gh.proj,
@@ -60,7 +60,7 @@ lazy val allSettings = artifactSettings ++
     credentialSettings ++
     sharedPublishSettings(gh, dev)
 
-lazy val `sbt-catalysts-ext` = (project in file("."))
-  .settings(moduleName := "sbt-catalysts-ext")
+lazy val `sbt-catalysts-extras` = (project in file("."))
+  .settings(moduleName := "sbt-catalysts-extras")
   .settings(allSettings: _*)
   .enablePlugins(AutomateHeaderPlugin)
