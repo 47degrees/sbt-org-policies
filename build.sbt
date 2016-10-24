@@ -1,6 +1,7 @@
 import sbt.Keys._
 import de.heikoseeberger.sbtheader.license.Apache2_0
 import Resolver.sonatypeRepo
+import PgpKeys.gpgCommand
 
 val dev = Seq(Dev("47 Degrees (twitter: @47deg)", "47 Degrees"))
 val gh  = GitHubSettings("com.fortysevendeg", "sbt-catalysts-extras", "47 Degrees", apache)
@@ -34,6 +35,7 @@ lazy val gpgFolder = sys.env.getOrElse("PGP_FOLDER", ".")
 
 lazy val pgpSettings = Seq(
   pgpPassphrase := Some(sys.env.getOrElse("PGP_PASSPHRASE", "").toCharArray),
+  gpgCommand := gpgFolder,
   pgpPublicRing := file(s"$gpgFolder/pubring.gpg"),
   pgpSecretRing := file(s"$gpgFolder/secring.gpg")
 )
