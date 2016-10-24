@@ -44,6 +44,7 @@ trait CatExtSettings {
 
   lazy val pgpSettings = Seq(
     pgpPassphrase := Some(sys.env.getOrElse("PGP_PASSPHRASE", "").toCharArray),
+    gpgCommand := gpgFolder,
     pgpPublicRing := file(s"$gpgFolder/pubring.gpg"),
     pgpSecretRing := file(s"$gpgFolder/secring.gpg")
   )
