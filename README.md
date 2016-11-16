@@ -28,7 +28,7 @@ Settings ready to be used in your project:
 
 * `pgpSettings`: https://goo.gl/OmcBfs, useful to deploy to Sonatype.
 * `testScriptedSettings`: https://goo.gl/ciLZL4, some basic configuration settings to test your sbt plugins.
-* `miscSettings`: https://goo.gl/bxp4EF, to enjoy with a fancy sbt shell promopt.
+* `miscSettings`: https://goo.gl/bxp4EF, to enjoy with a fancy sbt shell prompt.
 
 ## Extra-Tasks
 
