@@ -2,14 +2,14 @@
 
 # sbt-catalysts-extras
 
-**sbt-catalysts-extras** is an SBT plugin that extends the [sbt-catalyst](https://github.com/typelevel/sbt-catalysts) plugin, providing more dependencies and settings outside from Typelevel org.
+**sbt-catalysts-extras** is an SBT plugin, which forks and extends the [sbt-catalyst](https://github.com/typelevel/sbt-catalysts) plugin, providing more dependencies and settings outside from Typelevel org.
 
 ## Installation
 
 Add the following line to `project/plugins.sbt`:
 
 ```scala
-addSbtPlugin("com.fortysevendeg" % "sbt-catalysts-extras" % "0.0.4")
+addSbtPlugin("com.fortysevendeg" % "sbt-catalysts-extras" % "0.1.0")
 ```
 
 See some examples about how to use it in the [Typelevel sbt-catalyst](https://github.com/typelevel/sbt-catalysts#quick-example).
@@ -28,7 +28,7 @@ Settings ready to be used in your project:
 
 * `pgpSettings`: https://goo.gl/OmcBfs, useful to deploy to Sonatype.
 * `testScriptedSettings`: https://goo.gl/ciLZL4, some basic configuration settings to test your sbt plugins.
-* `miscSettings`: https://goo.gl/bxp4EF, to enjoy with a fancy sbt shell.
+* `miscSettings`: https://goo.gl/bxp4EF, to enjoy with a fancy sbt shell prompt.
 
 ## Extra-Tasks
 

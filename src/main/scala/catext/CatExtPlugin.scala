@@ -19,9 +19,11 @@ package catext
 import sbt.Keys._
 import sbt._
 import ScriptedPlugin._
+
 import scala.collection.immutable.ListMap
 import complete.DefaultParsers._
 import com.typesafe.sbt.pgp.PgpKeys._
+import sbtcatalysts.CatalystsBase
 
 object CatExtPlugin extends AutoPlugin {
 
@@ -36,7 +38,7 @@ object CatExtPlugin extends AutoPlugin {
   override def projectSettings: Seq[Def.Setting[_]] = tasksSettings
 }
 
-trait CatExtSettings {
+trait CatExtSettings extends CatalystsBase {
 
   def guard[T](flag: Boolean)(res: Seq[T]): Seq[T] = if (flag) res else Seq.empty
 
@@ -51,7 +53,7 @@ trait CatExtSettings {
 
   lazy val testScriptedSettings =
     ScriptedPlugin.scriptedSettings ++ Seq(
-      scriptedDependencies <<= (compile in Test) map { (analysis) =>
+      scriptedDependencies := (compile in Test) map { (analysis) =>
         Unit
       },
       scriptedLaunchOpts := {

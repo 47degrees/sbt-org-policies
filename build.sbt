@@ -19,16 +19,24 @@ lazy val artifactSettings = Seq(
 
 lazy val pluginSettings = Seq(
   sbtPlugin := true,
-  scalaVersion in ThisBuild := "2.10.6",
   resolvers ++= Seq(sonatypeRepo("snapshots"), sonatypeRepo("releases")),
-  // Extension import:
-  addSbtPlugin("org.typelevel" % "sbt-catalysts" % "0.1.12"),
-  // Additional Plugins:
-  addSbtPlugin("de.heikoseeberger" % "sbt-header"    % "1.6.0"),
-  addSbtPlugin("com.eed3si9n"      % "sbt-buildinfo" % "0.6.1"),
-  libraryDependencies <+= (sbtVersion) { sv =>
-    "org.scala-sbt" % "scripted-plugin" % sv
-  }
+  addSbtPlugin("com.eed3si9n"        % "sbt-unidoc"             % "0.3.3"),
+  addSbtPlugin("com.github.gseitz"   % "sbt-release"            % "1.0.3"),
+  addSbtPlugin("com.github.tkawachi" % "sbt-doctest"            % "0.4.1"),
+  addSbtPlugin("org.xerial.sbt"      % "sbt-sonatype"           % "1.1"),
+  addSbtPlugin("com.jsuereth"        % "sbt-pgp"                % "1.0.1"),
+  addSbtPlugin("com.typesafe.sbt"    % "sbt-ghpages"            % "0.5.4"),
+  addSbtPlugin("com.typesafe.sbt"    % "sbt-site"               % "1.1.0"),
+  addSbtPlugin("org.tpolecat"        % "tut-plugin"             % "0.4.6"),
+  addSbtPlugin("pl.project13.scala"  % "sbt-jmh"                % "0.2.16"),
+  addSbtPlugin("org.scalastyle"      %% "scalastyle-sbt-plugin" % "0.8.0"),
+  addSbtPlugin("org.scoverage"       % "sbt-scoverage"          % "1.5.0"),
+  addSbtPlugin("com.typesafe.sbt"    % "sbt-git"                % "0.8.5"),
+  addSbtPlugin("org.scala-js"        % "sbt-scalajs"            % "0.6.13"),
+  addSbtPlugin("com.fortysevendeg"   % "sbt-microsites"         % "0.3.2"),
+  addSbtPlugin("de.heikoseeberger"   % "sbt-header"             % "1.6.0"),
+  addSbtPlugin("com.eed3si9n"        % "sbt-buildinfo"          % "0.6.1"),
+  libraryDependencies += "org.scala-sbt" % "scripted-plugin" % sbtVersion.value
 )
 
 lazy val gpgFolder = sys.env.getOrElse("PGP_FOLDER", ".")
@@ -49,14 +57,12 @@ lazy val miscSettings = Seq(
     val projectName = Project.extract(s).currentProject.id
 
     s"$blue$projectName$white>${c.RESET}"
-  },
-  scalafmtConfig in ThisBuild := Some(file(".scalafmt"))
+  }
 )
 
 lazy val allSettings = artifactSettings ++
     pluginSettings ++
     miscSettings ++
-    reformatOnCompileSettings ++
     sharedReleaseProcess ++
     pgpSettings ++
     credentialSettings ++
