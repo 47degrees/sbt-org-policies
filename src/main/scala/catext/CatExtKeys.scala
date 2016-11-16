@@ -16,7 +16,6 @@
 
 package catext
 
-import sbtcatalysts._
 import sbt._
 
 trait CatExtKeys {
