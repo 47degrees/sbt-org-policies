@@ -26,4 +26,5 @@ trait CatExtKeys {
   val versionOf       = inputKey[Unit]("Task to get the version of the dependency specified as argument")
   val publishSnapshot = taskKey[Unit]("Publish only if the version is a SNAPSHOT")
 }
+
 object CatExtKeys extends CatExtKeys
