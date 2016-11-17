@@ -17,12 +17,29 @@ lazy val artifactSettings = Seq(
   )
 )
 
+lazy val testScriptedSettings =
+    ScriptedPlugin.scriptedSettings ++ Seq(
+      scriptedDependencies := (compile in Test) map { (analysis) =>
+        Unit
+      },
+      scriptedLaunchOpts := {
+        scriptedLaunchOpts.value ++
+          Seq(
+            "-Xmx2048M",
+            "-XX:MaxPermSize=512M",
+            "-XX:ReservedCodeCacheSize=256m",
+            "-XX:+UseConcMarkSweepGC",
+            "-Dplugin.version=" + version.value,
+            "-Dscala.version=" + scalaVersion.value
+          )
+      }
+    )
+
 lazy val pluginSettings = Seq(
   sbtPlugin := true,
   resolvers ++= Seq(sonatypeRepo("snapshots"), sonatypeRepo("releases")),
   addSbtPlugin("com.eed3si9n"        % "sbt-unidoc"             % "0.3.3"),
   addSbtPlugin("com.github.gseitz"   % "sbt-release"            % "1.0.3"),
-  addSbtPlugin("com.github.tkawachi" % "sbt-doctest"            % "0.4.1"),
   addSbtPlugin("org.xerial.sbt"      % "sbt-sonatype"           % "1.1"),
   addSbtPlugin("com.jsuereth"        % "sbt-pgp"                % "1.0.1"),
   addSbtPlugin("com.typesafe.sbt"    % "sbt-ghpages"            % "0.5.4"),
@@ -62,6 +79,7 @@ lazy val miscSettings = Seq(
 
 lazy val allSettings = artifactSettings ++
     pluginSettings ++
+    testScriptedSettings ++
     miscSettings ++
     sharedReleaseProcess ++
     pgpSettings ++
