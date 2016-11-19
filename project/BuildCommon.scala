@@ -52,7 +52,16 @@ object BuildCommon extends AutoPlugin {
       else
         Some("Releases" at nexus + "service/local/staging/deploy/maven2")
     },
-    autoAPIMappings := true
+    autoAPIMappings := true,
+    pomExtra := <developers>
+      <developer>
+        <name>47 Degrees (twitter: @47deg)</name>
+        <email>hello@47deg.com</email>
+      </developer>
+      <developer>
+        <name>47 Degrees</name>
+      </developer>
+      </developers>
   )
 
   private[this] val testScriptedSettings =
