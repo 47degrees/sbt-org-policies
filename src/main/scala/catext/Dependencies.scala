@@ -40,7 +40,7 @@ object Dependencies {
     "export-hook"         -> "1.2.0",
     "fetch"               -> "0.4.0",
     "github4s"            -> "0.10.0",
-    "http4s"              -> "0.15.3",
+    "http4s"              -> "0.15.3a",
     "kind-projector"      -> "0.9.3",
     "log4s"               -> "1.3.4",
     "machinist"           -> "0.6.1",
