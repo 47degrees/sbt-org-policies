@@ -22,36 +22,36 @@ import catext.CatExtPlugin.autoImport._
 object Dependencies {
 
   /**
-    * Versions is being instantiated to have the control.
-    * Original forked SBT Plugin: https://github.com/typelevel/sbt-catalysts/blob/69d8bb150ac6b3d79721d26c07326398ef5aae94/src/main/scala/org/typelevel/TypelevelDeps.scala
-    */
+   * Versions is being instantiated to have the control.
+   * Original forked SBT Plugin: https://github.com/typelevel/sbt-catalysts/blob/69d8bb150ac6b3d79721d26c07326398ef5aae94/src/main/scala/org/typelevel/TypelevelDeps.scala
+   */
   val versions = Map[String, String](
-    "algebra"             -> "0.5.1",
+    "algebra"             -> "0.6.0",
     "alleycats"           -> "0.1.7",
-    "aws-sdk"             -> "1.11.53",
+    "aws-sdk"             -> "1.11.83",
     "catalysts"           -> "0.1.0",
-    "cats"                -> "0.8.1",
-    "circe"               -> "0.6.0",
+    "cats"                -> "0.9.0",
+    "circe"               -> "0.7.0",
     "config"              -> "1.3.0",
-    "coursier"            -> "1.0.0-M14-2",
-    "discipline"          -> "0.5",
-    "doobie"              -> "0.3.1-M2",
+    "coursier"            -> "1.0.0-M15-1",
+    "discipline"          -> "0.7.3",
+    "doobie"              -> "0.4.1",
     "evaluator"           -> "0.1.1-SNAPSHOT",
-    "export-hook"         -> "1.1.0",
+    "export-hook"         -> "1.2.0",
     "fetch"               -> "0.4.0",
-    "github4s"            -> "0.9.0",
-    "http4s"              -> "0.14.10a",
+    "github4s"            -> "0.10.0",
+    "http4s"              -> "0.15.3",
     "kind-projector"      -> "0.9.3",
-    "log4s"               -> "1.3.0",
-    "machinist"           -> "0.4.1",
+    "log4s"               -> "1.3.4",
+    "machinist"           -> "0.6.1",
     "macro-compat"        -> "1.1.1",
-    "monix"               -> "2.1.0",
-    "monocle"             -> "1.3.2",
+    "monix"               -> "2.2.0",
+    "monocle"             -> "1.4.0",
     "newrelic"            -> "3.29.0",
     "paradise"            -> "2.1.0",
-    "pure-config"         -> "0.3.3",
-    "refined"             -> "0.3.6",
-    "roshttp"             -> "2.0.0-RC1",
+    "pure-config"         -> "0.5.1",
+    "refined"             -> "0.6.2",
+    "roshttp"             -> "2.0.1",
     "scala-exercises"     -> "0.3.0-SNAPSHOT",
     "scala-reflect"       -> "2.11.8",
     "scalac_2.10"         -> "2.10.6",
@@ -59,23 +59,23 @@ object Dependencies {
     "scalac_2.12"         -> "2.12.0",
     "scalac"              -> "2.11.8",
     "scalacheck"          -> "1.13.4",
-    "scalacheckshapeless" -> "1.1.3",
+    "scalacheckshapeless" -> "1.1.4",
     "scalaj"              -> "2.3.0",
     "scalatest"           -> "3.0.1",
-    "scalaz"              -> "7.2.4",
+    "scalaz"              -> "7.2.8",
     "scalazspecs2"        -> "0.4.0",
-    "scanamo"             -> "0.8.1",
+    "scanamo"             -> "0.9.1",
     "shapeless"           -> "2.3.2",
     "simulacrum"          -> "0.10.0",
     "slf4j"               -> "1.7.21",
-    "specs2"              -> "3.8.6"
+    "specs2"              -> "3.8.7"
   )
 
   /**
-    * Used same format as sbt-catalyst:
-    *
-    *  Library name -> version key, org, library
-    */
+   * Used same format as sbt-catalyst:
+   *
+   *  Library name -> version key, org, library
+   */
   val libraries = Map[String, (String, String, String)](
     "algebra-laws"                -> ("algebra", "org.typelevel", "algebra-laws"),
     "algebra"                     -> ("algebra", "org.typelevel", "algebra"),
@@ -154,12 +154,12 @@ object Dependencies {
   )
 
   /**
-    * Compiler plugins definitions and links to their versions
-    *
-    * Note that one version may apply to more than one plugin.
-    *
-    * Format: Library name -> version key, org, librar, crossVersion
-    */
+   * Compiler plugins definitions and links to their versions
+   *
+   * Note that one version may apply to more than one plugin.
+   *
+   * Format: Library name -> version key, org, librar, crossVersion
+   */
   val scalacPlugins = Map[String, (String, String, String, CrossVersion)](
     "kind-projector" -> ("kind-projector", "org.spire-math", "kind-projector", CrossVersion.binary),
     "paradise"       -> ("paradise", "org.scalamacros", "paradise", CrossVersion.full)
@@ -167,11 +167,11 @@ object Dependencies {
 
   // Some helper methods to combine libraries
   /**
-    * Sets all settings required for the macro-compat library.
-    *
-    * @param v Versions map to use
-    * @return All settings required for the macro-compat library
-    */
+   * Sets all settings required for the macro-compat library.
+   *
+   * @param v Versions map to use
+   * @return All settings required for the macro-compat library
+   */
   def macroCompatSettings(v: Versions): Seq[Setting[_]] =
     addCompileLibs(v, "macro-compat") ++ addCompilerPlugins(v, "paradise") ++
       scalaMacroDependencies(v)
