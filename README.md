@@ -9,7 +9,7 @@
 Add the following line to `project/plugins.sbt`:
 
 ```scala
-addSbtPlugin("com.fortysevendeg" % "sbt-catalysts-extras" % "0.1.3")
+addSbtPlugin("com.47deg" % "sbt-catalysts-extras" % "0.2.0")
 ```
 
 See some examples about how to use it in the [Typelevel sbt-catalyst](https://github.com/typelevel/sbt-catalysts#quick-example).

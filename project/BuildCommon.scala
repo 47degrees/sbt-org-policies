@@ -25,7 +25,7 @@ object BuildCommon extends AutoPlugin {
 
   private[this] val artifactSettings = Seq(
     name := "sbt-catalysts-extras",
-    organization := "com.fortysevendeg",
+    organization := "com.47deg",
     organizationName := "47 Degrees",
     homepage := Option(url("http://www.47deg.com")),
     organizationHomepage := Some(new URL("http://47deg.com")),
@@ -112,7 +112,8 @@ object BuildCommon extends AutoPlugin {
       setNextVersion,
       commitNextVersion,
       ReleaseStep(action = Command.process("sonatypeReleaseAll", _)),
-      pushChanges)
+      pushChanges
+    )
   )
 
   private[this] val miscSettings = Seq(

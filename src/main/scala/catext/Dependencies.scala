@@ -38,7 +38,7 @@ object Dependencies {
     "doobie"              -> "0.4.1",
     "evaluator"           -> "0.1.1-SNAPSHOT",
     "export-hook"         -> "1.2.0",
-    "fetch"               -> "0.4.0",
+    "fetch"               -> "0.5.0",
     "github4s"            -> "0.10.0",
     "http4s"              -> "0.15.3a",
     "kind-projector"      -> "0.9.3",
