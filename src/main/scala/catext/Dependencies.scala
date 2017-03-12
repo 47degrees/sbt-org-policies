@@ -45,7 +45,7 @@ object Dependencies {
     "log4s"               -> "1.3.4",
     "machinist"           -> "0.6.1",
     "macro-compat"        -> "1.1.1",
-    "monix"               -> "2.2.0",
+    "monix"               -> "2.2.3",
     "monocle"             -> "1.4.0",
     "newrelic"            -> "3.29.0",
     "paradise"            -> "2.1.0",
