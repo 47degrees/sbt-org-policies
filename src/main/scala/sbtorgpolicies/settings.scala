@@ -72,6 +72,9 @@ trait settings extends dependencies with utils {
     } yield Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", username, password)).toSeq
   )
 
+  /**
+   * Common PGP settings, needed to sign the artifacts when publishing them.
+   */
   lazy val pgpSettings = Seq(
     pgpPassphrase := Some(sys.env.getOrElse("PGP_PASSPHRASE", "").toCharArray),
     gpgCommand := gpgFolder,
@@ -79,7 +82,6 @@ trait settings extends dependencies with utils {
     pgpSecretRing := file(s"$gpgFolder/secring.gpg")
   )
 
-  // Common and shared setting
   /** Settings to make the module not published*/
   lazy val noPublishSettings = Seq(
     publish := (),
@@ -88,7 +90,7 @@ trait settings extends dependencies with utils {
   )
 
   /** Using the supplied Versions map, adds the dependencies for scala macros.*/
-  def scalaMacroDependencies: Seq[Setting[_]] = {
+  lazy val scalaMacroDependencies: Seq[Setting[_]] = {
     Seq(
       libraryDependencies += "org.scala-lang" % "scala-compiler" % scalaVersion.value % "provided",
       libraryDependencies += "org.scala-lang" % "scala-reflect"  % scalaVersion.value % "provided",
@@ -127,8 +129,11 @@ trait settings extends dependencies with utils {
    * Uses the github settings and versions map to set the organisation,
    * scala version and cross versions
    */
-  def sharedBuildSettings(gh: GitHubSettings) = Seq(
-    organization := gh.publishOrg,
+  def sharedBuildSettings(gh: SettingKey[GitHubSettings]) = Seq(
+    organization := gh.value.organization,
+    organizationName := gh.value.publishOrg,
+    homepage := Option(gh.value.homePage),
+    organizationHomepage := Option(gh.value.organizationHomePage),
     scalaVersion := scalac.`2.12`,
     crossScalaVersions := scalac.crossScalaVersions
   )
@@ -139,11 +144,11 @@ trait settings extends dependencies with utils {
    * Uses the github settings and list of developers to set all publish settings
    * required to publish signed artifacts to Sonatype OSS repository
    */
-  def sharedPublishSettings(gh: GitHubSettings, devs: Seq[Dev]): Seq[Setting[_]] = Seq(
-    homepage := Some(url(gh.home)),
-    licenses += gh.license,
-    scmInfo := Some(ScmInfo(url(gh.home), "scm:git:" + gh.repo)),
-    apiURL := Some(url(gh.api)),
+  def sharedPublishSettings(gh: SettingKey[GitHubSettings], devs: SettingKey[List[Dev]]): Seq[Setting[_]] = Seq(
+    homepage := Some(url(gh.value.home)),
+    licenses += gh.value.license,
+    scmInfo := Some(ScmInfo(url(gh.value.home), "scm:git:" + gh.value.repo)),
+    apiURL := Some(url(gh.value.api)),
     releaseCrossBuild := true,
     releasePublishArtifactsAction := PgpKeys.publishSigned.value,
     publishMavenStyle := true,
@@ -157,7 +162,7 @@ trait settings extends dependencies with utils {
         Some("Releases" at nexus + "service/local/staging/deploy/maven2")
     },
     autoAPIMappings := true,
-    pomExtra := <developers> { devs.map(_.pomExtra) } </developers>
+    pomExtra := <developers> { devs.value.map(_.pomExtra) } </developers>
   )
 
   /**

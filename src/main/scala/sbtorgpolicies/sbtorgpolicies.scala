@@ -45,7 +45,11 @@ package object sbtorgpolicies {
     "-language:existentials",
     "-language:higherKinds",
     "-language:implicitConversions",
-    "-language:experimental.macros"
+    "-language:experimental.macros",
+    "-language:reflectiveCalls",
+    "-Ypartial-unification", // enable fix for SI-2712
+    "-Yliteral-types", // enable SIP-23 implementation
+    "-Xplugin-require:macroparadise"
   )
 
   /** Scalac strict compilation options.*/
@@ -63,13 +67,24 @@ package object sbtorgpolicies {
   lazy val scalacAllOptions: Seq[String] = scalacCommonOptions ++ scalacLanguageOptions ++ scalacStrictOptions
 
   /** Github settings and related settings usually found in a Github README.*/
-  case class GitHubSettings(org: String, proj: String, publishOrg: String, license: (String, URL)) {
-    def home         = s"https://github.com/$org/$proj"
-    def repo         = s"git@github.com:$org/$proj.git"
-    def api          = s"https://$org.github.io/$proj/api/"
-    def organisation = s"com.github.$org"
-    override def toString =
-      s"GitHubSettings:home = $home\nGitHubSettings:repo = $repo\nGitHubSettings:api = $api\nGitHubSettings:organisation = $organisation"
+  case class GitHubSettings(
+      organization: String,
+      project: String,
+      publishOrg: String,
+      organizationHomePage: URL,
+      license: (String, URL)) {
+    def home: String         = s"https://github.com/$organization/$project"
+    def homePage: URL        = url(s"https://$organization.github.io/$project/")
+    def repo: String         = s"git@github.com:$organization/$project.git"
+    def api: String          = s"https://$organization.github.io/$project/api/"
+    def organisation: String = s"com.github.$organization"
+    override def toString: String =
+      s"""GitHubSettings:home = $home
+         |GitHubSettings:homePage = $homePage
+         |GitHubSettings:repo = $repo
+         |GitHubSettings:api = $api
+         |GitHubSettings:organisation = $organisation
+         |""".stripMargin
   }
 
   case class Dep(organization: String, name: String, revision: String) {
