@@ -22,7 +22,7 @@ lazy val pluginSettings = Seq(
   libraryDependencies += "org.scala-sbt" % "scripted-plugin" % sbtVersion.value
 )
 
-lazy val `sbt-catalysts-extras` = (project in file("."))
-  .settings(moduleName := "sbt-catalysts-extras")
+lazy val `sbt-org-policies` = (project in file("."))
+  .settings(moduleName := "sbt-org-policies")
   .settings(pluginSettings: _*)
   .enablePlugins(AutomateHeaderPlugin)
