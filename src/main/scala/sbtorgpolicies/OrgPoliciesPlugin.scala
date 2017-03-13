@@ -14,17 +14,26 @@
  * limitations under the License.
  */
 
-package catext
+package sbtorgpolicies
 
+import sbt.Keys.scalacOptions
 import sbt._
+import sbt.plugins.JvmPlugin
 
-trait CatExtKeys {
+object OrgPoliciesPlugin extends AutoPlugin {
 
-  val allLibraries    = taskKey[Unit]("Task to get all the available libraries")
-  val searchDep       = inputKey[Unit]("Task to search a dependency by name")
-  val allVersions     = taskKey[Unit]("Task to get all the available library versions")
-  val versionOf       = inputKey[Unit]("Task to get the version of the dependency specified as argument")
-  val publishSnapshot = taskKey[Unit]("Publish only if the version is a SNAPSHOT")
+  object autoImport extends settings
+
+  import autoImport._
+
+  override def requires: JvmPlugin.type = plugins.JvmPlugin
+
+  override def trigger: PluginTrigger = allRequirements
+
+  override def projectSettings: Seq[Def.Setting[_]] =
+    sharedCommonSettings ++
+      sharedReleaseProcess ++
+      credentialSettings ++
+      pgpSettings ++
+      Seq(scalacOptions ++= scalacAllOptions)
 }
-
-object CatExtKeys extends CatExtKeys

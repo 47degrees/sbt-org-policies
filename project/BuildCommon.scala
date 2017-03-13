@@ -1,22 +1,20 @@
+import com.typesafe.sbt.SbtPgp.autoImportImpl.PgpKeys.gpgCommand
 import com.typesafe.sbt.SbtPgp.autoImportImpl._
-import de.heikoseeberger.sbtheader.license.Apache2_0
-import PgpKeys.gpgCommand
 import de.heikoseeberger.sbtheader.HeaderKey._
-import sbtrelease.ReleasePlugin.autoImport._
-import ReleaseTransformations._
+import de.heikoseeberger.sbtheader.license.Apache2_0
 import sbt.Keys._
 import sbt._
-import sbt.ScriptedPlugin._
+import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
+import sbtrelease.ReleasePlugin.autoImport._
 
 object BuildCommon extends AutoPlugin {
 
   override def requires = plugins.JvmPlugin
 
-  override def trigger = allRequirements
+  override def trigger: PluginTrigger = allRequirements
 
   override def projectSettings =
     artifactSettings ++
-      testScriptedSettings ++
       miscSettings ++
       releaseProcessSettings ++
       pgpSettings ++
@@ -24,7 +22,7 @@ object BuildCommon extends AutoPlugin {
       publishSettings
 
   private[this] val artifactSettings = Seq(
-    name := "sbt-catalysts-extras",
+    name := "sbt-org-policies",
     organization := "com.47deg",
     organizationName := "47 Degrees",
     homepage := Option(url("http://www.47deg.com")),
@@ -34,7 +32,7 @@ object BuildCommon extends AutoPlugin {
     )
   )
 
-  private[this] val gitUrl = "https://github.com/47deg/sbt-catalysts-extras"
+  private[this] val gitUrl = "https://github.com/47deg/sbt-org-policies"
 
   private[this] val publishSettings = Seq(
     licenses += ("Apache License", url("http://www.apache.org/licenses/LICENSE-2.0.txt")),
@@ -64,24 +62,6 @@ object BuildCommon extends AutoPlugin {
       </developers>
   )
 
-  private[this] val testScriptedSettings =
-    ScriptedPlugin.scriptedSettings ++ Seq(
-      scriptedDependencies := (compile in Test) map { (analysis) =>
-        Unit
-      },
-      scriptedLaunchOpts := {
-        scriptedLaunchOpts.value ++
-          Seq(
-            "-Xmx2048M",
-            "-XX:MaxPermSize=512M",
-            "-XX:ReservedCodeCacheSize=256m",
-            "-XX:+UseConcMarkSweepGC",
-            "-Dplugin.version=" + version.value,
-            "-Dscala.version=" + scalaVersion.value
-          )
-      }
-    )
-
   private[this] val gpgFolder = sys.env.getOrElse("PGP_FOLDER", ".")
 
   private[this] val pgpSettings = Seq(
@@ -95,8 +75,7 @@ object BuildCommon extends AutoPlugin {
     credentials ++= (for {
       username <- Option(System.getenv().get("SONATYPE_USERNAME"))
       password <- Option(System.getenv().get("SONATYPE_PASSWORD"))
-    } yield
-      Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", username, password)).toSeq
+    } yield Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", username, password)).toSeq
   )
 
   private[this] val releaseProcessSettings = Seq(
