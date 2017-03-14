@@ -20,7 +20,6 @@ import com.typesafe.sbt.pgp.PgpKeys
 import com.typesafe.sbt.pgp.PgpKeys._
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 import sbt.Keys._
-import sbt.ScriptedPlugin.{scriptedDependencies, scriptedLaunchOpts}
 import sbt._
 import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 import sbtrelease.ReleasePlugin.autoImport._
@@ -189,6 +188,10 @@ trait settings extends dependencies with utils {
     scalacOptions in (Test, console) := { scalacOptions in (Compile, console) }.value
   )
 
+  /**
+   * Add a "pretty shell prompt". Do not use this settings if you are in Emacs sbt-mode:
+   * https://github.com/ensime/emacs-sbt-mode , since it's incompatible.
+   */
   lazy val miscSettings = Seq(
     shellPrompt := { s: State =>
       val c     = scala.Console
