@@ -20,6 +20,7 @@ lazy val pluginSettings = Seq(
   addSbtPlugin("de.heikoseeberger"  % "sbt-header"             % "1.6.0"),
   addSbtPlugin("com.eed3si9n"       % "sbt-buildinfo"          % "0.6.1"),
   addSbtPlugin("com.geirsson"       % "sbt-scalafmt"           % "0.6.3"),
+  addSbtPlugin("com.47deg"          % "sbt-dependencies"       % "0.0.2"),
   libraryDependencies += "org.scala-sbt" % "scripted-plugin" % sbtVersion.value
 )
 
@@ -27,3 +28,4 @@ lazy val `sbt-org-policies` = (project in file("."))
   .settings(moduleName := "sbt-org-policies")
   .settings(pluginSettings: _*)
   .enablePlugins(AutomateHeaderPlugin)
+  .enablePlugins(DependenciesPlugin)

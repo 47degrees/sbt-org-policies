@@ -1,5 +1,7 @@
+import com.timushev.sbt.updates.UpdatesPlugin.autoImport._
 import com.typesafe.sbt.SbtPgp.autoImportImpl.PgpKeys.gpgCommand
 import com.typesafe.sbt.SbtPgp.autoImportImpl._
+import dependencies.DependenciesPlugin.autoImport._
 import de.heikoseeberger.sbtheader.HeaderKey._
 import de.heikoseeberger.sbtheader.license.Apache2_0
 import sbt.Keys._
@@ -13,13 +15,14 @@ object BuildCommon extends AutoPlugin {
 
   override def trigger: PluginTrigger = allRequirements
 
-  override def projectSettings =
+  override def projectSettings: Seq[Def.Setting[_]] =
     artifactSettings ++
       miscSettings ++
       releaseProcessSettings ++
       pgpSettings ++
       credentialSettings ++
-      publishSettings
+      publishSettings ++
+      sbtDependenciesSettings
 
   private[this] val artifactSettings = Seq(
     name := "sbt-org-policies",
@@ -93,6 +96,12 @@ object BuildCommon extends AutoPlugin {
       ReleaseStep(action = Command.process("sonatypeReleaseAll", _)),
       pushChanges
     )
+  )
+
+  private[this] val sbtDependenciesSettings = Seq(
+    githubOwner := organization.value,
+    githubRepo := name.value,
+    githubToken := sys.props.get("githubToken").getOrElse("")
   )
 
   private[this] val miscSettings = Seq(
