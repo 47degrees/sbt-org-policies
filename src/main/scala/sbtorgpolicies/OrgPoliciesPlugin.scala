@@ -16,37 +16,19 @@
 
 package sbtorgpolicies
 
-import sbt.Keys._
+import org.scalafmt.sbt.ScalafmtPlugin
 import sbt._
-import sbt.plugins.JvmPlugin
+import sbtorgpolicies.settings.DefaultSettings
 
 object OrgPoliciesPlugin extends AutoPlugin {
 
-  object autoImport extends settings with OrgPoliciesKeys
+  object autoImport extends DefaultSettings
 
   import autoImport._
 
-  override def requires: JvmPlugin.type = plugins.JvmPlugin
+  override def requires: Plugins = plugins.JvmPlugin && ScalafmtPlugin
 
   override def trigger: PluginTrigger = allRequirements
 
-  lazy val orgDefaultSettings: Seq[Setting[_]] = Seq(
-      orgGithubSettings := GitHubSettings(
-        organization = "47deg",
-        project = name.value,
-        publishOrg = "47 Degrees",
-        organizationHomePage = url("http://47deg.com"),
-        license = apache),
-      orgDevSettings := List(Dev("47 Degrees (twitter: @47deg)", "47 Degrees")),
-      scalacOptions ++= scalacAllOptions
-    ) ++
-      sharedPublishSettings(orgGithubSettings, orgDevSettings) ++
-      sharedBuildSettings(orgGithubSettings)
-
-  override def projectSettings: Seq[Def.Setting[_]] =
-    sharedCommonSettings ++
-      sharedReleaseProcess ++
-      credentialSettings ++
-      pgpSettings ++
-      orgDefaultSettings
+  override def projectSettings: Seq[Def.Setting[_]] = orgDefaultSettings
 }

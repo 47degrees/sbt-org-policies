@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package sbtorgpolicies
+package sbtorgpolicies.settings
 
 import sbt._
+import sbtorgpolicies.{Dev, GitHubSettings}
 
-trait OrgPoliciesKeys {
+trait keys {
 
-  val orgGithubSettings: SettingKey[GitHubSettings] = settingKey[GitHubSettings]("General Org Github Settings")
+  val orgGithubSettings: SettingKey[GitHubSettings] =
+    settingKey[GitHubSettings]("General Org Github Settings")
 
   val orgDevSettings: SettingKey[List[Dev]] =
     settingKey[List[Dev]]("List of Devs involved in the development of the project")
