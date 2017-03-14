@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-package sbtorgpolicies
+package sbtorgpolicies.settings
 
 import com.typesafe.sbt.pgp.PgpKeys
 import com.typesafe.sbt.pgp.PgpKeys._
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 import sbt.Keys._
 import sbt._
+import sbtorgpolicies._
 import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 import sbtrelease.ReleasePlugin.autoImport._
 import sbtunidoc.Plugin.UnidocKeys._
 import sbtunidoc.Plugin._
 import scoverage.ScoverageKeys
 
-trait settings extends dependencies with utils {
+trait AllSettings extends keys with dependencies with scalafmt with utils {
 
   /**
    * Settings common to all projects.
@@ -134,6 +135,7 @@ trait settings extends dependencies with utils {
     organizationName := gh.value.publishOrg,
     homepage := Option(gh.value.homePage),
     organizationHomepage := Option(gh.value.organizationHomePage),
+    scalaOrganization := "org.typelevel",
     scalaVersion := scalac.`2.12`,
     crossScalaVersions := scalac.crossScalaVersions
   )
@@ -188,6 +190,9 @@ trait settings extends dependencies with utils {
     ScoverageKeys.coverageFailOnMinimum := false,
     ScoverageKeys.coverageHighlighting := scalaBinaryVersion.value != "2.10"
   )
+
+  lazy val scalafmtSettings: Seq[Setting[_]] =
+    ((includeFilter.in(scalafmtInc) := "*.scala") +: automateScalafmtFor(Compile, Test)) ++ generateScalafmtTask
 
   /** Common unidoc settings, adding the "-Ymacro-no-expand" scalac option.*/
   lazy val unidocCommonSettings = Seq(

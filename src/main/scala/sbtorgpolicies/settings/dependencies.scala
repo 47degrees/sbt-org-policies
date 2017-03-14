@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package sbtorgpolicies
+package sbtorgpolicies.settings
 
 import sbt._
+import sbtorgpolicies.Dep
 
 trait dependencies {
 

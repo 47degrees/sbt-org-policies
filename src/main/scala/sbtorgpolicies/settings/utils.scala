@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sbtorgpolicies
+package sbtorgpolicies.settings
 
 trait utils {
 
