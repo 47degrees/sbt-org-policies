@@ -2,7 +2,7 @@
 
 # sbt-org-policies
 
-**sbt-org-policies** is just an SBT plugin that enforces you with some organization policies across all the projects.
+**sbt-org-policies** is just an SBT plugin that enforces you with some organization policies and settings across all your projects.
 
 ## Installation
 
