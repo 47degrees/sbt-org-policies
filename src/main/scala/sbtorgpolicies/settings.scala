@@ -209,7 +209,7 @@ trait settings extends dependencies with utils {
    * Add a "pretty shell prompt". Do not use this settings if you are in Emacs sbt-mode:
    * https://github.com/ensime/emacs-sbt-mode , since it's incompatible.
    */
-  lazy val miscSettings = Seq(
+  lazy val shellPromptSettings = Seq(
     shellPrompt := { s: State =>
       val c     = scala.Console
       val blue  = c.RESET + c.BLUE + c.BOLD
