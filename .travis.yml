@@ -14,6 +14,6 @@ before_install:
   -in secring.gpg.enc -out secring.gpg -d
 after_success:
 - if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then
-    sbt -DgithubToken=$GITHUB_TOKEN_REPO updateDependencyIssues;
+    sbt updateDependencyIssues;
     sbt compile publishSigned;
   fi
