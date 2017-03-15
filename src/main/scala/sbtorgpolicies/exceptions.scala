@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
-package sbtorgpolicies.settings
+package sbtorgpolicies
 
-import sbt._
-import sbtorgpolicies.{Dev, GitHubSettings}
+object exceptions {
 
-trait keys {
+  sealed abstract class OrgPolicyException(val message: String, val maybeCause: Option[Throwable])
+      extends RuntimeException(message)
+      with Product
+      with Serializable {
 
-  val orgGithubSettings: SettingKey[GitHubSettings] =
-    settingKey[GitHubSettings]("General Org Github Settings")
+    maybeCause foreach initCause
 
-  val orgDevSettings: SettingKey[List[Dev]] =
-    settingKey[List[Dev]]("List of Devs involved in the development of the project")
+    override def toString: String = message
+  }
+
+  case class IOException(msg: String, cause: Option[Throwable] = None) extends OrgPolicyException(msg, cause)
 }

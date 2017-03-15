@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-package sbtorgpolicies.settings
+package sbtorgpolicies
 
-import sbt._
-import sbtorgpolicies.{Dev, GitHubSettings}
+import org.scalatest.{FunSuite, Matchers}
+import org.scalatest.mockito.MockitoSugar
+import org.scalatest.prop.Checkers
 
-trait keys {
-
-  val orgGithubSettings: SettingKey[GitHubSettings] =
-    settingKey[GitHubSettings]("General Org Github Settings")
-
-  val orgDevSettings: SettingKey[List[Dev]] =
-    settingKey[List[Dev]]("List of Devs involved in the development of the project")
-}
+trait TestOps extends FunSuite with Matchers with Checkers with MockitoSugar
