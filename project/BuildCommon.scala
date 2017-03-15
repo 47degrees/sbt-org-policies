@@ -62,7 +62,7 @@ object BuildCommon extends AutoPlugin {
       <developer>
         <name>47 Degrees</name>
       </developer>
-      </developers>
+    </developers>
   )
 
   private[this] val gpgFolder = sys.env.getOrElse("PGP_FOLDER", ".")
@@ -101,7 +101,7 @@ object BuildCommon extends AutoPlugin {
   private[this] val sbtDependenciesSettings = Seq(
     githubOwner := "47deg",
     githubRepo := name.value,
-    githubToken := sys.props.get("githubToken").getOrElse("")
+    githubToken := Option(System.getenv().get("GITHUB_TOKEN_REPO")).getOrElse("")
   )
 
   private[this] val miscSettings = Seq(
