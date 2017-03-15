@@ -31,86 +31,87 @@ trait scalafmt {
   val scalafmtGenerateFile: TaskKey[Unit] = taskKey[Unit]("Generate a default scalafmt configuration")
 
   lazy val generateScalafmtTask = Seq(
-    scalafmtGenerateFile := Def.task {
-      if (!file(".scalafmt.conf").exists()) {
-        IO.write(
-          file(".scalafmt.conf"),
-          """style = defaultWithAlign
-            |maxColumn = 100
-            |
-            |continuationIndent.callSite = 2
-            |
-            |newlines {
-            |  sometimesBeforeColonInMethodReturnType = false
-            |}
-            |
-            |align {
-            |  arrowEnumeratorGenerator = false
-            |  ifWhileOpenParen = false
-            |  openParenCallSite = false
-            |  openParenDefnSite = false
-            |}
-            |
-            |docstrings = JavaDoc
-            |
-            |rewrite {
-            |  rules = [SortImports, RedundantBraces]
-            |  redundantBraces.maxLines = 1
-            |}
-        """.stripMargin.getBytes(IO.utf8)
-        )
-      }
-    }
+    scalafmtGenerateFile := scalafmtGenerateFileDef.value
   )
 
   def automateScalafmtFor(configurations: Configuration*): Seq[Setting[_]] =
     configurations.flatMap { c =>
       inConfig(c)(
         Seq(
-          compileInputs.in(compile) := {
-            scalafmtInc.value
-            compileInputs.in(compile).value
-          },
+          scalafmtInc := scalafmtIncDef.value,
           sourceDirectories.in(scalafmtInc) := Seq(scalaSource.value),
-          scalafmtInc := {
-            val cache   = streams.value.cacheDirectory / "scalafmt"
-            val include = includeFilter.in(scalafmtInc).value
-            val exclude = excludeFilter.in(scalafmtInc).value
-            val sources =
-              sourceDirectories
-                .in(scalafmtInc)
-                .value
-                .descendantsExcept(include, exclude)
-                .get
-                .toSet
-
-            def format(handler: Set[File] => Unit, msg: String) = {
-              def update(handler: Set[File] => Unit, msg: String)(in: ChangeReport[File], out: ChangeReport[File]) = {
-                val label = Reference.display(thisProjectRef.value)
-                val files = in.modified -- in.removed
-                Analysis
-                  .counted("Scala source", "", "s", files.size)
-                  .foreach(count => streams.value.log.info(s"$msg $count in $label ..."))
-                handler(files)
-                files
-              }
-
-              FileFunction.cached(cache)(FilesInfo.hash, FilesInfo.exists)(update(handler, msg))(
-                sources
-              )
-            }
-
-            def formattingHandler(files: Set[File]) =
-              if (files.nonEmpty) {
-                val filesArg = files.map(_.getAbsolutePath).mkString(",")
-                ScalafmtBootstrap.main(List("--quiet", "-i", "-f", filesArg))
-              }
-
-            format(formattingHandler, "Formatting")
-            format(_ => (), "Reformatted") // Recalculate the cache
-          }
+          compileInputs.in(compile) := (compileInputs.in(compile) dependsOn scalafmtInc).value
         )
       )
     }
+
+  val scalafmtIncDef: Def.Initialize[Task[Set[File]]] = Def.task {
+    val cache   = streams.value.cacheDirectory / "scalafmt"
+    val include = includeFilter.in(scalafmtInc).value
+    val exclude = excludeFilter.in(scalafmtInc).value
+    val sources =
+      sourceDirectories
+        .in(scalafmtInc)
+        .value
+        .descendantsExcept(include, exclude)
+        .get
+        .toSet
+
+    def format(handler: Set[File] => Unit, msg: String) = {
+      def update(handler: Set[File] => Unit, msg: String)(in: ChangeReport[File], out: ChangeReport[File]) = {
+        val label = Reference.display(thisProjectRef.value)
+        val files = in.modified -- in.removed
+        Analysis
+          .counted("Scala source", "", "s", files.size)
+          .foreach(count => streams.value.log.info(s"$msg $count in $label ..."))
+        handler(files)
+        files
+      }
+
+      FileFunction.cached(cache)(FilesInfo.hash, FilesInfo.exists)(update(handler, msg))(
+        sources
+      )
+    }
+
+    def formattingHandler(files: Set[File]) =
+      if (files.nonEmpty) {
+        val filesArg = files.map(_.getAbsolutePath).mkString(",")
+        ScalafmtBootstrap.main(List("--quiet", "-i", "-f", filesArg))
+      }
+
+    format(formattingHandler, "Formatting")
+    format(_ => (), "Reformatted") // Recalculate the cache
+  }
+
+  val scalafmtGenerateFileDef: Def.Initialize[Task[Unit]] = Def.task {
+    if (!file(".scalafmt.conf").exists()) {
+      IO.write(
+        file(".scalafmt.conf"),
+        """style = defaultWithAlign
+          |maxColumn = 100
+          |
+          |continuationIndent.callSite = 2
+          |
+          |newlines {
+          |  sometimesBeforeColonInMethodReturnType = false
+          |}
+          |
+          |align {
+          |  arrowEnumeratorGenerator = false
+          |  ifWhileOpenParen = false
+          |  openParenCallSite = false
+          |  openParenDefnSite = false
+          |}
+          |
+          |docstrings = JavaDoc
+          |
+          |rewrite {
+          |  rules = [SortImports, RedundantBraces]
+          |  redundantBraces.maxLines = 1
+          |}
+        """.stripMargin.getBytes(IO.utf8)
+      )
+    }
+  }
 
 }
