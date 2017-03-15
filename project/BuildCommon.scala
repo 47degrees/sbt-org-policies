@@ -99,7 +99,7 @@ object BuildCommon extends AutoPlugin {
   )
 
   private[this] val sbtDependenciesSettings = Seq(
-    githubOwner := organization.value,
+    githubOwner := "47deg",
     githubRepo := name.value,
     githubToken := sys.props.get("githubToken").getOrElse("")
   )
