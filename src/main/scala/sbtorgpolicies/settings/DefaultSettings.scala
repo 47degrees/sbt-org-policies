@@ -27,9 +27,11 @@ trait DefaultSettings extends AllSettings {
       orgGithubSettings := GitHubSettings(
         organization = "47deg",
         project = name.value,
-        publishOrg = "47 Degrees",
+        organizationName = "47 Degrees",
         organizationHomePage = url("http://47deg.com"),
-        license = apache),
+        organizationEmail = "hello@47deg.com",
+        license = apache
+      ),
       orgDevSettings := List(Dev("47 Degrees (twitter: @47deg)", "47 Degrees")),
       scalacOptions ++= scalacAllOptions
     ) ++
@@ -42,5 +44,6 @@ trait DefaultSettings extends AllSettings {
       scalaDependencyOverrides ++
       sharedScoverageSettings() ++
       scalafmtSettings ++
-      sbtDependenciesSettings(orgGithubSettings)
+      sbtDependenciesSettings(orgGithubSettings) ++
+      orgFileSettings(orgGithubSettings)
 }

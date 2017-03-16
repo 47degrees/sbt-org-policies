@@ -50,7 +50,7 @@ class TemplatesEngineTest extends TestOps {
 
       when(mockFileWriter.writeContentToFile(content, outputPath)).thenReturn(().asRight)
 
-      val result = templatesEngine.run(inputPath, replacements, outputPath)
+      val result = templatesEngine.run(inputPath, outputPath, replacements)
 
       verify(mockFileReader).withFileContent(any[String], any[(String) => IOResult[String]]())
       verify(mockFileWriter).writeContentToFile(content, outputPath)
@@ -75,7 +75,7 @@ class TemplatesEngineTest extends TestOps {
 
         when(mockFileWriter.writeContentToFile(content, outputPath)).thenReturn(().asRight)
 
-        val result = templatesEngine.run(inputPath, replacements, outputPath)
+        val result = templatesEngine.run(inputPath, outputPath, replacements)
 
         verify(mockFileReader).withFileContent(any[String], any[(String) => IOResult[String]]())
         verifyZeroInteractions(mockFileWriter)
@@ -100,7 +100,7 @@ class TemplatesEngineTest extends TestOps {
         when(mockFileWriter.writeContentToFile(content, outputPath)).thenReturn(exception
           .asLeft[Unit])
 
-        val result = templatesEngine.run(inputPath, replacements, outputPath)
+        val result = templatesEngine.run(inputPath, outputPath, replacements)
 
         verify(mockFileReader).withFileContent(any[String], any[(String) => IOResult[String]]())
         verify(mockFileWriter).writeContentToFile(content, outputPath)
@@ -220,5 +220,4 @@ class TemplatesEngineTest extends TestOps {
     result.isRight shouldBe true
     result.right.get shouldBe originalContent
   }
-
 }
