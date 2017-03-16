@@ -17,7 +17,7 @@
 package sbtorgpolicies
 
 import sbtorgpolicies.exceptions.IOException
-
+import cats.syntax.either._
 import scala.language.implicitConversions
 
 package object io {
@@ -45,6 +45,9 @@ package object io {
 
     implicit def ioTSyntax[T](t: T): IOReplaceableOps[T] = new IOReplaceableOps(t)
 
+    implicit def eitherFilterSyntax[T](either: Either[Throwable, T]): FilteredEitherOps[T] =
+      new FilteredEitherOps(either)
+
     final class IOReplaceableOps[T](t: T) {
 
       def asReplaceable: ReplaceableT[T] = ReplaceableT(t)
@@ -55,6 +58,16 @@ package object io {
 
       def asReplaceable: ReplaceableList[T] = ReplaceableList[T](list)
 
+    }
+
+    final class FilteredEitherOps[T](either: Either[Throwable, T]) {
+
+      def withFilter(f: T => Boolean): Either[Throwable, T] = either match {
+        case Right(r) if !f(r) =>
+          new IllegalStateException("Filter condition has not been satisfied").asLeft[T]
+        case _ =>
+          either
+      }
     }
   }
 }

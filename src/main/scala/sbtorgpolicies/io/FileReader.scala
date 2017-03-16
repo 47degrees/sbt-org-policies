@@ -20,25 +20,19 @@ import cats.syntax.either._
 import sbtorgpolicies.exceptions._
 
 import scala.io.BufferedSource
-import scala.util.Try
 
 class FileReader {
 
-  def withFileContent[T](filePath: String, f: String => T): IOResult[T] =
-    getFileContent(filePath) match {
-      case Right(content) => f(content).asRight
-      case Left(e)        => e.asLeft
-    }
+  def withFileContent[T](filePath: String, f: String => IOResult[T]): IOResult[T] =
+    getFileContent(filePath) flatMap f
 
   private[this] def getFileContent(filePath: String): IOResult[String] =
     Either
-      .fromTry {
-        Try {
-          val source: BufferedSource = scala.io.Source.fromFile(filePath)
-          val content: String        = source.mkString
-          source.close()
-          content
-        }
+      .catchNonFatal {
+        val source: BufferedSource = scala.io.Source.fromFile(filePath)
+        val content: String        = source.mkString
+        source.close()
+        content
       }
       .leftMap(e => IOException(s"Error loading $filePath content", Some(e)))
 

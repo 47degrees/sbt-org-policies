@@ -32,10 +32,7 @@ class TemplatesEngine {
     } yield ()
 
   def replaceFileWith(inputPath: String, replacements: Replacements): IOResult[String] =
-    for {
-      result  <- fileReader.withFileContent(inputPath, replaceWith(_, replacements))
-      content <- result
-    } yield content
+    fileReader.withFileContent(inputPath, replaceWith(_, replacements))
 
   def replaceWith(content: String, replacements: Replacements): IOResult[String] =
     Either

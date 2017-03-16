@@ -17,36 +17,34 @@
 package sbtorgpolicies.io
 
 import cats.syntax.either._
-import sbt.{file, IO}
+import sbt.{file, File, IO}
+import sbtorgpolicies.io.syntax._
 import sbtorgpolicies.exceptions._
-
-import scala.util.Try
 
 class FileWriter {
 
-  def writeContentToFile(content: String, outputPath: String): IOResult[Unit] =
-    createFile(outputPath) match {
-      case Right(b) if b =>
-        Either
-          .fromTry {
-            Try(IO.write(file(outputPath), content))
-          }
-          .leftMap(e => IOException(s"Error writing to file $outputPath", Some(e)))
-      case _ =>
-        IOException(s"Unexpected error writing to file $outputPath").asLeft
-    }
+  def writeContentToFile(content: String, outputPath: String): IOResult[Unit] = {
 
-  def createFile(output: String): IOResult[Boolean] =
+    def writeFile: Either[Throwable, Unit] = Either.catchNonFatal(IO.write(file(outputPath), content))
+
+    (for {
+      result <- createFile(outputPath)
+      _      <- writeFile if result
+    } yield ()).leftMap(e => IOException(s"Error writing to file $outputPath", Some(e)))
+
+  }
+
+  def createFile(output: String): IOResult[Boolean] = {
+
+    def parentDirExists(f: File): Boolean = f.getParentFile.exists() || f.getParentFile.mkdirs()
+
     Either
       .catchNonFatal {
         val f = file(output)
 
-        if (!f.exists()) {
-          if (!f.getParentFile.exists())
-            f.getParentFile.mkdirs()
-          f.createNewFile()
-        } else true
+        f.exists() || (parentDirExists(f) && f.createNewFile())
       }
       .leftMap(e => IOException(s"Error creating file", Some(e)))
+  }
 
 }

@@ -45,13 +45,13 @@ class TemplatesEngineTest extends TestOps {
       when(
         mockFileReader
           .withFileContent(any[String], any[String => IOResult[String]]()))
-        .thenReturn(content.asRight.asRight)
+        .thenReturn(content.asRight)
 
       when(mockFileWriter.writeContentToFile(content, outputPath)).thenReturn(().asRight)
 
       val result = templatesEngine.run(inputPath, replacements, outputPath)
 
-      verify(mockFileReader).withFileContent(any[String], any[(String) => String]())
+      verify(mockFileReader).withFileContent(any[String], any[(String) => IOResult[String]]())
       verify(mockFileWriter).writeContentToFile(content, outputPath)
 
       result.isRight
@@ -69,16 +69,14 @@ class TemplatesEngineTest extends TestOps {
         when(
           mockFileReader
             .withFileContent(any[String], any[String => IOResult[String]]()))
-          .thenReturn(
-            IOException(exceptionMsg)
-              .asLeft[String]
-              .asRight[IOException])
+          .thenReturn(IOException(exceptionMsg)
+            .asLeft[String])
 
         when(mockFileWriter.writeContentToFile(content, outputPath)).thenReturn(().asRight)
 
         val result = templatesEngine.run(inputPath, replacements, outputPath)
 
-        verify(mockFileReader).withFileContent(any[String], any[(String) => String]())
+        verify(mockFileReader).withFileContent(any[String], any[(String) => IOResult[String]]())
         verifyZeroInteractions(mockFileWriter)
 
         result.isLeft
@@ -96,14 +94,14 @@ class TemplatesEngineTest extends TestOps {
         when(
           mockFileReader
             .withFileContent(any[String], any[String => IOResult[String]]()))
-          .thenReturn(content.asRight.asRight)
+          .thenReturn(content.asRight)
 
         when(mockFileWriter.writeContentToFile(content, outputPath)).thenReturn(IOException(exceptionMsg)
           .asLeft[Unit])
 
         val result = templatesEngine.run(inputPath, replacements, outputPath)
 
-        verify(mockFileReader).withFileContent(any[String], any[(String) => String]())
+        verify(mockFileReader).withFileContent(any[String], any[(String) => IOResult[String]]())
         verify(mockFileWriter).writeContentToFile(content, outputPath)
 
         result.isLeft
@@ -120,11 +118,11 @@ class TemplatesEngineTest extends TestOps {
       when(
         mockFileReader
           .withFileContent(any[String], any[String => IOResult[String]]()))
-        .thenReturn(content.asRight.asRight)
+        .thenReturn(content.asRight)
 
       val result = templatesEngine.replaceFileWith(inputPath, replacements)
 
-      verify(mockFileReader).withFileContent(any[String], any[(String) => String]())
+      verify(mockFileReader).withFileContent(any[String], any[(String) => IOResult[String]]())
 
       result.isRight && result.right.get == content
     }
@@ -140,14 +138,11 @@ class TemplatesEngineTest extends TestOps {
       when(
         mockFileReader
           .withFileContent(any[String], any[String => IOResult[String]]()))
-        .thenReturn(
-          IOException(exceptionMsg)
-            .asLeft[String]
-            .asRight[IOException])
+        .thenReturn(IOException(exceptionMsg).asLeft)
 
       val result = templatesEngine.replaceFileWith(inputPath, replacements)
 
-      verify(mockFileReader).withFileContent(any[String], any[(String) => String]())
+      verify(mockFileReader).withFileContent(any[String], any[(String) => IOResult[String]]())
 
       result.isLeft
     }
@@ -224,4 +219,5 @@ class TemplatesEngineTest extends TestOps {
     result.isRight shouldBe true
     result.right.get shouldBe originalContent
   }
+
 }
