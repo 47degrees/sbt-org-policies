@@ -20,4 +20,15 @@ import org.scalatest.{FunSuite, Matchers}
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.prop.Checkers
 
-trait TestOps extends FunSuite with Matchers with Checkers with MockitoSugar
+trait TestOps extends FunSuite with Matchers with Checkers with MockitoSugar {
+
+  implicit def anyEq[A](a: A): AnyEq[A] = new AnyEq[A](a)
+
+  final class AnyEq[A](a: A) {
+    def shouldBeEq(b: A): Boolean = {
+      a shouldBe b
+      a == b
+    }
+  }
+
+}

@@ -22,6 +22,7 @@ import org.mockito.Mockito
 import org.mockito.Mockito._
 import org.scalacheck.Prop._
 import sbtorgpolicies.TestOps
+import sbtorgpolicies.arbitraries.ExceptionArbitraries._
 import sbtorgpolicies.arbitraries.IOArbitraries._
 import sbtorgpolicies.exceptions.IOException
 
@@ -63,13 +64,13 @@ class TemplatesEngineTest extends TestOps {
   test("TemplatesEngine.run fails when FileReader throws and Exception") {
 
     val property = forAll {
-      (inputPath: String, content: String, exceptionMsg: String, outputPath: String, replacements: Replacements) =>
+      (inputPath: String, content: String, exception: IOException, outputPath: String, replacements: Replacements) =>
         Mockito.reset(mockFileReader, mockFileWriter)
 
         when(
           mockFileReader
             .withFileContent(any[String], any[String => IOResult[String]]()))
-          .thenReturn(IOException(exceptionMsg)
+          .thenReturn(exception
             .asLeft[String])
 
         when(mockFileWriter.writeContentToFile(content, outputPath)).thenReturn(().asRight)
@@ -88,7 +89,7 @@ class TemplatesEngineTest extends TestOps {
   test("TemplatesEngine.run fails when FileWriter throws and Exception") {
 
     val property = forAll {
-      (inputPath: String, content: String, exceptionMsg: String, outputPath: String, replacements: Replacements) =>
+      (inputPath: String, content: String, exception: IOException, outputPath: String, replacements: Replacements) =>
         Mockito.reset(mockFileReader, mockFileWriter)
 
         when(
@@ -96,7 +97,7 @@ class TemplatesEngineTest extends TestOps {
             .withFileContent(any[String], any[String => IOResult[String]]()))
           .thenReturn(content.asRight)
 
-        when(mockFileWriter.writeContentToFile(content, outputPath)).thenReturn(IOException(exceptionMsg)
+        when(mockFileWriter.writeContentToFile(content, outputPath)).thenReturn(exception
           .asLeft[Unit])
 
         val result = templatesEngine.run(inputPath, replacements, outputPath)
@@ -132,13 +133,13 @@ class TemplatesEngineTest extends TestOps {
 
   test("TemplatesEngine.replaceFileWith fails when FileReader throws and Exception") {
 
-    val property = forAll { (inputPath: String, exceptionMsg: String, replacements: Replacements) =>
+    val property = forAll { (inputPath: String, exception: IOException, replacements: Replacements) =>
       Mockito.reset(mockFileReader)
 
       when(
         mockFileReader
           .withFileContent(any[String], any[String => IOResult[String]]()))
-        .thenReturn(IOException(exceptionMsg).asLeft)
+        .thenReturn(exception.asLeft)
 
       val result = templatesEngine.replaceFileWith(inputPath, replacements)
 
