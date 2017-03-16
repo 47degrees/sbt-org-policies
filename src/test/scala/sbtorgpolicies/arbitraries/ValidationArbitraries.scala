@@ -14,19 +14,26 @@
  * limitations under the License.
  */
 
-package sbtorgpolicies.rules
+package sbtorgpolicies.arbitraries
 
+import cats.data.ValidatedNel
 import cats.syntax.validated._
-import sbtorgpolicies.exceptions.ValidationException
-import sbtorgpolicies.io.FileReader
+import org.scalacheck.{Arbitrary, Gen}
 
-class FileValidation {
+trait ValidationArbitraries {
 
-  val fileReader: FileReader = new FileReader
+  implicit def invalidNelGen[E, A](implicit E: Arbitrary[E]): Gen[ValidatedNel[E, A]] = {
+    E.arbitrary map (_.invalidNel[A])
+  }
 
-  def validateFile(inputPath: String, validation: (String) => ValidationResult): ValidationResult =
-    fileReader.getFileContent(inputPath) match {
-      case Right(v) => validation(v)
-      case Left(e) => ValidationException(e.getMessage, Some(e)).invalidNel
-    }
+  implicit def validNelGen[E, A](implicit A: Arbitrary[A]): Gen[ValidatedNel[E, A]] = {
+    A.arbitrary map (_.validNel[E])
+  }
+
+  implicit def validatedNelArbitrary[E, A](implicit E: Arbitrary[E], A: Arbitrary[A]): Arbitrary[ValidatedNel[E, A]] = Arbitrary {
+    Gen.oneOf(invalidNelGen[E, A], validNelGen[E, A])
+  }
+
 }
+
+object ValidationArbitraries extends ValidationArbitraries

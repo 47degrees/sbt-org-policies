@@ -15,19 +15,19 @@
  */
 
 package sbtorgpolicies
-
-import cats.syntax.either._
+import cats.data.{Validated, ValidatedNel}
+import cats.syntax.validated._
 import sbtorgpolicies.exceptions.ValidationException
 
 import scala.util.matching.Regex
 
 package object rules {
 
-  type ValidationResult = Either[ValidationException, Unit]
+  type ValidationResult = ValidatedNel[ValidationException, Unit]
 
   type ValidationFunction = (String) => ValidationResult
 
-  val emptyValidation: ValidationFunction = _ => ().asRight
+  val emptyValidation: ValidationFunction = _ => Validated.valid((): Unit)
 
   def requiredStringsValidation(list: List[String]): ValidationFunction = {
 
@@ -36,8 +36,8 @@ package object rules {
       list.foldLeft(List.empty[String]) {
         case (accumulated, string) => accumulated ++ validateString(string).toList
       } match {
-        case Nil    => ().asRight[ValidationException]
-        case errors => ValidationException(s"Validation error:\n${errors.mkString("\n")}").asLeft[Unit]
+        case Nil    => ().validNel
+        case errors => ValidationException(s"Validation error:\n${errors.mkString("\n")}").invalidNel
       }
 
     content: String =>
@@ -69,7 +69,7 @@ package object rules {
         }
 
       if (sectionLines.lines.isEmpty) {
-        ValidationException("Section not found").asLeft[Unit]
+        ValidationException("Section not found").invalidNel
       } else {
         validation(sectionLines.lines.mkString("\n"))
       }

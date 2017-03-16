@@ -17,6 +17,7 @@
 package sbtorgpolicies.rules
 
 import cats.syntax.either._
+import cats.syntax.validated._
 import org.mockito.Matchers._
 import org.mockito.Mockito
 import org.mockito.Mockito._
@@ -24,6 +25,7 @@ import org.scalacheck.Prop._
 import sbtorgpolicies.TestOps
 import sbtorgpolicies.exceptions.{IOException, ValidationException}
 import sbtorgpolicies.arbitraries.ExceptionArbitraries._
+import sbtorgpolicies.arbitraries.ValidationArbitraries._
 import sbtorgpolicies.io.FileReader
 
 class FileValidationTest extends TestOps {
@@ -62,11 +64,11 @@ class FileValidationTest extends TestOps {
 
         when(mockFileReader.getFileContent(any[String])).thenReturn(left)
 
-        val result = fileValidation.validateFile(inputPath, _ => Right((): Unit))
+        val result = fileValidation.validateFile(inputPath, _ => ().valid)
 
         verify(mockFileReader).getFileContent(any[String])
 
-        result shouldBeEq ValidationException(exception.message, Some(exception)).asLeft[Unit]
+        result shouldBeEq ValidationException(exception.message, Some(exception)).invalidNel
     }
 
     check(property)
