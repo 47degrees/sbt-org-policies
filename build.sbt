@@ -21,7 +21,13 @@ lazy val pluginSettings = Seq(
   addSbtPlugin("com.eed3si9n"       % "sbt-buildinfo"          % "0.6.1"),
   addSbtPlugin("com.geirsson"       % "sbt-scalafmt"           % "0.6.3"),
   addSbtPlugin("com.47deg"          % "sbt-dependencies"       % "0.0.2"),
-  libraryDependencies += "org.scala-sbt" % "scripted-plugin" % sbtVersion.value
+  libraryDependencies ++= Seq(
+    "org.typelevel"  %% "cats"           % "0.9.0",
+    "org.scala-sbt"  % "scripted-plugin" % sbtVersion.value,
+    "org.scalatest"  %% "scalatest"      % "3.0.1" % "test",
+    "org.scalacheck" %% "scalacheck"     % "1.13.4" % "test",
+    "org.mockito"    % "mockito-all"     % "2.0.2-beta" % "test"
+  )
 )
 
 lazy val `sbt-org-policies` = (project in file("."))

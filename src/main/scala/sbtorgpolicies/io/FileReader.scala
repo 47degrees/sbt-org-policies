@@ -14,16 +14,26 @@
  * limitations under the License.
  */
 
-package sbtorgpolicies.settings
+package sbtorgpolicies.io
 
-import sbt._
-import sbtorgpolicies.{Dev, GitHubSettings}
+import cats.syntax.either._
+import sbtorgpolicies.exceptions._
 
-trait keys {
+import scala.io.BufferedSource
 
-  val orgGithubSettings: SettingKey[GitHubSettings] =
-    settingKey[GitHubSettings]("General Org Github Settings")
+class FileReader {
 
-  val orgDevSettings: SettingKey[List[Dev]] =
-    settingKey[List[Dev]]("List of Devs involved in the development of the project")
+  def withFileContent[T](filePath: String, f: String => IOResult[T]): IOResult[T] =
+    getFileContent(filePath) flatMap f
+
+  private[this] def getFileContent(filePath: String): IOResult[String] =
+    Either
+      .catchNonFatal {
+        val source: BufferedSource = scala.io.Source.fromFile(filePath)
+        val content: String        = source.mkString
+        source.close()
+        content
+      }
+      .leftMap(e => IOException(s"Error loading $filePath content", Some(e)))
+
 }

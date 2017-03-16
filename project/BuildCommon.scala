@@ -31,7 +31,7 @@ object BuildCommon extends AutoPlugin {
     homepage := Option(url("http://www.47deg.com")),
     organizationHomepage := Some(new URL("http://47deg.com")),
     headers := Map(
-      "scala" -> Apache2_0("2016", "47 Degrees, LLC. <http://www.47deg.com>")
+      "scala" -> Apache2_0("2017", "47 Degrees, LLC. <http://www.47deg.com>")
     )
   )
 
