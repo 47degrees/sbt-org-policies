@@ -21,17 +21,19 @@ import sbtorgpolicies.exceptions.{IOException, ValidationException}
 
 trait ExceptionArbitraries {
 
+  val exceptionMessage: String = "Generated Exception"
+
   implicit val ioExceptionArbitrary: Arbitrary[IOException] = Arbitrary {
     for {
       msg <- Gen.alphaStr
-      maybeException <- Gen.option(new RuntimeException("Generated Exception"))
+      maybeException <- Gen.option(new RuntimeException(exceptionMessage))
     } yield IOException(msg, maybeException)
   }
 
   implicit val validationExceptionArbitrary: Arbitrary[ValidationException] = Arbitrary {
     for {
       msg <- Gen.alphaStr
-      maybeException <- Gen.option(new RuntimeException("Generated Exception"))
+      maybeException <- Gen.option(new RuntimeException(exceptionMessage))
     } yield ValidationException(msg, maybeException)
   }
 

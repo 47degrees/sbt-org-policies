@@ -17,7 +17,6 @@
 package sbtorgpolicies
 
 import cats.syntax.either._
-import jdk.nashorn.internal.runtime.regexp.RegExp
 import sbtorgpolicies.exceptions.ValidationException
 
 import scala.util.matching.Regex
@@ -30,7 +29,7 @@ package object rules {
 
   val emptyValidation: ValidationFunction = _ => ().asRight
 
-  def requiredStrings(list: List[String]): ValidationFunction = {
+  def requiredStringsValidation(list: List[String]): ValidationFunction = {
 
     def validateList(content: String, list: List[String])(
         validateString: (String) => Option[String]): ValidationResult =
@@ -47,7 +46,7 @@ package object rules {
       }
   }
 
-  def requiredSection(start: String, excludedEnd: String, validation: ValidationFunction): ValidationFunction = {
+  def requiredSection(startRegExp: Regex, endRegExp: Regex, validation: ValidationFunction): ValidationFunction = {
 
     case class Section(started: Boolean = false, ended: Boolean = false, lines: List[String] = Nil)
 
@@ -55,8 +54,6 @@ package object rules {
       r.findFirstIn(s).isDefined
 
     content: String =>
-      val startRegExp = start.r
-      val endRegExp   = excludedEnd.r
       val sectionLines = content
         .split("\n")
         .foldLeft(Section()) {
