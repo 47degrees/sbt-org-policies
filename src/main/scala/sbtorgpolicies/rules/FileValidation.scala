@@ -24,7 +24,7 @@ class FileValidation {
 
   val fileReader: FileReader = new FileReader
 
-  def validateFile(inputPath: String, validation: (String) => ValidationResult): ValidationResult =
+  def validateFile(inputPath: String, validation: ValidationFunction): ValidationResult =
     fileReader.getFileContent(inputPath) match {
       case Right(v) => validation(v)
       case Left(e) => ValidationException(e.getMessage, Some(e)).invalidNel

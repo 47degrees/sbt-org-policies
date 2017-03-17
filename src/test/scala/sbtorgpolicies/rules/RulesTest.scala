@@ -58,7 +58,7 @@ class RulesTest extends TestOps {
            |End
          """.stripMargin
 
-      val realMissing = missing.filterNot(existing.contains)
+      val realMissing = missing.filterNot(existing.contains).filter(_.nonEmpty)
 
       val result = requiredStringsValidation(existing ++ realMissing)(content)
       if (realMissing.isEmpty) {
