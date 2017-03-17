@@ -25,7 +25,7 @@ import org.scalacheck.Prop._
 import sbtorgpolicies.TestOps
 import sbtorgpolicies.exceptions.{IOException, ValidationException}
 import sbtorgpolicies.arbitraries.ExceptionArbitraries._
-import sbtorgpolicies.arbitraries.ValidationArbitraries._
+import cats.laws.discipline.arbitrary._
 import sbtorgpolicies.io.FileReader
 
 class FileValidationTest extends TestOps {
