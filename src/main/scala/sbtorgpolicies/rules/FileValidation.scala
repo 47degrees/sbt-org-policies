@@ -14,26 +14,19 @@
  * limitations under the License.
  */
 
-package sbtorgpolicies.io
+package sbtorgpolicies.rules
 
-import cats.syntax.either._
-import sbtorgpolicies.exceptions._
+import cats.syntax.validated._
+import sbtorgpolicies.exceptions.ValidationException
+import sbtorgpolicies.io.FileReader
 
-import scala.io.BufferedSource
+class FileValidation {
 
-class FileReader {
+  val fileReader: FileReader = new FileReader
 
-  def withFileContent[T](filePath: String, f: String => IOResult[T]): IOResult[T] =
-    getFileContent(filePath) flatMap f
-
-  def getFileContent(filePath: String): IOResult[String] =
-    Either
-      .catchNonFatal {
-        val source: BufferedSource = scala.io.Source.fromFile(filePath)
-        val content: String        = source.mkString
-        source.close()
-        content
-      }
-      .leftMap(e => IOException(s"Error loading $filePath content", Some(e)))
-
+  def validateFile(inputPath: String, validation: ValidationFunction): ValidationResult =
+    fileReader.getFileContent(inputPath) match {
+      case Right(v) => validation(v)
+      case Left(e) => ValidationException(e.getMessage, Some(e)).invalidNel
+    }
 }

@@ -1,4 +1,3 @@
-import com.timushev.sbt.updates.UpdatesPlugin.autoImport._
 import com.typesafe.sbt.SbtPgp.autoImportImpl.PgpKeys.gpgCommand
 import com.typesafe.sbt.SbtPgp.autoImportImpl._
 import dependencies.DependenciesPlugin.autoImport._
