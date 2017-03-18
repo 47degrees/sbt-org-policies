@@ -4,5 +4,5 @@ addSbtPlugin("com.github.gseitz"                   % "sbt-release"      % "1.0.4
 addSbtPlugin("org.xerial.sbt"                      % "sbt-sonatype"     % "1.1")
 addSbtPlugin("org.scala-js"                        % "sbt-scalajs"      % "0.6.14")
 addSbtPlugin("com.geirsson"                        % "sbt-scalafmt"     % "0.6.3")
-addSbtPlugin("com.47deg"                           % "sbt-dependencies" % "0.0.3")
+addSbtPlugin("com.47deg"                           % "sbt-dependencies" % "0.0.4")
 libraryDependencies <+= sbtVersion("org.scala-sbt" % "scripted-plugin"  % _)

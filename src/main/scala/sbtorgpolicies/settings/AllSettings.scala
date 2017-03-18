@@ -30,7 +30,7 @@ import sbtunidoc.ScalaUnidocPlugin.autoImport._
 import sbtunidoc.BaseUnidocPlugin.autoImport._
 import scoverage.ScoverageKeys
 
-trait AllSettings extends keys with dependencies with scalafmt with files with utils {
+trait AllSettings extends keys with dependencies with scalafmt with files with validationFiles with utils {
 
   /**
    * Settings common to all projects.
