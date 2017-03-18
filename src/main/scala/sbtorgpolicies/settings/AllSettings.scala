@@ -30,7 +30,7 @@ import sbtunidoc.Plugin.UnidocKeys._
 import sbtunidoc.Plugin._
 import scoverage.ScoverageKeys
 
-trait AllSettings extends keys with dependencies with scalafmt with utils {
+trait AllSettings extends keys with dependencies with scalafmt with files with utils {
 
   /**
    * Settings common to all projects.
@@ -134,7 +134,7 @@ trait AllSettings extends keys with dependencies with scalafmt with utils {
    */
   def sharedBuildSettings(gh: SettingKey[GitHubSettings]) = Seq(
     organization := gh.value.organization,
-    organizationName := gh.value.publishOrg,
+    organizationName := gh.value.organizationName,
     homepage := Option(gh.value.homePage),
     organizationHomepage := Option(gh.value.organizationHomePage),
     scalaOrganization := "org.typelevel",
@@ -244,4 +244,6 @@ trait AllSettings extends keys with dependencies with scalafmt with utils {
       githubRepo := gh.value.project,
       githubToken := sys.props.get("githubToken").getOrElse("")
     )
+
+  def orgFileSettings(gh: SettingKey[GitHubSettings]): Seq[Setting[_]] = orgFilesDefaultSettings(gh) ++ orgFilesTasks
 }

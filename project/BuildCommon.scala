@@ -5,6 +5,7 @@ import de.heikoseeberger.sbtheader.HeaderKey._
 import de.heikoseeberger.sbtheader.license.Apache2_0
 import sbt.Keys._
 import sbt._
+import ScriptedPlugin._
 import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 import sbtrelease.ReleasePlugin.autoImport._
 
@@ -21,7 +22,8 @@ object BuildCommon extends AutoPlugin {
       pgpSettings ++
       credentialSettings ++
       publishSettings ++
-      sbtDependenciesSettings
+      sbtDependenciesSettings ++
+      testScriptedSettings
 
   private[this] val artifactSettings = Seq(
     name := "sbt-org-policies",
@@ -102,6 +104,24 @@ object BuildCommon extends AutoPlugin {
     githubRepo := name.value,
     githubToken := Option(System.getenv().get("GITHUB_TOKEN_REPO")).getOrElse("")
   )
+
+  private[this] val testScriptedSettings =
+    ScriptedPlugin.scriptedSettings ++ Seq(
+      scriptedDependencies := (compile in Test) map { (analysis) =>
+        Unit
+      },
+      scriptedLaunchOpts := {
+        scriptedLaunchOpts.value ++
+          Seq(
+            "-Xmx2048M",
+            "-XX:MaxPermSize=512M",
+            "-XX:ReservedCodeCacheSize=256m",
+            "-XX:+UseConcMarkSweepGC",
+            "-Dplugin.version=" + version.value,
+            "-Dscala.version=" + scalaVersion.value
+          )
+      }
+    )
 
   private[this] val miscSettings = Seq(
     shellPrompt := { s: State =>

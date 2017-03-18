@@ -1,0 +1,9 @@
+# check that the sbt-org-policies plugin works on a minimal project
+
+> orgCreateFiles
+
+$ exists target/scala-2.11/resource_managed/org-policies/templates
+
+$ exists LICENSE
+
+$ exists CONTRIBUTING.md

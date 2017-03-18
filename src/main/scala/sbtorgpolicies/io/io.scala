@@ -16,8 +16,15 @@
 
 package sbtorgpolicies
 
-import sbtorgpolicies.exceptions.IOException
+import java.io.File
+import java.nio.file.Path
+import java.nio.file.Paths.get
+
 import cats.syntax.either._
+import sbt.{file, File}
+import sbtorgpolicies.exceptions.IOException
+import sbtorgpolicies.io.syntax._
+
 import scala.language.implicitConversions
 
 package object io {
@@ -38,6 +45,38 @@ package object io {
     override def asString: String = list.map(elem => s"* ${elem.asString}").mkString("\n")
   }
 
+  case class FileType(
+      mandatory: Boolean,
+      overWritable: Boolean,
+      templatePath: String,
+      outputPath: String,
+      replacements: Replacements)
+
+  def LicenseFileType(ghSettings: GitHubSettings) = FileType(
+    mandatory = true,
+    overWritable = true,
+    templatePath = "templates/LICENSE.template",
+    outputPath = "LICENSE",
+    replacements = Map(
+      "year"                 -> 2017.asReplaceable,
+      "organizationName"     -> ghSettings.organizationName.asReplaceable,
+      "organizationHomePage" -> ghSettings.organizationHomePage.asReplaceable
+    )
+  )
+
+  def ContributingFileType(ghSettings: GitHubSettings) = FileType(
+    mandatory = true,
+    overWritable = true,
+    templatePath = "templates/CONTRIBUTING.md.template",
+    outputPath = "CONTRIBUTING.md",
+    replacements = Map(
+      "name"              -> ghSettings.project.asReplaceable,
+      "organization"      -> ghSettings.organization.asReplaceable,
+      "organizationName"  -> ghSettings.organizationName.asReplaceable,
+      "organizationEmail" -> ghSettings.organizationEmail.asReplaceable
+    )
+  )
+
   object syntax {
 
     implicit def ioListSyntax[T <: Replaceable](list: List[T]): IOReplaceableListOps[T] =
@@ -47,6 +86,8 @@ package object io {
 
     implicit def eitherFilterSyntax[T](either: Either[Throwable, T]): FilteredEitherOps[T] =
       new FilteredEitherOps(either)
+
+    implicit def fileNameSyntax(fileName: String): FileNameOps = new FileNameOps(fileName)
 
     final class IOReplaceableOps[T](t: T) {
 
@@ -68,6 +109,20 @@ package object io {
         case _ =>
           either
       }
+    }
+
+    final class FileNameOps(filename: String) {
+
+      def toPath: Path = get(filename)
+
+      def toFile: File = file(filename.fixPath)
+
+      def fixPath: String = filename.replaceAll("/", File.separator)
+
+      def ensureFinalSlash: String =
+        filename +
+          (if (filename.endsWith(File.separator)) ""
+           else File.separator)
     }
   }
 }

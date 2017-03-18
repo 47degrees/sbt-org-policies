@@ -16,24 +16,67 @@
 
 package sbtorgpolicies.io
 
-import cats.syntax.either._
-import sbtorgpolicies.exceptions._
+import java.io.File
 
-import scala.io.BufferedSource
+import cats.syntax.either._
+import sbt.{file, IO}
+import sbtorgpolicies.exceptions._
+import sbtorgpolicies.io.syntax._
+
+import scala.annotation.tailrec
 
 class FileReader {
+
+  def exists(path: String): Boolean =
+    Either
+      .catchNonFatal(path.toFile.exists()) getOrElse false
 
   def withFileContent[T](filePath: String, f: String => IOResult[T]): IOResult[T] =
     getFileContent(filePath) flatMap f
 
   def getFileContent(filePath: String): IOResult[String] =
     Either
-      .catchNonFatal {
-        val source: BufferedSource = scala.io.Source.fromFile(filePath)
-        val content: String        = source.mkString
-        source.close()
-        content
-      }
+      .catchNonFatal(IO.readLines(file(filePath)).mkString)
       .leftMap(e => IOException(s"Error loading $filePath content", Some(e)))
 
+  def fetchFilesRecursivelyFromPath(sourcePath: String, acceptedExtensions: List[String] = Nil): IOResult[List[File]] =
+    fetchFilesRecursively(sourcePath.toFile, acceptedExtensions)
+
+  def fetchFilesRecursively(sourceFile: File, acceptedExtensions: List[String] = Nil): IOResult[List[File]] =
+    Either
+      .catchNonFatal {
+
+        @tailrec
+        def innerRecursive(files: List[File], accum: List[File]): List[File] = {
+
+          val acceptedFiles    = files filter acceptedExtension
+          val filesDirectories = files filter (_.isDirectory) flatMap (_.listFiles().toList)
+
+          val newAccum = accum ++ acceptedFiles
+
+          filesDirectories match {
+            case Nil => newAccum
+            case _   => innerRecursive(filesDirectories, newAccum)
+          }
+        }
+
+        def acceptedExtension(file: File): Boolean =
+          file.isFile &&
+            (acceptedExtensions.isEmpty ||
+              acceptedExtensions.foldLeft(false) { (b, ext) =>
+                b || file.getName.endsWith(ext)
+              })
+
+        (sourceFile.exists(), sourceFile.isFile, acceptedExtension(sourceFile)) match {
+          case (false, _, _) =>
+            Nil
+          case (_, true, false) =>
+            Nil
+          case (_, true, true) =>
+            List(sourceFile)
+          case _ =>
+            innerRecursive(Option(sourceFile.listFiles.toList).toList.flatten, Nil)
+        }
+      }
+      .leftMap(e => IOException(s"Error fetching files recursively from ${sourceFile.getAbsolutePath}", Some(e)))
 }

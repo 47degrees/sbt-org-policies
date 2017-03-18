@@ -25,7 +25,7 @@ class TemplatesEngine {
 
   val fileWriter: FileWriter = new FileWriter
 
-  def run(inputPath: String, replacements: Replacements, outputPath: String): IOResult[Unit] =
+  def run(inputPath: String, outputPath: String, replacements: Replacements): IOResult[Unit] =
     for {
       content <- replaceFileWith(inputPath, replacements)
       _       <- fileWriter.writeContentToFile(content, outputPath)

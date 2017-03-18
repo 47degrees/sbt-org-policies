@@ -70,8 +70,9 @@ package object sbtorgpolicies {
   case class GitHubSettings(
       organization: String,
       project: String,
-      publishOrg: String,
+      organizationName: String,
       organizationHomePage: URL,
+      organizationEmail: String,
       license: (String, URL)) {
     def home: String         = s"https://github.com/$organization/$project"
     def homePage: URL        = url(s"https://$organization.github.io/$project/")
