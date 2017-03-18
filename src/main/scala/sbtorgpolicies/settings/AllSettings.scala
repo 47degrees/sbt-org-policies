@@ -26,8 +26,8 @@ import sbt._
 import sbtorgpolicies._
 import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 import sbtrelease.ReleasePlugin.autoImport._
-import sbtunidoc.Plugin.UnidocKeys._
-import sbtunidoc.Plugin._
+import sbtunidoc.ScalaUnidocPlugin.autoImport._
+import sbtunidoc.BaseUnidocPlugin.autoImport._
 import scoverage.ScoverageKeys
 
 trait AllSettings extends keys with dependencies with scalafmt with files with utils {

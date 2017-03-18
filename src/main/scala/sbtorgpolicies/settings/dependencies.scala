@@ -57,7 +57,7 @@ trait dependencies {
     "roshttp"         -> "2.0.1",
     "scala-exercises" -> "0.3.0-SNAPSHOT",
     "scala-reflect"   -> "2.11.8",
-    "scalacheck"      -> "1.13.4",
+    "scalacheck"      -> "1.13.5",
     "scheckShapeless" -> "1.1.4",
     "scalaj"          -> "2.3.0",
     "scalatest"       -> "3.0.1",
