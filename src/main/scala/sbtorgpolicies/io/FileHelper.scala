@@ -29,12 +29,12 @@ class FileHelper {
 
   val templatesEngine: TemplatesEngine = new TemplatesEngine
 
-  def getPluginUrl: Either[IOException, URL] =
+  def getPluginUrl: IOResult[URL] =
     Either
       .catchNonFatal(getClass.getProtectionDomain.getCodeSource.getLocation)
       .leftMap(e => IOException(s"Error obtaining the plugin URL", Some(e)))
 
-  def createResources(userTemplatesDir: File, outputDir: File): Either[IOException, Unit] = {
+  def createResources(userTemplatesDir: File, outputDir: File): IOResult[Unit] = {
 
     val templatesOutput = s"${outputDir.getAbsolutePath.ensureFinalSlash}"
 
@@ -45,7 +45,7 @@ class FileHelper {
     } yield ()
   }
 
-  def checkOrgFiles(projectDir: File, baseDir: File, fileList: List[FileType]): Either[IOException, Unit] =
+  def checkOrgFiles(projectDir: File, baseDir: File, fileList: List[FileType]): IOResult[Unit] =
     Either
       .catchNonFatal(
         fileList
