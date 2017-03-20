@@ -101,6 +101,8 @@ package object sbtorgpolicies {
     val `2.11`: String = "2.11.8"
     val `2.12`: String = "2.12.1"
 
+    val latestScalaVersion: String = `2.12`
+
     val crossScalaVersions: List[String] = List(`2.11`, `2.12`)
   }
 

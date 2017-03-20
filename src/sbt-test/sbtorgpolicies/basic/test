@@ -1,4 +1,4 @@
-# check that the sbt-org-policies plugin works on a minimal project
+# check that the sbt-org-policies plugin works on a minimal cross-versioned project
 
 > orgCreateFiles
 
@@ -9,3 +9,15 @@ $ exists LICENSE
 $ exists CONTRIBUTING.md
 
 > validateFiles
+
+> testCheckSettings
+
+> set scalaVersion:="2.12.1"
+
+> set crossScalaVersions:=Seq("2.11.8")
+
+> testCheckSettings
+
+> set crossScalaVersions:=Seq("2.11.8","2.12.1")
+
+> checkSettings
