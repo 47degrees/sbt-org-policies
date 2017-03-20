@@ -239,7 +239,7 @@ trait AllSettings extends keys with dependencies with scalafmt with files with v
    * Uses the github settings to set the GitHub owner and repo
    */
   def sbtDependenciesSettings(gh: SettingKey[GitHubSettings]): Seq[Setting[_]] =
-    DependenciesPlugin.projectSettings ++ Seq(
+    DependenciesPlugin.defaultSettings ++ Seq(
       githubOwner := gh.value.organization,
       githubRepo := gh.value.project,
       githubToken := sys.props.get("githubToken").getOrElse("")

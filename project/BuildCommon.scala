@@ -7,6 +7,7 @@ import de.heikoseeberger.sbtheader.license.Apache2_0
 import sbt.Keys._
 import sbt._
 import ScriptedPlugin._
+import dependencies.DependenciesPlugin
 import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 import sbtrelease.ReleasePlugin.autoImport._
 
@@ -100,7 +101,7 @@ object BuildCommon extends AutoPlugin {
     )
   )
 
-  private[this] val sbtDependenciesSettings = Seq(
+  private[this] val sbtDependenciesSettings = DependenciesPlugin.defaultSettings ++ Seq(
     dependencyUpdatesExclusions :=
       moduleFilter(organization = "org.scala-lang") |
         moduleFilter(organization = "org.scala-sbt"),
