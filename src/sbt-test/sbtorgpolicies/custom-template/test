@@ -1,4 +1,4 @@
-# check that the sbt-org-policies plugin works on a minimal project
+# checks that orgCreateFiles sbt task works as expected
 
 > orgCreateFiles
 

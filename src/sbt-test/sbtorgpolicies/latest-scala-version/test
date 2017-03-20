@@ -1,0 +1,13 @@
+# checks that the sbt-org-policies plugin works on a Scala 2.12 project
+
+> orgCreateFiles
+
+$ exists target/scala-2.12/resource_managed/org-policies/templates
+
+$ exists LICENSE
+
+$ exists CONTRIBUTING.md
+
+> validateFiles
+
+> checkSettings

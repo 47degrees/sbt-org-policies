@@ -37,6 +37,7 @@ trait AllSettings
     with files
     with templates
     with fileValidation
+    with enforcement
     with utils {
 
   /**
