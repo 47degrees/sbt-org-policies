@@ -1,3 +1,4 @@
+import com.timushev.sbt.updates.UpdatesPlugin.autoImport.dependencyUpdatesExclusions
 import com.typesafe.sbt.SbtPgp.autoImportImpl.PgpKeys.gpgCommand
 import com.typesafe.sbt.SbtPgp.autoImportImpl._
 import dependencies.DependenciesPlugin.autoImport._
@@ -100,6 +101,9 @@ object BuildCommon extends AutoPlugin {
   )
 
   private[this] val sbtDependenciesSettings = Seq(
+    dependencyUpdatesExclusions :=
+      moduleFilter(organization = "org.scala-lang") |
+        moduleFilter(organization = "org.scala-sbt"),
     githubOwner := "47deg",
     githubRepo := name.value,
     githubToken := Option(System.getenv().get("GITHUB_TOKEN_REPO")).getOrElse("")
