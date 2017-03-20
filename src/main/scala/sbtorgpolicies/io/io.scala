@@ -23,83 +23,19 @@ import java.nio.file.Paths.get
 import cats.syntax.either._
 import sbt.{file, File}
 import sbtorgpolicies.exceptions.IOException
-import sbtorgpolicies.io.syntax._
 
 import scala.language.implicitConversions
 
 package object io {
 
-  type Replacements = Map[String, Replaceable]
-  type IOResult[T]  = Either[IOException, T]
-
-  trait Replaceable {
-
-    def asString: String
-  }
-
-  case class ReplaceableT[T](t: T) extends Replaceable {
-    override def asString: String = t.toString
-  }
-
-  case class ReplaceableList[T <: Replaceable](list: List[T]) extends Replaceable {
-    override def asString: String = list.map(elem => s"* ${elem.asString}").mkString("\n")
-  }
-
-  case class FileType(
-      mandatory: Boolean,
-      overWritable: Boolean,
-      templatePath: String,
-      outputPath: String,
-      replacements: Replacements)
-
-  def LicenseFileType(ghSettings: GitHubSettings) = FileType(
-    mandatory = true,
-    overWritable = true,
-    templatePath = "templates/LICENSE.template",
-    outputPath = "LICENSE",
-    replacements = Map(
-      "year"                 -> 2017.asReplaceable,
-      "organizationName"     -> ghSettings.organizationName.asReplaceable,
-      "organizationHomePage" -> ghSettings.organizationHomePage.asReplaceable
-    )
-  )
-
-  def ContributingFileType(ghSettings: GitHubSettings) = FileType(
-    mandatory = true,
-    overWritable = true,
-    templatePath = "templates/CONTRIBUTING.md.template",
-    outputPath = "CONTRIBUTING.md",
-    replacements = Map(
-      "name"              -> ghSettings.project.asReplaceable,
-      "organization"      -> ghSettings.organization.asReplaceable,
-      "organizationName"  -> ghSettings.organizationName.asReplaceable,
-      "organizationEmail" -> ghSettings.organizationEmail.asReplaceable
-    )
-  )
+  type IOResult[T] = Either[IOException, T]
 
   object syntax {
-
-    implicit def ioListSyntax[T <: Replaceable](list: List[T]): IOReplaceableListOps[T] =
-      new IOReplaceableListOps(list)
-
-    implicit def ioTSyntax[T](t: T): IOReplaceableOps[T] = new IOReplaceableOps(t)
 
     implicit def eitherFilterSyntax[T](either: Either[Throwable, T]): FilteredEitherOps[T] =
       new FilteredEitherOps(either)
 
     implicit def fileNameSyntax(fileName: String): FileNameOps = new FileNameOps(fileName)
-
-    final class IOReplaceableOps[T](t: T) {
-
-      def asReplaceable: ReplaceableT[T] = ReplaceableT(t)
-
-    }
-
-    final class IOReplaceableListOps[T <: Replaceable](list: List[T]) {
-
-      def asReplaceable: ReplaceableList[T] = ReplaceableList[T](list)
-
-    }
 
     final class FilteredEitherOps[T](either: Either[Throwable, T]) {
 

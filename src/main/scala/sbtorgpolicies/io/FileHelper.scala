@@ -20,6 +20,7 @@ import cats.syntax.either._
 import sbt.{File, URL}
 import sbtorgpolicies.exceptions.IOException
 import sbtorgpolicies.io.syntax._
+import sbtorgpolicies.templates.{FileType, TemplatesEngine}
 
 class FileHelper {
 
