@@ -27,7 +27,7 @@ trait validationFilesKeys {
 
   val validationList: SettingKey[List[Validation]] = settingKey[List[Validation]]("Validation list")
 
-  val validatesAll: TaskKey[Unit] = taskKey[Unit]("Validates all files")
+  val validateFiles: TaskKey[Unit] = taskKey[Unit]("Validate all files")
 
 }
 
@@ -42,7 +42,7 @@ trait validationFiles extends validationFilesKeys {
         new File(baseDirectory.value, "LICENSE").getAbsolutePath,
         List(requiredStringsValidation(List(licenses.value.headOption.map(_._1).getOrElse("UNKNOWN LICENSE")))))
     ),
-    validatesAll := Def.task {
+    validateFiles := Def.task {
       validationFilesTask(validationList.value, streams.value.log)
     }.value
   )
@@ -62,9 +62,9 @@ trait validationFiles extends validationFilesKeys {
       if (validation.policyLevel == PolicyWarning) log.warn(msg) else log.error(msg)
 
     fileValidation.validateFile(validation.validationRule.inputPath, validation.validationRule.validationList: _*) match {
-      case Valid(_)        => log.info(s"File ${validation.validationRule.inputPath} validated successfully")
+      case Valid(_)        => log.info(s"File ${validation.validationRule.inputPath} was validated successfully")
       case Invalid(errors) =>
-        logError(s"Found some errors on ${validation.validationRule.inputPath}:")
+        logError(s"Some errors where found while validating ${validation.validationRule.inputPath}:")
         errors.toList foreach (e => logError(s" - ${e.message}"))
     }
 

@@ -1,0 +1,3 @@
+# check that the sbt-org-policies plugin works with the required files
+
+> validateFiles
