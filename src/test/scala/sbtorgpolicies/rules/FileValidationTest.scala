@@ -16,7 +16,10 @@
 
 package sbtorgpolicies.rules
 
+import cats.instances.list._
+import cats.kernel.instances.unit._
 import cats.syntax.either._
+import cats.syntax.foldable._
 import cats.syntax.validated._
 import org.mockito.Matchers._
 import org.mockito.Mockito
@@ -64,11 +67,32 @@ class FileValidationTest extends TestOps {
 
         when(mockFileReader.getFileContent(any[String])).thenReturn(left)
 
-        val result = fileValidation.validateFile(inputPath, _ => ().valid)
+        val result = fileValidation.validateFile(inputPath, _ => ().validNel)
 
         verify(mockFileReader).getFileContent(any[String])
 
-        result shouldBeEq ValidationException(exception.message, Some(exception)).invalidNel
+        result shouldBeEq ValidationException(s"Can't read $inputPath", Some(exception)).invalidNel
+    }
+
+    check(property)
+  }
+
+  test("FileValidation.validateFile should accumulate the invalid results") {
+
+    val property = forAll { (inputPath: String, content: String, results: List[ValidationResult]) =>
+      Mockito.reset(mockFileReader)
+
+      when(mockFileReader.getFileContent(any[String])).thenReturn(content.asRight)
+
+      def validationFunction(result: ValidationResult)(s: String): ValidationResult = result
+
+      val validations: List[(String) => ValidationResult] = results.map(validationFunction)
+
+      val result = fileValidation.validateFile(inputPath, validations: _*)
+
+      verify(mockFileReader).getFileContent(any[String])
+
+      result shouldBeEq results.combineAll
     }
 
     check(property)

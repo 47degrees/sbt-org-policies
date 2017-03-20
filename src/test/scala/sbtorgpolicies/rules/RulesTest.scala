@@ -26,7 +26,7 @@ class RulesTest extends TestOps {
   test("emptyValidation should return Right for all strings") {
 
     val property = forAll { (randomString: String) =>
-      emptyValidation(randomString) shouldBeEq ().valid
+      emptyValidation(randomString) shouldBeEq ().validNel
     }
 
     check(property)
@@ -42,7 +42,7 @@ class RulesTest extends TestOps {
            |End
          """.stripMargin
 
-      requiredStringsValidation(randomStrings)(content) shouldBeEq ().valid
+      requiredStringsValidation(randomStrings)(content) shouldBeEq ().validNel
     }
 
     check(property)
@@ -62,7 +62,7 @@ class RulesTest extends TestOps {
 
       val result = requiredStringsValidation(existing ++ realMissing)(content)
       if (realMissing.isEmpty) {
-        result shouldBeEq ().valid
+        result shouldBeEq ().validNel
       } else {
         result.isInvalid shouldBeEq true
       }
@@ -85,7 +85,7 @@ class RulesTest extends TestOps {
            |End
          """.stripMargin
 
-    val validResponse = ().valid
+    val validResponse = ().validNel
 
     def changelogValidation(s: String): ValidationResult =
       if (s.nonEmpty) validResponse else ValidationException("").invalidNel
@@ -151,7 +151,7 @@ class RulesTest extends TestOps {
            |End
          """.stripMargin
 
-    val validResponse = ().valid
+    val validResponse = ().validNel
 
     def changelogValidation(s: String): ValidationResult =
       if (s.nonEmpty) validResponse else ValidationException("").invalidNel

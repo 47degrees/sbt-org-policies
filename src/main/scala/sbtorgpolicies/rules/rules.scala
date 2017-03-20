@@ -16,6 +16,9 @@
 
 package sbtorgpolicies
 import cats.data.{Validated, ValidatedNel}
+import cats.kernel.instances.unit._
+import cats.instances.list._
+import cats.syntax.foldable._
 import cats.syntax.validated._
 import sbtorgpolicies.exceptions.ValidationException
 
@@ -32,17 +35,12 @@ package object rules {
   def requiredStringsValidation(list: List[String]): ValidationFunction = {
 
     def validateList(content: String, list: List[String])(
-        validateString: (String) => Option[String]): ValidationResult =
-      list.foldLeft(List.empty[String]) {
-        case (accumulated, string) => accumulated ++ validateString(string).toList
-      } match {
-        case Nil    => ().validNel
-        case errors => ValidationException(s"Validation error:\n${errors.mkString("\n")}").invalidNel
-      }
+        validateString: (String) => ValidationResult): ValidationResult =
+    list.map(validateString).combineAll
 
     content: String =>
       validateList(content, list) { string =>
-        if (content.contains(string)) None else Some(s"$string not found")
+        if (content.contains(string)) ().valid else ValidationException(s"$string not found").invalidNel
       }
   }
 

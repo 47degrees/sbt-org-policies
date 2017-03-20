@@ -45,5 +45,6 @@ trait DefaultSettings extends AllSettings {
       sharedScoverageSettings() ++
       scalafmtSettings ++
       sbtDependenciesSettings(orgGithubSettings) ++
-      orgFileSettings(orgGithubSettings)
+      orgFileSettings(orgGithubSettings) ++
+      validationSettings
 }

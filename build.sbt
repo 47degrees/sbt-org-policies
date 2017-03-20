@@ -20,7 +20,7 @@ lazy val pluginSettings = Seq(
   addSbtPlugin("de.heikoseeberger"  % "sbt-header"             % "1.8.0"),
   addSbtPlugin("com.eed3si9n"       % "sbt-buildinfo"          % "0.6.1"),
   addSbtPlugin("com.geirsson"       % "sbt-scalafmt"           % "0.6.3"),
-  addSbtPlugin("com.47deg"          % "sbt-dependencies"       % "0.0.2"),
+  addSbtPlugin("com.47deg"          % "sbt-dependencies"       % "0.0.4"),
   libraryDependencies ++= Seq(
     "org.typelevel"  %% "cats"           % "0.9.0",
     "org.scala-sbt"  % "scripted-plugin" % sbtVersion.value,

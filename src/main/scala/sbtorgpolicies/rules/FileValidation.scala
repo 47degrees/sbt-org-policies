@@ -16,6 +16,9 @@
 
 package sbtorgpolicies.rules
 
+import cats.kernel.instances.unit._
+import cats.instances.list._
+import cats.syntax.foldable._
 import cats.syntax.validated._
 import sbtorgpolicies.exceptions.ValidationException
 import sbtorgpolicies.io.FileReader
@@ -24,9 +27,9 @@ class FileValidation {
 
   val fileReader: FileReader = new FileReader
 
-  def validateFile(inputPath: String, validation: ValidationFunction): ValidationResult =
+  def validateFile(inputPath: String, validations: ValidationFunction*): ValidationResult =
     fileReader.getFileContent(inputPath) match {
-      case Right(v) => validation(v)
-      case Left(e) => ValidationException(e.getMessage, Some(e)).invalidNel
+      case Right(v) => validations.toList.map(_(v)).combineAll
+      case Left(e) => ValidationException(s"Can't read $inputPath", Some(e)).invalidNel
     }
 }

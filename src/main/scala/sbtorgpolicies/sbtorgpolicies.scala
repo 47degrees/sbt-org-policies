@@ -17,6 +17,7 @@
 import org.scalajs.sbtplugin.ScalaJSCrossVersion
 import org.scalajs.sbtplugin.impl.CrossGroupArtifactID
 import sbt._
+import sbtorgpolicies.rules.ValidationFunction
 
 package object sbtorgpolicies {
 
@@ -113,4 +114,12 @@ package object sbtorgpolicies {
         <url>http://github.com/{ id }</url>
       </developer>
   }
+
+  sealed abstract class PolicyLevel extends Product with Serializable
+  case object PolicyWarning extends PolicyLevel
+  case object PolicyError extends PolicyLevel
+
+  case class Validation(policyLevel: PolicyLevel, validationRule: ValidationRule)
+
+  case class ValidationRule(inputPath: String, validationList: List[ValidationFunction])
 }
