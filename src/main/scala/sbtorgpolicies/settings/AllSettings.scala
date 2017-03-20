@@ -30,7 +30,14 @@ import sbtunidoc.ScalaUnidocPlugin.autoImport._
 import sbtunidoc.BaseUnidocPlugin.autoImport._
 import scoverage.ScoverageKeys
 
-trait AllSettings extends keys with dependencies with scalafmt with files with validationFiles with utils {
+trait AllSettings
+    extends keys
+    with dependencies
+    with scalafmt
+    with files
+    with templates
+    with fileValidation
+    with utils {
 
   /**
    * Settings common to all projects.
@@ -245,5 +252,16 @@ trait AllSettings extends keys with dependencies with scalafmt with files with v
       githubToken := sys.props.get("githubToken").getOrElse("")
     )
 
+  /**
+   * Sets the default settings that provides the ability to create files based on its templates.
+   * @param gh Project Github settings.
+   * @return list of the default org file settings.
+   */
   def orgFileSettings(gh: SettingKey[GitHubSettings]): Seq[Setting[_]] = orgFilesDefaultSettings(gh) ++ orgFilesTasks
+
+  /**
+   * Default settings that the plugin will take into account to perform the file validation,
+   * both existence and content verification.
+   */
+  lazy val fileValidationSettings: Seq[Setting[_]] = defaultFileValidationSettings ++ fileValidationTasks
 }

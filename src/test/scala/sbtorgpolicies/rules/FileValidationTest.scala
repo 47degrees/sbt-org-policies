@@ -59,19 +59,18 @@ class FileValidationTest extends TestOps {
 
   test("FileValidation.validateFile fails when FileReader throws and Exception") {
 
-    val property = forAll {
-      (inputPath: String, exception: IOException) =>
-        Mockito.reset(mockFileReader)
+    val property = forAll { (inputPath: String, exception: IOException) =>
+      Mockito.reset(mockFileReader)
 
-        val left = exception.asLeft[String]
+      val left = exception.asLeft[String]
 
-        when(mockFileReader.getFileContent(any[String])).thenReturn(left)
+      when(mockFileReader.getFileContent(any[String])).thenReturn(left)
 
-        val result = fileValidation.validateFile(inputPath, _ => ().validNel)
+      val result = fileValidation.validateFile(inputPath, _ => ().validNel)
 
-        verify(mockFileReader).getFileContent(any[String])
+      verify(mockFileReader).getFileContent(any[String])
 
-        result shouldBeEq ValidationException(s"Can't read $inputPath", Some(exception)).invalidNel
+      result shouldBeEq ValidationException(s"Can't read $inputPath", Some(exception)).invalidNel
     }
 
     check(property)

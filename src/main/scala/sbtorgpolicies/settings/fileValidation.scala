@@ -17,13 +17,12 @@
 package sbtorgpolicies.settings
 
 import cats.data.Validated.{Invalid, Valid}
-import sbt._
 import sbt.Keys._
+import sbt._
+import sbtorgpolicies.exceptions.ValidationException
 import sbtorgpolicies.rules._
-import sbtorgpolicies.rules.FileValidation
-import sbtorgpolicies.{PolicyError, PolicyWarning, Validation, ValidationRule}
 
-trait validationFilesKeys {
+trait fileValidationKeys {
 
   val validationList: SettingKey[List[Validation]] = settingKey[List[Validation]]("Validation list")
 
@@ -31,41 +30,45 @@ trait validationFilesKeys {
 
 }
 
-trait validationFiles extends validationFilesKeys {
+trait fileValidation extends fileValidationKeys with ValidationFunctions {
 
-  val validationSettings = Seq(
+  val fileValidation = new FileValidation
+
+  val defaultFileValidationSettings = Seq(
     validationList := List(
-      validation(
-        new File(baseDirectory.value, "README.md").getAbsolutePath,
-        List(emptyValidation)),
-      validation(
+      mkValidation(new File(baseDirectory.value, "README.md").getAbsolutePath, List(emptyValidation)),
+      mkValidation(
         new File(baseDirectory.value, "LICENSE").getAbsolutePath,
-        List(requiredStringsValidation(List(licenses.value.headOption.map(_._1).getOrElse("UNKNOWN LICENSE")))))
-    ),
+        List(requiredStrings(List(licenses.value.headOption.map(_._1).getOrElse("UNKNOWN LICENSE"))))
+      )
+    )
+  )
+
+  val fileValidationTasks = Seq(
     validateFiles := Def.task {
       validationFilesTask(validationList.value, streams.value.log)
     }.value
   )
 
-  def validation(path: String, list: List[ValidationFunction]): Validation =
-    Validation(PolicyError, ValidationRule(path, list))
-
-  def validationFilesTask(list: List[Validation], log: Logger): Unit = {
+  private[this] def validationFilesTask(list: List[Validation], log: Logger): Unit =
     list foreach (validationFileTask(_, log))
-  }
 
-  def validationFileTask(validation: Validation, log: Logger): Unit = {
+  private[this] def validationFileTask(validation: Validation, log: Logger): Unit = {
 
-    val fileValidation = new FileValidation
-
-    def logError(msg: String): Unit =
-      if (validation.policyLevel == PolicyWarning) log.warn(msg) else log.error(msg)
+    def errorHandler(description: String, errorList: List[ValidationException]): Unit = {
+      val errorMessage =
+        s"""$description
+           |${errorList map (e => s" - ${e.message}") mkString "\n"}
+         """.stripMargin
+      if (validation.policyLevel == PolicyWarning) log.warn(errorMessage) else log.error(errorMessage)
+    }
 
     fileValidation.validateFile(validation.validationRule.inputPath, validation.validationRule.validationList: _*) match {
-      case Valid(_)        => log.info(s"File ${validation.validationRule.inputPath} was validated successfully")
+      case Valid(_) => log.info(s"File ${validation.validationRule.inputPath} was validated successfully")
       case Invalid(errors) =>
-        logError(s"Some errors where found while validating ${validation.validationRule.inputPath}:")
-        errors.toList foreach (e => logError(s" - ${e.message}"))
+        errorHandler(
+          s"Some errors where found while validating ${validation.validationRule.inputPath}:",
+          errors.toList)
     }
 
   }

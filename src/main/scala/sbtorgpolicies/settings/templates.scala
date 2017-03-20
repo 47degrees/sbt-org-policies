@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-package sbtorgpolicies.rules
+package sbtorgpolicies.settings
 
-import cats.kernel.instances.unit._
-import cats.instances.list._
-import cats.syntax.foldable._
-import cats.syntax.validated._
-import sbtorgpolicies.exceptions.ValidationException
-import sbtorgpolicies.io.FileReader
+import sbt.Keys._
+import sbt._
 
-class FileValidation {
+trait templatesKeys {
 
-  val fileReader: FileReader = new FileReader
+  val orgTemplatesDirectory: SettingKey[File] = settingKey[File](
+    "Optional. Directory where are placed the different templates it'll be used. " +
+      "By default, it'll be the resourcesDirectory + '/org/templates'")
 
-  def validateFile(inputPath: String, validations: ValidationFunction*): ValidationResult =
-    fileReader.getFileContent(inputPath) match {
-      case Right(v) => validations.toList.map(_(v)).combineAll
-      case Left(e)  => ValidationException(s"Can't read $inputPath", Some(e)).invalidNel
-    }
+}
+
+trait templates extends templatesKeys {
+
+  lazy val orgTemplatesDefaultSettings = Seq(
+    orgTemplatesDirectory := (resourceDirectory in Compile).value / "org" / "templates"
+  )
 }

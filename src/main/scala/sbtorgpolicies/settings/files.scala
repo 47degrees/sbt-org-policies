@@ -20,15 +20,12 @@ import cats.syntax.either._
 import sbt.Keys._
 import sbt._
 import sbtorgpolicies.GitHubSettings
+import sbtorgpolicies.templates._
 import sbtorgpolicies.io._
 
 trait filesKeys {
 
   val orgCreateFiles: TaskKey[Unit] = taskKey[Unit]("Task to created the different files")
-
-  val orgTemplatesDirectory: SettingKey[File] = settingKey[File](
-    "Optional. Directory where are placed the different templates it'll be used. " +
-      "By default, it'll be the resourcesDirectory + '/org/templates'")
 
   val orgTargetDirectory: SettingKey[File] =
     SettingKey[File]("orgTargetDirectory", "Where sbt-org-policies output goes")
@@ -38,11 +35,10 @@ trait filesKeys {
 
 }
 
-trait files extends filesKeys {
+trait files extends filesKeys with templatesKeys {
 
   def orgFilesDefaultSettings(gh: SettingKey[GitHubSettings]) = Seq(
     orgTargetDirectory := resourceManaged.value / "org-policies",
-    orgTemplatesDirectory := (resourceDirectory in Compile).value / "org" / "templates",
     orgEnforcedFiles := List(LicenseFileType(gh.value), ContributingFileType(gh.value))
   )
 

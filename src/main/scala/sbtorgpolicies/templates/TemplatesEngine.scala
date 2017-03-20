@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package sbtorgpolicies.io
+package sbtorgpolicies.templates
 
 import cats.syntax.either._
+import sbtorgpolicies.io._
 import sbtorgpolicies.exceptions._
 
 class TemplatesEngine {

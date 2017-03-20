@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sbtorgpolicies.io
+package sbtorgpolicies.templates
 
 import cats.syntax.either._
 import org.mockito.Matchers._
@@ -23,8 +23,11 @@ import org.mockito.Mockito._
 import org.scalacheck.Prop._
 import sbtorgpolicies.TestOps
 import sbtorgpolicies.arbitraries.ExceptionArbitraries._
-import sbtorgpolicies.arbitraries.IOArbitraries._
+import sbtorgpolicies.arbitraries.TemplateArbitraries._
 import sbtorgpolicies.exceptions.IOException
+import sbtorgpolicies.io._
+import sbtorgpolicies.templates.syntax._
+import sbtorgpolicies.io.syntax._
 
 class TemplatesEngineTest extends TestOps {
 
@@ -153,8 +156,6 @@ class TemplatesEngineTest extends TestOps {
 
   test("TemplatesEngine.replaceWith works as expected") {
 
-    import sbtorgpolicies.io.syntax._
-
     val originalContent =
       """
         |{{year}} {{organizationName}}.
@@ -186,8 +187,6 @@ class TemplatesEngineTest extends TestOps {
   }
 
   test("TemplatesEngine.replaceWith returns the same content when no macros are found") {
-
-    import sbtorgpolicies.io.syntax._
 
     val originalContent =
       """

@@ -112,14 +112,13 @@ object BuildCommon extends AutoPlugin {
 
   private[this] val testScriptedSettings =
     ScriptedPlugin.scriptedSettings ++ Seq(
-      scriptedDependencies := (compile in Test) map { (analysis) =>
+      scriptedDependencies := (compile in Test) map { _ =>
         Unit
       },
       scriptedLaunchOpts := {
         scriptedLaunchOpts.value ++
           Seq(
             "-Xmx2048M",
-            "-XX:MaxPermSize=512M",
             "-XX:ReservedCodeCacheSize=256m",
             "-XX:+UseConcMarkSweepGC",
             "-Dplugin.version=" + version.value,

@@ -23,6 +23,8 @@ import sbtorgpolicies.exceptions.ValidationException
 
 class RulesTest extends TestOps {
 
+  val vfs = new ValidationFunctions {}
+
   test("emptyValidation should return Right for all strings") {
 
     val property = forAll { (randomString: String) =>
@@ -42,7 +44,7 @@ class RulesTest extends TestOps {
            |End
          """.stripMargin
 
-      requiredStringsValidation(randomStrings)(content) shouldBeEq ().validNel
+      vfs.requiredStrings(randomStrings)(content) shouldBeEq ().validNel
     }
 
     check(property)
@@ -60,7 +62,7 @@ class RulesTest extends TestOps {
 
       val realMissing = missing.filterNot(existing.contains).filter(_.nonEmpty)
 
-      val result = requiredStringsValidation(existing ++ realMissing)(content)
+      val result = vfs.requiredStrings(existing ++ realMissing)(content)
       if (realMissing.isEmpty) {
         result shouldBeEq ().validNel
       } else {
@@ -94,8 +96,8 @@ class RulesTest extends TestOps {
       if (s.contains("User 1") && s.contains("User 2") && s.contains("User 3")) validResponse
       else ValidationException("").invalidNel
 
-    requiredSection("\\#\\#\\#.*Changelog".r, "\\#\\#\\#".r, changelogValidation)(content) shouldBeEq validResponse
-    requiredSection("\\#\\#\\#.*Contributors".r, "\\#\\#\\#".r, contributorsValidation)(content) shouldBeEq validResponse
+    vfs.requiredSection("\\#\\#\\#.*Changelog".r, "\\#\\#\\#".r, changelogValidation)(content) shouldBeEq validResponse
+    vfs.requiredSection("\\#\\#\\#.*Contributors".r, "\\#\\#\\#".r, contributorsValidation)(content) shouldBeEq validResponse
   }
 
   test("requiredSection should return Left if the section is not included in the content") {
@@ -112,7 +114,7 @@ class RulesTest extends TestOps {
 
     def changelogValidation(s: String): ValidationResult = ().validNel
 
-    requiredSection("\\#\\#\\#.*Changelog".r, "\\#\\#\\#".r, changelogValidation)(content) shouldBeEq invalidResponse
+    vfs.requiredSection("\\#\\#\\#.*Changelog".r, "\\#\\#\\#".r, changelogValidation)(content) shouldBeEq invalidResponse
   }
 
   test("requiredSection should return Left if the section is not valid") {
@@ -134,7 +136,7 @@ class RulesTest extends TestOps {
     def contributorsValidation(s: String): ValidationResult =
       ValidationException("Section not valid").invalidNel
 
-    requiredSection("\\#\\#\\#.*Contributors".r, "\\#\\#\\#".r, contributorsValidation)(content) shouldBeEq invalidResponse
+    vfs.requiredSection("\\#\\#\\#.*Contributors".r, "\\#\\#\\#".r, contributorsValidation)(content) shouldBeEq invalidResponse
   }
 
   test("requiredStrings and requiredSection should works as expected when combined") {
@@ -157,10 +159,10 @@ class RulesTest extends TestOps {
       if (s.nonEmpty) validResponse else ValidationException("").invalidNel
 
     def contributorsValidation(s: String): ValidationResult =
-      requiredStringsValidation(List("User 1", "User 2", "User 3"))(s)
+      vfs.requiredStrings(List("User 1", "User 2", "User 3"))(s)
 
-    requiredSection("\\#\\#\\#.*Changelog".r, "\\#\\#\\#".r, changelogValidation)(content) shouldBeEq validResponse
-    requiredSection("\\#\\#\\#.*Contributors".r, "\\#\\#\\#".r, contributorsValidation)(content) shouldBeEq validResponse
+    vfs.requiredSection("\\#\\#\\#.*Changelog".r, "\\#\\#\\#".r, changelogValidation)(content) shouldBeEq validResponse
+    vfs.requiredSection("\\#\\#\\#.*Contributors".r, "\\#\\#\\#".r, contributorsValidation)(content) shouldBeEq validResponse
   }
 
 }

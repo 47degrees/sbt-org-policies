@@ -17,9 +17,9 @@
 package sbtorgpolicies.arbitraries
 
 import org.scalacheck.{Arbitrary, Gen}
-import sbtorgpolicies.io._
+import sbtorgpolicies.templates._
 
-trait IOArbitraries {
+trait TemplateArbitraries {
 
   implicit val replaceableArbitrary: Arbitrary[ReplaceableT[String]] =
     Arbitrary(Gen.alphaStr map (ReplaceableT(_)))
@@ -36,4 +36,4 @@ trait IOArbitraries {
     Arbitrary(Gen.mapOf(replacementsTupleArbitrary.arbitrary))
 }
 
-object IOArbitraries extends IOArbitraries
+object TemplateArbitraries extends TemplateArbitraries

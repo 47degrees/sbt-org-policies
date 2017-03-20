@@ -15,14 +15,9 @@
  */
 
 package sbtorgpolicies
-import cats.data.{Validated, ValidatedNel}
-import cats.kernel.instances.unit._
-import cats.instances.list._
-import cats.syntax.foldable._
-import cats.syntax.validated._
-import sbtorgpolicies.exceptions.ValidationException
 
-import scala.util.matching.Regex
+import cats.data.{Validated, ValidatedNel}
+import sbtorgpolicies.exceptions.ValidationException
 
 package object rules {
 
@@ -32,45 +27,16 @@ package object rules {
 
   val emptyValidation: ValidationFunction = _ => Validated.valid((): Unit)
 
-  def requiredStringsValidation(list: List[String]): ValidationFunction = {
+  sealed abstract class PolicyLevel extends Product with Serializable
 
-    def validateList(content: String, list: List[String])(
-        validateString: (String) => ValidationResult): ValidationResult =
-    list.map(validateString).combineAll
+  case object PolicyWarning extends PolicyLevel
 
-    content: String =>
-      validateList(content, list) { string =>
-        if (content.contains(string)) ().valid else ValidationException(s"$string not found").invalidNel
-      }
-  }
+  case object PolicyError extends PolicyLevel
 
-  def requiredSection(startRegExp: Regex, endRegExp: Regex, validation: ValidationFunction): ValidationFunction = {
+  case class Validation(policyLevel: PolicyLevel, validationRule: ValidationRule)
 
-    case class Section(started: Boolean = false, ended: Boolean = false, lines: List[String] = Nil)
+  case class ValidationRule(inputPath: String, validationList: List[ValidationFunction])
 
-    def matches(r: Regex, s: String): Boolean =
-      r.findFirstIn(s).isDefined
-
-    content: String =>
-      val sectionLines = content
-        .split("\n")
-        .foldLeft(Section()) {
-          case (section, _) if section.ended => section
-          case (section, l) if section.started && matches(endRegExp, l) =>
-            section.copy(ended = true)
-          case (section, l) if section.started =>
-            section.copy(lines = section.lines :+ l)
-          case (section, l) if matches(startRegExp, l) =>
-            section.copy(started = true, lines = List(l))
-          case (section, _) =>
-            section
-        }
-
-      if (sectionLines.lines.isEmpty) {
-        ValidationException("Section not found").invalidNel
-      } else {
-        validation(sectionLines.lines.mkString("\n"))
-      }
-  }
-
+  def mkValidation(path: String, list: List[ValidationFunction], policyLevel: PolicyLevel = PolicyError): Validation =
+    Validation(policyLevel, ValidationRule(path, list))
 }
