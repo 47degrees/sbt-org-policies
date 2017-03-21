@@ -19,6 +19,7 @@ package sbtorgpolicies.settings
 import sbt.Keys.{name, scalacOptions}
 import sbt.{url, Setting}
 import sbtorgpolicies._
+import sbtorgpolicies.model._
 
 trait DefaultSettings extends AllSettings {
 
@@ -30,7 +31,7 @@ trait DefaultSettings extends AllSettings {
         organizationName = "47 Degrees",
         organizationHomePage = url("http://47deg.com"),
         organizationEmail = "hello@47deg.com",
-        license = apache
+        license = ApacheLicense
       ),
       orgDevSettings := List(Dev("47 Degrees (twitter: @47deg)", "47 Degrees")),
       scalacOptions ++= scalacAllOptions

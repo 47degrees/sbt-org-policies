@@ -11,3 +11,19 @@ $ exists CONTRIBUTING.md
 # check the custom LICENSE file
 
 > check
+
+> set orgGithubSettings := sbtorgpolicies.model.GitHubSettings("myorg","custom-template-config","My Organization",url("http://myorg.com"),"hello@myorg.com",sbtorgpolicies.model.ApacheLicense)
+
+> orgCreateFiles
+
+$ exists LICENSE
+
+> checkApache
+
+> set orgGithubSettings := sbtorgpolicies.model.GitHubSettings("myorg","custom-template-config","My Organization",url("http://myorg.com"),"hello@myorg.com",sbtorgpolicies.model.MITLicense)
+
+> orgCreateFiles
+
+$ exists LICENSE
+
+> checkMIT
