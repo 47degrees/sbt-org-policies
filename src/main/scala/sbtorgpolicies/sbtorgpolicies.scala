@@ -15,7 +15,6 @@
  */
 
 import org.scalajs.sbtplugin.ScalaJSCrossVersion
-import org.scalajs.sbtplugin.impl.CrossGroupArtifactID
 import sbt._
 
 package object sbtorgpolicies {
@@ -46,16 +45,16 @@ package object sbtorgpolicies {
     "-language:higherKinds",
     "-language:implicitConversions",
     "-language:experimental.macros",
-    "-language:reflectiveCalls",
+    "-language:reflectiveCalls"
+  )
+
+  lazy val scalacAdvancedOptions = Seq(
     "-Ypartial-unification", // enable fix for SI-2712
     "-Yliteral-types", // enable SIP-23 implementation
-    "-Xplugin-require:macroparadise"
-  )
+    "-Xplugin-require:macroparadise")
 
   /** Scalac strict compilation options.*/
   lazy val scalacStrictOptions = Seq(
-    "-Xfatal-warnings",
-    "-Yinline-warnings",
     "-Yno-adapted-args",
     "-Ywarn-dead-code",
     "-Ywarn-numeric-widen",
@@ -92,7 +91,7 @@ package object sbtorgpolicies {
 
     def toModuleId: ModuleID = organization %% name % revision
 
-    def toJsModuleId: ModuleID = new CrossGroupArtifactID(organization, name, ScalaJSCrossVersion.binary) % revision
+    def toJsModuleId: ModuleID = (organization % name % revision).cross(ScalaJSCrossVersion.binary)
   }
 
   object scalac {

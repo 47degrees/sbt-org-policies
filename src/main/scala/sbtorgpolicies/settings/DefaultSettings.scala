@@ -36,9 +36,9 @@ trait DefaultSettings extends AllSettings {
       scalacOptions ++= scalacAllOptions
     ) ++
       sharedCommonSettings ++
+      sharedCommonDependencies ++
       sharedReleaseProcess ++
       credentialSettings ++
-      pgpSettings ++
       sharedPublishSettings(orgGithubSettings, orgDevSettings) ++
       sharedBuildSettings(orgGithubSettings) ++
       scalaDependencyOverrides ++

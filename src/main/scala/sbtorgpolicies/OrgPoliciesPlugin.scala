@@ -31,4 +31,6 @@ object OrgPoliciesPlugin extends AutoPlugin {
   override def trigger: PluginTrigger = allRequirements
 
   override def projectSettings: Seq[Def.Setting[_]] = orgDefaultSettings
+
+  override def globalSettings: Seq[Def.Setting[_]] = pgpSettings
 }
