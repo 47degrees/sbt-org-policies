@@ -94,6 +94,8 @@ trait AllSettings
     } yield Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", username, password)).toSeq
   )
 
+  lazy val gpgFolder: String = getEnvVar("PGP_FOLDER") getOrElse "."
+
   /**
    * Common PGP settings, needed to sign the artifacts when publishing them.
    */
@@ -152,7 +154,7 @@ trait AllSettings
    * scala version and cross versions
    */
   def sharedBuildSettings(gh: SettingKey[GitHubSettings]) = Seq(
-    organization := gh.value.organization,
+    organization := gh.value.groupId,
     organizationName := gh.value.organizationName,
     homepage := Option(gh.value.homePage),
     organizationHomepage := Option(gh.value.organizationHomePage),

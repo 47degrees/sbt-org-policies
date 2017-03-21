@@ -17,13 +17,13 @@
 package sbtorgpolicies
 
 import sbt.Append.Value
-import sbt.{Append, URL, url}
+import sbt.{url, Append, URL}
 
 object model {
 
   sealed abstract class License(val name: String, val url: URL) {
     def tupled: (String, URL) = (name, url)
-    def custom: License = CustomLicense(this)
+    def custom: License       = CustomLicense(this)
   }
 
   /** Apache 2.0 License.*/
@@ -85,12 +85,13 @@ object model {
 
   /** Github settings and related settings usually found in a Github README.*/
   case class GitHubSettings(
-    organization: String,
-    project: String,
-    organizationName: String,
-    organizationHomePage: URL,
-    organizationEmail: String,
-    license: License) {
+      organization: String,
+      project: String,
+      organizationName: String,
+      groupId: String,
+      organizationHomePage: URL,
+      organizationEmail: String,
+      license: License) {
     def home: String         = s"https://github.com/$organization/$project"
     def homePage: URL        = url(s"https://$organization.github.io/$project/")
     def repo: String         = s"git@github.com:$organization/$project.git"

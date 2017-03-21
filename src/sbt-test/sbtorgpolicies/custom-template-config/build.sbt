@@ -6,6 +6,7 @@ orgGithubSettings := GitHubSettings(
   organization = "myorg",
   project = "custom-template-config",
   organizationName = "My Organization",
+  groupId = "com.myorg",
   organizationHomePage = url("http://myorg.com"),
   organizationEmail = "hello@myorg.com",
   license = ApacheLicense.custom
