@@ -53,6 +53,16 @@ trait AllSettings
   )
 
   /**
+   * Common dependencies to all projects.
+   *
+   */
+  lazy val sharedCommonDependencies = Seq(
+    libraryDependencies ++= Seq(
+      compilerPlugin(%%("kind-projector"))
+    )
+  )
+
+  /**
    * Release settings common to all projects.
    *
    * Adds a Sonatype release step to the default release steps
@@ -78,8 +88,8 @@ trait AllSettings
   lazy val credentialSettings = Seq(
     // For Travis CI - see http://www.cakesolutions.net/teamblogs/publishing-artefacts-to-oss-sonatype-nexus-using-sbt-and-travis-ci
     credentials ++= (for {
-      username <- Option(System.getenv().get("SONATYPE_USERNAME"))
-      password <- Option(System.getenv().get("SONATYPE_PASSWORD"))
+      username <- getEnvVar("SONATYPE_USERNAME")
+      password <- getEnvVar("SONATYPE_PASSWORD")
     } yield Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", username, password)).toSeq
   )
 
@@ -87,7 +97,7 @@ trait AllSettings
    * Common PGP settings, needed to sign the artifacts when publishing them.
    */
   lazy val pgpSettings = Seq(
-    pgpPassphrase := Some(sys.env.getOrElse("PGP_PASSPHRASE", "").toCharArray),
+    pgpPassphrase := Some(getEnvVar("PGP_PASSPHRASE").getOrElse("").toCharArray),
     gpgCommand := gpgFolder,
     pgpPublicRing := file(s"$gpgFolder/pubring.gpg"),
     pgpSecretRing := file(s"$gpgFolder/secring.gpg")
@@ -105,6 +115,7 @@ trait AllSettings
     Seq(
       libraryDependencies += "org.scala-lang" % "scala-compiler" % scalaVersion.value % "provided",
       libraryDependencies += "org.scala-lang" % "scala-reflect"  % scalaVersion.value % "provided",
+      libraryDependencies += compilerPlugin(%%("paradise") cross CrossVersion.full),
       libraryDependencies ++= {
         CrossVersion.partialVersion(scalaVersion.value) match {
           // if scala 2.11+ is used, quasiquotes are merged into scala-reflect
@@ -112,8 +123,7 @@ trait AllSettings
           // in Scala 2.10, quasiquotes are provided by macro paradise
           case Some((2, 10)) =>
             Seq(
-              compilerPlugin(dep("paradise") cross CrossVersion.full),
-              dep("quasiquotes") cross CrossVersion.binary
+              %%("quasiquotes") cross CrossVersion.binary
             )
         }
       }
@@ -131,7 +141,7 @@ trait AllSettings
     requiresDOM := false,
     jsEnv := NodeJSEnv().value,
     // batch mode decreases the amount of memory needed to compile scala.js code
-    scalaJSOptimizerOptions := scalaJSOptimizerOptions.value.withBatchMode(scala.sys.env.get("TRAVIS").isDefined)
+    scalaJSOptimizerOptions := scalaJSOptimizerOptions.value.withBatchMode(getEnvVar("TRAVIS").isDefined)
   )
 
   /**
