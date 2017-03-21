@@ -19,7 +19,7 @@ package sbtorgpolicies.settings
 import sbt._
 import sbt.Keys._
 import sbtorgpolicies.exceptions.ValidationException
-import sbtorgpolicies.scalac
+import sbtorgpolicies.model.scalac
 
 trait enforcementKeys {
 

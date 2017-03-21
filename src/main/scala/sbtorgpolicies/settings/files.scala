@@ -19,9 +19,9 @@ package sbtorgpolicies.settings
 import cats.syntax.either._
 import sbt.Keys._
 import sbt._
-import sbtorgpolicies.GitHubSettings
-import sbtorgpolicies.templates._
 import sbtorgpolicies.io._
+import sbtorgpolicies.model._
+import sbtorgpolicies.templates._
 
 trait filesKeys {
 

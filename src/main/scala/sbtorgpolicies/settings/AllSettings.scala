@@ -24,6 +24,7 @@ import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 import sbt.Keys._
 import sbt._
 import sbtorgpolicies._
+import sbtorgpolicies.model._
 import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 import sbtrelease.ReleasePlugin.autoImport._
 import sbtunidoc.ScalaUnidocPlugin.autoImport._

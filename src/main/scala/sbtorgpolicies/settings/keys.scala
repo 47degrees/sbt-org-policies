@@ -17,7 +17,8 @@
 package sbtorgpolicies.settings
 
 import sbt._
-import sbtorgpolicies.{Dev, GitHubSettings}
+import sbtorgpolicies.Dev
+import sbtorgpolicies.model._
 
 trait keys {
 

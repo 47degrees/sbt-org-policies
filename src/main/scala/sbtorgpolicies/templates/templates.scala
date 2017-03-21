@@ -16,6 +16,7 @@
 
 package sbtorgpolicies
 
+import sbtorgpolicies.model._
 import sbtorgpolicies.templates.syntax._
 
 import scala.language.implicitConversions
@@ -44,17 +45,26 @@ package object templates {
       outputPath: String,
       replacements: Replacements)
 
-  def LicenseFileType(ghSettings: GitHubSettings) = FileType(
-    mandatory = true,
-    overWritable = true,
-    templatePath = "templates/LICENSE.template",
-    outputPath = "LICENSE",
-    replacements = Map(
-      "year"                 -> 2017.asReplaceable,
-      "organizationName"     -> ghSettings.organizationName.asReplaceable,
-      "organizationHomePage" -> ghSettings.organizationHomePage.asReplaceable
+  def LicenseFileType(ghSettings: GitHubSettings): FileType = {
+
+    def licenseFile: String = ghSettings.license match {
+      case ApacheLicense => "templates/LICENSE_ASL2.template"
+      case MITLicense    => "templates/LICENSE_MIT.template"
+      case _             => "templates/LICENSE.template"
+    }
+
+    FileType(
+      mandatory = true,
+      overWritable = true,
+      templatePath = licenseFile,
+      outputPath = "LICENSE",
+      replacements = Map(
+        "year"                 -> 2017.asReplaceable,
+        "organizationName"     -> ghSettings.organizationName.asReplaceable,
+        "organizationHomePage" -> ghSettings.organizationHomePage.asReplaceable
+      )
     )
-  )
+  }
 
   def ContributingFileType(ghSettings: GitHubSettings) = FileType(
     mandatory = true,

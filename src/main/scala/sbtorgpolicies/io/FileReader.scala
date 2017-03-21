@@ -36,7 +36,7 @@ class FileReader {
 
   def getFileContent(filePath: String): IOResult[String] =
     Either
-      .catchNonFatal(IO.readLines(file(filePath)).mkString)
+      .catchNonFatal(IO.readLines(file(filePath)).mkString("\n"))
       .leftMap(e => IOException(s"Error loading $filePath content", Some(e)))
 
   def fetchFilesRecursivelyFromPath(sourcePath: String, acceptedExtensions: List[String] = Nil): IOResult[List[File]] =
