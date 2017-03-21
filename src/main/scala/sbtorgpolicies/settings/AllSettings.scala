@@ -263,7 +263,7 @@ trait AllSettings
     DependenciesPlugin.defaultSettings ++ Seq(
       githubOwner := gh.value.organization,
       githubRepo := gh.value.project,
-      githubToken := sys.props.get("githubToken").getOrElse("")
+      githubToken := ""
     )
 
   /**
@@ -271,7 +271,8 @@ trait AllSettings
    * @param gh Project Github settings.
    * @return list of the default org file settings.
    */
-  def orgFileSettings(gh: SettingKey[GitHubSettings]): Seq[Setting[_]] = orgFilesDefaultSettings(gh) ++ orgFilesTasks
+  def orgFileSettings(gh: SettingKey[GitHubSettings], maintainers: SettingKey[List[Dev]]): Seq[Setting[_]] =
+    orgFilesDefaultSettings(gh) ++ orgFilesTasks(gh, maintainers, githubToken)
 
   /**
    * Default settings that the plugin will take into account to perform the file validation,

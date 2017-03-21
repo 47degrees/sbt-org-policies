@@ -4,5 +4,6 @@ addSbtPlugin("com.github.gseitz" % "sbt-release"      % "1.0.4")
 addSbtPlugin("org.xerial.sbt"    % "sbt-sonatype"     % "1.1")
 addSbtPlugin("org.scala-js"      % "sbt-scalajs"      % "0.6.14")
 addSbtPlugin("com.geirsson"      % "sbt-scalafmt"     % "0.6.6")
-addSbtPlugin("com.47deg"         % "sbt-dependencies" % "0.0.4")
+resolvers += Resolver.sonatypeRepo("snapshots")
+addSbtPlugin("com.47deg"         % "sbt-dependencies" % "0.0.5-SNAPSHOT")
 libraryDependencies += "org.scala-sbt" % "scripted-plugin" % sbtVersion.value
