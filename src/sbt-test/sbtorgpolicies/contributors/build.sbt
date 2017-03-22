@@ -1,5 +1,7 @@
 name := "sbt-org-policies"
 
+githubToken := Option(System.getenv().get("GITHUB_TOKEN_REPO")).getOrElse("")
+
 lazy val testCheck = TaskKey[Unit]("testCheck")
 
 testCheck := Def.task {
