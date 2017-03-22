@@ -34,20 +34,21 @@ trait DefaultSettings extends AllSettings {
         organizationEmail = "hello@47deg.com",
         license = ApacheLicense
       ),
-      orgDevSettings := List(Dev("47 Degrees (twitter: @47deg)", "47 Degrees")),
+      orgMaintainersSettings := List(Dev("47 Degrees (twitter: @47deg)", "47 Degrees", Some("hello@47deg.com"))),
+      orgContributorsSettings := Nil,
       scalacOptions ++= scalacAllOptions
     ) ++
       sharedCommonSettings ++
       sharedCommonDependencies ++
       sharedReleaseProcess ++
       credentialSettings ++
-      sharedPublishSettings(orgGithubSettings, orgDevSettings) ++
+      sharedPublishSettings(orgGithubSettings, orgMaintainersSettings) ++
       sharedBuildSettings(orgGithubSettings) ++
       scalaDependencyOverrides ++
       sharedScoverageSettings() ++
       scalafmtSettings ++
       sbtDependenciesSettings(orgGithubSettings) ++
-      orgFileSettings(orgGithubSettings) ++
+      orgFileSettings(orgGithubSettings, orgMaintainersSettings) ++
       orgTemplatesDefaultSettings ++
       fileValidationSettings ++
       enforcementSettingsTasks

@@ -19,6 +19,7 @@ package sbtorgpolicies.settings
 import cats.syntax.either._
 import sbt.Keys._
 import sbt._
+import sbtorgpolicies.github.GitHubOps
 import sbtorgpolicies.io._
 import sbtorgpolicies.model._
 import sbtorgpolicies.templates._
@@ -26,6 +27,9 @@ import sbtorgpolicies.templates._
 trait filesKeys {
 
   val orgCreateFiles: TaskKey[Unit] = taskKey[Unit]("Task to created the different files")
+
+  val orgCreateContributorsFile: TaskKey[Unit] =
+    taskKey[Unit]("Task for fetching the contributors from GitHub and creating a new SBT file with the list")
 
   val orgTargetDirectory: SettingKey[File] =
     SettingKey[File]("orgTargetDirectory", "Where sbt-org-policies output goes")
@@ -42,7 +46,7 @@ trait files extends filesKeys with templatesKeys {
     orgEnforcedFiles := List(LicenseFileType(gh.value), ContributingFileType(gh.value))
   )
 
-  lazy val orgFilesTasks = Seq(
+  def orgFilesTasks(gh: SettingKey[GitHubSettings], maintainers: SettingKey[List[Dev]], ghToken: SettingKey[String]) = Seq(
     orgCreateFiles := Def.task {
       val fh = new FileHelper
 
@@ -56,6 +60,27 @@ trait files extends filesKeys with templatesKeys {
           e.printStackTrace()
       }
 
+    }.value,
+    orgCreateContributorsFile := Def.task {
+      val fh        = new FileHelper
+      val token = if (ghToken.value.isEmpty) None else Some(ghToken.value)
+      val ghOps = new GitHubOps(gh.value.organization, gh.value.project, token)
+
+      (for {
+        list <- ghOps.fetchContributors
+        maintainersIds = maintainers.value.map(_.id)
+        filteredDevs = list
+          .map(user => Dev(user.name.getOrElse(s"<${user.login}>"), user.login, user.blog))
+          .filterNot(dev => maintainersIds.contains(dev.id))
+        _ <- fh.createResources(orgTemplatesDirectory.value, orgTargetDirectory.value)
+        _ <- fh
+          .checkOrgFiles(baseDirectory.value, orgTargetDirectory.value, List(ContributorsSBTFileType(filteredDevs)))
+      } yield ()) match {
+        case Right(_) => streams.value.log.info("contributors file created successfully")
+        case Left(e) =>
+          streams.value.log.error(s"Error creating contributors file")
+          e.printStackTrace()
+      }
     }.value
   )
 }

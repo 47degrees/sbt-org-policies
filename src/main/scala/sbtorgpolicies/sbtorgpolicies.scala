@@ -25,14 +25,4 @@ package object sbtorgpolicies {
 
     def toJsModuleId: ModuleID = (organization % name % revision).cross(ScalaJSCrossVersion.binary)
   }
-
-  /** The name and github user id */
-  case class Dev(name: String, id: String) {
-    def pomExtra: xml.NodeSeq =
-      <developer>
-        <id>{ id }</id>
-        <name>{ name }</name>
-        <url>http://github.com/{ id }</url>
-      </developer>
-  }
 }

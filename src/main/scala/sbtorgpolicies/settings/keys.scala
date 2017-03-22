@@ -17,7 +17,6 @@
 package sbtorgpolicies.settings
 
 import sbt._
-import sbtorgpolicies.Dev
 import sbtorgpolicies.model._
 
 trait keys {
@@ -25,6 +24,9 @@ trait keys {
   val orgGithubSettings: SettingKey[GitHubSettings] =
     settingKey[GitHubSettings]("General Org Github Settings")
 
-  val orgDevSettings: SettingKey[List[Dev]] =
+  val orgMaintainersSettings: SettingKey[List[Dev]] =
+    settingKey[List[Dev]]("List of Maintainers of the project")
+
+  val orgContributorsSettings: SettingKey[List[Dev]] =
     settingKey[List[Dev]]("List of Devs involved in the development of the project")
 }

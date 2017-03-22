@@ -106,6 +106,16 @@ object model {
          |""".stripMargin
   }
 
+  /** The name and github user id */
+  case class Dev(name: String, id: String, url: Option[String] = None) {
+    def pomExtra: xml.NodeSeq =
+      <developer>
+        <id>{ id }</id>
+        <name>{ name }</name>
+        <url>http://github.com/{ id }</url>
+      </developer>
+  }
+
   object scalac {
 
     val `2.10`: String = "2.10.6"

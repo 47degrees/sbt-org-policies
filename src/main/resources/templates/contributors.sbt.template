@@ -1,0 +1,5 @@
+import sbtorgpolicies.model._
+
+orgContributorsSettings := List(
+{{devs}}
+)

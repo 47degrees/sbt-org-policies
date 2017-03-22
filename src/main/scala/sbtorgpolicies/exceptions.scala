@@ -31,4 +31,6 @@ object exceptions {
   case class IOException(msg: String, cause: Option[Throwable] = None) extends OrgPolicyException(msg, cause)
 
   case class ValidationException(msg: String, cause: Option[Throwable] = None) extends OrgPolicyException(msg, cause)
+
+  case class GitHubException(msg: String, cause: Option[Throwable] = None) extends OrgPolicyException(msg, cause)
 }

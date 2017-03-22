@@ -79,6 +79,26 @@ package object templates {
     )
   )
 
+  def ContributorsSBTFileType(list: List[Dev]): FileType = {
+
+    def optionAsScalaString(o: Option[String]): String =
+      o.map(v => s"""Some("$v")""").getOrElse("None")
+
+    def devsAsScalaListString: List[String] = list.map { dev =>
+      s"""    Dev("${dev.name}", "${dev.id}", ${optionAsScalaString(dev.url)})"""
+    }
+
+    FileType(
+      mandatory = false,
+      overWritable = true,
+      templatePath = "templates/contributors.sbt.template",
+      outputPath = "contributors.sbt",
+      replacements = Map(
+        "devs" -> devsAsScalaListString.mkString(",\n").asReplaceable
+      )
+    )
+  }
+
   object syntax {
 
     implicit def ioListSyntax[T <: Replaceable](list: List[T]): IOReplaceableListOps[T] =
