@@ -45,7 +45,12 @@ trait dependencies {
     version
       .foldLeft(libs(lib))((module, revision) => module.copy(revision = revision))
 
-  private[this] val v: Map[String, String] = Map[String, String](
+  private[this] val v47: Map[String, String] = Map[String, String](
+    "fetch"    -> "0.5.0",
+    "github4s" -> "0.11.1"
+  )
+
+  private[this] val vOthers: Map[String, String] = Map[String, String](
     "akka"            -> "2.4.17",
     "algebra"         -> "0.6.0",
     "alleycats"       -> "0.1.7",
@@ -61,10 +66,8 @@ trait dependencies {
     "embedded-redis"  -> "0.6",
     "evaluator"       -> "0.1.1-SNAPSHOT",
     "export-hook"     -> "1.2.0",
-    "fetch"           -> "0.5.0",
     "fs2"             -> "0.9.4",
     "fs2-cats"        -> "0.3.0",
-    "github4s"        -> "0.10.0",
     "http4s"          -> "0.16.0-cats-SNAPSHOT",
     "journal"         -> "3.0.18",
     "kind-projector"  -> "0.9.3",
@@ -96,6 +99,8 @@ trait dependencies {
     "slogging"        -> "0.5.2",
     "specs2"          -> "3.8.7"
   )
+
+  private[this] val v: Map[String, String] = v47 ++ vOthers
 
   private[this] val libs: Map[String, Dep] = Map(
     "akka-actor"                  -> Dep("com.typesafe.akka", "akka-actor", v("akka")),
@@ -141,10 +146,10 @@ trait dependencies {
     "fs2-core"                    -> Dep("co.fs2", "fs2-core", v("fs2")),
     "fs2-io"                      -> Dep("co.fs2", "fs2-io", v("fs2")),
     "fs2-cats"                    -> Dep("co.fs2", "fs2-cats", v("fs2-cats")),
-    "fetch"                       -> Dep("com.fortysevendeg", "fetch", v("fetch")),
-    "fetch-monix"                 -> Dep("com.fortysevendeg", "fetch-monix", v("fetch")),
-    "fetch-debug"                 -> Dep("com.fortysevendeg", "fetch-debug", v("fetch")),
-    "github4s"                    -> Dep("com.fortysevendeg", "github4s", v("github4s")),
+    "fetch"                       -> Dep("com.47deg", "fetch", v("fetch")),
+    "fetch-monix"                 -> Dep("com.47deg", "fetch-monix", v("fetch")),
+    "fetch-debug"                 -> Dep("com.47deg", "fetch-debug", v("fetch")),
+    "github4s"                    -> Dep("com.47deg", "github4s", v("github4s")),
     "http4s-blaze-client"         -> Dep("org.http4s", "http4s-blaze-client", v("http4s")),
     "http4s-blaze-server"         -> Dep("org.http4s", "http4s-blaze-server", v("http4s")),
     "http4s-client"               -> Dep("org.http4s", "http4s-circe", v("http4s")),
