@@ -79,13 +79,33 @@ package object templates {
     )
   )
 
+  def AuthorsFileType(ghSettings: GitHubSettings, maintainers: List[Dev], contributors: List[Dev]): FileType = {
+
+    def devTemplate(dev: Dev): Replaceable = (dev.name match {
+      case Some(n) => s"$n <[${dev.id}](https://github.com/${dev.id})>"
+      case None    => s"[${dev.id}](https://github.com/${dev.id})"
+    }).asReplaceable
+
+    FileType(
+      mandatory = true,
+      overWritable = true,
+      templatePath = "templates/AUTHORS.md.template",
+      outputPath = "AUTHORS.md",
+      replacements = Map(
+        "name"         -> ghSettings.project.asReplaceable,
+        "maintainers"  -> maintainers.map(devTemplate).asReplaceable,
+        "contributors" -> contributors.map(devTemplate).asReplaceable
+      )
+    )
+  }
+
   def ContributorsSBTFileType(list: List[Dev]): FileType = {
 
     def optionAsScalaString(o: Option[String]): String =
       o.map(v => s"""Some("$v")""").getOrElse("None")
 
     def devsAsScalaListString: List[String] = list.map { dev =>
-      s"""    Dev("${dev.name}", "${dev.id}", ${optionAsScalaString(dev.url)})"""
+      s"""    Dev("${dev.id}", ${optionAsScalaString(dev.name)}, ${optionAsScalaString(dev.url)})"""
     }
 
     FileType(

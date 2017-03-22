@@ -8,6 +8,8 @@ $ exists LICENSE
 
 $ exists CONTRIBUTING.md
 
+$ exists AUTHORS.md
+
 > validateFiles
 
 > testCheckSettings

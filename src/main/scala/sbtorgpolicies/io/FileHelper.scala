@@ -48,15 +48,16 @@ class FileHelper {
 
   def checkOrgFiles(projectDir: File, baseDir: File, fileList: List[FileType]): IOResult[Unit] =
     Either
-      .catchNonFatal(
+      .catchNonFatal {
         fileList
           .filter(f => !fileReader.exists(f.outputPath) || f.overWritable)
-          .foreach(
-            f =>
-              templatesEngine.run(
-                baseDir.getAbsolutePath.ensureFinalSlash + f.templatePath,
-                projectDir.getAbsolutePath.ensureFinalSlash + f.outputPath,
-                f.replacements)))
+          .foreach { f =>
+            templatesEngine.run(
+              baseDir.getAbsolutePath.ensureFinalSlash + f.templatePath,
+              projectDir.getAbsolutePath.ensureFinalSlash + f.outputPath,
+              f.replacements)
+          }
+      }
       .leftMap(e => IOException(s"Error checking files ${fileList.mkString(",")}", Some(e)))
 
 }

@@ -169,7 +169,10 @@ trait AllSettings
    * Uses the github settings and list of developers to set all publish settings
    * required to publish signed artifacts to Sonatype OSS repository
    */
-  def sharedPublishSettings(gh: SettingKey[GitHubSettings], devs: SettingKey[List[Dev]]): Seq[Setting[_]] = Seq(
+  def sharedPublishSettings(
+      gh: SettingKey[GitHubSettings],
+      maintainers: SettingKey[List[Dev]],
+      contributors: SettingKey[List[Dev]]): Seq[Setting[_]] = Seq(
     homepage := Some(url(gh.value.home)),
     licenses += gh.value.license,
     scmInfo := Some(ScmInfo(url(gh.value.home), "scm:git:" + gh.value.repo)),
@@ -187,7 +190,7 @@ trait AllSettings
         Some("Releases" at nexus + "service/local/staging/deploy/maven2")
     },
     autoAPIMappings := true,
-    pomExtra := <developers> { devs.value.map(_.pomExtra) } </developers>
+    pomExtra := <developers> { (maintainers.value ++ contributors.value).map(_.pomExtra) } </developers>
   )
 
   /**
@@ -271,8 +274,11 @@ trait AllSettings
    * @param gh Project Github settings.
    * @return list of the default org file settings.
    */
-  def orgFileSettings(gh: SettingKey[GitHubSettings], maintainers: SettingKey[List[Dev]]): Seq[Setting[_]] =
-    orgFilesDefaultSettings(gh) ++ orgFilesTasks(gh, maintainers, githubToken)
+  def orgFileSettings(
+      gh: SettingKey[GitHubSettings],
+      maintainers: SettingKey[List[Dev]],
+      contributors: SettingKey[List[Dev]]): Seq[Setting[_]] =
+    orgFilesDefaultSettings(gh, maintainers, contributors) ++ orgFilesTasks(gh, maintainers, githubToken)
 
   /**
    * Default settings that the plugin will take into account to perform the file validation,

@@ -107,11 +107,11 @@ object model {
   }
 
   /** The name and github user id */
-  case class Dev(name: String, id: String, url: Option[String] = None) {
+  case class Dev(id: String, name: Option[String] = None, url: Option[String] = None) {
     def pomExtra: xml.NodeSeq =
       <developer>
         <id>{ id }</id>
-        <name>{ name }</name>
+        { name.fold(xml.NodeSeq.Empty)(x => <name>{x}</name>) }
         <url>http://github.com/{ id }</url>
       </developer>
   }
