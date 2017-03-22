@@ -41,12 +41,21 @@ trait filesKeys {
 
 trait files extends filesKeys with templatesKeys {
 
-  def orgFilesDefaultSettings(gh: SettingKey[GitHubSettings]) = Seq(
+  def orgFilesDefaultSettings(
+      gh: SettingKey[GitHubSettings],
+      maintainers: SettingKey[List[Dev]],
+      contributors: SettingKey[List[Dev]]) = Seq(
     orgTargetDirectory := resourceManaged.value / "org-policies",
-    orgEnforcedFiles := List(LicenseFileType(gh.value), ContributingFileType(gh.value))
+    orgEnforcedFiles := List(
+      LicenseFileType(gh.value),
+      ContributingFileType(gh.value),
+      AuthorsFileType(gh.value, maintainers.value, contributors.value))
   )
 
-  def orgFilesTasks(gh: SettingKey[GitHubSettings], maintainers: SettingKey[List[Dev]], ghToken: SettingKey[String]) = Seq(
+  def orgFilesTasks(
+      gh: SettingKey[GitHubSettings],
+      maintainers: SettingKey[List[Dev]],
+      ghToken: SettingKey[String]) = Seq(
     orgCreateFiles := Def.task {
       val fh = new FileHelper
 
@@ -62,7 +71,7 @@ trait files extends filesKeys with templatesKeys {
 
     }.value,
     orgCreateContributorsFile := Def.task {
-      val fh        = new FileHelper
+      val fh    = new FileHelper
       val token = if (ghToken.value.isEmpty) None else Some(ghToken.value)
       val ghOps = new GitHubOps(gh.value.organization, gh.value.project, token)
 
@@ -70,7 +79,7 @@ trait files extends filesKeys with templatesKeys {
         list <- ghOps.fetchContributors
         maintainersIds = maintainers.value.map(_.id)
         filteredDevs = list
-          .map(user => Dev(user.name.getOrElse(s"<${user.login}>"), user.login, user.blog))
+          .map(user => Dev(user.login, user.name, user.blog))
           .filterNot(dev => maintainersIds.contains(dev.id))
         _ <- fh.createResources(orgTemplatesDirectory.value, orgTargetDirectory.value)
         _ <- fh
