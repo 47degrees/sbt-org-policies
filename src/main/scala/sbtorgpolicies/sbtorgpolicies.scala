@@ -19,8 +19,6 @@ import sbt._
 
 package object sbtorgpolicies {
 
-  lazy val gpgFolder: String = sys.env.getOrElse("PGP_FOLDER", ".")
-
   case class Dep(organization: String, name: String, revision: String) {
 
     def toModuleId: ModuleID = organization %% name % revision

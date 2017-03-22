@@ -29,6 +29,7 @@ trait DefaultSettings extends AllSettings {
         organization = "47deg",
         project = name.value,
         organizationName = "47 Degrees",
+        groupId = "com.47deg",
         organizationHomePage = url("http://47deg.com"),
         organizationEmail = "hello@47deg.com",
         license = ApacheLicense
