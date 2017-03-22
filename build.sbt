@@ -16,10 +16,10 @@ lazy val pluginSettings = Seq(
   addSbtPlugin("org.scoverage"      % "sbt-scoverage"          % "1.5.0"),
   addSbtPlugin("com.typesafe.sbt"   % "sbt-git"                % "0.8.5"),
   addSbtPlugin("org.scala-js"       % "sbt-scalajs"            % "0.6.14"),
-  addSbtPlugin("com.47deg"          % "sbt-microsites"         % "0.5.0-SNAPSHOT"),
   addSbtPlugin("de.heikoseeberger"  % "sbt-header"             % "1.8.0"),
   addSbtPlugin("com.eed3si9n"       % "sbt-buildinfo"          % "0.6.1"),
   addSbtPlugin("com.geirsson"       % "sbt-scalafmt"           % "0.6.6"),
+  addSbtPlugin("com.47deg"          % "sbt-microsites"         % "0.5.0-SNAPSHOT"),
   addSbtPlugin("com.47deg"          % "sbt-dependencies"       % "0.0.5-SNAPSHOT"),
   libraryDependencies ++= Seq(
     "com.47deg"      %% "github4s"       % "0.11.1",

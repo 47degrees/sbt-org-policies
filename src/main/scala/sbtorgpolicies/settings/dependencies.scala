@@ -47,7 +47,7 @@ trait dependencies {
 
   private[this] val v47: Map[String, String] = Map[String, String](
     "fetch"    -> "0.5.0",
-    "github4s" -> "0.11.1"
+    "github4s" -> "0.12.0"
   )
 
   private[this] val vOthers: Map[String, String] = Map[String, String](
@@ -89,7 +89,7 @@ trait dependencies {
     "scheckShapeless" -> "1.1.4",
     "scalaj"          -> "2.3.0",
     "scalatest"       -> "3.0.1",
-    "scalaz"          -> "7.2.8",
+    "scalaz"          -> "7.2.9",
     "scalazspecs2"    -> "0.4.0",
     "scanamo"         -> "0.9.1",
     "shapeless"       -> "2.3.2",
