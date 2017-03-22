@@ -46,7 +46,7 @@ trait dependencies {
       .foldLeft(libs(lib))((module, revision) => module.copy(revision = revision))
 
   private[this] val v47: Map[String, String] = Map[String, String](
-    "fetch"    -> "0.5.0",
+    "fetch"    -> "0.6.0",
     "github4s" -> "0.12.0"
   )
 
@@ -70,6 +70,7 @@ trait dependencies {
     "fs2-cats"        -> "0.3.0",
     "http4s"          -> "0.16.0-cats-SNAPSHOT",
     "journal"         -> "3.0.18",
+    "jwt-scala"       -> "0.12.0",
     "kind-projector"  -> "0.9.3",
     "log4s"           -> "1.3.4",
     "machinist"       -> "0.6.1",
@@ -152,10 +153,17 @@ trait dependencies {
     "github4s"                    -> Dep("com.47deg", "github4s", v("github4s")),
     "http4s-blaze-client"         -> Dep("org.http4s", "http4s-blaze-client", v("http4s")),
     "http4s-blaze-server"         -> Dep("org.http4s", "http4s-blaze-server", v("http4s")),
-    "http4s-client"               -> Dep("org.http4s", "http4s-circe", v("http4s")),
+    "http4s-circe"                -> Dep("org.http4s", "http4s-circe", v("http4s")),
     "http4s-core"                 -> Dep("org.http4s", "http4s-core", v("http4s")),
     "http4s-dsl"                  -> Dep("org.http4s", "http4s-dsl", v("http4s")),
     "journal-core"                -> Dep("io.verizon.journal", "core", v("journal")),
+    "jwt-core"                    -> Dep("com.pauldijou", "jwt-core", v("jwt-scala")),
+    "jwt-play-json"               -> Dep("com.pauldijou", "jwt-play-json", v("jwt-scala")),
+    "jwt-play"                    -> Dep("com.pauldijou", "jwt-play", v("jwt-scala")),
+    "jwt-json4s-native"           -> Dep("com.pauldijou", "jwt-json4s-native", v("jwt-scala")),
+    "jwt-json4s-jackson"          -> Dep("com.pauldijou", "jwt-json4s-jackson", v("jwt-scala")),
+    "jwt-circe"                   -> Dep("com.pauldijou", "jwt-circe", v("jwt-scala")),
+    "jwt-upickle"                 -> Dep("com.pauldijou", "jwt-upickle", v("jwt-scala")),
     "kind-projector"              -> Dep("org.spire-math", "kind-projector", v("kind-projector")),
     "log4s"                       -> Dep("org.log4s", "log4s", v("log4s")),
     "machinist"                   -> Dep("org.typelevel", "machinist", v("machinist")),
