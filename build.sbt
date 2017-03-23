@@ -22,7 +22,7 @@ lazy val pluginSettings = Seq(
   addSbtPlugin("com.47deg"          % "sbt-microsites"         % "0.5.0-SNAPSHOT"),
   addSbtPlugin("com.47deg"          % "sbt-dependencies"       % "0.0.5-SNAPSHOT"),
   libraryDependencies ++= Seq(
-    "com.47deg"      %% "github4s"       % "0.11.1",
+    "com.47deg"      %% "github4s"       % "0.12.0",
     "org.typelevel"  %% "cats"           % "0.9.0",
     "org.scala-sbt"  % "scripted-plugin" % sbtVersion.value,
     "org.scalatest"  %% "scalatest"      % "3.0.1" % "test",
