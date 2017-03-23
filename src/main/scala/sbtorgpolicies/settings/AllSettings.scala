@@ -23,7 +23,6 @@ import dependencies.DependenciesPlugin.autoImport._
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 import sbt.Keys._
 import sbt._
-import utils._
 import sbtorgpolicies.model._
 import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 import sbtrelease.ReleasePlugin.autoImport._
@@ -38,7 +37,8 @@ trait AllSettings
     with files
     with templates
     with fileValidation
-    with enforcement {
+    with enforcement
+    with utils {
 
   /**
    * Settings common to all projects.
@@ -211,9 +211,9 @@ trait AllSettings
   )
 
   /** Common coverage settings, with minimum coverage defaulting to 80.*/
-  def sharedScoverageSettings(min: Int = 80) = Seq(
+  def sharedScoverageSettings(min: Double = scoverageMinimum) = Seq(
     ScoverageKeys.coverageMinimum := min,
-    ScoverageKeys.coverageFailOnMinimum := false,
+    ScoverageKeys.coverageFailOnMinimum := true,
     ScoverageKeys.coverageHighlighting := scalaBinaryVersion.value != "2.10"
   )
 

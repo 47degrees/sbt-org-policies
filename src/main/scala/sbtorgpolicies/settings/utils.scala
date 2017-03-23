@@ -18,7 +18,7 @@ package sbtorgpolicies.settings
 
 import java.util._
 
-object utils {
+trait utils {
 
   def guard[T](flag: Boolean)(res: Seq[T]): Seq[T] = if (flag) res else Seq.empty
 
@@ -26,3 +26,5 @@ object utils {
 
   val currentYear: Int = Calendar.getInstance(TimeZone.getTimeZone("UTC")).get(Calendar.YEAR)
 }
+
+object utils extends utils

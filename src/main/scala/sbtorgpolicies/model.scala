@@ -48,6 +48,8 @@ object model {
       override def appendValue(a: Seq[(String, URL)], b: License): Seq[(String, URL)] = a :+ b.tupled
     }
 
+  lazy val scoverageMinimum = 80d
+
   lazy val scalacCommonOptions = Seq(
     "-deprecation",
     "-encoding",

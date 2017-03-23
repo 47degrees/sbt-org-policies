@@ -19,11 +19,12 @@ package sbtorgpolicies.settings
 import sbt._
 import sbt.Keys._
 import sbtorgpolicies.exceptions.ValidationException
-import sbtorgpolicies.model.scalac
+import sbtorgpolicies.model._
+import scoverage.ScoverageKeys
 
 trait enforcementKeys {
 
-  val checkSettings: TaskKey[Unit] = taskKey[Unit]("Task for checking the project settings")
+  val orgCheckSettings: TaskKey[Unit] = taskKey[Unit]("Task for checking the project settings")
 
 }
 
@@ -39,15 +40,33 @@ trait enforcement extends enforcementKeys {
   private[this] def checkCrossScalaVersion = Def.task {
     val crossScalaVersionsValue = crossScalaVersions.value
     if (crossScalaVersionsValue != scalac.crossScalaVersions) {
-      throw ValidationException(s"crossScalaVersions is $crossScalaVersionsValue. It should be ${scalac.crossScalaVersions}")
+      throw ValidationException(
+        s"crossScalaVersions is $crossScalaVersionsValue. It should be ${scalac.crossScalaVersions}")
     }
   }
 
-  lazy val enforcementSettingsTasks = Seq(
-    checkSettings := Def.sequential(
-      checkScalaVersion,
-      checkCrossScalaVersion
-    ).value
+  private[this] def checkScoverageSettings = Def.task {
+
+    val coverageFailOnMinimumValue = ScoverageKeys.coverageFailOnMinimum.value
+    val coverageMinimumValue       = ScoverageKeys.coverageMinimum.value
+
+    if (!coverageFailOnMinimumValue)
+      throw ValidationException(
+        s"coverageFailOnMinimum is $coverageFailOnMinimumValue, however, it should be enabled.")
+
+    if (coverageMinimumValue < scoverageMinimum)
+      throw ValidationException(
+        s"coverageMinimumValue is $coverageMinimumValue. It should be at least $scoverageMinimum%")
+  }
+
+  lazy val orgEnforcementSettingsTasks = Seq(
+    orgCheckSettings := Def
+      .sequential(
+        checkScalaVersion,
+        checkCrossScalaVersion,
+        checkScoverageSettings
+      )
+      .value
   )
 
 }

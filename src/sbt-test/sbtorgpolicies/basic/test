@@ -22,4 +22,12 @@ $ exists AUTHORS.md
 
 > set crossScalaVersions:=Seq("2.11.8","2.12.1")
 
-> checkSettings
+> orgCheckSettings
+
+> set scoverage.ScoverageKeys.coverageMinimum:=50
+
+> testCheckSettings
+
+> set scoverage.ScoverageKeys.coverageMinimum:=80
+
+> orgCheckSettings
