@@ -16,9 +16,13 @@
 
 package sbtorgpolicies.settings
 
-trait utils {
+import java.util._
+
+object utils {
 
   def guard[T](flag: Boolean)(res: Seq[T]): Seq[T] = if (flag) res else Seq.empty
 
   def getEnvVar(name: String): Option[String] = Option(System.getenv().get(name))
+
+  val currentYear: Int = Calendar.getInstance(TimeZone.getTimeZone("UTC")).get(Calendar.YEAR)
 }

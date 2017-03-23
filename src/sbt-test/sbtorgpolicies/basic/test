@@ -10,7 +10,7 @@ $ exists CONTRIBUTING.md
 
 $ exists AUTHORS.md
 
-> validateFiles
+> orgValidateFiles
 
 > testCheckSettings
 

@@ -1,7 +1,9 @@
-# checks that the validateFiles sbt task works fine with the required files
+# checks that the orgValidateFiles sbt task works fine with the required files
 
 $ exists LICENSE
 
 $ exists README.md
 
-> validateFiles
+$ exists AUTHORS.md
+
+> orgValidateFiles

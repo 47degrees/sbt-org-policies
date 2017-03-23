@@ -20,13 +20,14 @@ import cats.data.Validated.{Invalid, Valid}
 import sbt.Keys._
 import sbt._
 import sbtorgpolicies.exceptions.ValidationException
+import sbtorgpolicies.model.Dev
 import sbtorgpolicies.rules._
 
 trait fileValidationKeys {
 
-  val validationList: SettingKey[List[Validation]] = settingKey[List[Validation]]("Validation list")
+  val orgValidationList: SettingKey[List[Validation]] = settingKey[List[Validation]]("Validation list")
 
-  val validateFiles: TaskKey[Unit] = taskKey[Unit]("Validate all files")
+  val orgValidateFiles: TaskKey[Unit] = taskKey[Unit]("Validate all files")
 
 }
 
@@ -34,9 +35,16 @@ trait fileValidation extends fileValidationKeys with ValidationFunctions {
 
   val fileValidation = new FileValidation
 
-  val defaultFileValidationSettings = Seq(
-    validationList := List(
+  private[this] def devListStrings(list: List[Dev]): List[String] =
+    list.map(_.id) ++ list.flatMap(_.name)
+
+  def orgFileValidationDefaultSettings(maintainers: SettingKey[List[Dev]], contributors: SettingKey[List[Dev]]) = Seq(
+    orgValidationList := List(
       mkValidation(new File(baseDirectory.value, "README.md").getAbsolutePath, List(emptyValidation)),
+      mkValidation(new File(baseDirectory.value, "CONTRIBUTING.md").getAbsolutePath, List(emptyValidation)),
+      mkValidation(
+        new File(baseDirectory.value, "AUTHORS.md").getAbsolutePath,
+        List(requiredStrings(devListStrings(maintainers.value ++ contributors.value)))),
       mkValidation(
         new File(baseDirectory.value, "LICENSE").getAbsolutePath,
         List(requiredStrings(List(licenses.value.headOption.map(_._1).getOrElse("UNKNOWN LICENSE"))))
@@ -44,9 +52,9 @@ trait fileValidation extends fileValidationKeys with ValidationFunctions {
     )
   )
 
-  val fileValidationTasks = Seq(
-    validateFiles := Def.task {
-      validationFilesTask(validationList.value, streams.value.log)
+  val orgFileValidationTasks = Seq(
+    orgValidateFiles := Def.task {
+      validationFilesTask(orgValidationList.value, streams.value.log)
     }.value
   )
 

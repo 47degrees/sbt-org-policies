@@ -23,7 +23,7 @@ import dependencies.DependenciesPlugin.autoImport._
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 import sbt.Keys._
 import sbt._
-import sbtorgpolicies._
+import utils._
 import sbtorgpolicies.model._
 import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 import sbtrelease.ReleasePlugin.autoImport._
@@ -38,8 +38,7 @@ trait AllSettings
     with files
     with templates
     with fileValidation
-    with enforcement
-    with utils {
+    with enforcement {
 
   /**
    * Settings common to all projects.
@@ -171,10 +170,11 @@ trait AllSettings
    */
   def sharedPublishSettings(
       gh: SettingKey[GitHubSettings],
+      license: SettingKey[License],
       maintainers: SettingKey[List[Dev]],
       contributors: SettingKey[List[Dev]]): Seq[Setting[_]] = Seq(
     homepage := Some(url(gh.value.home)),
-    licenses += gh.value.license,
+    licenses += license.value,
     scmInfo := Some(ScmInfo(url(gh.value.home), "scm:git:" + gh.value.repo)),
     apiURL := Some(url(gh.value.api)),
     releaseCrossBuild := true,
@@ -276,13 +276,17 @@ trait AllSettings
    */
   def orgFileSettings(
       gh: SettingKey[GitHubSettings],
+      license: SettingKey[License],
       maintainers: SettingKey[List[Dev]],
       contributors: SettingKey[List[Dev]]): Seq[Setting[_]] =
-    orgFilesDefaultSettings(gh, maintainers, contributors) ++ orgFilesTasks(gh, maintainers, githubToken)
+    orgFilesDefaultSettings(gh, license, maintainers, contributors) ++ orgFilesTasks(gh, maintainers, githubToken)
 
   /**
    * Default settings that the plugin will take into account to perform the file validation,
    * both existence and content verification.
    */
-  lazy val fileValidationSettings: Seq[Setting[_]] = defaultFileValidationSettings ++ fileValidationTasks
+  def orgFileValidationSettings(
+      maintainers: SettingKey[List[Dev]],
+      contributors: SettingKey[List[Dev]]): Seq[Setting[_]] =
+    orgFileValidationDefaultSettings(maintainers, contributors) ++ orgFileValidationTasks
 }

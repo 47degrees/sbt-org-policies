@@ -8,9 +8,12 @@ orgGithubSettings := GitHubSettings(
   organizationName = "My Organization",
   groupId = "com.myorg",
   organizationHomePage = url("http://myorg.com"),
-  organizationEmail = "hello@myorg.com",
-  license = ApacheLicense.custom
+  organizationEmail = "hello@myorg.com"
 )
+
+orgLicense := ApacheLicense.custom
+
+startYear := Some(2012)
 
 orgTemplatesDirectory := (resourceDirectory in Compile).value / "myorg"
 
@@ -31,24 +34,33 @@ check := {
 
   if (!content.contains("My Organization"))
     sys.error("custom user setting didn't work")
+
+  if (!content.contains(s"2012-"))
+    sys.error("custom user setting didn't work")
 }
 
 checkApache := {
   val content = getLines("LICENSE").mkString
 
-  if (!content.startsWith("Copyright ") || !content.contains("Licensed under the Apache License, Version 2.0"))
+  if (!content.contains("Licensed under the Apache License, Version 2.0"))
     sys.error("Apache template is not being copied successfully")
 
   if (!content.contains("My Organization"))
+    sys.error("custom user setting didn't work")
+
+  if (!content.contains(s"2012-"))
     sys.error("custom user setting didn't work")
 }
 
 checkMIT := {
   val content = getLines("LICENSE").mkString
 
-  if (!content.startsWith("The MIT License (MIT)"))
+  if (!content.contains("The MIT License (MIT)"))
     sys.error("MIT template is not being copied successfully")
 
   if (!content.contains("My Organization"))
+    sys.error("custom user setting didn't work")
+
+  if (!content.contains(s"2012-"))
     sys.error("custom user setting didn't work")
 }

@@ -17,6 +17,7 @@
 package sbtorgpolicies
 
 import sbtorgpolicies.model._
+import sbtorgpolicies.settings.utils._
 import sbtorgpolicies.templates.syntax._
 
 import scala.language.implicitConversions
@@ -45,12 +46,19 @@ package object templates {
       outputPath: String,
       replacements: Replacements)
 
-  def LicenseFileType(ghSettings: GitHubSettings): FileType = {
+  def LicenseFileType(ghSettings: GitHubSettings, license: License, startYear: Option[Int]): FileType = {
 
-    def licenseFile: String = ghSettings.license match {
+    def licenseFile: String = license match {
       case ApacheLicense => "templates/LICENSE_ASL2.template"
       case MITLicense    => "templates/LICENSE_MIT.template"
       case _             => "templates/LICENSE.template"
+    }
+
+    def replaceableYear: Replaceable = {
+      startYear.getOrElse(currentYear) match {
+        case start if start == currentYear => currentYear.asReplaceable
+        case start                         => s"$start-$currentYear".asReplaceable
+      }
     }
 
     FileType(
@@ -59,7 +67,7 @@ package object templates {
       templatePath = licenseFile,
       outputPath = "LICENSE",
       replacements = Map(
-        "year"                 -> 2017.asReplaceable,
+        "year"                 -> replaceableYear,
         "organizationName"     -> ghSettings.organizationName.asReplaceable,
         "organizationHomePage" -> ghSettings.organizationHomePage.asReplaceable
       )
@@ -81,10 +89,11 @@ package object templates {
 
   def AuthorsFileType(ghSettings: GitHubSettings, maintainers: List[Dev], contributors: List[Dev]): FileType = {
 
-    def devTemplate(dev: Dev): Replaceable = (dev.name match {
-      case Some(n) => s"$n <[${dev.id}](https://github.com/${dev.id})>"
-      case None    => s"[${dev.id}](https://github.com/${dev.id})"
-    }).asReplaceable
+    def devTemplate(dev: Dev): Replaceable =
+      (dev.name match {
+        case Some(n) => s"$n <[${dev.id}](https://github.com/${dev.id})>"
+        case None    => s"[${dev.id}](https://github.com/${dev.id})"
+      }).asReplaceable
 
     FileType(
       mandatory = true,

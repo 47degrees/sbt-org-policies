@@ -22,7 +22,10 @@ import sbtorgpolicies.model._
 trait keys {
 
   val orgGithubSettings: SettingKey[GitHubSettings] =
-    settingKey[GitHubSettings]("General Org Github Settings")
+    settingKey[GitHubSettings]("General Org GitHub Settings")
+
+  val orgLicense: SettingKey[License] =
+    settingKey[License]("General Org License Setting")
 
   val orgMaintainersSettings: SettingKey[List[Dev]] =
     settingKey[List[Dev]]("List of Maintainers of the project")
