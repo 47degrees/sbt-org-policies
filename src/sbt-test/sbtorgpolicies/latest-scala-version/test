@@ -8,6 +8,8 @@ $ exists LICENSE
 
 $ exists CONTRIBUTING.md
 
-> validateFiles
+$ exists AUTHORS.md
+
+> orgValidateFiles
 
 > checkSettings

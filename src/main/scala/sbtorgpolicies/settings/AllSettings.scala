@@ -284,5 +284,8 @@ trait AllSettings
    * Default settings that the plugin will take into account to perform the file validation,
    * both existence and content verification.
    */
-  lazy val fileValidationSettings: Seq[Setting[_]] = defaultFileValidationSettings ++ fileValidationTasks
+  def orgFileValidationSettings(
+      maintainers: SettingKey[List[Dev]],
+      contributors: SettingKey[List[Dev]]): Seq[Setting[_]] =
+    orgFileValidationDefaultSettings(maintainers, contributors) ++ orgFileValidationTasks
 }

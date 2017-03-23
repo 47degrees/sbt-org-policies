@@ -50,6 +50,6 @@ trait DefaultSettings extends AllSettings {
       sbtDependenciesSettings(orgGithubSettings) ++
       orgFileSettings(orgGithubSettings, orgMaintainersSettings, orgContributorsSettings) ++
       orgTemplatesDefaultSettings ++
-      fileValidationSettings ++
+      orgFileValidationSettings(orgMaintainersSettings, orgContributorsSettings) ++
       enforcementSettingsTasks
 }
