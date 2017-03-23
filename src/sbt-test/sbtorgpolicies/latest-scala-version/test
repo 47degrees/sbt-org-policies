@@ -12,4 +12,12 @@ $ exists AUTHORS.md
 
 > orgValidateFiles
 
-> checkSettings
+> orgCheckSettings
+
+> set scoverage.ScoverageKeys.coverageFailOnMinimum:=false
+
+> testCheckSettings
+
+> set scoverage.ScoverageKeys.coverageFailOnMinimum:=true
+
+> orgCheckSettings

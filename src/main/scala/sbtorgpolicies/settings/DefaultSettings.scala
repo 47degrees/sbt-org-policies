@@ -19,7 +19,6 @@ package sbtorgpolicies.settings
 import sbt.Keys._
 import sbt._
 import sbtorgpolicies.model._
-import utils._
 
 trait DefaultSettings extends AllSettings {
 
@@ -52,5 +51,5 @@ trait DefaultSettings extends AllSettings {
       orgFileSettings(orgGithubSettings, orgLicense, orgMaintainersSettings, orgContributorsSettings) ++
       orgTemplatesDefaultSettings ++
       orgFileValidationSettings(orgMaintainersSettings, orgContributorsSettings) ++
-      enforcementSettingsTasks
+      orgEnforcementSettingsTasks
 }
