@@ -37,7 +37,7 @@ check := {
 checkApache := {
   val content = getLines("LICENSE").mkString
 
-  if (!content.startsWith("Copyright ") || !content.contains("Licensed under the Apache License, Version 2.0"))
+  if (!content.contains("Licensed under the Apache License, Version 2.0"))
     sys.error("Apache template is not being copied successfully")
 
   if (!content.contains("My Organization"))
@@ -47,7 +47,7 @@ checkApache := {
 checkMIT := {
   val content = getLines("LICENSE").mkString
 
-  if (!content.startsWith("The MIT License (MIT)"))
+  if (!content.contains("The MIT License (MIT)"))
     sys.error("MIT template is not being copied successfully")
 
   if (!content.contains("My Organization"))
