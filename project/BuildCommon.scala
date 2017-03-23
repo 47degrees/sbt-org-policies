@@ -7,13 +7,14 @@ import de.heikoseeberger.sbtheader.license.Apache2_0
 import sbt.Keys._
 import sbt._
 import ScriptedPlugin._
+import de.heikoseeberger.sbtheader.HeaderPlugin
 import dependencies.DependenciesPlugin
 import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 import sbtrelease.ReleasePlugin.autoImport._
 
 object BuildCommon extends AutoPlugin {
 
-  override def requires = plugins.JvmPlugin
+  override def requires = plugins.JvmPlugin && HeaderPlugin
 
   override def trigger: PluginTrigger = allRequirements
 
