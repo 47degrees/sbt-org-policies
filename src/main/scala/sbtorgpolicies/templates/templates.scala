@@ -45,9 +45,9 @@ package object templates {
       outputPath: String,
       replacements: Replacements)
 
-  def LicenseFileType(ghSettings: GitHubSettings): FileType = {
+  def LicenseFileType(ghSettings: GitHubSettings, license: License): FileType = {
 
-    def licenseFile: String = ghSettings.license match {
+    def licenseFile: String = license match {
       case ApacheLicense => "templates/LICENSE_ASL2.template"
       case MITLicense    => "templates/LICENSE_MIT.template"
       case _             => "templates/LICENSE.template"

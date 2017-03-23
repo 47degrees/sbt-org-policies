@@ -43,11 +43,12 @@ trait files extends filesKeys with templatesKeys {
 
   def orgFilesDefaultSettings(
       gh: SettingKey[GitHubSettings],
+      license: SettingKey[License],
       maintainers: SettingKey[List[Dev]],
       contributors: SettingKey[List[Dev]]) = Seq(
     orgTargetDirectory := resourceManaged.value / "org-policies",
     orgEnforcedFiles := List(
-      LicenseFileType(gh.value),
+      LicenseFileType(gh.value, license.value),
       ContributingFileType(gh.value),
       AuthorsFileType(gh.value, maintainers.value, contributors.value))
   )

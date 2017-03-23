@@ -31,9 +31,9 @@ trait DefaultSettings extends AllSettings {
         organizationName = "47 Degrees",
         groupId = "com.47deg",
         organizationHomePage = url("http://47deg.com"),
-        organizationEmail = "hello@47deg.com",
-        license = ApacheLicense
+        organizationEmail = "hello@47deg.com"
       ),
+      orgLicense := ApacheLicense,
       orgMaintainersSettings := List(Dev("47degdev", Some("47 Degrees (twitter: @47deg)"), Some("hello@47deg.com"))),
       orgContributorsSettings := Nil,
       scalacOptions ++= scalacAllOptions
@@ -42,13 +42,13 @@ trait DefaultSettings extends AllSettings {
       sharedCommonDependencies ++
       sharedReleaseProcess ++
       credentialSettings ++
-      sharedPublishSettings(orgGithubSettings, orgMaintainersSettings, orgContributorsSettings) ++
+      sharedPublishSettings(orgGithubSettings, orgLicense, orgMaintainersSettings, orgContributorsSettings) ++
       sharedBuildSettings(orgGithubSettings) ++
       scalaDependencyOverrides ++
       sharedScoverageSettings() ++
       scalafmtSettings ++
       sbtDependenciesSettings(orgGithubSettings) ++
-      orgFileSettings(orgGithubSettings, orgMaintainersSettings, orgContributorsSettings) ++
+      orgFileSettings(orgGithubSettings, orgLicense, orgMaintainersSettings, orgContributorsSettings) ++
       orgTemplatesDefaultSettings ++
       orgFileValidationSettings(orgMaintainersSettings, orgContributorsSettings) ++
       enforcementSettingsTasks

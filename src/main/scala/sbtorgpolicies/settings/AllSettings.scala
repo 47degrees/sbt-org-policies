@@ -171,10 +171,11 @@ trait AllSettings
    */
   def sharedPublishSettings(
       gh: SettingKey[GitHubSettings],
+      license: SettingKey[License],
       maintainers: SettingKey[List[Dev]],
       contributors: SettingKey[List[Dev]]): Seq[Setting[_]] = Seq(
     homepage := Some(url(gh.value.home)),
-    licenses += gh.value.license,
+    licenses += license.value,
     scmInfo := Some(ScmInfo(url(gh.value.home), "scm:git:" + gh.value.repo)),
     apiURL := Some(url(gh.value.api)),
     releaseCrossBuild := true,
@@ -276,9 +277,10 @@ trait AllSettings
    */
   def orgFileSettings(
       gh: SettingKey[GitHubSettings],
+      license: SettingKey[License],
       maintainers: SettingKey[List[Dev]],
       contributors: SettingKey[List[Dev]]): Seq[Setting[_]] =
-    orgFilesDefaultSettings(gh, maintainers, contributors) ++ orgFilesTasks(gh, maintainers, githubToken)
+    orgFilesDefaultSettings(gh, license, maintainers, contributors) ++ orgFilesTasks(gh, maintainers, githubToken)
 
   /**
    * Default settings that the plugin will take into account to perform the file validation,

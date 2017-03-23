@@ -90,8 +90,7 @@ object model {
       organizationName: String,
       groupId: String,
       organizationHomePage: URL,
-      organizationEmail: String,
-      license: License) {
+      organizationEmail: String) {
     def home: String         = s"https://github.com/$organization/$project"
     def homePage: URL        = url(s"https://$organization.github.io/$project/")
     def repo: String         = s"git@github.com:$organization/$project.git"

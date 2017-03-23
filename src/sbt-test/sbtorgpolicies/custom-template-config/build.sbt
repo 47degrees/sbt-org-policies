@@ -8,9 +8,10 @@ orgGithubSettings := GitHubSettings(
   organizationName = "My Organization",
   groupId = "com.myorg",
   organizationHomePage = url("http://myorg.com"),
-  organizationEmail = "hello@myorg.com",
-  license = ApacheLicense.custom
+  organizationEmail = "hello@myorg.com"
 )
+
+orgLicense := ApacheLicense.custom
 
 orgTemplatesDirectory := (resourceDirectory in Compile).value / "myorg"
 

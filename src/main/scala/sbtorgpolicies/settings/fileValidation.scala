@@ -41,6 +41,7 @@ trait fileValidation extends fileValidationKeys with ValidationFunctions {
   def orgFileValidationDefaultSettings(maintainers: SettingKey[List[Dev]], contributors: SettingKey[List[Dev]]) = Seq(
     orgValidationList := List(
       mkValidation(new File(baseDirectory.value, "README.md").getAbsolutePath, List(emptyValidation)),
+      mkValidation(new File(baseDirectory.value, "CONTRIBUTING.md").getAbsolutePath, List(emptyValidation)),
       mkValidation(
         new File(baseDirectory.value, "AUTHORS.md").getAbsolutePath,
         List(requiredStrings(devListStrings(maintainers.value ++ contributors.value)))),

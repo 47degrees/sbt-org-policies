@@ -12,7 +12,7 @@ $ exists CONTRIBUTING.md
 
 > check
 
-> set orgGithubSettings := sbtorgpolicies.model.GitHubSettings("myorg","custom-template-config","My Organization","com.myorg",url("http://myorg.com"),"hello@myorg.com",sbtorgpolicies.model.ApacheLicense)
+> set orgLicense := sbtorgpolicies.model.ApacheLicense
 
 > orgCreateFiles
 
@@ -20,7 +20,7 @@ $ exists LICENSE
 
 > checkApache
 
-> set orgGithubSettings := sbtorgpolicies.model.GitHubSettings("myorg","custom-template-config","My Organization","com.myorg",url("http://myorg.com"),"hello@myorg.com",sbtorgpolicies.model.MITLicense)
+> set orgLicense := sbtorgpolicies.model.MITLicense
 
 > orgCreateFiles
 
