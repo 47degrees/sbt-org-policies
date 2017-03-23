@@ -13,6 +13,8 @@ orgGithubSettings := GitHubSettings(
 
 orgLicense := ApacheLicense.custom
 
+startYear := Some(2012)
+
 orgTemplatesDirectory := (resourceDirectory in Compile).value / "myorg"
 
 def getLines(fileName: String) =
@@ -32,6 +34,9 @@ check := {
 
   if (!content.contains("My Organization"))
     sys.error("custom user setting didn't work")
+
+  if (!content.contains(s"2012-"))
+    sys.error("custom user setting didn't work")
 }
 
 checkApache := {
@@ -42,6 +47,9 @@ checkApache := {
 
   if (!content.contains("My Organization"))
     sys.error("custom user setting didn't work")
+
+  if (!content.contains(s"2012-"))
+    sys.error("custom user setting didn't work")
 }
 
 checkMIT := {
@@ -51,5 +59,8 @@ checkMIT := {
     sys.error("MIT template is not being copied successfully")
 
   if (!content.contains("My Organization"))
+    sys.error("custom user setting didn't work")
+
+  if (!content.contains(s"2012-"))
     sys.error("custom user setting didn't work")
 }

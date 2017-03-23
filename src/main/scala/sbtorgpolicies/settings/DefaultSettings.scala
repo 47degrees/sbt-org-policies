@@ -16,10 +16,10 @@
 
 package sbtorgpolicies.settings
 
-import sbt.Keys.{name, scalacOptions}
-import sbt.{url, Setting}
-import sbtorgpolicies._
+import sbt.Keys._
+import sbt._
 import sbtorgpolicies.model._
+import utils._
 
 trait DefaultSettings extends AllSettings {
 
@@ -36,6 +36,7 @@ trait DefaultSettings extends AllSettings {
       orgLicense := ApacheLicense,
       orgMaintainersSettings := List(Dev("47degdev", Some("47 Degrees (twitter: @47deg)"), Some("hello@47deg.com"))),
       orgContributorsSettings := Nil,
+      startYear := Some(currentYear),
       scalacOptions ++= scalacAllOptions
     ) ++
       sharedCommonSettings ++

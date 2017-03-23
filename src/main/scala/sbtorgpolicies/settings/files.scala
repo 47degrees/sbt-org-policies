@@ -48,7 +48,7 @@ trait files extends filesKeys with templatesKeys {
       contributors: SettingKey[List[Dev]]) = Seq(
     orgTargetDirectory := resourceManaged.value / "org-policies",
     orgEnforcedFiles := List(
-      LicenseFileType(gh.value, license.value),
+      LicenseFileType(gh.value, license.value, startYear.value),
       ContributingFileType(gh.value),
       AuthorsFileType(gh.value, maintainers.value, contributors.value))
   )

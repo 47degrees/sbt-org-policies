@@ -23,7 +23,7 @@ import dependencies.DependenciesPlugin.autoImport._
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 import sbt.Keys._
 import sbt._
-import sbtorgpolicies._
+import utils._
 import sbtorgpolicies.model._
 import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 import sbtrelease.ReleasePlugin.autoImport._
@@ -38,8 +38,7 @@ trait AllSettings
     with files
     with templates
     with fileValidation
-    with enforcement
-    with utils {
+    with enforcement {
 
   /**
    * Settings common to all projects.
