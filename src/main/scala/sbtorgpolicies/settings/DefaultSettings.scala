@@ -16,8 +16,11 @@
 
 package sbtorgpolicies.settings
 
-import sbt.Keys._
+import de.heikoseeberger.sbtheader.AutomateHeaderPlugin
+import de.heikoseeberger.sbtheader.HeaderKey.headers
+import de.heikoseeberger.sbtheader.license.Apache2_0
 import sbt._
+import sbt.Keys._
 import sbtorgpolicies.model._
 
 trait DefaultSettings extends AllSettings {
@@ -36,7 +39,10 @@ trait DefaultSettings extends AllSettings {
       orgMaintainersSettings := List(Dev("47degdev", Some("47 Degrees (twitter: @47deg)"), Some("hello@47deg.com"))),
       orgContributorsSettings := Nil,
       startYear := Some(currentYear),
-      scalacOptions ++= scalacAllOptions
+      scalacOptions ++= scalacAllOptions,
+      headers := Map(
+        "scala" -> Apache2_0("2017", "47 Degrees, LLC. <http://www.47deg.com>")
+      )
     ) ++
       sharedCommonSettings ++
       sharedCommonDependencies ++
@@ -51,5 +57,6 @@ trait DefaultSettings extends AllSettings {
       orgFileSettings(orgGithubSettings, orgLicense, orgMaintainersSettings, orgContributorsSettings) ++
       orgTemplatesDefaultSettings ++
       orgFileValidationSettings(orgMaintainersSettings, orgContributorsSettings) ++
-      orgEnforcementSettingsTasks
+      orgEnforcementSettingsTasks ++
+      AutomateHeaderPlugin.automateFor(Compile, Test)
 }

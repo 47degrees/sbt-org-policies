@@ -31,3 +31,11 @@ $ exists AUTHORS.md
 > set scoverage.ScoverageKeys.coverageMinimum:=80
 
 > orgCheckSettings
+
+> set de.heikoseeberger.sbtheader.HeaderKey.headers:=Map.empty
+
+> testCheckSettings
+
+> set de.heikoseeberger.sbtheader.HeaderKey.headers:=Map("scala" -> de.heikoseeberger.sbtheader.license.Apache2_0("2017", "47 Degrees, LLC. <http://www.47deg.com>"))
+
+> orgCheckSettings

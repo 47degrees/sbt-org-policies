@@ -16,11 +16,14 @@
 
 package sbtorgpolicies.settings
 
+import de.heikoseeberger.sbtheader.HeaderKey
 import sbt._
 import sbt.Keys._
 import sbtorgpolicies.exceptions.ValidationException
 import sbtorgpolicies.model._
 import scoverage.ScoverageKeys
+
+import scala.util.matching.Regex
 
 trait enforcementKeys {
 
@@ -59,12 +62,20 @@ trait enforcement extends enforcementKeys {
         s"coverageMinimumValue is $coverageMinimumValue. It should be at least $scoverageMinimum%")
   }
 
+  private[this] def checkFileHeaderSettings = Def.task {
+    val headersValue: Map[String, (Regex, String)] = HeaderKey.headers.value
+    if (headersValue.size <= 0) {
+      throw ValidationException(s"HeaderKey.headers is empty and it's a mandatory setting")
+    }
+  }
+
   lazy val orgEnforcementSettingsTasks = Seq(
     orgCheckSettings := Def
       .sequential(
         checkScalaVersion,
         checkCrossScalaVersion,
-        checkScoverageSettings
+        checkScoverageSettings,
+        checkFileHeaderSettings
       )
       .value
   )
