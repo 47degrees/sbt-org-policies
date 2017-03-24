@@ -276,7 +276,9 @@ trait AllSettings
    * both existence and content verification.
    */
   def orgFileValidationSettings(
+      name: SettingKey[String],
+      license: SettingKey[License],
       maintainers: SettingKey[List[Dev]],
       contributors: SettingKey[List[Dev]]): Seq[Setting[_]] =
-    orgFileValidationDefaultSettings(maintainers, contributors) ++ orgFileValidationTasks
+    orgFileValidationDefaultSettings(name, license, maintainers, contributors) ++ orgFileValidationTasks
 }

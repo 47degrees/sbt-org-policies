@@ -46,6 +46,13 @@ package object templates {
       outputPath: String,
       replacements: Replacements)
 
+  private[this] def replaceableYear(startYear: Option[Int]): Replaceable = {
+    startYear.getOrElse(currentYear) match {
+      case start if start == currentYear => currentYear.asReplaceable
+      case start                         => s"$start-$currentYear".asReplaceable
+    }
+  }
+
   def LicenseFileType(ghSettings: GitHubSettings, license: License, startYear: Option[Int]): FileType = {
 
     def licenseFile: String = license match {
@@ -54,20 +61,13 @@ package object templates {
       case _             => "templates/LICENSE.template"
     }
 
-    def replaceableYear: Replaceable = {
-      startYear.getOrElse(currentYear) match {
-        case start if start == currentYear => currentYear.asReplaceable
-        case start                         => s"$start-$currentYear".asReplaceable
-      }
-    }
-
     FileType(
       mandatory = true,
       overWritable = true,
       templatePath = licenseFile,
       outputPath = "LICENSE",
       replacements = Map(
-        "year"                 -> replaceableYear,
+        "year"                 -> replaceableYear(startYear),
         "organizationName"     -> ghSettings.organizationName.asReplaceable,
         "organizationHomePage" -> ghSettings.organizationHomePage.asReplaceable
       )
@@ -124,6 +124,22 @@ package object templates {
       outputPath = "contributors.sbt",
       replacements = Map(
         "devs" -> devsAsScalaListString.mkString(",\n").asReplaceable
+      )
+    )
+  }
+
+  def NoticeFileType(ghSettings: GitHubSettings, license: License, startYear: Option[Int]): FileType = {
+
+    FileType(
+      mandatory = true,
+      overWritable = true,
+      templatePath = "templates/NOTICE.md.template",
+      outputPath = "NOTICE.md",
+      replacements = Map(
+        "year"             -> replaceableYear(startYear),
+        "name"             -> ghSettings.project.asReplaceable,
+        "organizationName" -> ghSettings.organizationName.asReplaceable,
+        "licenseName"      -> license.name.asReplaceable
       )
     )
   }

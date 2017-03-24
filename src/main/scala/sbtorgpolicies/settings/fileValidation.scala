@@ -20,7 +20,7 @@ import cats.data.Validated.{Invalid, Valid}
 import sbt.Keys._
 import sbt._
 import sbtorgpolicies.exceptions.ValidationException
-import sbtorgpolicies.model.Dev
+import sbtorgpolicies.model.{Dev, License}
 import sbtorgpolicies.rules._
 
 trait fileValidationKeys {
@@ -38,7 +38,11 @@ trait fileValidation extends fileValidationKeys with ValidationFunctions {
   private[this] def devListStrings(list: List[Dev]): List[String] =
     list.map(_.id) ++ list.flatMap(_.name)
 
-  def orgFileValidationDefaultSettings(maintainers: SettingKey[List[Dev]], contributors: SettingKey[List[Dev]]) = Seq(
+  def orgFileValidationDefaultSettings(
+      name: SettingKey[String],
+      license: SettingKey[License],
+      maintainers: SettingKey[List[Dev]],
+      contributors: SettingKey[List[Dev]]) = Seq(
     orgValidationList := List(
       mkValidation(new File(baseDirectory.value, "README.md").getAbsolutePath, List(emptyValidation)),
       mkValidation(new File(baseDirectory.value, "CONTRIBUTING.md").getAbsolutePath, List(emptyValidation)),
@@ -47,7 +51,11 @@ trait fileValidation extends fileValidationKeys with ValidationFunctions {
         List(requiredStrings(devListStrings(maintainers.value ++ contributors.value)))),
       mkValidation(
         new File(baseDirectory.value, "LICENSE").getAbsolutePath,
-        List(requiredStrings(List(licenses.value.headOption.map(_._1).getOrElse("UNKNOWN LICENSE"))))
+        List(requiredStrings(List(license.value.name)))
+      ),
+      mkValidation(
+        new File(baseDirectory.value, "NOTICE.md").getAbsolutePath,
+        List(requiredStrings(List(name.value, license.value.name)))
       )
     )
   )

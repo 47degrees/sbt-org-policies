@@ -10,6 +10,8 @@ $ exists CONTRIBUTING.md
 
 $ exists AUTHORS.md
 
+$ exists NOTICE.md
+
 > orgValidateFiles
 
 > orgCheckSettings

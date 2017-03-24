@@ -56,7 +56,7 @@ trait DefaultSettings extends AllSettings {
       scalafmtSettings ++
       orgFileSettings(orgGithubSetting, orgLicenseSetting, orgMaintainersSetting, orgContributorsSetting) ++
       orgTemplatesDefaultSettings ++
-      orgFileValidationSettings(orgMaintainersSetting, orgContributorsSetting) ++
+      orgFileValidationSettings(name, orgLicenseSetting, orgMaintainersSetting, orgContributorsSetting) ++
       orgEnforcementSettingsTasks ++
       AutomateHeaderPlugin.automateFor(Compile, Test)
 }
