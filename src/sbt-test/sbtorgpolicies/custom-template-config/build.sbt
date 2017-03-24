@@ -2,7 +2,7 @@ import sbtorgpolicies.model._
 
 scalaVersion := "2.11.8"
 
-orgGithubSettings := GitHubSettings(
+orgGithubSetting := GitHubSettings(
   organization = "myorg",
   project = "custom-template-config",
   organizationName = "My Organization",
@@ -11,7 +11,7 @@ orgGithubSettings := GitHubSettings(
   organizationEmail = "hello@myorg.com"
 )
 
-orgLicense := ApacheLicense.custom
+orgLicenseSetting := ApacheLicense.custom
 
 startYear := Some(2012)
 

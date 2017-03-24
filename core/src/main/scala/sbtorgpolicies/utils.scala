@@ -16,19 +16,15 @@
 
 package sbtorgpolicies
 
-import org.scalatest.{FunSuite, Matchers}
-import org.scalatest.mockito.MockitoSugar
-import org.scalatest.prop.Checkers
+import java.util._
 
-trait TestOps extends FunSuite with Matchers with Checkers with MockitoSugar {
+trait utils {
 
-  implicit def anyEq[A](a: A): AnyEq[A] = new AnyEq[A](a)
+  def guard[T](flag: Boolean)(res: Seq[T]): Seq[T] = if (flag) res else Seq.empty
 
-  final class AnyEq[A](a: A) {
-    def shouldBeEq(b: A): Boolean = {
-      a shouldBe b
-      a == b
-    }
-  }
+  def getEnvVar(name: String): Option[String] = Option(System.getenv().get(name))
 
+  val currentYear: Int = Calendar.getInstance(TimeZone.getTimeZone("UTC")).get(Calendar.YEAR)
 }
+
+object utils extends utils

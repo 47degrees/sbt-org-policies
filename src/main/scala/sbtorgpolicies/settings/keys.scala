@@ -21,15 +21,18 @@ import sbtorgpolicies.model._
 
 trait keys {
 
-  val orgGithubSettings: SettingKey[GitHubSettings] =
+  val orgGithubSetting: SettingKey[GitHubSettings] =
     settingKey[GitHubSettings]("General Org GitHub Settings")
 
-  val orgLicense: SettingKey[License] =
+  val orgGithubTokenSetting: SettingKey[Option[String]] =
+    settingKey[Option[String]]("Github token, needed to be used to interact with Github, empty by default")
+
+  val orgLicenseSetting: SettingKey[License] =
     settingKey[License]("General Org License Setting")
 
-  val orgMaintainersSettings: SettingKey[List[Dev]] =
+  val orgMaintainersSetting: SettingKey[List[Dev]] =
     settingKey[List[Dev]]("List of Maintainers of the project")
 
-  val orgContributorsSettings: SettingKey[List[Dev]] =
+  val orgContributorsSetting: SettingKey[List[Dev]] =
     settingKey[List[Dev]]("List of Devs involved in the development of the project")
 }
