@@ -51,7 +51,8 @@ trait files extends filesKeys with templatesKeys {
       LicenseFileType(gh.value, license.value, startYear.value),
       ContributingFileType(gh.value),
       AuthorsFileType(gh.value, maintainers.value, contributors.value),
-      NoticeFileType(gh.value, license.value, startYear.value))
+      NoticeFileType(gh.value, license.value, startYear.value)
+    )
   )
 
   def orgFilesTasks(

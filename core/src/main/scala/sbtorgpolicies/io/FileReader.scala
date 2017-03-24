@@ -27,6 +27,9 @@ import scala.annotation.tailrec
 
 class FileReader {
 
+  def getChildPath(parent: File, childPath: String): String =
+    new File(parent, childPath).getAbsolutePath
+
   def exists(path: String): Boolean =
     Either
       .catchNonFatal(path.toFile.exists()) getOrElse false
