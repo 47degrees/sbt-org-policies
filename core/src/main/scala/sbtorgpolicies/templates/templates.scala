@@ -17,7 +17,7 @@
 package sbtorgpolicies
 
 import sbtorgpolicies.model._
-import sbtorgpolicies.settings.utils._
+import sbtorgpolicies.utils._
 import sbtorgpolicies.templates.syntax._
 
 import scala.language.implicitConversions

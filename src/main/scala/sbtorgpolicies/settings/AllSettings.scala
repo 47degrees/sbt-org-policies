@@ -18,11 +18,10 @@ package sbtorgpolicies.settings
 
 import com.typesafe.sbt.pgp.PgpKeys
 import com.typesafe.sbt.pgp.PgpKeys._
-import dependencies.DependenciesPlugin
-import dependencies.DependenciesPlugin.autoImport._
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 import sbt.Keys._
 import sbt._
+import sbtorgpolicies._
 import sbtorgpolicies.model._
 import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 import sbtrelease.ReleasePlugin.autoImport._
@@ -258,18 +257,6 @@ trait AllSettings
   )
 
   /**
-   * Sets the default properties for the sbt-dependencies plugin
-   *
-   * Uses the github settings to set the GitHub owner and repo
-   */
-  def sbtDependenciesSettings(gh: SettingKey[GitHubSettings]): Seq[Setting[_]] =
-    DependenciesPlugin.defaultSettings ++ Seq(
-      githubOwner := gh.value.organization,
-      githubRepo := gh.value.project,
-      githubToken := ""
-    )
-
-  /**
    * Sets the default settings that provides the ability to create files based on its templates.
    * @param gh Project Github settings.
    * @return list of the default org file settings.
@@ -279,7 +266,10 @@ trait AllSettings
       license: SettingKey[License],
       maintainers: SettingKey[List[Dev]],
       contributors: SettingKey[List[Dev]]): Seq[Setting[_]] =
-    orgFilesDefaultSettings(gh, license, maintainers, contributors) ++ orgFilesTasks(gh, maintainers, githubToken)
+    orgFilesDefaultSettings(gh, license, maintainers, contributors) ++ orgFilesTasks(
+      gh,
+      maintainers,
+      orgGithubTokenSetting)
 
   /**
    * Default settings that the plugin will take into account to perform the file validation,

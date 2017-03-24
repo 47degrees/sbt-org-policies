@@ -27,7 +27,7 @@ trait DefaultSettings extends AllSettings {
 
   lazy val orgDefaultSettings: Seq[Setting[_]] =
     Seq(
-      orgGithubSettings := GitHubSettings(
+      orgGithubSetting := GitHubSettings(
         organization = "47deg",
         project = name.value,
         organizationName = "47 Degrees",
@@ -35,9 +35,10 @@ trait DefaultSettings extends AllSettings {
         organizationHomePage = url("http://47deg.com"),
         organizationEmail = "hello@47deg.com"
       ),
-      orgLicense := ApacheLicense,
-      orgMaintainersSettings := List(Dev("47degdev", Some("47 Degrees (twitter: @47deg)"), Some("hello@47deg.com"))),
-      orgContributorsSettings := Nil,
+      orgGithubTokenSetting := None,
+      orgLicenseSetting := ApacheLicense,
+      orgMaintainersSetting := List(Dev("47degdev", Some("47 Degrees (twitter: @47deg)"), Some("hello@47deg.com"))),
+      orgContributorsSetting := Nil,
       startYear := Some(currentYear),
       scalacOptions ++= scalacAllOptions,
       headers := Map(
@@ -48,15 +49,14 @@ trait DefaultSettings extends AllSettings {
       sharedCommonDependencies ++
       sharedReleaseProcess ++
       credentialSettings ++
-      sharedPublishSettings(orgGithubSettings, orgLicense, orgMaintainersSettings, orgContributorsSettings) ++
-      sharedBuildSettings(orgGithubSettings) ++
+      sharedPublishSettings(orgGithubSetting, orgLicenseSetting, orgMaintainersSetting, orgContributorsSetting) ++
+      sharedBuildSettings(orgGithubSetting) ++
       scalaDependencyOverrides ++
       sharedScoverageSettings() ++
       scalafmtSettings ++
-      sbtDependenciesSettings(orgGithubSettings) ++
-      orgFileSettings(orgGithubSettings, orgLicense, orgMaintainersSettings, orgContributorsSettings) ++
+      orgFileSettings(orgGithubSetting, orgLicenseSetting, orgMaintainersSetting, orgContributorsSetting) ++
       orgTemplatesDefaultSettings ++
-      orgFileValidationSettings(orgMaintainersSettings, orgContributorsSettings) ++
+      orgFileValidationSettings(orgMaintainersSetting, orgContributorsSetting) ++
       orgEnforcementSettingsTasks ++
       AutomateHeaderPlugin.automateFor(Compile, Test)
 }

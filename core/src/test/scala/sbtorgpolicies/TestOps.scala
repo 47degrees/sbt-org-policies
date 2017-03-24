@@ -14,17 +14,23 @@
  * limitations under the License.
  */
 
-package sbtorgpolicies.settings
+package sbtorgpolicies
 
-import java.util._
+import org.scalatest.{FunSuite, Matchers}
+import org.scalatest.mockito.MockitoSugar
+import org.scalatest.prop.Checkers
 
-trait utils {
+import scala.language.implicitConversions
 
-  def guard[T](flag: Boolean)(res: Seq[T]): Seq[T] = if (flag) res else Seq.empty
+trait TestOps extends FunSuite with Matchers with Checkers with MockitoSugar {
 
-  def getEnvVar(name: String): Option[String] = Option(System.getenv().get(name))
+  implicit def anyEq[A](a: A): AnyEq[A] = new AnyEq[A](a)
 
-  val currentYear: Int = Calendar.getInstance(TimeZone.getTimeZone("UTC")).get(Calendar.YEAR)
+  final class AnyEq[A](a: A) {
+    def shouldBeEq(b: A): Boolean = {
+      a shouldBe b
+      a == b
+    }
+  }
+
 }
-
-object utils extends utils

@@ -56,41 +56,41 @@ trait files extends filesKeys with templatesKeys {
   def orgFilesTasks(
       gh: SettingKey[GitHubSettings],
       maintainers: SettingKey[List[Dev]],
-      ghToken: SettingKey[String]) = Seq(
-    orgCreateFiles := Def.task {
-      val fh = new FileHelper
+      githubToken: SettingKey[Option[String]]) =
+    Seq(
+      orgCreateFiles := Def.task {
+        val fh = new FileHelper
 
-      (for {
-        _ <- fh.createResources(orgTemplatesDirectory.value, orgTargetDirectory.value)
-        _ <- fh.checkOrgFiles(baseDirectory.value, orgTargetDirectory.value, orgEnforcedFiles.value)
-      } yield ()) match {
-        case Right(_) => streams.value.log.info("Over-writable files have been created successfully")
-        case Left(e) =>
-          streams.value.log.error(s"Error creating files")
-          e.printStackTrace()
-      }
+        (for {
+          _ <- fh.createResources(orgTemplatesDirectory.value, orgTargetDirectory.value)
+          _ <- fh.checkOrgFiles(baseDirectory.value, orgTargetDirectory.value, orgEnforcedFiles.value)
+        } yield ()) match {
+          case Right(_) => streams.value.log.info("Over-writable files have been created successfully")
+          case Left(e) =>
+            streams.value.log.error(s"Error creating files")
+            e.printStackTrace()
+        }
 
-    }.value,
-    orgCreateContributorsFile := Def.task {
-      val fh    = new FileHelper
-      val token = if (ghToken.value.isEmpty) None else Some(ghToken.value)
-      val ghOps = new GitHubOps(gh.value.organization, gh.value.project, token)
+      }.value,
+      orgCreateContributorsFile := Def.task {
+        val fh    = new FileHelper
+        val ghOps = new GitHubOps(gh.value.organization, gh.value.project, githubToken.value)
 
-      (for {
-        list <- ghOps.fetchContributors
-        maintainersIds = maintainers.value.map(_.id)
-        filteredDevs = list
-          .map(user => Dev(user.login, user.name, user.blog))
-          .filterNot(dev => maintainersIds.contains(dev.id))
-        _ <- fh.createResources(orgTemplatesDirectory.value, orgTargetDirectory.value)
-        _ <- fh
-          .checkOrgFiles(baseDirectory.value, orgTargetDirectory.value, List(ContributorsSBTFileType(filteredDevs)))
-      } yield ()) match {
-        case Right(_) => streams.value.log.info("contributors file created successfully")
-        case Left(e) =>
-          streams.value.log.error(s"Error creating contributors file")
-          e.printStackTrace()
-      }
-    }.value
-  )
+        (for {
+          list <- ghOps.fetchContributors
+          maintainersIds = maintainers.value.map(_.id)
+          filteredDevs = list
+            .map(user => Dev(user.login, user.name, user.blog))
+            .filterNot(dev => maintainersIds.contains(dev.id))
+          _ <- fh.createResources(orgTemplatesDirectory.value, orgTargetDirectory.value)
+          _ <- fh
+            .checkOrgFiles(baseDirectory.value, orgTargetDirectory.value, List(ContributorsSBTFileType(filteredDevs)))
+        } yield ()) match {
+          case Right(_) => streams.value.log.info("contributors file created successfully")
+          case Left(e) =>
+            streams.value.log.error(s"Error creating contributors file")
+            e.printStackTrace()
+        }
+      }.value
+    )
 }

@@ -1,35 +1,83 @@
-import com.timushev.sbt.updates.UpdatesPlugin.autoImport.dependencyUpdatesExclusions
 import com.typesafe.sbt.SbtPgp.autoImportImpl.PgpKeys.gpgCommand
 import com.typesafe.sbt.SbtPgp.autoImportImpl._
-import dependencies.DependenciesPlugin.autoImport._
 import de.heikoseeberger.sbtheader.HeaderKey._
+import de.heikoseeberger.sbtheader.HeaderPlugin
 import de.heikoseeberger.sbtheader.license.Apache2_0
 import sbt.Keys._
+import sbt.Resolver.sonatypeRepo
+import sbt.ScriptedPlugin._
 import sbt._
-import ScriptedPlugin._
-import de.heikoseeberger.sbtheader.HeaderPlugin
-import dependencies.DependenciesPlugin
 import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 import sbtrelease.ReleasePlugin.autoImport._
 
-object BuildCommon extends AutoPlugin {
+object ProjectPlugin extends AutoPlugin {
 
-  override def requires = plugins.JvmPlugin && HeaderPlugin
+  override def requires: Plugins = plugins.JvmPlugin && HeaderPlugin
 
   override def trigger: PluginTrigger = allRequirements
 
+  object autoImport {
+
+    lazy val pluginSettings: Seq[Def.Setting[_]] = Seq(
+      sbtPlugin := true,
+      resolvers ++= Seq(sonatypeRepo("snapshots"), sonatypeRepo("releases")),
+      addSbtPlugin("com.eed3si9n"       % "sbt-unidoc"             % "0.4.0"),
+      addSbtPlugin("com.github.gseitz"  % "sbt-release"            % "1.0.4"),
+      addSbtPlugin("org.xerial.sbt"     % "sbt-sonatype"           % "1.1"),
+      addSbtPlugin("com.jsuereth"       % "sbt-pgp"                % "1.0.1"),
+      addSbtPlugin("com.typesafe.sbt"   % "sbt-ghpages"            % "0.6.0"),
+      addSbtPlugin("com.typesafe.sbt"   % "sbt-site"               % "1.2.0"),
+      addSbtPlugin("org.tpolecat"       % "tut-plugin"             % "0.4.8"),
+      addSbtPlugin("pl.project13.scala" % "sbt-jmh"                % "0.2.24"),
+      addSbtPlugin("org.scalastyle"     %% "scalastyle-sbt-plugin" % "0.8.0"),
+      addSbtPlugin("org.scoverage"      % "sbt-scoverage"          % "1.5.0"),
+      addSbtPlugin("com.typesafe.sbt"   % "sbt-git"                % "0.8.5"),
+      addSbtPlugin("org.scala-js"       % "sbt-scalajs"            % "0.6.14"),
+      addSbtPlugin("de.heikoseeberger"  % "sbt-header"             % "1.8.0"),
+      addSbtPlugin("com.eed3si9n"       % "sbt-buildinfo"          % "0.6.1"),
+      addSbtPlugin("com.geirsson"       % "sbt-scalafmt"           % "0.6.6")
+    ) ++
+      ScriptedPlugin.scriptedSettings ++ Seq(
+      scriptedDependencies := (compile in Test) map { _ =>
+        Unit
+      },
+      scriptedLaunchOpts := {
+        scriptedLaunchOpts.value ++
+          Seq(
+            "-Xmx2048M",
+            "-XX:ReservedCodeCacheSize=256m",
+            "-XX:+UseConcMarkSweepGC",
+            "-Dplugin.version=" + version.value,
+            "-Dscala.version=" + scalaVersion.value
+          )
+      }
+    )
+
+    lazy val coreSettings = Seq(
+      libraryDependencies ++= Seq(
+        "com.47deg"      %% "github4s"       % "0.12.0",
+        "org.typelevel"  %% "cats"           % "0.9.0",
+        "org.scala-sbt"  % "scripted-plugin" % sbtVersion.value,
+        "org.scalatest"  %% "scalatest"      % "3.0.1" % "test",
+        "org.scalacheck" %% "scalacheck"     % "1.13.5" % "test",
+        "org.mockito"    % "mockito-all"     % "2.0.2-beta" % "test"
+      )
+    )
+
+  }
+
   override def projectSettings: Seq[Def.Setting[_]] =
     artifactSettings ++
-      miscSettings ++
       releaseProcessSettings ++
       pgpSettings ++
       credentialSettings ++
       publishSettings ++
-      sbtDependenciesSettings ++
-      testScriptedSettings
+      miscSettings
 
   private[this] val artifactSettings = Seq(
-    name := "sbt-org-policies",
+    scalaVersion := "2.10.6",
+    crossScalaVersions := Seq("2.10.6"),
+    scalaOrganization := "org.scala-lang",
     organization := "com.47deg",
     organizationName := "47 Degrees",
     homepage := Option(url("http://www.47deg.com")),
@@ -101,32 +149,6 @@ object BuildCommon extends AutoPlugin {
       pushChanges
     )
   )
-
-  private[this] val sbtDependenciesSettings = DependenciesPlugin.defaultSettings ++ Seq(
-    dependencyUpdatesExclusions :=
-      moduleFilter(organization = "org.scala-lang") |
-        moduleFilter(organization = "org.scala-sbt"),
-    githubOwner := "47deg",
-    githubRepo := name.value,
-    githubToken := Option(System.getenv().get("GITHUB_TOKEN_REPO")).getOrElse("")
-  )
-
-  private[this] val testScriptedSettings =
-    ScriptedPlugin.scriptedSettings ++ Seq(
-      scriptedDependencies := (compile in Test) map { _ =>
-        Unit
-      },
-      scriptedLaunchOpts := {
-        scriptedLaunchOpts.value ++
-          Seq(
-            "-Xmx2048M",
-            "-XX:ReservedCodeCacheSize=256m",
-            "-XX:+UseConcMarkSweepGC",
-            "-Dplugin.version=" + version.value,
-            "-Dscala.version=" + scalaVersion.value
-          )
-      }
-    )
 
   private[this] val miscSettings = Seq(
     shellPrompt := { s: State =>
