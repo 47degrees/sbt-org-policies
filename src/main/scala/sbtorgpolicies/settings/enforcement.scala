@@ -33,6 +33,17 @@ trait enforcementKeys {
 
 trait enforcement extends enforcementKeys {
 
+  lazy val orgEnforcementSettingsTasks = Seq(
+    orgCheckSettings := Def
+      .sequential(
+        checkScalaVersion,
+        checkCrossScalaVersion,
+        checkScoverageSettings,
+        checkFileHeaderSettings
+      )
+      .value
+  )
+
   private[this] def checkScalaVersion = Def.task {
     val scalaVersionValue = scalaVersion.value
     if (scalaVersionValue != scalac.latestScalaVersion) {
@@ -68,16 +79,5 @@ trait enforcement extends enforcementKeys {
       throw ValidationException(s"HeaderKey.headers is empty and it's a mandatory setting")
     }
   }
-
-  lazy val orgEnforcementSettingsTasks = Seq(
-    orgCheckSettings := Def
-      .sequential(
-        checkScalaVersion,
-        checkCrossScalaVersion,
-        checkScoverageSettings,
-        checkFileHeaderSettings
-      )
-      .value
-  )
 
 }
