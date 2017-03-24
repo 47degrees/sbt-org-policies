@@ -20,7 +20,7 @@ import cats.data.Validated.{Invalid, Valid}
 import sbt.Keys._
 import sbt._
 import sbtorgpolicies.exceptions.ValidationException
-import sbtorgpolicies.model.Dev
+import sbtorgpolicies.model.{Dev, License}
 import sbtorgpolicies.rules._
 
 trait fileValidationKeys {
@@ -34,20 +34,29 @@ trait fileValidationKeys {
 trait fileValidation extends fileValidationKeys with ValidationFunctions {
 
   val fileValidation = new FileValidation
+  import fileValidation.fileReader._
 
   private[this] def devListStrings(list: List[Dev]): List[String] =
     list.map(_.id) ++ list.flatMap(_.name)
 
-  def orgFileValidationDefaultSettings(maintainers: SettingKey[List[Dev]], contributors: SettingKey[List[Dev]]) = Seq(
+  def orgFileValidationDefaultSettings(
+      name: SettingKey[String],
+      license: SettingKey[License],
+      maintainers: SettingKey[List[Dev]],
+      contributors: SettingKey[List[Dev]]) = Seq(
     orgValidationList := List(
-      mkValidation(new File(baseDirectory.value, "README.md").getAbsolutePath, List(emptyValidation)),
-      mkValidation(new File(baseDirectory.value, "CONTRIBUTING.md").getAbsolutePath, List(emptyValidation)),
+      mkValidation(getChildPath(baseDirectory.value, "README.md"), List(emptyValidation)),
+      mkValidation(getChildPath(baseDirectory.value, "CONTRIBUTING.md"), List(emptyValidation)),
       mkValidation(
-        new File(baseDirectory.value, "AUTHORS.md").getAbsolutePath,
+        getChildPath(baseDirectory.value, "AUTHORS.md"),
         List(requiredStrings(devListStrings(maintainers.value ++ contributors.value)))),
       mkValidation(
-        new File(baseDirectory.value, "LICENSE").getAbsolutePath,
-        List(requiredStrings(List(licenses.value.headOption.map(_._1).getOrElse("UNKNOWN LICENSE"))))
+        getChildPath(baseDirectory.value, "LICENSE"),
+        List(requiredStrings(List(license.value.name)))
+      ),
+      mkValidation(
+        getChildPath(baseDirectory.value, "NOTICE.md"),
+        List(requiredStrings(List(name.value, license.value.name)))
       )
     )
   )
@@ -68,7 +77,10 @@ trait fileValidation extends fileValidationKeys with ValidationFunctions {
         s"""$description
            |${errorList map (e => s" - ${e.message}") mkString "\n"}
          """.stripMargin
-      if (validation.policyLevel == PolicyWarning) log.warn(errorMessage) else log.error(errorMessage)
+      if (validation.policyLevel == PolicyWarning) log.warn(errorMessage)
+      else {
+        throw ValidationException(errorMessage)
+      }
     }
 
     fileValidation.validateFile(validation.validationRule.inputPath, validation.validationRule.validationList: _*) match {

@@ -1,5 +1,7 @@
 scalaVersion := "2.11.8"
 
+name := "sbt-org-policies-test"
+
 import sbtorgpolicies.model._
 
 orgMaintainersSetting := List(
