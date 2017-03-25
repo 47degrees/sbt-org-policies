@@ -26,32 +26,32 @@ import sbt.inc.Analysis
  */
 trait scalafmt {
 
-  val scalafmtInc: TaskKey[Unit] = taskKey[Unit]("Incrementally format modified sources")
+  val orgScalafmtInc: TaskKey[Unit] = taskKey[Unit]("Incrementally format modified sources")
 
-  val scalafmtGenerateFile: TaskKey[Unit] = taskKey[Unit]("Generate a default scalafmt configuration")
+  val orgScalafmtGenerateFile: TaskKey[Unit] = taskKey[Unit]("Generate a default scalafmt configuration")
 
-  lazy val generateScalafmtTask = Seq(
-    scalafmtGenerateFile := scalafmtGenerateFileDef.value
+  lazy val orgGenerateScalafmtTask = Seq(
+    orgScalafmtGenerateFile := orgScalafmtGenerateFileDef.value
   )
 
-  def automateScalafmtFor(configurations: Configuration*): Seq[Setting[_]] =
+  def orgAutomateScalafmtFor(configurations: Configuration*): Seq[Setting[_]] =
     configurations.flatMap { c =>
       inConfig(c)(
         Seq(
-          scalafmtInc := scalafmtIncDef.value,
-          sourceDirectories.in(scalafmtInc) := Seq(scalaSource.value),
-          compileInputs.in(compile) := (compileInputs.in(compile) dependsOn scalafmtInc).value
+          orgScalafmtInc := orgScalafmtIncDef.value,
+          sourceDirectories.in(orgScalafmtInc) := Seq(scalaSource.value),
+          compileInputs.in(compile) := (compileInputs.in(compile) dependsOn orgScalafmtInc).value
         )
       )
     }
 
-  val scalafmtIncDef: Def.Initialize[Task[Set[File]]] = Def.task {
+  val orgScalafmtIncDef: Def.Initialize[Task[Set[File]]] = Def.task {
     val cache   = streams.value.cacheDirectory / "scalafmt"
-    val include = includeFilter.in(scalafmtInc).value
-    val exclude = excludeFilter.in(scalafmtInc).value
+    val include = includeFilter.in(orgScalafmtInc).value
+    val exclude = excludeFilter.in(orgScalafmtInc).value
     val sources =
       sourceDirectories
-        .in(scalafmtInc)
+        .in(orgScalafmtInc)
         .value
         .descendantsExcept(include, exclude)
         .get
@@ -83,7 +83,7 @@ trait scalafmt {
     format(_ => (), "Reformatted") // Recalculate the cache
   }
 
-  val scalafmtGenerateFileDef: Def.Initialize[Task[Unit]] = Def.task {
+  val orgScalafmtGenerateFileDef: Def.Initialize[Task[Unit]] = Def.task {
     if (!file(".scalafmt.conf").exists()) {
       IO.write(
         file(".scalafmt.conf"),
