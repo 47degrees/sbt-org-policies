@@ -9,5 +9,5 @@
 Add the following line to `project/plugins.sbt`:
 
 ```scala
-addSbtPlugin("com.47deg" % "sbt-org-policies" % "0.2.0")
+addSbtPlugin("com.47deg" % "sbt-org-policies" % "0.3.0")
 ```
