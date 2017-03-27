@@ -36,11 +36,12 @@ object ProjectPlugin extends AutoPlugin {
       addSbtPlugin("org.scalastyle"     %% "scalastyle-sbt-plugin" % "0.8.0"),
       addSbtPlugin("org.scoverage"      % "sbt-scoverage"          % "1.5.0"),
       addSbtPlugin("com.typesafe.sbt"   % "sbt-git"                % "0.8.5"),
-      addSbtPlugin("org.scala-js"       % "sbt-scalajs"            % "0.6.14"),
+      addSbtPlugin("org.scala-js"       % "sbt-scalajs"            % "0.6.15"),
       addSbtPlugin("de.heikoseeberger"  % "sbt-header"             % "1.8.0"),
       addSbtPlugin("com.eed3si9n"       % "sbt-buildinfo"          % "0.6.1"),
       addSbtPlugin("com.geirsson"       % "sbt-scalafmt"           % "0.6.6"),
-      addSbtPlugin("com.47deg"          % "sbt-dependencies"       % "0.1.0")
+      addSbtPlugin("com.47deg"          % "sbt-dependencies"       % "0.1.0"),
+      addSbtPlugin("com.47deg"          % "sbt-microsites"         % "0.5.1")
     ) ++
       ScriptedPlugin.scriptedSettings ++ Seq(
       scriptedDependencies := (compile in Test) map { _ =>

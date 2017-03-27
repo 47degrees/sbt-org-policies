@@ -1,5 +1,4 @@
 import sbt.Keys._
-import Resolver.sonatypeRepo
 
 lazy val `sbt-org-policies` = (project in file("."))
   .dependsOn(`org-policies-core`)
