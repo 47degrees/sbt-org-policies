@@ -18,6 +18,8 @@ package sbtorgpolicies.settings
 
 import com.typesafe.sbt.pgp.PgpKeys
 import com.typesafe.sbt.pgp.PgpKeys._
+import dependencies.DependenciesPlugin
+import dependencies.DependenciesPlugin.autoImport._
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 import sbt.Keys._
 import sbt._
@@ -255,6 +257,18 @@ trait AllSettings
       s"$blue$projectName$white>${c.RESET}"
     }
   )
+
+  /**
+   * Sets the default properties for the sbt-dependencies plugin
+   *
+   * Uses the github settings to set the GitHub owner and repo
+   */
+  def sbtDependenciesSettings(gh: SettingKey[GitHubSettings]): Seq[Setting[_]] =
+    DependenciesPlugin.defaultSettings ++ Seq(
+      depGithubOwnerSetting := gh.value.organization,
+      depGithubRepoSetting := gh.value.project,
+      depGithubTokenSetting := orgGithubTokenSetting.value
+    )
 
   /**
    * Sets the default settings that provides the ability to create files based on its templates.

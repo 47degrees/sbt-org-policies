@@ -1,5 +1,8 @@
+import com.timushev.sbt.updates.UpdatesPlugin.autoImport.dependencyUpdatesExclusions
 import com.typesafe.sbt.SbtPgp.autoImportImpl.PgpKeys.gpgCommand
 import com.typesafe.sbt.SbtPgp.autoImportImpl._
+import dependencies.DependenciesPlugin
+import dependencies.DependenciesPlugin.autoImport._
 import de.heikoseeberger.sbtheader.HeaderKey._
 import de.heikoseeberger.sbtheader.HeaderPlugin
 import de.heikoseeberger.sbtheader.license.Apache2_0
@@ -7,6 +10,7 @@ import sbt.Keys._
 import sbt.Resolver.sonatypeRepo
 import sbt.ScriptedPlugin._
 import sbt._
+import sbtorgpolicies.utils._
 import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 import sbtrelease.ReleasePlugin.autoImport._
 
@@ -35,7 +39,8 @@ object ProjectPlugin extends AutoPlugin {
       addSbtPlugin("org.scala-js"       % "sbt-scalajs"            % "0.6.14"),
       addSbtPlugin("de.heikoseeberger"  % "sbt-header"             % "1.8.0"),
       addSbtPlugin("com.eed3si9n"       % "sbt-buildinfo"          % "0.6.1"),
-      addSbtPlugin("com.geirsson"       % "sbt-scalafmt"           % "0.6.6")
+      addSbtPlugin("com.geirsson"       % "sbt-scalafmt"           % "0.6.6"),
+      addSbtPlugin("com.47deg"          % "sbt-dependencies"       % "0.1.0")
     ) ++
       ScriptedPlugin.scriptedSettings ++ Seq(
       scriptedDependencies := (compile in Test) map { _ =>
@@ -72,7 +77,8 @@ object ProjectPlugin extends AutoPlugin {
       pgpSettings ++
       credentialSettings ++
       publishSettings ++
-      miscSettings
+      miscSettings ++
+      sbtDependenciesSettings
 
   private[this] val artifactSettings = Seq(
     scalaVersion := "2.10.6",
@@ -117,7 +123,7 @@ object ProjectPlugin extends AutoPlugin {
     </developers>
   )
 
-  private[this] val gpgFolder = sys.env.getOrElse("PGP_FOLDER", ".")
+  private[this] val gpgFolder = getEnvVar("PGP_FOLDER").getOrElse(".")
 
   private[this] val pgpSettings = Seq(
     pgpPassphrase := Some(sys.env.getOrElse("PGP_PASSPHRASE", "").toCharArray),
@@ -128,8 +134,8 @@ object ProjectPlugin extends AutoPlugin {
 
   private[this] val credentialSettings = Seq(
     credentials ++= (for {
-      username <- Option(System.getenv().get("SONATYPE_USERNAME"))
-      password <- Option(System.getenv().get("SONATYPE_PASSWORD"))
+      username <- getEnvVar("SONATYPE_USERNAME")
+      password <- getEnvVar("SONATYPE_PASSWORD")
     } yield Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", username, password)).toSeq
   )
 
@@ -160,5 +166,14 @@ object ProjectPlugin extends AutoPlugin {
 
       s"$blue$projectName$white>${c.RESET}"
     }
+  )
+
+  private[this] val sbtDependenciesSettings = DependenciesPlugin.defaultSettings ++ Seq(
+    dependencyUpdatesExclusions :=
+      moduleFilter(organization = "org.scala-lang") |
+        moduleFilter(organization = "org.scala-sbt"),
+    depGithubOwnerSetting := "47deg",
+    depGithubRepoSetting := name.value,
+    depGithubTokenSetting := getEnvVar("GITHUB_TOKEN_REPO")
   )
 }
