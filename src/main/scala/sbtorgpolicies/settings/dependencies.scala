@@ -220,6 +220,6 @@ trait dependencies {
     "slogging"                    -> Dep("biz.enef", "slogging", v("slogging")),
     "specs2-core"                 -> Dep("org.specs2", "specs2-core", v("specs2")),
     "specs2-scalacheck"           -> Dep("org.specs2", "specs2-scalacheck", v("specs2")),
-    "slick-core"                  -> Dep("com.typesafe.slick", "slick" , v("slick"))
+    "slick"                       -> Dep("com.typesafe.slick", "slick" , v("slick"))
   )
 }
