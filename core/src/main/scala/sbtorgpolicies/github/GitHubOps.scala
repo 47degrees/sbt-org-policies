@@ -52,4 +52,6 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
     }
   }
 
+  def commitFiles(filesAndContents: List[(String, String)]): Either[GitHubException, Unit] = ???
+
 }
