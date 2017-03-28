@@ -46,7 +46,13 @@ trait bash extends bashKeys with filesKeys {
         val ghOps = new GitHubOps(gh.value.organization, gh.value.project, githubToken.value)
         (for {
           filesAndContents <- readFileContents(orgEnforcedFiles.value)
-          _                <- ghOps.commitFiles(filesAndContents)
+          _ <- ghOps.commitFiles(
+            owner = gh.value.organization,
+            repo = gh.value.project,
+            branch = orgCommitBranchSetting.value,
+            message = "Updates policy files from SBT",
+            filesAndContents = filesAndContents
+          )
         } yield ()) match {
           case Right(_) => streams.value.log.info("Policy files committed successfully")
           case Left(e) =>
