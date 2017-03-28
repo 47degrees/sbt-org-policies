@@ -101,7 +101,8 @@ trait dependencies {
     "simulacrum"      -> "0.10.0",
     "slf4j"           -> "1.7.21",
     "slogging"        -> "0.5.2",
-    "specs2"          -> "3.8.7"
+    "specs2"          -> "3.8.7",
+    "slick"           -> "3.2.0"
   )
 
   private[this] val v: Map[String, String] = v47 ++ vOthers
@@ -218,6 +219,7 @@ trait dependencies {
     "slf4j-simple"                -> Dep("org.slf4j", "slf4j-simple", v("slf4j")),
     "slogging"                    -> Dep("biz.enef", "slogging", v("slogging")),
     "specs2-core"                 -> Dep("org.specs2", "specs2-core", v("specs2")),
-    "specs2-scalacheck"           -> Dep("org.specs2", "specs2-scalacheck", v("specs2"))
+    "specs2-scalacheck"           -> Dep("org.specs2", "specs2-scalacheck", v("specs2")),
+    "slick"                       -> Dep("com.typesafe.slick", "slick" , v("slick"))
   )
 }
