@@ -47,7 +47,7 @@ trait dependencies {
 
   private[this] val v47: Map[String, String] = Map[String, String](
     "fetch"    -> "0.6.0",
-    "github4s" -> "0.12.0"
+    "github4s" -> "0.12.1"
   )
 
   private[this] val vOthers: Map[String, String] = Map[String, String](
@@ -79,6 +79,7 @@ trait dependencies {
     "macro-compat"    -> "1.1.1",
     "monix"           -> "2.2.3",
     "monocle"         -> "1.4.0",
+    "mockito"         -> "2.7.19",
     "newrelic"        -> "3.29.0",
     "paradise"        -> "2.1.0",
     "pcplod"          -> "1.2.0",
@@ -188,6 +189,7 @@ trait dependencies {
     "monocle-law"                 -> Dep("com.github.julien-truffaut", "monocle-law", v("monocle")),
     "monocle-macro"               -> Dep("com.github.julien-truffaut", "monocle-macro", v("monocle")),
     "monocle-state"               -> Dep("com.github.julien-truffaut", "monocle-state", v("monocle")),
+    "mockito"                     -> Dep("org.mockito", "mockito-core", v("mockito")),
     "newrelic"                    -> Dep("com.newrelic.agent.java", "newrelic-agent", v("newrelic")),
     "paradise"                    -> Dep("org.scalamacros", "paradise", v("paradise")),
     "play"                        -> Dep("com.typesafe.play", "play", v("play")),
