@@ -39,6 +39,7 @@ trait AllSettings
     with templates
     with fileValidation
     with enforcement
+    with bash
     with utils {
 
   /**
@@ -295,4 +296,7 @@ trait AllSettings
       maintainers: SettingKey[List[Dev]],
       contributors: SettingKey[List[Dev]]): Seq[Setting[_]] =
     orgFileValidationDefaultSettings(name, license, maintainers, contributors) ++ orgFileValidationTasks
+
+  def orgBashSettings: Seq[Setting[_]] =
+    orgBashDefaultSettings ++ orgBashTasks(orgGithubSetting, orgGithubTokenSetting)
 }
