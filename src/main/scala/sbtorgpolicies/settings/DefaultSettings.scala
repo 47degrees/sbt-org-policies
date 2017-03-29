@@ -58,6 +58,7 @@ trait DefaultSettings extends AllSettings {
       orgTemplatesDefaultSettings ++
       orgFileValidationSettings(name, orgLicenseSetting, orgMaintainersSetting, orgContributorsSetting) ++
       orgEnforcementSettingsTasks ++
+      orgBashSettings ++
       AutomateHeaderPlugin.automateFor(Compile, Test) ++
       sbtDependenciesSettings(orgGithubSetting)
 }

@@ -100,9 +100,10 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
       gHResultParentCommit <- fetchHeadCommit
       parentCommitSha = gHResultParentCommit.result.`object`.sha
       gHResultBaseTree <- fetchBaseTreeSha(parentCommitSha)
-      ghResultTree     <- createTree(gHResultBaseTree.result.tree.sha)
-      ghResultCommit   <- createCommit(ghResultTree.result.sha, parentCommitSha)
-      ghResultUpdate   <- updateHead(ghResultCommit.result.sha)
+      baseTreeSha = gHResultBaseTree.result.tree.sha
+      ghResultTree   <- createTree(baseTreeSha)
+      ghResultCommit <- createCommit(ghResultTree.result.sha, parentCommitSha)
+      ghResultUpdate <- updateHead(ghResultCommit.result.sha)
     } yield ghResultUpdate
 
     op.value.exec[Try, HttpResponse[String]](Map("user-agent" -> "sbt-org-policies")) match {

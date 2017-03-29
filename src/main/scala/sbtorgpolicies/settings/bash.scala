@@ -6,7 +6,8 @@ import sbt.Keys._
 import sbt._
 import sbtorgpolicies.github.GitHubOps
 import sbtorgpolicies.io.{FileReader, IOResult}
-import sbtorgpolicies.model.{Dev, GitHubSettings}
+import sbtorgpolicies.model.GitHubSettings
+import sbtorgpolicies.templates.contributorsFilePath
 import sbtorgpolicies.templates.FileType
 import sbtorgpolicies.utils._
 
@@ -30,16 +31,19 @@ trait bash extends bashKeys with filesKeys {
     orgCommitBranchSetting := "master"
   )
 
-  private[this] def readFileContents(list: List[FileType]): IOResult[List[(String, String)]] =
-    list.foldLeft[IOResult[List[(String, String)]]](Right(Nil)) {
+  private[this] def readFileContents(list: List[FileType]): IOResult[List[(String, String)]] = {
+
+    val sbtContributors = fileReader.getFileContent(contributorsFilePath).map((contributorsFilePath, _))
+
+    list.foldLeft[IOResult[List[(String, String)]]](sbtContributors.map(List(_))) {
       case (Right(partialResult), file) =>
         fileReader.getFileContent(file.outputPath).map(partialResult :+ (file.outputPath, _))
       case (Left(e), _) => Left(e)
     }
+  }
 
   def orgBashTasks(
       gh: SettingKey[GitHubSettings],
-      maintainers: SettingKey[List[Dev]],
       githubToken: SettingKey[Option[String]]) =
     Seq(
       orgCommitPolicyFiles := Def.task {
@@ -60,7 +64,7 @@ trait bash extends bashKeys with filesKeys {
             e.printStackTrace()
         }
       }.value,
-      orgAfterTravisSuccess := Def.task {
+      orgAfterTravisSuccess := Def.taskDyn {
         if (getEnvVarOrElse("TRAVIS_BRANCH") == "master" && getEnvVarOrElse("TRAVIS_PULL_REQUEST") == "false") {
           Def
             .sequential(
@@ -69,8 +73,7 @@ trait bash extends bashKeys with filesKeys {
               orgCommitPolicyFiles,
               publishSigned
             )
-            .value
-        }
+        } else Def.task()
       }.value
     )
 

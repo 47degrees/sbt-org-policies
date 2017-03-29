@@ -46,6 +46,8 @@ package object templates {
       outputPath: String,
       replacements: Replacements)
 
+  val contributorsFilePath: String = "contributors.sbt"
+
   private[this] def replaceableYear(startYear: Option[Int]): Replaceable = {
     startYear.getOrElse(currentYear) match {
       case start if start == currentYear => currentYear.asReplaceable
@@ -121,7 +123,7 @@ package object templates {
       mandatory = false,
       overWritable = true,
       templatePath = "templates/contributors.sbt.template",
-      outputPath = "contributors.sbt",
+      outputPath = contributorsFilePath,
       replacements = Map(
         "devs" -> devsAsScalaListString.mkString(",\n").asReplaceable
       )
