@@ -14,12 +14,14 @@ import sbtorgpolicies.utils._
 trait bashKeys {
 
   val orgCommitBranchSetting: SettingKey[String] =
-    settingKey[String]("Defines the target branch for committing policy files")
+    settingKey[String]("Defines the target branch for committing the policy files")
 
-  val orgCommitPolicyFiles: TaskKey[Unit] = taskKey[Unit]("Commit into defined branch the policy files")
+  val orgCommitMessageSetting: SettingKey[String] =
+    settingKey[String]("Defines the commit message when publishing files into GitHub")
 
-  val orgAfterTravisSuccess: TaskKey[Unit] = taskKey[Unit](
-    "Task intended to execute sequentially tasks after a Travis build. It's only executed on the master branch")
+  val orgCommitPolicyFiles: TaskKey[Unit] = taskKey[Unit]("Commit the policy files into the specified branch")
+
+  val orgAfterCISuccess: TaskKey[Unit] = taskKey[Unit]("It will execute some tasks after a CI build.")
 
 }
 
@@ -28,7 +30,8 @@ trait bash extends bashKeys with filesKeys {
   val fileReader: FileReader = new FileReader
 
   val orgBashDefaultSettings = Seq(
-    orgCommitBranchSetting := "master"
+    orgCommitBranchSetting := "master",
+    orgCommitMessageSetting := "Updates policy files from SBT"
   )
 
   private[this] def readFileContents(list: List[FileType]): IOResult[List[(String, String)]] = {
@@ -42,9 +45,7 @@ trait bash extends bashKeys with filesKeys {
     }
   }
 
-  def orgBashTasks(
-      gh: SettingKey[GitHubSettings],
-      githubToken: SettingKey[Option[String]]) =
+  def orgBashTasks(gh: SettingKey[GitHubSettings], githubToken: SettingKey[Option[String]]) =
     Seq(
       orgCommitPolicyFiles := Def.task {
         val ghOps = new GitHubOps(gh.value.organization, gh.value.project, githubToken.value)
@@ -54,7 +55,7 @@ trait bash extends bashKeys with filesKeys {
             owner = gh.value.organization,
             repo = gh.value.project,
             branch = orgCommitBranchSetting.value,
-            message = "Updates policy files from SBT",
+            message = orgCommitMessageSetting.value,
             filesAndContents = filesAndContents
           )
         } yield ()) match {
@@ -64,8 +65,9 @@ trait bash extends bashKeys with filesKeys {
             e.printStackTrace()
         }
       }.value,
-      orgAfterTravisSuccess := Def.taskDyn {
-        if (getEnvVarOrElse("TRAVIS_BRANCH") == "master" && getEnvVarOrElse("TRAVIS_PULL_REQUEST") == "false") {
+      orgAfterCISuccess := Def.taskDyn {
+        if (getEnvVarOrElse("TRAVIS_BRANCH") == "master" &&
+          getEnvVarOrElse("TRAVIS_PULL_REQUEST") == "false") {
           Def
             .sequential(
               orgCreateContributorsFile,

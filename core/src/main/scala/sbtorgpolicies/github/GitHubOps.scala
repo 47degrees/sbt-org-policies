@@ -17,12 +17,10 @@
 package sbtorgpolicies.github
 
 import cats.data.{EitherT, NonEmptyList}
-import cats.free.Free
 import cats.implicits._
 import github4s.Github
 import github4s.Github._
 import github4s.GithubResponses._
-import github4s.app.GitHub4s
 import github4s.free.domain._
 import github4s.jvm.Implicits._
 import sbtorgpolicies.exceptions.GitHubException

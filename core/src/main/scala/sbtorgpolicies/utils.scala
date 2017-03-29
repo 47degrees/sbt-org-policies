@@ -24,7 +24,7 @@ trait utils {
 
   def getEnvVar(name: String): Option[String] = Option(System.getenv().get(name))
 
-  def getEnvVarOrElse(name: String, value: String = ""): String = Option(System.getenv().get(name)).getOrElse(value)
+  def getEnvVarOrElse(name: String, value: String = ""): String = getEnvVar(name).getOrElse(value)
 
   val currentYear: Int = Calendar.getInstance(TimeZone.getTimeZone("UTC")).get(Calendar.YEAR)
 }
