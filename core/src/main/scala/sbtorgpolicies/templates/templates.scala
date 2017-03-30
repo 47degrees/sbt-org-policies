@@ -48,13 +48,6 @@ package object templates {
 
   val contributorsFilePath: String = "contributors.sbt"
 
-  private[this] def replaceableYear(startYear: Option[Int]): Replaceable = {
-    startYear.getOrElse(currentYear) match {
-      case start if start == currentYear => currentYear.asReplaceable
-      case start                         => s"$start-$currentYear".asReplaceable
-    }
-  }
-
   def LicenseFileType(ghSettings: GitHubSettings, license: License, startYear: Option[Int]): FileType = {
 
     def licenseFile: String = license match {
@@ -69,7 +62,7 @@ package object templates {
       templatePath = licenseFile,
       outputPath = "LICENSE",
       replacements = Map(
-        "year"                 -> replaceableYear(startYear),
+        "year"                 -> replaceableYear(startYear).asReplaceable,
         "organizationName"     -> ghSettings.organizationName.asReplaceable,
         "organizationHomePage" -> ghSettings.organizationHomePage.asReplaceable
       )
@@ -138,7 +131,7 @@ package object templates {
       templatePath = "templates/NOTICE.md.template",
       outputPath = "NOTICE.md",
       replacements = Map(
-        "year"             -> replaceableYear(startYear),
+        "year"             -> replaceableYear(startYear).asReplaceable,
         "name"             -> ghSettings.project.asReplaceable,
         "organizationName" -> ghSettings.organizationName.asReplaceable,
         "licenseName"      -> license.name.asReplaceable

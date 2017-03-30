@@ -27,6 +27,13 @@ trait utils {
   def getEnvVarOrElse(name: String, value: String = ""): String = getEnvVar(name).getOrElse(value)
 
   val currentYear: Int = Calendar.getInstance(TimeZone.getTimeZone("UTC")).get(Calendar.YEAR)
+
+  def replaceableYear(startYear: Option[Int]): String = {
+    startYear.getOrElse(currentYear) match {
+      case start if start == currentYear => currentYear.toString
+      case start                         => s"$start-$currentYear"
+    }
+  }
 }
 
 object utils extends utils

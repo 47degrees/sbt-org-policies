@@ -42,7 +42,7 @@ trait DefaultSettings extends AllSettings {
       startYear := Some(currentYear),
       scalacOptions ++= scalacAllOptions,
       headers := Map(
-        "scala" -> Apache2_0("2017", "47 Degrees, LLC. <http://www.47deg.com>")
+        "scala" -> Apache2_0(replaceableYear(startYear.value), "47 Degrees, LLC. <http://www.47deg.com>")
       )
     ) ++
       sharedCommonSettings ++

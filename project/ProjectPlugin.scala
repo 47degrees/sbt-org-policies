@@ -88,6 +88,7 @@ object ProjectPlugin extends AutoPlugin {
     organization := "com.47deg",
     organizationName := "47 Degrees",
     homepage := Option(url("http://www.47deg.com")),
+    startYear := Some(2017),
     organizationHomepage := Some(new URL("http://47deg.com")),
     headers := Map(
       "scala" -> Apache2_0("2017", "47 Degrees, LLC. <http://www.47deg.com>")
