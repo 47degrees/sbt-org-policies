@@ -24,6 +24,9 @@ import scala.language.implicitConversions
 
 package object templates {
 
+  val contributorsFilePath: String = "contributors.sbt"
+  val versionFilePath: String      = "version.sbt"
+
   type Replacements = Map[String, Replaceable]
 
   trait Replaceable {
@@ -45,8 +48,6 @@ package object templates {
       templatePath: String,
       outputPath: String,
       replacements: Replacements)
-
-  val contributorsFilePath: String = "contributors.sbt"
 
   def LicenseFileType(ghSettings: GitHubSettings, license: License, startYear: Option[Int]): FileType = {
 
@@ -136,6 +137,17 @@ package object templates {
         "organizationName" -> ghSettings.organizationName.asReplaceable,
         "licenseName"      -> license.name.asReplaceable
       )
+    )
+  }
+
+  def VersionSbtFileType: FileType = {
+
+    FileType(
+      mandatory = true,
+      overWritable = false,
+      templatePath = "templates/version.sbt.template",
+      outputPath = versionFilePath,
+      replacements = Map.empty
     )
   }
 

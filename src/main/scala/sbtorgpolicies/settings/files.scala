@@ -47,7 +47,8 @@ trait files extends filesKeys with templatesKeys with keys {
       LicenseFileType(orgGithubSetting.value, orgLicenseSetting.value, startYear.value),
       ContributingFileType(orgGithubSetting.value),
       AuthorsFileType(orgGithubSetting.value, orgMaintainersSetting.value, orgContributorsSetting.value),
-      NoticeFileType(orgGithubSetting.value, orgLicenseSetting.value, startYear.value)
+      NoticeFileType(orgGithubSetting.value, orgLicenseSetting.value, startYear.value),
+      VersionSbtFileType
     )
   )
 
@@ -68,8 +69,11 @@ trait files extends filesKeys with templatesKeys with keys {
 
       }.value,
       orgCreateContributorsFile := Def.task {
-        val fh    = new FileHelper
-        val ghOps = new GitHubOps(orgGithubSetting.value.organization, orgGithubSetting.value.project, orgGithubTokenSetting.value)
+        val fh = new FileHelper
+        val ghOps = new GitHubOps(
+          orgGithubSetting.value.organization,
+          orgGithubSetting.value.project,
+          orgGithubTokenSetting.value)
 
         (for {
           list <- ghOps.fetchContributors

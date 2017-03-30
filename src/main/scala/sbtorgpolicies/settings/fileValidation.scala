@@ -20,7 +20,7 @@ import cats.data.Validated.{Invalid, Valid}
 import sbt.Keys._
 import sbt._
 import sbtorgpolicies.exceptions.ValidationException
-import sbtorgpolicies.model.{Dev, License}
+import sbtorgpolicies.model.Dev
 import sbtorgpolicies.rules._
 
 trait fileValidationKeys {
@@ -53,7 +53,8 @@ trait fileValidation extends fileValidationKeys with ValidationFunctions with ke
       mkValidation(
         getChildPath(baseDirectory.value, "NOTICE.md"),
         List(requiredStrings(List(name.value, orgLicenseSetting.value.name)))
-      )
+      ),
+      mkValidation(getChildPath(baseDirectory.value, sbtorgpolicies.templates.versionFilePath), List(emptyValidation))
     )
   )
 

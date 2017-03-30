@@ -136,6 +136,7 @@ trait dependencies {
     "circe-core"                  -> Dep("io.circe", "circe-core", v("circe")),
     "circe-generic"               -> Dep("io.circe", "circe-generic", v("circe")),
     "circe-parser"                -> Dep("io.circe", "circe-parser", v("circe")),
+    "circe-optics"                -> Dep("io.circe", "circe-optics", v("circe")),
     "config"                      -> Dep("com.typesafe", "config", v("config")),
     "coursier-cache"              -> Dep("io.get-coursier", "coursier-cache", v("coursier")),
     "coursier"                    -> Dep("io.get-coursier", "coursier", v("coursier")),
@@ -220,9 +221,9 @@ trait dependencies {
     "simulacrum"                  -> Dep("com.github.mpilquist", "simulacrum", v("simulacrum")),
     "slf4j-nop"                   -> Dep("org.slf4j", "slf4j-nop", v("slf4j")),
     "slf4j-simple"                -> Dep("org.slf4j", "slf4j-simple", v("slf4j")),
+    "slick"                       -> Dep("com.typesafe.slick", "slick", v("slick")),
     "slogging"                    -> Dep("biz.enef", "slogging", v("slogging")),
     "specs2-core"                 -> Dep("org.specs2", "specs2-core", v("specs2")),
-    "specs2-scalacheck"           -> Dep("org.specs2", "specs2-scalacheck", v("specs2")),
-    "slick"                       -> Dep("com.typesafe.slick", "slick" , v("slick"))
+    "specs2-scalacheck"           -> Dep("org.specs2", "specs2-scalacheck", v("specs2"))
   )
 }
