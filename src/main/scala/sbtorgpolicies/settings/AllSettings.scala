@@ -88,7 +88,6 @@ trait AllSettings
 
   /** Adds the credential settings required for sonatype releases.*/
   lazy val credentialSettings = Seq(
-    // For Travis CI - see http://www.cakesolutions.net/teamblogs/publishing-artefacts-to-oss-sonatype-nexus-using-sbt-and-travis-ci
     credentials ++= (for {
       username <- getEnvVar("SONATYPE_USERNAME")
       password <- getEnvVar("SONATYPE_PASSWORD")
