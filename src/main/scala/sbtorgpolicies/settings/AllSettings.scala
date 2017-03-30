@@ -215,7 +215,10 @@ trait AllSettings
   )
 
   lazy val scalafmtSettings: Seq[Setting[_]] =
-    ((includeFilter.in(orgScalafmtInc) := "*.scala") +: orgAutomateScalafmtFor(Compile, Test)) ++ orgGenerateScalafmtTask
+    (List(
+      includeFilter.in(orgScalafmtInc) := "*.scala",
+      excludeFilter.in(orgScalafmtInc) := ".scalafmt.conf"
+    ) ++ orgAutomateScalafmtFor(Compile, Test)) ++ orgGenerateScalafmtTask
 
   /** Common unidoc settings, adding the "-Ymacro-no-expand" scalac option.*/
   lazy val unidocCommonSettings = Seq(
@@ -279,7 +282,7 @@ trait AllSettings
     orgFileValidationDefaultSettings ++ orgFileValidationTasks
 
   /**
-    * Default settings and tasks for the bash features
-    */
+   * Default settings and tasks for the bash features
+   */
   def orgBashSettings: Seq[Setting[_]] = orgBashDefaultSettings ++ orgBashTasks
 }

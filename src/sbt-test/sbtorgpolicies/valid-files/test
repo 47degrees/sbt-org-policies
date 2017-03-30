@@ -6,4 +6,6 @@ $ exists README.md
 
 $ exists AUTHORS.md
 
+$ exists version.sbt
+
 > orgValidateFiles

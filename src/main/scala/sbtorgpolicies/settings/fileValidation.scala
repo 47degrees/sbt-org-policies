@@ -53,7 +53,8 @@ trait fileValidation extends fileValidationKeys with ValidationFunctions with ke
       mkValidation(
         getChildPath(baseDirectory.value, "NOTICE.md"),
         List(requiredStrings(List(name.value, orgLicenseSetting.value.name)))
-      )
+      ),
+      mkValidation(getChildPath(baseDirectory.value, "version.sbt"), List(emptyValidation))
     )
   )
 
