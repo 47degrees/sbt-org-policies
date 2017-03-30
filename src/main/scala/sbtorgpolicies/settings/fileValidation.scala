@@ -31,7 +31,7 @@ trait fileValidationKeys {
 
 }
 
-trait fileValidation extends fileValidationKeys with ValidationFunctions {
+trait fileValidation extends fileValidationKeys with ValidationFunctions with keys {
 
   val fileValidation = new FileValidation
   import fileValidation.fileReader._
@@ -39,24 +39,20 @@ trait fileValidation extends fileValidationKeys with ValidationFunctions {
   private[this] def devListStrings(list: List[Dev]): List[String] =
     list.map(_.id) ++ list.flatMap(_.name)
 
-  def orgFileValidationDefaultSettings(
-      name: SettingKey[String],
-      license: SettingKey[License],
-      maintainers: SettingKey[List[Dev]],
-      contributors: SettingKey[List[Dev]]) = Seq(
+  val orgFileValidationDefaultSettings = Seq(
     orgValidationList := List(
       mkValidation(getChildPath(baseDirectory.value, "README.md"), List(emptyValidation)),
       mkValidation(getChildPath(baseDirectory.value, "CONTRIBUTING.md"), List(emptyValidation)),
       mkValidation(
         getChildPath(baseDirectory.value, "AUTHORS.md"),
-        List(requiredStrings(devListStrings(maintainers.value ++ contributors.value)))),
+        List(requiredStrings(devListStrings(orgMaintainersSetting.value ++ orgContributorsSetting.value)))),
       mkValidation(
         getChildPath(baseDirectory.value, "LICENSE"),
-        List(requiredStrings(List(license.value.name)))
+        List(requiredStrings(List(orgLicenseSetting.value.name)))
       ),
       mkValidation(
         getChildPath(baseDirectory.value, "NOTICE.md"),
-        List(requiredStrings(List(name.value, license.value.name)))
+        List(requiredStrings(List(name.value, orgLicenseSetting.value.name)))
       )
     )
   )

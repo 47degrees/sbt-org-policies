@@ -154,11 +154,11 @@ trait AllSettings
    * Uses the github settings and versions map to set the organisation,
    * scala version and cross versions
    */
-  def sharedBuildSettings(gh: SettingKey[GitHubSettings]) = Seq(
-    organization := gh.value.groupId,
-    organizationName := gh.value.organizationName,
-    homepage := Option(gh.value.homePage),
-    organizationHomepage := Option(gh.value.organizationHomePage),
+  val sharedBuildSettings = Seq(
+    organization := orgGithubSetting.value.groupId,
+    organizationName := orgGithubSetting.value.organizationName,
+    homepage := Option(orgGithubSetting.value.homePage),
+    organizationHomepage := Option(orgGithubSetting.value.organizationHomePage),
     scalaOrganization := "org.typelevel",
     scalaVersion := scalac.`2.12`,
     crossScalaVersions := scalac.crossScalaVersions
@@ -170,15 +170,11 @@ trait AllSettings
    * Uses the github settings and list of developers to set all publish settings
    * required to publish signed artifacts to Sonatype OSS repository
    */
-  def sharedPublishSettings(
-      gh: SettingKey[GitHubSettings],
-      license: SettingKey[License],
-      maintainers: SettingKey[List[Dev]],
-      contributors: SettingKey[List[Dev]]): Seq[Setting[_]] = Seq(
-    homepage := Some(url(gh.value.home)),
-    licenses += license.value,
-    scmInfo := Some(ScmInfo(url(gh.value.home), "scm:git:" + gh.value.repo)),
-    apiURL := Some(url(gh.value.api)),
+  val sharedPublishSettings: Seq[Setting[_]] = Seq(
+    homepage := Some(url(orgGithubSetting.value.home)),
+    licenses += orgLicenseSetting.value,
+    scmInfo := Some(ScmInfo(url(orgGithubSetting.value.home), "scm:git:" + orgGithubSetting.value.repo)),
+    apiURL := Some(url(orgGithubSetting.value.api)),
     releaseCrossBuild := true,
     releasePublishArtifactsAction := PgpKeys.publishSigned.value,
     publishMavenStyle := true,
@@ -192,7 +188,7 @@ trait AllSettings
         Some("Releases" at nexus + "service/local/staging/deploy/maven2")
     },
     autoAPIMappings := true,
-    pomExtra := <developers> { (maintainers.value ++ contributors.value).map(_.pomExtra) } </developers>
+    pomExtra := <developers> { (orgMaintainersSetting.value ++ orgContributorsSetting.value).map(_.pomExtra) } </developers>
   )
 
   /**
@@ -264,39 +260,27 @@ trait AllSettings
    *
    * Uses the github settings to set the GitHub owner and repo
    */
-  def sbtDependenciesSettings(gh: SettingKey[GitHubSettings]): Seq[Setting[_]] =
+  val sbtDependenciesSettings: Seq[Setting[_]] =
     DependenciesPlugin.defaultSettings ++ Seq(
-      depGithubOwnerSetting := gh.value.organization,
-      depGithubRepoSetting := gh.value.project,
+      depGithubOwnerSetting := orgGithubSetting.value.organization,
+      depGithubRepoSetting := orgGithubSetting.value.project,
       depGithubTokenSetting := orgGithubTokenSetting.value
     )
 
   /**
    * Sets the default settings that provides the ability to create files based on its templates.
-   * @param gh Project Github settings.
-   * @return list of the default org file settings.
    */
-  def orgFileSettings(
-      gh: SettingKey[GitHubSettings],
-      license: SettingKey[License],
-      maintainers: SettingKey[List[Dev]],
-      contributors: SettingKey[List[Dev]]): Seq[Setting[_]] =
-    orgFilesDefaultSettings(gh, license, maintainers, contributors) ++ orgFilesTasks(
-      gh,
-      maintainers,
-      orgGithubTokenSetting)
+  val orgFileSettings: Seq[Setting[_]] = orgFilesDefaultSettings ++ orgFilesTasks
 
   /**
    * Default settings that the plugin will take into account to perform the file validation,
    * both existence and content verification.
    */
-  def orgFileValidationSettings(
-      name: SettingKey[String],
-      license: SettingKey[License],
-      maintainers: SettingKey[List[Dev]],
-      contributors: SettingKey[List[Dev]]): Seq[Setting[_]] =
-    orgFileValidationDefaultSettings(name, license, maintainers, contributors) ++ orgFileValidationTasks
+  val orgFileValidationSettings: Seq[Setting[_]] =
+    orgFileValidationDefaultSettings ++ orgFileValidationTasks
 
-  def orgBashSettings: Seq[Setting[_]] =
-    orgBashDefaultSettings ++ orgBashTasks(orgGithubSetting, orgGithubTokenSetting)
+  /**
+    * Default settings and tasks for the bash features
+    */
+  def orgBashSettings: Seq[Setting[_]] = orgBashDefaultSettings ++ orgBashTasks
 }

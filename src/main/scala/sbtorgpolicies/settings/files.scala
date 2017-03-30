@@ -39,26 +39,19 @@ trait filesKeys {
 
 }
 
-trait files extends filesKeys with templatesKeys {
+trait files extends filesKeys with templatesKeys with keys {
 
-  def orgFilesDefaultSettings(
-      gh: SettingKey[GitHubSettings],
-      license: SettingKey[License],
-      maintainers: SettingKey[List[Dev]],
-      contributors: SettingKey[List[Dev]]) = Seq(
+  val orgFilesDefaultSettings = Seq(
     orgTargetDirectory := resourceManaged.value / "org-policies",
     orgEnforcedFiles := List(
-      LicenseFileType(gh.value, license.value, startYear.value),
-      ContributingFileType(gh.value),
-      AuthorsFileType(gh.value, maintainers.value, contributors.value),
-      NoticeFileType(gh.value, license.value, startYear.value)
+      LicenseFileType(orgGithubSetting.value, orgLicenseSetting.value, startYear.value),
+      ContributingFileType(orgGithubSetting.value),
+      AuthorsFileType(orgGithubSetting.value, orgMaintainersSetting.value, orgContributorsSetting.value),
+      NoticeFileType(orgGithubSetting.value, orgLicenseSetting.value, startYear.value)
     )
   )
 
-  def orgFilesTasks(
-      gh: SettingKey[GitHubSettings],
-      maintainers: SettingKey[List[Dev]],
-      githubToken: SettingKey[Option[String]]) =
+  val orgFilesTasks =
     Seq(
       orgCreateFiles := Def.task {
         val fh = new FileHelper
@@ -76,11 +69,11 @@ trait files extends filesKeys with templatesKeys {
       }.value,
       orgCreateContributorsFile := Def.task {
         val fh    = new FileHelper
-        val ghOps = new GitHubOps(gh.value.organization, gh.value.project, githubToken.value)
+        val ghOps = new GitHubOps(orgGithubSetting.value.organization, orgGithubSetting.value.project, orgGithubTokenSetting.value)
 
         (for {
           list <- ghOps.fetchContributors
-          maintainersIds = maintainers.value.map(_.id)
+          maintainersIds = orgMaintainersSetting.value.map(_.id)
           filteredDevs = list
             .map(user => Dev(user.login, user.name, user.blog))
             .filterNot(dev => maintainersIds.contains(dev.id))
