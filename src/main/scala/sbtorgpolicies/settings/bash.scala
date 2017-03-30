@@ -25,7 +25,7 @@ trait bashKeys {
 
 }
 
-trait bash extends bashKeys with filesKeys {
+trait bash extends bashKeys with filesKeys with keys {
 
   val fileReader: FileReader = new FileReader
 
@@ -45,15 +45,18 @@ trait bash extends bashKeys with filesKeys {
     }
   }
 
-  def orgBashTasks(gh: SettingKey[GitHubSettings], githubToken: SettingKey[Option[String]]) =
+  val orgBashTasks =
     Seq(
       orgCommitPolicyFiles := Def.task {
-        val ghOps = new GitHubOps(gh.value.organization, gh.value.project, githubToken.value)
+        val ghOps = new GitHubOps(
+          orgGithubSetting.value.organization,
+          orgGithubSetting.value.project,
+          orgGithubTokenSetting.value)
         (for {
           filesAndContents <- readFileContents(orgEnforcedFiles.value)
           _ <- ghOps.commitFiles(
-            owner = gh.value.organization,
-            repo = gh.value.project,
+            owner = orgGithubSetting.value.organization,
+            repo = orgGithubSetting.value.project,
             branch = orgCommitBranchSetting.value,
             message = orgCommitMessageSetting.value,
             filesAndContents = filesAndContents

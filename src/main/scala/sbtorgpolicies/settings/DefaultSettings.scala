@@ -49,16 +49,16 @@ trait DefaultSettings extends AllSettings {
       sharedCommonDependencies ++
       sharedReleaseProcess ++
       credentialSettings ++
-      sharedPublishSettings(orgGithubSetting, orgLicenseSetting, orgMaintainersSetting, orgContributorsSetting) ++
-      sharedBuildSettings(orgGithubSetting) ++
+      sharedPublishSettings ++
+      sharedBuildSettings ++
       scalaDependencyOverrides ++
       sharedScoverageSettings() ++
       scalafmtSettings ++
-      orgFileSettings(orgGithubSetting, orgLicenseSetting, orgMaintainersSetting, orgContributorsSetting) ++
+      orgFileSettings ++
       orgTemplatesDefaultSettings ++
-      orgFileValidationSettings(name, orgLicenseSetting, orgMaintainersSetting, orgContributorsSetting) ++
+      orgFileValidationSettings ++
       orgEnforcementSettingsTasks ++
       orgBashSettings ++
       AutomateHeaderPlugin.automateFor(Compile, Test) ++
-      sbtDependenciesSettings(orgGithubSetting)
+      sbtDependenciesSettings
 }
