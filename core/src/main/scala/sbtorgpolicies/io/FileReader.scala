@@ -32,7 +32,7 @@ class FileReader {
 
   def exists(path: String): Boolean =
     Either
-      .catchNonFatal(path.toFile.exists()) getOrElse false
+      .catchNonFatal(file(path).exists()) getOrElse false
 
   def withFileContent[T](filePath: String, f: String => IOResult[T]): IOResult[T] =
     getFileContent(filePath) flatMap f

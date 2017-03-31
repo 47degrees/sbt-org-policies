@@ -6,9 +6,7 @@ import sbt.Keys._
 import sbt._
 import sbtorgpolicies.github.GitHubOps
 import sbtorgpolicies.io.{FileReader, IOResult}
-import sbtorgpolicies.model.GitHubSettings
-import sbtorgpolicies.templates.contributorsFilePath
-import sbtorgpolicies.templates.FileType
+import sbtorgpolicies.templates.{FileType, contributorsFilePath}
 import sbtorgpolicies.utils._
 
 trait bashKeys {

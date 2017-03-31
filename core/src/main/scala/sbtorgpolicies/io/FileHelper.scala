@@ -20,7 +20,7 @@ import cats.syntax.either._
 import sbt.{File, URL}
 import sbtorgpolicies.exceptions.IOException
 import sbtorgpolicies.io.syntax._
-import sbtorgpolicies.templates.{FileType, TemplatesEngine}
+import sbtorgpolicies.templates.{AppendableFileType, FileType, ReplaceableFileType, TemplatesEngine}
 
 class FileHelper {
 
@@ -46,18 +46,34 @@ class FileHelper {
     } yield ()
   }
 
-  def checkOrgFiles(projectDir: File, baseDir: File, fileList: List[FileType]): IOResult[Unit] =
+  def checkOrgFiles(projectDir: File, baseDir: File, fileList: List[FileType]): IOResult[Unit] = {
+
+    def checkFiles(): Unit = fileList foreach { f =>
+      if (!fileReader.exists(baseDir.getAbsolutePath.ensureFinalSlash + f.templatePath))
+        throw new IllegalArgumentException(s"File not found: ${f.templatePath}")
+    }
+
     Either
       .catchNonFatal {
+        checkFiles()
         fileList
           .filter(f => !fileReader.exists(f.outputPath) || f.overWritable)
-          .foreach { f =>
-            templatesEngine.run(
-              baseDir.getAbsolutePath.ensureFinalSlash + f.templatePath,
-              projectDir.getAbsolutePath.ensureFinalSlash + f.outputPath,
-              f.replacements)
+          .foreach {
+            case f: ReplaceableFileType =>
+              templatesEngine.run(
+                inputPath = baseDir.getAbsolutePath.ensureFinalSlash + f.templatePath,
+                outputPath = projectDir.getAbsolutePath.ensureFinalSlash + f.outputPath,
+                replacements = f.replacements)
+            case f: AppendableFileType =>
+              templatesEngine.runInsert(
+                inputPath = baseDir.getAbsolutePath.ensureFinalSlash + f.templatePath,
+                outputPath = projectDir.getAbsolutePath.ensureFinalSlash + f.outputPath,
+                regexpLine = f.afterLine,
+                template = f.template,
+                replacements = f.replacements)
           }
       }
-      .leftMap(e => IOException(s"Error checking files ${fileList.mkString(",")}", Some(e)))
+      .leftMap(e => IOException(s"Error checking files ${fileList.map(_.outputPath).mkString(",")}", Some(e)))
+  }
 
 }

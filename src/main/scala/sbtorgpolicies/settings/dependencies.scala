@@ -47,7 +47,7 @@ trait dependencies {
 
   private[this] val v47: Map[String, String] = Map[String, String](
     "fetch"    -> "0.6.0",
-    "github4s" -> "0.12.1"
+    "github4s" -> "0.13.0"
   )
 
   private[this] val vOthers: Map[String, String] = Map[String, String](
@@ -71,6 +71,7 @@ trait dependencies {
     "fs2"             -> "0.9.4",
     "fs2-cats"        -> "0.3.0",
     "http4s"          -> "0.16.0-cats-SNAPSHOT",
+    "joda-time"       -> "2.9.9",
     "journal"         -> "3.0.18",
     "jwt-scala"       -> "0.12.0",
     "kind-projector"  -> "0.9.3",
@@ -170,6 +171,7 @@ trait dependencies {
     "http4s-circe"                -> Dep("org.http4s", "http4s-circe", v("http4s")),
     "http4s-core"                 -> Dep("org.http4s", "http4s-core", v("http4s")),
     "http4s-dsl"                  -> Dep("org.http4s", "http4s-dsl", v("http4s")),
+    "joda-time"                   -> Dep("joda-time", "joda-time", v("joda-time")),
     "journal-core"                -> Dep("io.verizon.journal", "core", v("journal")),
     "jwt-core"                    -> Dep("com.pauldijou", "jwt-core", v("jwt-scala")),
     "jwt-play-json"               -> Dep("com.pauldijou", "jwt-play-json", v("jwt-scala")),
