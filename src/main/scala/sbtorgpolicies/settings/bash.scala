@@ -6,7 +6,6 @@ import sbt.Keys._
 import sbt._
 import sbtorgpolicies.github.GitHubOps
 import sbtorgpolicies.io.{FileReader, IOResult}
-import sbtorgpolicies.model.GitHubSettings
 import sbtorgpolicies.templates.contributorsFilePath
 import sbtorgpolicies.templates.FileType
 import sbtorgpolicies.utils._
@@ -21,6 +20,10 @@ trait bashKeys {
 
   val orgCommitPolicyFiles: TaskKey[Unit] = taskKey[Unit]("Commit the policy files into the specified branch")
 
+  val orgPublishRelease: TaskKey[Unit] = taskKey[Unit](
+    "This task allows to publish the artifact (publishSigned) in case of dealing with an snapshot, or, " +
+      "releasing a new version in any other case.")
+
   val orgAfterCISuccess: TaskKey[Unit] = taskKey[Unit]("It will execute some tasks after a CI build.")
 
 }
@@ -31,7 +34,16 @@ trait bash extends bashKeys with filesKeys with keys {
 
   val orgBashDefaultSettings = Seq(
     orgCommitBranchSetting := "master",
-    orgCommitMessageSetting := "Updates policy files from SBT"
+    orgCommitMessageSetting := "Updates policy files from SBT",
+    orgPublishRelease := Def.taskDyn {
+
+      val buildVersion = (version in ThisBuild).value
+      val exitCode     = if (!buildVersion.endsWith("-SNAPSHOT")) "sbt release".! else 0
+
+      if (exitCode == 0) Def.task(publishSigned.value)
+      else Def.task()
+
+    }.value
   )
 
   private[this] def readFileContents(list: List[FileType]): IOResult[List[(String, String)]] = {
