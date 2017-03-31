@@ -16,7 +16,7 @@
 
 package sbtorgpolicies
 
-import java.util._
+import org.joda.time.{DateTime, DateTimeZone}
 
 trait utils {
 
@@ -26,7 +26,7 @@ trait utils {
 
   def getEnvVarOrElse(name: String, value: String = ""): String = getEnvVar(name).getOrElse(value)
 
-  val currentYear: Int = Calendar.getInstance(TimeZone.getTimeZone("UTC")).get(Calendar.YEAR)
+  val currentYear: Int = DateTime.now(DateTimeZone.UTC).getYear
 
   def replaceableYear(startYear: Option[Int]): String = {
     startYear.getOrElse(currentYear) match {
