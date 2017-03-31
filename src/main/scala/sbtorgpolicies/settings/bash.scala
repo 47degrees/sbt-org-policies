@@ -36,12 +36,33 @@ trait bash extends bashKeys with filesKeys with keys {
     orgCommitMessageSetting := "Updates policy files from SBT",
     orgPublishRelease := Def.taskDyn {
 
-      val buildVersion = (version in ThisBuild).value
-      val exitCode     = if (!buildVersion.endsWith("-SNAPSHOT")) "sbt release".! else 0
+      val buildV       = (version in ThisBuild).value
+      val scalaV       = scalaVersion.value
+      val crossV       = crossScalaVersions.value
+      val isSnapshotV  = buildV.endsWith("-SNAPSHOT")
+      val isLastScalaV = crossV.lastOption.exists(_ == scalaV)
 
-      if (exitCode == 0) Def.task(publishSigned.value)
-      else Def.task()
+      streams.value.log.info(s"""orgPublishRelease Initiated
+           |Build Version = $buildV
+           |Scala Version = $scalaV
+           |crossScalaVersions = $crossV
+           |isSnapshotV = $isSnapshotV
+           |isLastScalaV = $isLastScalaV
+         """.stripMargin)
 
+      (isSnapshotV, isLastScalaV) match {
+        case (true, _) =>
+          streams.value.log.info("SNAPSHOT version detected, skipping release and publishing it...")
+          Def.task(publishSigned.value)
+        case (false, true) =>
+          streams.value.log.info("Release Version detected, starting the release process...")
+          s"git checkout ${orgCommitBranchSetting.value}".!
+          "sbt release".!
+          Def.task()
+        case _ =>
+          streams.value.log.info(s"Release Version detected but it'll be skipped for Scala $scalaV...")
+          Def.task()
+      }
     }.value
   )
 

@@ -40,6 +40,7 @@ trait AllSettings
     with fileValidation
     with enforcement
     with bash
+    with release
     with utils {
 
   /**
@@ -72,7 +73,7 @@ trait AllSettings
   lazy val sharedReleaseProcess = Seq(
     releaseProcess := Seq[ReleaseStep](
       checkSnapshotDependencies,
-      inquireVersions,
+      orgInquireVersions,
       runClean,
       runTest,
       setReleaseVersion,
@@ -82,7 +83,7 @@ trait AllSettings
       setNextVersion,
       commitNextVersion,
       ReleaseStep(action = Command.process("sonatypeReleaseAll", _)),
-      pushChanges
+      orgPushChanges
     )
   )
 
