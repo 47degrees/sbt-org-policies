@@ -61,8 +61,9 @@ object ProjectPlugin extends AutoPlugin {
 
     lazy val coreSettings = Seq(
       libraryDependencies ++= Seq(
-        "com.47deg"      %% "github4s"       % "0.12.1",
+        "com.47deg"      %% "github4s"       % "0.13.0",
         "org.typelevel"  %% "cats"           % "0.9.0",
+        "joda-time"      % "joda-time"       % "2.9.9",
         "org.scala-sbt"  % "scripted-plugin" % sbtVersion.value,
         "org.scalatest"  %% "scalatest"      % "3.0.1" % "test",
         "org.scalacheck" %% "scalacheck"     % "1.13.5" % "test",

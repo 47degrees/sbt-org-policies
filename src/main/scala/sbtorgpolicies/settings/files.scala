@@ -48,7 +48,8 @@ trait files extends filesKeys with templatesKeys with keys {
       ContributingFileType(orgGithubSetting.value),
       AuthorsFileType(orgGithubSetting.value, orgMaintainersSetting.value, orgContributorsSetting.value),
       NoticeFileType(orgGithubSetting.value, orgLicenseSetting.value, startYear.value),
-      VersionSbtFileType
+      VersionSbtFileType,
+      ChangelogFileType
     )
   )
 

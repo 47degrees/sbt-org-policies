@@ -12,6 +12,8 @@ $ exists AUTHORS.md
 
 $ exists NOTICE.md
 
+$ exists CHANGELOG.md
+
 > orgValidateFiles
 
 > testCheckSettings

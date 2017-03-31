@@ -20,6 +20,8 @@ import cats.syntax.either._
 import sbtorgpolicies.io._
 import sbtorgpolicies.exceptions._
 
+import scala.util.matching.Regex
+
 class TemplatesEngine {
 
   val fileReader: FileReader = new FileReader
@@ -30,6 +32,18 @@ class TemplatesEngine {
     for {
       content <- replaceFileWith(inputPath, replacements)
       _       <- fileWriter.writeContentToFile(content, outputPath)
+    } yield ()
+
+  def runInsert(
+      inputPath: String,
+      outputPath: String,
+      regexpLine: Regex,
+      template: String,
+      replacements: Replacements): IOResult[Unit] =
+    for {
+      fileContent     <- readFileOr(outputPath, inputPath)
+      replacedContent <- insertAfter(fileContent, regexpLine, template, replacements)
+      _               <- fileWriter.writeContentToFile(replacedContent, outputPath)
     } yield ()
 
   def replaceFileWith(inputPath: String, replacements: Replacements): IOResult[String] =
@@ -45,5 +59,23 @@ class TemplatesEngine {
       }
       .leftMap(e => IOException(s"Error replacing content", Some(e)))
 
-  private[this] def replacementPattern(key: String) = s"\\{\\{$key\\}\\}".r
+  def readFileOr(inputPath: String, templatePath: String): IOResult[String] =
+    fileReader.getFileContent(inputPath) match {
+      case Right(c) => Right(c)
+      case Left(_)  => fileReader.getFileContent(templatePath)
+    }
+
+  def insertAfter(content: String, regexpLine: Regex, template: String, replacements: Replacements): IOResult[String] =
+    Either
+      .catchNonFatal {
+        val replaced = replacements.foldLeft(template) {
+          case (str, (key, replaceable)) =>
+            replacementPattern(key).replaceAllIn(str, replaceable.asString)
+        }
+
+        regexpLine.replaceFirstIn(content, "$0\n" + replaced)
+      }
+      .leftMap(e => IOException(s"Error inserting content", Some(e)))
+
+  private[this] def replacementPattern(key: String): Regex = s"\\{\\{$key\\}\\}".r
 }

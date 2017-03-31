@@ -29,6 +29,8 @@ import sbtorgpolicies.io._
 import sbtorgpolicies.templates.syntax._
 import sbtorgpolicies.io.syntax._
 
+import scala.util.matching.Regex
+
 class TemplatesEngineTest extends TestOps {
 
   val mockFileReader: FileReader = mock[FileReader]
@@ -168,7 +170,7 @@ class TemplatesEngineTest extends TestOps {
       "year"                 -> 2017.asReplaceable,
       "organizationName"     -> "47 Degrees".asReplaceable,
       "organizationHomePage" -> "http://www.47deg.com".asReplaceable,
-      "contributors"         -> List("47 Deg".asReplaceable, "Developers".asReplaceable).asReplaceable
+      "contributors"         -> List("47 Deg", "Developers").asReplaceable
     )
 
     val expectedContent = originalContent
@@ -218,5 +220,146 @@ class TemplatesEngineTest extends TestOps {
 
     result.isRight shouldBe true
     result.right.get shouldBe originalContent
+  }
+
+  test("TemplatesEngine.insertAfter works as expected") {
+
+    val originalContent =
+      """
+        | Title
+        |
+        | Other Stuff
+      """.stripMargin
+
+    val template = "\n{{year}} ({{name}})".stripMargin
+
+    val replacements = Map(
+      "year" -> 2017.asReplaceable,
+      "name" -> "47 Degrees".asReplaceable
+    )
+
+    val expectedContent =
+      """
+        | Title
+        |
+        |2017 (47 Degrees)
+        |
+        | Other Stuff
+      """.stripMargin
+
+    val result = templatesEngine.insertAfter(originalContent, " Title".r, template, replacements)
+
+    result.isRight shouldBe true
+    result.right.get shouldBe expectedContent
+  }
+
+  test("TemplatesEngine.readFileOr should works as expected") {
+
+    val property = forAll { (pathOneResult: IOResult[String], pathTwoResult: IOResult[String]) =>
+      Mockito.reset(mockFileReader)
+
+      val pathOne = "path1"
+      val pathTwo = "path2"
+
+      when(mockFileReader.getFileContent(pathOne)).thenReturn(pathOneResult)
+      when(mockFileReader.getFileContent(pathTwo)).thenReturn(pathTwoResult)
+
+      val result = templatesEngine.readFileOr(pathOne, pathTwo)
+
+      if (pathOneResult.isLeft) {
+        result shouldBeEq pathTwoResult
+      } else {
+        result shouldBeEq pathOneResult
+      }
+    }
+
+    check(property)
+  }
+
+  test("TemplatesEngine.runInsert works as expected") {
+
+    val property = forAll { (inputPath: String, content: String, outputPath: String, replacements: Replacements) =>
+      val myEngine: TemplatesEngine = new TemplatesEngine {
+
+        override val fileReader: FileReader = mockFileReader
+
+        override val fileWriter: FileWriter = mockFileWriter
+
+        override def insertAfter(
+            content: String,
+            regexpLine: Regex,
+            template: String,
+            replacements: Replacements): IOResult[String] = content.asRight
+      }
+
+      Mockito.reset(mockFileReader, mockFileWriter)
+
+      when(mockFileReader.getFileContent(any[String])).thenReturn(content.asRight)
+
+      when(mockFileWriter.writeContentToFile(any[String], any[String])).thenReturn(().asRight)
+
+      val result = myEngine.runInsert(inputPath, outputPath, "".r, "template", replacements)
+
+      verify(mockFileReader).getFileContent(outputPath)
+      verify(mockFileWriter).writeContentToFile(content, outputPath)
+
+      result.isRight
+    }
+
+    check(property)
+  }
+
+  test("TemplatesEngine.runInsert fails when FileReader throws and Exception") {
+
+    val property = forAll {
+      (inputPath: String, exception: IOException, outputPath: String, replacements: Replacements) =>
+        Mockito.reset(mockFileReader, mockFileWriter)
+
+        when(mockFileReader.getFileContent(any[String])).thenReturn(exception.asLeft[String])
+
+        val result = templatesEngine.runInsert(inputPath, outputPath, "".r, "template", replacements)
+
+        verify(mockFileReader, times(2)).getFileContent(any[String])
+        verifyZeroInteractions(mockFileWriter)
+
+        result.isLeft
+    }
+
+    check(property)
+  }
+
+  test("TemplatesEngine.runInsert fails when FileWriter throws and Exception") {
+
+    val property = forAll {
+      (inputPath: String, content: String, exception: IOException, outputPath: String, replacements: Replacements) =>
+        val myEngine: TemplatesEngine = new TemplatesEngine {
+
+          override val fileReader: FileReader = mockFileReader
+
+          override val fileWriter: FileWriter = mockFileWriter
+
+          override def insertAfter(
+            content: String,
+            regexpLine: Regex,
+            template: String,
+            replacements: Replacements): IOResult[String] = content.asRight
+        }
+
+        Mockito.reset(mockFileReader, mockFileWriter)
+
+        when(mockFileReader.getFileContent(any[String])).thenReturn(content.asRight)
+
+        when(mockFileWriter.writeContentToFile(any[String], any[String])).thenReturn(exception
+          .asLeft[Unit])
+
+        val result = myEngine.runInsert(inputPath, outputPath, "".r, "template", replacements)
+
+        verify(mockFileReader).getFileContent(outputPath)
+        verify(mockFileWriter).writeContentToFile(content, outputPath)
+
+        result.isLeft
+    }
+
+    check(property)
   }
 }

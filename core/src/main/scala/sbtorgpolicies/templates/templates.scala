@@ -16,11 +16,13 @@
 
 package sbtorgpolicies
 
+import org.joda.time.DateTime
 import sbtorgpolicies.model._
 import sbtorgpolicies.utils._
 import sbtorgpolicies.templates.syntax._
 
 import scala.language.implicitConversions
+import scala.util.matching.Regex
 
 package object templates {
 
@@ -38,16 +40,37 @@ package object templates {
     override def asString: String = t.toString
   }
 
-  case class ReplaceableList[T <: Replaceable](list: List[T]) extends Replaceable {
-    override def asString: String = list.map(elem => s"* ${elem.asString}").mkString("\n")
+  case class ReplaceableList[T](list: List[T]) extends Replaceable {
+    override def asString: String = list.map(elem => s"* ${elem.asReplaceable.asString}").mkString("\n")
   }
 
-  case class FileType(
+  sealed trait FileType {
+
+    def mandatory: Boolean
+    def overWritable: Boolean
+    def templatePath: String
+    def outputPath: String
+    def replacements: Replacements
+
+  }
+
+  case class ReplaceableFileType(
       mandatory: Boolean,
       overWritable: Boolean,
       templatePath: String,
       outputPath: String,
       replacements: Replacements)
+      extends FileType
+
+  case class AppendableFileType(
+      mandatory: Boolean,
+      overWritable: Boolean,
+      templatePath: String,
+      outputPath: String,
+      afterLine: Regex,
+      template: String,
+      replacements: Replacements)
+      extends FileType
 
   def LicenseFileType(ghSettings: GitHubSettings, license: License, startYear: Option[Int]): FileType = {
 
@@ -57,7 +80,7 @@ package object templates {
       case _             => "templates/LICENSE.template"
     }
 
-    FileType(
+    ReplaceableFileType(
       mandatory = true,
       overWritable = true,
       templatePath = licenseFile,
@@ -70,7 +93,7 @@ package object templates {
     )
   }
 
-  def ContributingFileType(ghSettings: GitHubSettings) = FileType(
+  def ContributingFileType(ghSettings: GitHubSettings) = ReplaceableFileType(
     mandatory = true,
     overWritable = true,
     templatePath = "templates/CONTRIBUTING.md.template",
@@ -85,13 +108,13 @@ package object templates {
 
   def AuthorsFileType(ghSettings: GitHubSettings, maintainers: List[Dev], contributors: List[Dev]): FileType = {
 
-    def devTemplate(dev: Dev): Replaceable =
-      (dev.name match {
+    def devTemplate(dev: Dev): String =
+      dev.name match {
         case Some(n) => s"$n <[${dev.id}](https://github.com/${dev.id})>"
         case None    => s"[${dev.id}](https://github.com/${dev.id})"
-      }).asReplaceable
+      }
 
-    FileType(
+    ReplaceableFileType(
       mandatory = true,
       overWritable = true,
       templatePath = "templates/AUTHORS.md.template",
@@ -113,7 +136,7 @@ package object templates {
       s"""    Dev("${dev.id}", ${optionAsScalaString(dev.name)}, ${optionAsScalaString(dev.url)})"""
     }
 
-    FileType(
+    ReplaceableFileType(
       mandatory = false,
       overWritable = true,
       templatePath = "templates/contributors.sbt.template",
@@ -126,7 +149,7 @@ package object templates {
 
   def NoticeFileType(ghSettings: GitHubSettings, license: License, startYear: Option[Int]): FileType = {
 
-    FileType(
+    ReplaceableFileType(
       mandatory = true,
       overWritable = true,
       templatePath = "templates/NOTICE.md.template",
@@ -140,20 +163,53 @@ package object templates {
     )
   }
 
-  def VersionSbtFileType: FileType = {
-
-    FileType(
+  def VersionSbtFileType: FileType =
+    ReplaceableFileType(
       mandatory = true,
       overWritable = false,
       templatePath = "templates/version.sbt.template",
       outputPath = versionFilePath,
       replacements = Map.empty
     )
+
+  def ChangelogFileType: FileType =
+    ReplaceableFileType(
+      mandatory = true,
+      overWritable = false,
+      templatePath = "templates/CHANGELOG.md.template",
+      outputPath = "CHANGELOG.md",
+      replacements = Map.empty
+    )
+
+  def ChangelogFileType(date: DateTime, version: String, changes: List[String]): FileType = {
+
+    val template =
+      """
+        |## {{date}} - Version {{version}}
+        |
+        |Release changes:
+        |
+        |{{changes}} 
+      """.stripMargin
+
+    AppendableFileType(
+      mandatory = true,
+      overWritable = true,
+      templatePath = "templates/CHANGELOG.md.template",
+      outputPath = "CHANGELOG.md",
+      afterLine = """# Changelog""".r,
+      template = template,
+      replacements = Map(
+        "date"    -> date.asReplaceable,
+        "version" -> version.asReplaceable,
+        "changes" -> changes.asReplaceable
+      )
+    )
   }
 
   object syntax {
 
-    implicit def ioListSyntax[T <: Replaceable](list: List[T]): IOReplaceableListOps[T] =
+    implicit def ioListSyntax[T](list: List[T]): IOReplaceableListOps[T] =
       new IOReplaceableListOps(list)
 
     implicit def ioTSyntax[T](t: T): IOReplaceableOps[T] = new IOReplaceableOps(t)
@@ -164,7 +220,7 @@ package object templates {
 
     }
 
-    final class IOReplaceableListOps[T <: Replaceable](list: List[T]) {
+    final class IOReplaceableListOps[T](list: List[T]) {
 
       def asReplaceable: ReplaceableList[T] = ReplaceableList[T](list)
 
