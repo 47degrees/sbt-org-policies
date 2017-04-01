@@ -52,6 +52,7 @@ trait dependencies {
 
   private[this] val vOthers: Map[String, String] = Map[String, String](
     "akka"            -> "2.4.17",
+    "akka-http"       -> "10.0.5",
     "algebra"         -> "0.6.0",
     "alleycats"       -> "0.1.7",
     "aws-sdk"         -> "1.11.83",
@@ -111,6 +112,8 @@ trait dependencies {
 
   private[this] val libs: Map[String, Dep] = Map(
     "akka-actor"                  -> Dep("com.typesafe.akka", "akka-actor", v("akka")),
+    "akka-http"                   -> Dep("com.typesafe.akka", "akka-http", v("akka-http")),
+    "akka-http-testkit"           -> Dep("com.typesafe.akka", "akka-http-testkit", v("akka-http")),
     "algebra-laws"                -> Dep("org.typelevel", "algebra-laws", v("algebra")),
     "algebra"                     -> Dep("org.typelevel", "algebra", v("algebra")),
     "alleycats"                   -> Dep("org.typelevel", "alleycats", v("alleycats")),
