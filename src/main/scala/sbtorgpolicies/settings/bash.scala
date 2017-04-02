@@ -80,10 +80,7 @@ trait bash extends bashKeys with filesKeys with keys {
   val orgBashTasks =
     Seq(
       orgCommitPolicyFiles := Def.task {
-        val ghOps = new GitHubOps(
-          orgGithubSetting.value.organization,
-          orgGithubSetting.value.project,
-          orgGithubTokenSetting.value)
+        val ghOps: GitHubOps = orgGithubOps.value
         (for {
           filesAndContents <- readFileContents(orgEnforcedFiles.value)
           _ <- ghOps.commitFiles(

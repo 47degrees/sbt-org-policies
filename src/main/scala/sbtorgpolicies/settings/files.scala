@@ -70,11 +70,8 @@ trait files extends filesKeys with templatesKeys with keys {
 
       }.value,
       orgCreateContributorsFile := Def.task {
-        val fh = new FileHelper
-        val ghOps = new GitHubOps(
-          orgGithubSetting.value.organization,
-          orgGithubSetting.value.project,
-          orgGithubTokenSetting.value)
+        val fh    = new FileHelper
+        val ghOps = orgGithubOps.value
 
         (for {
           list <- ghOps.fetchContributors

@@ -19,15 +19,11 @@ package sbtorgpolicies.github
 import cats.data.{EitherT, NonEmptyList}
 import cats.implicits._
 import github4s.Github
-import github4s.Github._
 import github4s.GithubResponses._
 import github4s.free.domain._
-import github4s.jvm.Implicits._
 import sbtorgpolicies.exceptions.GitHubException
 import sbtorgpolicies.github.instances._
-
-import scala.util.{Failure, Success, Try}
-import scalaj.http.HttpResponse
+import sbtorgpolicies.github.syntax._
 
 class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
 
@@ -41,16 +37,12 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
     def fetchUserDetail(user: User): Github4sResponse[User] =
       EitherT(gh.users.get(user.login))
 
-    val op = for {
+    val op: EitherT[GHIO, GHException, GHResult[List[User]]] = for {
       response         <- fetchUserList
       detailedResponse <- response.result.traverse(fetchUserDetail)
     } yield detailedResponse
 
-    op.value.exec[Try, HttpResponse[String]](Map("user-agent" -> "sbt-org-policies")) match {
-      case Success(Right(r)) => Right(r.result)
-      case Success(Left(e))  => Left(GitHubException("GitHub returned an error", Some(e)))
-      case Failure(e)        => Left(GitHubException("Error making request to GitHub", Some(e)))
-    }
+    op.execE
   }
 
   def commitFiles(
@@ -58,23 +50,7 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
       repo: String,
       branch: String,
       message: String,
-      filesAndContents: List[(String, String)]): Either[GitHubException, Unit] = {
-
-    def fetchHeadCommit: Github4sResponse[Ref] = {
-
-      def findReference(gHResult: GHResult[NonEmptyList[Ref]]): GHResponse[Ref] =
-        gHResult.result.toList.find(_.ref == s"refs/heads/$branch") match {
-          case Some(ref) => Right(GHResult(ref, gHResult.statusCode, gHResult.headers))
-          case None      => Left(UnexpectedException(s"Branch $branch not found"))
-        }
-
-      val result: GHIO[GHResponse[Ref]] =
-        gh.gitData.getReference(owner, repo, s"heads/$branch").map {
-          case Right(r) => findReference(r)
-          case Left(e)  => Left(e)
-        }
-      EitherT(result)
-    }
+      filesAndContents: List[(String, String)]): Either[GitHubException, Ref] = {
 
     def fetchBaseTreeSha(commitSha: String): Github4sResponse[RefCommit] =
       EitherT(gh.gitData.getCommit(owner, repo, commitSha))
@@ -95,7 +71,7 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
       EitherT(gh.gitData.updateReference(owner, repo, s"heads/$branch", commitSha))
 
     val op = for {
-      gHResultParentCommit <- fetchHeadCommit
+      gHResultParentCommit <- fetchHeadCommit(branch)
       parentCommitSha = gHResultParentCommit.result.`object`.sha
       gHResultBaseTree <- fetchBaseTreeSha(parentCommitSha)
       baseTreeSha = gHResultBaseTree.result.tree.sha
@@ -104,11 +80,46 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
       ghResultUpdate <- updateHead(ghResultCommit.result.sha)
     } yield ghResultUpdate
 
-    op.value.exec[Try, HttpResponse[String]](Map("user-agent" -> "sbt-org-policies")) match {
-      case Success(Right(_)) => Right((): Unit)
-      case Success(Left(e))  => Left(GitHubException("GitHub returned an error", Some(e)))
-      case Failure(e)        => Left(GitHubException("Error making request to GitHub", Some(e)))
-    }
+    op.execE
+  }
+
+  def fetchReference(ref: String): Either[GitHubException, NonEmptyList[Ref]] =
+    gh.gitData
+      .getReference(owner, repo, ref)
+      .execE
+
+  def createTagHeadCommit(branch: String, tag: String, comment: String): Either[GitHubException, Ref] = {
+
+    def createTag(obj: RefObject): Github4sResponse[Tag] =
+      EitherT(gh.gitData.createTag(owner, repo, tag, comment, obj.sha, obj.`type`))
+
+    def createTagReference(commitSha: String) =
+      EitherT(gh.gitData.createReference(owner, repo, s"refs/tags/$tag", commitSha))
+
+    val op = for {
+      headCommit  <- fetchHeadCommit(branch)
+      tagResponse <- createTag(headCommit.result.`object`)
+      reference   <- createTagReference(tagResponse.result.sha)
+    } yield reference
+
+    op.execE
+  }
+
+  private[this] def fetchHeadCommit(branch: String): Github4sResponse[Ref] = {
+
+    def findReference(gHResult: GHResult[NonEmptyList[Ref]]): GHResponse[Ref] =
+      gHResult.result.toList.find(_.ref == s"refs/heads/$branch") match {
+        case Some(ref) =>
+          Right(GHResult(ref, gHResult.statusCode, gHResult.headers))
+        case None => Left(UnexpectedException(s"Branch $branch not found"))
+      }
+
+    val result: GHIO[GHResponse[Ref]] =
+      gh.gitData.getReference(owner, repo, s"heads/$branch").map {
+        case Right(r) => findReference(r)
+        case Left(e)  => Left(e)
+      }
+    EitherT(result)
   }
 
 }

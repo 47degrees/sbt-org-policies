@@ -78,7 +78,7 @@ trait AllSettings
       runTest,
       setReleaseVersion,
       commitReleaseVersion,
-      tagRelease,
+      orgTagRelease,
       publishArtifacts,
       setNextVersion,
       commitNextVersion,
