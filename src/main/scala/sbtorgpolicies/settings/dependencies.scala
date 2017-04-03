@@ -71,7 +71,7 @@ trait dependencies {
     "finch"           -> "0.13.0",
     "fs2"             -> "0.9.4",
     "fs2-cats"        -> "0.3.0",
-    "http4s"          -> "0.16.0-cats-SNAPSHOT",
+    "http4s"          -> "0.17.0-SNAPSHOT",
     "joda-time"       -> "2.9.9",
     "journal"         -> "3.0.18",
     "jwt-scala"       -> "0.12.0",
