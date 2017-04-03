@@ -17,6 +17,7 @@
 package sbtorgpolicies.settings
 
 import sbt._
+import sbtorgpolicies.github.GitHubOps
 import sbtorgpolicies.model._
 
 trait keys {
@@ -26,6 +27,9 @@ trait keys {
 
   val orgGithubTokenSetting: SettingKey[Option[String]] =
     settingKey[Option[String]]("Github token, needed to be used to interact with Github, empty by default")
+
+  val orgGithubOps: SettingKey[GitHubOps] =
+    settingKey[GitHubOps]("Github wrapper to interact with github4s and the Github API")
 
   val orgLicenseSetting: SettingKey[License] =
     settingKey[License]("General Org License Setting")
