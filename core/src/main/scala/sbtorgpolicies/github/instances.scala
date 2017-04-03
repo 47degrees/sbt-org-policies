@@ -16,15 +16,19 @@
 
 package sbtorgpolicies.github
 
-import cats.{Monad, MonadError}
 import cats.data.EitherT
 import cats.free.Free
+import cats.{Monad, MonadError}
+import github4s.Github._
 import github4s.GithubResponses._
 import github4s.free.interpreters.{Capture, Interpreters}
 import github4s.jvm.Implicits._
+import sbtorgpolicies.exceptions.GitHubException
 
-import scala.util.Try
+import scala.language.implicitConversions
+import scala.util.{Failure, Success, Try}
 import scalaj.http.HttpResponse
+
 
 object instances {
 

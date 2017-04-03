@@ -27,7 +27,7 @@ import sbtorgpolicies.github.syntax._
 
 class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
 
-  private[this] val gh = Github(accessToken)
+  val gh = Github(accessToken)
 
   def fetchContributors: Either[GitHubException, List[User]] = {
 
@@ -101,6 +101,50 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
       tagResponse <- createTag(headCommit.result.`object`)
       reference   <- createTagReference(tagResponse.result.sha)
     } yield reference
+
+    op.execE
+  }
+
+  def latestPullRequests(inPath: String, message: String): Either[GitHubException, List[PullRequest]] = {
+
+    def fetchLastCommit: Github4sResponse[Option[Commit]] = {
+
+      def findCommit(list: List[Commit]): Option[Commit] =
+        list.sortBy(_.date).reverse.find(_.message.contains(message))
+
+      val result: GHIO[GHResponse[Option[Commit]]] = gh.repos.listCommits(
+        owner = owner,
+        repo = repo,
+        path = Some(inPath)) map {
+        case Right(ghResult) => Right(ghResult.map(findCommit))
+        case Left(e)         => Left(e)
+      }
+      EitherT(result)
+    }
+
+    def fetchPullRequests(maybeDate: Option[String]): Github4sResponse[List[PullRequest]] = {
+
+      def orderAndFilter(list: List[PullRequest]): List[PullRequest] =
+        list.flatMap { pr =>
+          pr.merged_at.map((_, pr))
+        } filter {
+          case (mergedAt, _) => mergedAt > maybeDate.getOrElse("")
+        } map (_._2)
+
+      val result: GHIO[GHResponse[List[PullRequest]]] = gh.pullRequests.list(
+        owner,
+        repo,
+        List(PRFilterClosed, PRFilterBase("master"), PRFilterSortUpdated, PRFilterOrderDesc)) map {
+        case Right(gHResult) => Right(gHResult.map(orderAndFilter))
+        case Left(e)         => Left(e)
+      }
+      EitherT(result)
+    }
+
+    val op = for {
+      maybeCommit <- fetchLastCommit
+      list        <- fetchPullRequests(maybeCommit.result.map(_.date))
+    } yield list
 
     op.execE
   }
