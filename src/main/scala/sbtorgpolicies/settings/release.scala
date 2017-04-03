@@ -1,16 +1,37 @@
 package sbtorgpolicies.settings
 
-import sbt.Keys.{packageOptions, version}
+import cats.syntax.either._
+import org.joda.time.{DateTime, DateTimeZone}
+import sbt.Keys.{baseDirectory, packageOptions, version}
 import sbt.Package.ManifestAttributes
-import sbt.{ProcessLogger, Project, Setting, State}
+import sbt.{Project, Setting, State}
 import sbtorgpolicies.github.GitHubOps
+import sbtorgpolicies.io.FileHelper
+import sbtorgpolicies.templates._
 import sbtrelease.ReleasePlugin.autoImport.ReleaseKeys._
 import sbtrelease.ReleasePlugin.autoImport._
 import sbtrelease.ReleaseStateTransformations._
-import sbtrelease.{Git, Utilities, Vcs}
+import sbtrelease.{Utilities, Vcs}
 
-trait release extends keys with bashKeys {
+trait release extends keys with filesKeys with bashKeys with templatesKeys {
   import Utilities._
+
+  val orgVersionCommitMessage: String = "Setting version"
+
+  lazy val orgInitialVcsChecks: ReleaseStep = { st: State =>
+    val extracted = Project.extract(st)
+
+    val hasUntrackedFiles = vcs(st).hasUntrackedFiles
+    val hasModifiedFiles  = vcs(st).hasModifiedFiles
+    if (hasModifiedFiles) sys.error("Aborting release: unstaged modified files")
+    if (hasUntrackedFiles && !extracted.get(releaseIgnoreUntrackedFiles)) {
+      sys.error(
+        "Aborting release: untracked files. Remove them or specify 'releaseIgnoreUntrackedFiles := true' in settings")
+    }
+
+    st.log.info("Starting release process off commit: " + vcs(st).currentHash)
+    st
+  }
 
   lazy val orgInquireVersions: ReleaseStep = { st: State =>
     val extracted = Project.extract(st)
@@ -35,49 +56,91 @@ trait release extends keys with bashKeys {
       }
     }
 
-    val (tagState, tag)         = st.extract.runTask(releaseTagName, st)
-    val (commentState, comment) = st.extract.runTask(releaseTagComment, tagState)
-    val tagToUse                = findTag(tag)
-    val branch                  = st.extract.get(orgCommitBranchSetting)
-    tagToUse.foreach(ghOps.createTagHeadCommit(branch, _, comment))
+    val (tagState, tag)            = st.extract.runTask(releaseTagName, st)
+    val (commentState, tagComment) = st.extract.runTask(releaseTagComment, tagState)
+    val tagToUse                   = findTag(tag)
+    val branch                     = st.extract.get(orgCommitBranchSetting)
+    val file                       = st.extract.get(releaseVersionFile)
+
+    val releaseDescription = ghOps.latestPullRequests(branch, file.getName, orgVersionCommitMessage) match {
+      case Right(Nil) => s"* $tagComment"
+      case Right(list) =>
+        list map { pr =>
+          val prTitle = pr.title.replace(s" (#${pr.number})", "")
+          s"* $prTitle ([#${pr.number}](${pr.html_url}))"
+        } mkString "\n"
+      case Left(e) =>
+        e.printStackTrace()
+        sys.error("Tag release process couldn't fetch the pull request list from Github. Aborting release!")
+    }
+
+    tagToUse.foreach(ghOps.createTagRelease(branch, _, tagComment, releaseDescription))
 
     tagToUse map (t =>
       reapply(
         Seq[Setting[_]](
+          releaseTagComment := releaseDescription,
           packageOptions += ManifestAttributes("Vcs-Release-Tag" -> t)
         ),
         commentState)) getOrElse commentState
   }
 
-  lazy val orgPushChanges: ReleaseStep = ReleaseStep(orgPushChangesAction, orgCheckUpstream)
+  lazy val orgUpdateChangeLog: ReleaseStep = { st: State =>
+    val ghOps: GitHubOps = st.extract.get(orgGithubOps)
+    val fh               = new FileHelper
 
-  private[this] lazy val orgPushChangesAction = { st: State =>
-    val vc = vcs(st)
-    if (vc.hasUpstream) {
-      val processLogger: ProcessLogger = if (vc.isInstanceOf[Git]) {
-        vc.stdErrorToStdOut(st.log)
-      } else st.log
-      vc.pushChanges !! processLogger
-    } else {
-      st.log.info("Changes were NOT pushed, because no upstream branch is configured for the local branch [%s]" format vcs(
-        st).currentBranch)
+    val (_, comment)    = st.extract.runTask(releaseTagComment, st)
+    val branch          = st.extract.get(orgCommitBranchSetting)
+    val commitMessage   = st.extract.get(orgCommitMessageSetting)
+    val baseDir         = st.extract.get(baseDirectory)
+    val orgTemplatesDir = st.extract.get(orgTemplatesDirectory)
+    val orgTargetDir    = st.extract.get(orgTargetDirectory)
+
+    val vs = st
+      .get(versions)
+      .getOrElse(sys.error("No versions are set! Was this release part executed before inquireVersions?"))
+
+    (for {
+      _ <- fh.createResources(orgTemplatesDir, orgTargetDir)
+      fileType = ChangelogFileType(DateTime.now(DateTimeZone.UTC), vs._1, comment)
+      _ <- fh.checkOrgFiles(baseDir, orgTargetDir, List(fileType))
+      _ <- ghOps.commitFiles(branch = branch, message = s"$commitMessage [ci skip]", files = List(fileType.outputPath))
+    } yield ()) match {
+      case Right(_) => st.log.info("Update Change Log was finished successfully")
+      case Left(e) =>
+        e.printStackTrace()
+        sys.error(s"Error updating Changelog file")
     }
+
     st
   }
 
-  private[this] lazy val orgCheckUpstream = { st: State =>
-    if (!vcs(st).hasUpstream) {
-      sys.error(
-        "No tracking branch is set up. Either configure a remote tracking branch, or remove the pushChanges release part.")
+  lazy val orgCommitNextVersion: ReleaseStep = { st: State =>
+    val ghOps: GitHubOps = st.extract.get(orgGithubOps)
+    val file             = st.extract.get(releaseVersionFile)
+    val branch           = st.extract.get(orgCommitBranchSetting)
+
+    val vs = st
+      .get(versions)
+      .getOrElse(sys.error("No versions are set! Was this release part executed before inquireVersions?"))
+
+    val commitMessage = s"$orgVersionCommitMessage to ${vs._2}"
+
+    ghOps.commitFiles(branch, commitMessage, files = List(file.getName)) match {
+      case Right(_) => st.log.info("Next version was committed successfully")
+      case Left(e) =>
+        e.printStackTrace()
+        sys.error(s"Error committing next version")
     }
 
-    st.log.info("Checking remote [%s] ..." format vcs(st).trackingRemote)
-    if (vcs(st).checkRemote(vcs(st).trackingRemote) ! st.log != 0) {
-      sys.error("Aborting the release!")
-    }
+    st
+  }
 
-    if (vcs(st).isBehindRemote) {
-      sys.error("Merge the upstream commits and run `release` again.")
+  lazy val orgPostRelease: ReleaseStep = { st: State =>
+    if (sbtorgpolicies.utils.getEnvVar("TRAVIS").isEmpty) {
+      st.log.warn(
+        "No Travis Environment detected, please be sure you revert " +
+          "your local changes and fetch the latest remote changes")
     }
     st
   }

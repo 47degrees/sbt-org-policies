@@ -17,6 +17,7 @@
 package sbtorgpolicies
 
 import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
 import sbtorgpolicies.model._
 import sbtorgpolicies.utils._
 import sbtorgpolicies.templates.syntax._
@@ -181,7 +182,7 @@ package object templates {
       replacements = Map.empty
     )
 
-  def ChangelogFileType(date: DateTime, version: String, changes: List[String]): FileType = {
+  def ChangelogFileType(date: DateTime, version: String, changes: String): FileType = {
 
     val template =
       """
@@ -214,6 +215,8 @@ package object templates {
 
     implicit def ioTSyntax[T](t: T): IOReplaceableOps[T] = new IOReplaceableOps(t)
 
+    implicit def dateSyntax(t: DateTime): IOReplaceableDateOps = new IOReplaceableDateOps(t)
+
     final class IOReplaceableOps[T](t: T) {
 
       def asReplaceable: ReplaceableT[T] = ReplaceableT(t)
@@ -223,6 +226,14 @@ package object templates {
     final class IOReplaceableListOps[T](list: List[T]) {
 
       def asReplaceable: ReplaceableList[T] = ReplaceableList[T](list)
+
+    }
+
+    final class IOReplaceableDateOps(date: DateTime) {
+
+      private[this] val formatter = DateTimeFormat.forPattern("MM/dd/yyyy")
+
+      def asReplaceable: Replaceable = ReplaceableT(date.toString(formatter))
 
     }
   }

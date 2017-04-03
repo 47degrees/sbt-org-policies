@@ -72,18 +72,18 @@ trait AllSettings
    */
   lazy val sharedReleaseProcess = Seq(
     releaseProcess := Seq[ReleaseStep](
+      orgInitialVcsChecks,
       checkSnapshotDependencies,
       orgInquireVersions,
       runClean,
       runTest,
-      setReleaseVersion,
-      commitReleaseVersion,
       orgTagRelease,
+      orgUpdateChangeLog,
       publishArtifacts,
       setNextVersion,
-      commitNextVersion,
+      orgCommitNextVersion,
       ReleaseStep(action = Command.process("sonatypeReleaseAll", _)),
-      orgPushChanges
+      orgPostRelease
     )
   )
 
