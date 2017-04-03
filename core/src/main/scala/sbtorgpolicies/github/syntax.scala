@@ -36,4 +36,13 @@ object syntax {
     }
 
   }
+
+  implicit def ghResultSyntax[A](gHResult: GHResult[A]): GHResultOps[A] = new GHResultOps[A](gHResult)
+
+  final class GHResultOps[A](gHResult: GHResult[A]) {
+
+    def map[B](f: A => B): GHResult[B] =
+      gHResult.copy(result = f(gHResult.result))
+
+  }
 }

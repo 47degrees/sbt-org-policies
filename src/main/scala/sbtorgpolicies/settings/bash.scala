@@ -1,12 +1,11 @@
 package sbtorgpolicies.settings
 
-import cats.syntax.either._
 import com.typesafe.sbt.pgp.PgpKeys._
 import sbt.Keys._
 import sbt._
 import sbtorgpolicies.github.GitHubOps
-import sbtorgpolicies.io.{FileReader, IOResult}
-import sbtorgpolicies.templates.{contributorsFilePath, FileType}
+import sbtorgpolicies.io.FileReader
+import sbtorgpolicies.templates.contributorsFilePath
 import sbtorgpolicies.utils._
 
 trait bashKeys {
@@ -66,31 +65,17 @@ trait bash extends bashKeys with filesKeys with keys {
     }.value
   )
 
-  private[this] def readFileContents(list: List[FileType]): IOResult[List[(String, String)]] = {
-
-    val sbtContributors = fileReader.getFileContent(contributorsFilePath).map((contributorsFilePath, _))
-
-    list.foldLeft[IOResult[List[(String, String)]]](sbtContributors.map(List(_))) {
-      case (Right(partialResult), file) =>
-        fileReader.getFileContent(file.outputPath).map(partialResult :+ (file.outputPath, _))
-      case (Left(e), _) => Left(e)
-    }
-  }
-
   val orgBashTasks =
     Seq(
       orgCommitPolicyFiles := Def.task {
         val ghOps: GitHubOps = orgGithubOps.value
-        (for {
-          filesAndContents <- readFileContents(orgEnforcedFiles.value)
-          _ <- ghOps.commitFiles(
-            owner = orgGithubSetting.value.organization,
-            repo = orgGithubSetting.value.project,
-            branch = orgCommitBranchSetting.value,
-            message = orgCommitMessageSetting.value,
-            filesAndContents = filesAndContents
-          )
-        } yield ()) match {
+        ghOps.commitFiles(
+          owner = orgGithubSetting.value.organization,
+          repo = orgGithubSetting.value.project,
+          branch = orgCommitBranchSetting.value,
+          message = orgCommitMessageSetting.value,
+          files = orgEnforcedFiles.value.map(_.outputPath) :+ contributorsFilePath
+        ) match {
           case Right(_) => streams.value.log.info("Policy files committed successfully")
           case Left(e) =>
             streams.value.log.error(s"Error committing files")
