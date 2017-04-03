@@ -56,14 +56,14 @@ trait release extends keys with filesKeys with bashKeys with templatesKeys {
       }
     }
 
-    val (tagState, tag)                = st.extract.runTask(releaseTagName, st)
-    val (commentState, defaultComment) = st.extract.runTask(releaseTagComment, tagState)
-    val tagToUse                       = findTag(tag)
-    val branch                         = st.extract.get(orgCommitBranchSetting)
-    val file                           = st.extract.get(releaseVersionFile)
+    val (tagState, tag)            = st.extract.runTask(releaseTagName, st)
+    val (commentState, tagComment) = st.extract.runTask(releaseTagComment, tagState)
+    val tagToUse                   = findTag(tag)
+    val branch                     = st.extract.get(orgCommitBranchSetting)
+    val file                       = st.extract.get(releaseVersionFile)
 
-    val newComment = ghOps.latestPullRequests(branch, file.getName, orgVersionCommitMessage) match {
-      case Right(Nil) => s"* $defaultComment"
+    val releaseDescription = ghOps.latestPullRequests(branch, file.getName, orgVersionCommitMessage) match {
+      case Right(Nil) => s"* $tagComment"
       case Right(list) =>
         list map { pr =>
           val prTitle = pr.title.replace(s" (#${pr.number})", "")
@@ -74,12 +74,12 @@ trait release extends keys with filesKeys with bashKeys with templatesKeys {
         sys.error("Tag release process couldn't fetch the pull request list from Github. Aborting release!")
     }
 
-    tagToUse.foreach(ghOps.createTagHeadCommit(branch, _, newComment))
+    tagToUse.foreach(ghOps.createTagRelease(branch, _, tagComment, releaseDescription))
 
     tagToUse map (t =>
       reapply(
         Seq[Setting[_]](
-          releaseTagComment := newComment,
+          releaseTagComment := releaseDescription,
           packageOptions += ManifestAttributes("Vcs-Release-Tag" -> t)
         ),
         commentState)) getOrElse commentState

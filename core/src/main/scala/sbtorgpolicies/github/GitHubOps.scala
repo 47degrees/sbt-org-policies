@@ -108,10 +108,14 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
       .getReference(owner, repo, ref)
       .execE
 
-  def createTagHeadCommit(branch: String, tag: String, comment: String): Either[GitHubException, Ref] = {
+  def createTagRelease(
+      branch: String,
+      tag: String,
+      message: String,
+      releaseDescription: String): Either[GitHubException, Ref] = {
 
     def createTag(obj: RefObject): Github4sResponse[Tag] =
-      EitherT(gh.gitData.createTag(owner, repo, tag, comment, obj.sha, obj.`type`))
+      EitherT(gh.gitData.createTag(owner, repo, tag, message, obj.sha, obj.`type`))
 
     def createTagReference(commitSha: String) =
       EitherT(gh.gitData.createReference(owner, repo, s"refs/tags/$tag", commitSha))
