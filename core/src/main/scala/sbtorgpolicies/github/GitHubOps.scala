@@ -132,7 +132,7 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
     op.execE
   }
 
-  def latestPullRequests(inPath: String, message: String): Either[GitHubException, List[PullRequest]] = {
+  def latestPullRequests(branch: String, inPath: String, message: String): Either[GitHubException, List[PullRequest]] = {
 
     def fetchLastCommit: Github4sResponse[Option[Commit]] = {
 
@@ -161,7 +161,7 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
       val result: GHIO[GHResponse[List[PullRequest]]] = gh.pullRequests.list(
         owner,
         repo,
-        List(PRFilterClosed, PRFilterBase("master"), PRFilterSortUpdated, PRFilterOrderDesc)) map {
+        List(PRFilterClosed, PRFilterBase(branch), PRFilterSortUpdated, PRFilterOrderDesc)) map {
         case Right(gHResult) => Right(gHResult.map(orderAndFilter))
         case Left(e)         => Left(e)
       }
