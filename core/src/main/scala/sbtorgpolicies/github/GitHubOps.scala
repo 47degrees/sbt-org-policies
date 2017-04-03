@@ -18,14 +18,18 @@ package sbtorgpolicies.github
 
 import cats.data.{EitherT, NonEmptyList}
 import cats.implicits._
+import cats.syntax.either._
 import github4s.Github
 import github4s.GithubResponses._
 import github4s.free.domain._
-import sbtorgpolicies.exceptions.GitHubException
+import sbtorgpolicies.exceptions.{GitHubException, OrgPolicyException}
 import sbtorgpolicies.github.instances._
 import sbtorgpolicies.github.syntax._
+import sbtorgpolicies.io.{FileReader, IOResult}
 
 class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
+
+  val fileReader: FileReader = new FileReader
 
   val gh = Github(accessToken)
 
@@ -50,7 +54,30 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
       repo: String,
       branch: String,
       message: String,
-      filesAndContents: List[(String, String)]): Either[GitHubException, Ref] = {
+      files: List[String]): Either[OrgPolicyException, Ref] = {
+
+    def readFileContents: IOResult[List[(String, String)]] = {
+      files.foldLeft[IOResult[List[(String, String)]]](Right(Nil)) {
+        case (Right(partialResult), file) =>
+          fileReader.getFileContent(file).map(partialResult :+ (file, _))
+        case (Left(e), _) => Left(e)
+      }
+    }
+
+    readFileContents match {
+      case Right(filesAndContents) =>
+        commitFilesAndContents(owner, repo, branch, message, filesAndContents)
+      case Left(e) => Left(e)
+    }
+
+  }
+
+  def commitFilesAndContents(
+      owner: String,
+      repo: String,
+      branch: String,
+      message: String,
+      filesAndContents: List[(String, String)]): Either[OrgPolicyException, Ref] = {
 
     def fetchBaseTreeSha(commitSha: String): Github4sResponse[RefCommit] =
       EitherT(gh.gitData.getCommit(owner, repo, commitSha))
