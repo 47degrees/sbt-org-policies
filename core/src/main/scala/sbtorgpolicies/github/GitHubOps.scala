@@ -49,12 +49,7 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
     op.execE
   }
 
-  def commitFiles(
-      owner: String,
-      repo: String,
-      branch: String,
-      message: String,
-      files: List[String]): Either[OrgPolicyException, Ref] = {
+  def commitFiles(branch: String, message: String, files: List[String]): Either[OrgPolicyException, Ref] = {
 
     def readFileContents: IOResult[List[(String, String)]] = {
       files.foldLeft[IOResult[List[(String, String)]]](Right(Nil)) {
@@ -66,15 +61,13 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
 
     readFileContents match {
       case Right(filesAndContents) =>
-        commitFilesAndContents(owner, repo, branch, message, filesAndContents)
+        commitFilesAndContents(branch, message, filesAndContents)
       case Left(e) => Left(e)
     }
 
   }
 
   def commitFilesAndContents(
-      owner: String,
-      repo: String,
       branch: String,
       message: String,
       filesAndContents: List[(String, String)]): Either[OrgPolicyException, Ref] = {
@@ -152,7 +145,7 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
     def fetchPullRequests(maybeDate: Option[String]): Github4sResponse[List[PullRequest]] = {
 
       def orderAndFilter(list: List[PullRequest]): List[PullRequest] =
-        list.flatMap { pr =>
+        list.reverse.flatMap { pr =>
           pr.merged_at.map((_, pr))
         } filter {
           case (mergedAt, _) => mergedAt > maybeDate.getOrElse("")

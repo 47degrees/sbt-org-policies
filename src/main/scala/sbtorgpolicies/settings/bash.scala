@@ -70,10 +70,8 @@ trait bash extends bashKeys with filesKeys with keys {
       orgCommitPolicyFiles := Def.task {
         val ghOps: GitHubOps = orgGithubOps.value
         ghOps.commitFiles(
-          owner = orgGithubSetting.value.organization,
-          repo = orgGithubSetting.value.project,
           branch = orgCommitBranchSetting.value,
-          message = orgCommitMessageSetting.value,
+          message = s"${orgCommitMessageSetting.value} [ci skip]",
           files = orgEnforcedFiles.value.map(_.outputPath) :+ contributorsFilePath
         ) match {
           case Right(_) => streams.value.log.info("Policy files committed successfully")
