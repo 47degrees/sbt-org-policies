@@ -88,7 +88,7 @@ trait bash extends bashKeys with filesKeys with keys {
               orgCreateContributorsFile,
               orgCreateFiles,
               orgCommitPolicyFiles,
-              publishSigned
+              orgPublishRelease
             )
         } else Def.task()
       }.value

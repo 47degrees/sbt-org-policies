@@ -112,7 +112,7 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
       branch: String,
       tag: String,
       message: String,
-      releaseDescription: String): Either[GitHubException, Ref] = {
+      releaseDescription: String): Either[GitHubException, Release] = {
 
     def createTag(obj: RefObject): Github4sResponse[Tag] =
       EitherT(gh.gitData.createTag(owner, repo, tag, message, obj.sha, obj.`type`))
@@ -120,11 +120,15 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
     def createTagReference(commitSha: String) =
       EitherT(gh.gitData.createReference(owner, repo, s"refs/tags/$tag", commitSha))
 
+    def createRelease: Github4sResponse[Release] =
+      EitherT(gh.repos.createRelease(owner, repo, tag, tag, releaseDescription))
+
     val op = for {
       headCommit  <- fetchHeadCommit(branch)
       tagResponse <- createTag(headCommit.result.`object`)
       reference   <- createTagReference(tagResponse.result.sha)
-    } yield reference
+      release     <- createRelease
+    } yield release
 
     op.execE
   }
