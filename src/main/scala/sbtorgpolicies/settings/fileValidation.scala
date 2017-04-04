@@ -22,25 +22,15 @@ import sbt._
 import sbtorgpolicies.exceptions.ValidationException
 import sbtorgpolicies.model.Dev
 import sbtorgpolicies.rules._
+import sbtorgpolicies.OrgPoliciesKeys._
 
-trait fileValidationKeys {
-
-  val orgValidationList: SettingKey[List[Validation]] = settingKey[List[Validation]]("Validation list")
-
-  val orgValidateFiles: TaskKey[Unit] = taskKey[Unit]("Validate all files")
-
-}
-
-trait fileValidation extends fileValidationKeys with ValidationFunctions with keys {
+trait fileValidation extends ValidationFunctions {
 
   val fileValidation = new FileValidation
   import fileValidation.fileReader._
 
-  private[this] def devListStrings(list: List[Dev]): List[String] =
-    list.map(_.id) ++ list.flatMap(_.name)
-
-  val orgFileValidationDefaultSettings = Seq(
-    orgValidationList := List(
+  val fileValidationDefaultSettings = Seq(
+    orgValidationListSetting := List(
       mkValidation(getChildPath(baseDirectory.value, "README.md"), List(emptyValidation)),
       mkValidation(getChildPath(baseDirectory.value, "CONTRIBUTING.md"), List(emptyValidation)),
       mkValidation(
@@ -60,9 +50,12 @@ trait fileValidation extends fileValidationKeys with ValidationFunctions with ke
 
   val orgFileValidationTasks = Seq(
     orgValidateFiles := Def.task {
-      validationFilesTask(orgValidationList.value, streams.value.log)
+      validationFilesTask(orgValidationListSetting.value, streams.value.log)
     }.value
   )
+
+  private[this] def devListStrings(list: List[Dev]): List[String] =
+    list.map(_.id) ++ list.flatMap(_.name)
 
   private[this] def validationFilesTask(list: List[Validation], log: Logger): Unit =
     list foreach (validationFileTask(_, log))

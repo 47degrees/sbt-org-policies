@@ -25,18 +25,17 @@ import sbt.Keys._
 import sbt._
 import sbtorgpolicies._
 import sbtorgpolicies.model._
+import OrgPoliciesKeys._
 import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 import sbtrelease.ReleasePlugin.autoImport._
-import sbtunidoc.ScalaUnidocPlugin.autoImport._
 import sbtunidoc.BaseUnidocPlugin.autoImport._
+import sbtunidoc.ScalaUnidocPlugin.autoImport._
 import scoverage.ScoverageKeys
 
 trait AllSettings
-    extends keys
-    with dependencies
+    extends dependencies
     with scalafmt
     with files
-    with templates
     with fileValidation
     with enforcement
     with bash
@@ -159,9 +158,11 @@ trait AllSettings
     organizationName := orgGithubSetting.value.organizationName,
     homepage := Option(orgGithubSetting.value.homePage),
     organizationHomepage := Option(orgGithubSetting.value.organizationHomePage),
+    startYear := Some(currentYear),
     scalaOrganization := "org.typelevel",
     scalaVersion := scalac.`2.12`,
-    crossScalaVersions := scalac.crossScalaVersions
+    crossScalaVersions := scalac.crossScalaVersions,
+    scalacOptions ++= scalacAllOptions
   )
 
   /**
@@ -269,21 +270,4 @@ trait AllSettings
       depGithubRepoSetting := orgGithubSetting.value.project,
       depGithubTokenSetting := orgGithubTokenSetting.value
     )
-
-  /**
-   * Sets the default settings that provides the ability to create files based on its templates.
-   */
-  val orgFileSettings: Seq[Setting[_]] = orgFilesDefaultSettings ++ orgFilesTasks
-
-  /**
-   * Default settings that the plugin will take into account to perform the file validation,
-   * both existence and content verification.
-   */
-  val orgFileValidationSettings: Seq[Setting[_]] =
-    orgFileValidationDefaultSettings ++ orgFileValidationTasks
-
-  /**
-   * Default settings and tasks for the bash features
-   */
-  def orgBashSettings: Seq[Setting[_]] = orgBashDefaultSettings ++ orgBashTasks
 }

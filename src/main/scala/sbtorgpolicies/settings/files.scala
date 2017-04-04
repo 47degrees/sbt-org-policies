@@ -19,39 +19,12 @@ package sbtorgpolicies.settings
 import cats.syntax.either._
 import sbt.Keys._
 import sbt._
-import sbtorgpolicies.github.GitHubOps
 import sbtorgpolicies.io._
 import sbtorgpolicies.model._
+import sbtorgpolicies.OrgPoliciesKeys._
 import sbtorgpolicies.templates._
 
-trait filesKeys {
-
-  val orgCreateFiles: TaskKey[Unit] = taskKey[Unit]("Task to created the different files")
-
-  val orgCreateContributorsFile: TaskKey[Unit] =
-    taskKey[Unit]("Task for fetching the contributors from GitHub and creating a new SBT file with the list")
-
-  val orgTargetDirectory: SettingKey[File] =
-    SettingKey[File]("orgTargetDirectory", "Where sbt-org-policies output goes")
-
-  val orgEnforcedFiles: SettingKey[List[FileType]] =
-    settingKey[List[FileType]]("List of files the plugin must exists and should be created by the plugin")
-
-}
-
-trait files extends filesKeys with templatesKeys with keys {
-
-  val orgFilesDefaultSettings = Seq(
-    orgTargetDirectory := resourceManaged.value / "org-policies",
-    orgEnforcedFiles := List(
-      LicenseFileType(orgGithubSetting.value, orgLicenseSetting.value, startYear.value),
-      ContributingFileType(orgGithubSetting.value),
-      AuthorsFileType(orgGithubSetting.value, orgMaintainersSetting.value, orgContributorsSetting.value),
-      NoticeFileType(orgGithubSetting.value, orgLicenseSetting.value, startYear.value),
-      VersionSbtFileType,
-      ChangelogFileType
-    )
-  )
+trait files {
 
   val orgFilesTasks =
     Seq(
@@ -59,8 +32,8 @@ trait files extends filesKeys with templatesKeys with keys {
         val fh = new FileHelper
 
         (for {
-          _ <- fh.createResources(orgTemplatesDirectory.value, orgTargetDirectory.value)
-          _ <- fh.checkOrgFiles(baseDirectory.value, orgTargetDirectory.value, orgEnforcedFiles.value)
+          _ <- fh.createResources(orgTemplatesDirectorySetting.value, orgTargetDirectorySetting.value)
+          _ <- fh.checkOrgFiles(baseDirectory.value, orgTargetDirectorySetting.value, orgEnforcedFilesSetting.value)
         } yield ()) match {
           case Right(_) => streams.value.log.info("Over-writable files have been created successfully")
           case Left(e) =>
@@ -71,7 +44,7 @@ trait files extends filesKeys with templatesKeys with keys {
       }.value,
       orgCreateContributorsFile := Def.task {
         val fh    = new FileHelper
-        val ghOps = orgGithubOps.value
+        val ghOps = orgGithubOpsSetting.value
 
         (for {
           list <- ghOps.fetchContributors
@@ -79,9 +52,12 @@ trait files extends filesKeys with templatesKeys with keys {
           filteredDevs = list
             .map(user => Dev(user.login, user.name, user.blog))
             .filterNot(dev => maintainersIds.contains(dev.id))
-          _ <- fh.createResources(orgTemplatesDirectory.value, orgTargetDirectory.value)
+          _ <- fh.createResources(orgTemplatesDirectorySetting.value, orgTargetDirectorySetting.value)
           _ <- fh
-            .checkOrgFiles(baseDirectory.value, orgTargetDirectory.value, List(ContributorsSBTFileType(filteredDevs)))
+            .checkOrgFiles(
+              baseDirectory.value,
+              orgTargetDirectorySetting.value,
+              List(ContributorsSBTFileType(filteredDevs)))
         } yield ()) match {
           case Right(_) => streams.value.log.info("contributors file created successfully")
           case Left(e) =>

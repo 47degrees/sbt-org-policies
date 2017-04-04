@@ -22,7 +22,7 @@ import sbtorgpolicies.settings.DefaultSettings
 
 object OrgPoliciesPlugin extends AutoPlugin {
 
-  object autoImport extends DefaultSettings
+  object autoImport extends OrgPoliciesKeys with DefaultSettings
 
   import autoImport._
 

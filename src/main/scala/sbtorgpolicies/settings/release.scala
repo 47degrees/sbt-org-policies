@@ -7,13 +7,14 @@ import sbt.Package.ManifestAttributes
 import sbt.{Project, Setting, State}
 import sbtorgpolicies.github.GitHubOps
 import sbtorgpolicies.io.FileHelper
+import sbtorgpolicies.OrgPoliciesKeys._
 import sbtorgpolicies.templates._
 import sbtrelease.ReleasePlugin.autoImport.ReleaseKeys._
 import sbtrelease.ReleasePlugin.autoImport._
 import sbtrelease.ReleaseStateTransformations._
 import sbtrelease.{Utilities, Vcs}
 
-trait release extends keys with filesKeys with bashKeys with templatesKeys {
+trait release {
   import Utilities._
 
   val orgVersionCommitMessage: String = "Setting version"
@@ -45,7 +46,7 @@ trait release extends keys with filesKeys with bashKeys with templatesKeys {
   }
 
   lazy val orgTagRelease: ReleaseStep = { st: State =>
-    val ghOps: GitHubOps = st.extract.get(orgGithubOps)
+    val ghOps: GitHubOps = st.extract.get(orgGithubOpsSetting)
 
     def findTag(tag: String): Option[String] = {
       if (ghOps.fetchReference(s"tags/$tag").isRight) {
@@ -86,15 +87,15 @@ trait release extends keys with filesKeys with bashKeys with templatesKeys {
   }
 
   lazy val orgUpdateChangeLog: ReleaseStep = { st: State =>
-    val ghOps: GitHubOps = st.extract.get(orgGithubOps)
+    val ghOps: GitHubOps = st.extract.get(orgGithubOpsSetting)
     val fh               = new FileHelper
 
     val (_, comment)    = st.extract.runTask(releaseTagComment, st)
     val branch          = st.extract.get(orgCommitBranchSetting)
     val commitMessage   = st.extract.get(orgCommitMessageSetting)
     val baseDir         = st.extract.get(baseDirectory)
-    val orgTemplatesDir = st.extract.get(orgTemplatesDirectory)
-    val orgTargetDir    = st.extract.get(orgTargetDirectory)
+    val orgTemplatesDir = st.extract.get(orgTemplatesDirectorySetting)
+    val orgTargetDir    = st.extract.get(orgTargetDirectorySetting)
 
     val vs = st
       .get(versions)
@@ -116,7 +117,7 @@ trait release extends keys with filesKeys with bashKeys with templatesKeys {
   }
 
   lazy val orgCommitNextVersion: ReleaseStep = { st: State =>
-    val ghOps: GitHubOps = st.extract.get(orgGithubOps)
+    val ghOps: GitHubOps = st.extract.get(orgGithubOpsSetting)
     val file             = st.extract.get(releaseVersionFile)
     val branch           = st.extract.get(orgCommitBranchSetting)
 
