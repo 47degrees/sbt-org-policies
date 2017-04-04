@@ -16,12 +16,19 @@
 
 package sbtorgpolicies.settings
 
+import org.scalajs.sbtplugin.ScalaJSCrossVersion
 import sbt._
-import sbtorgpolicies.Dep
 
 import scala.language.postfixOps
 
 trait dependencies {
+
+  case class Dep(organization: String, name: String, revision: String) {
+
+    def toModuleId: ModuleID = organization %% name % revision
+
+    def toJsModuleId: ModuleID = (organization % name % revision).cross(ScalaJSCrossVersion.binary)
+  }
 
   def %(artifactId: String): ModuleID =
     getLib(artifactId).toModuleId.cross(CrossVersion.Disabled)

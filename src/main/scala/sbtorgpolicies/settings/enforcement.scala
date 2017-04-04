@@ -17,21 +17,16 @@
 package sbtorgpolicies.settings
 
 import de.heikoseeberger.sbtheader.HeaderKey
-import sbt._
 import sbt.Keys._
+import sbt._
 import sbtorgpolicies.exceptions.ValidationException
 import sbtorgpolicies.model._
+import sbtorgpolicies.OrgPoliciesKeys._
 import scoverage.ScoverageKeys
 
 import scala.util.matching.Regex
 
-trait enforcementKeys {
-
-  val orgCheckSettings: TaskKey[Unit] = taskKey[Unit]("Task for checking the project settings")
-
-}
-
-trait enforcement extends enforcementKeys {
+trait enforcement {
 
   lazy val orgEnforcementSettingsTasks = Seq(
     orgCheckSettings := Def

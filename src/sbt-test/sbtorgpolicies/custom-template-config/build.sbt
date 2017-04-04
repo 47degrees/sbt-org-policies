@@ -15,7 +15,7 @@ orgLicenseSetting := ApacheLicense.custom
 
 startYear := Some(2012)
 
-orgTemplatesDirectory := (resourceDirectory in Compile).value / "myorg"
+orgTemplatesDirectorySetting := (resourceDirectory in Compile).value / "myorg"
 
 def getLines(fileName: String) =
   IO.readLines(file(fileName))

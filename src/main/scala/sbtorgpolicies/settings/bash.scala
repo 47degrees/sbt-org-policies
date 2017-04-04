@@ -4,80 +4,55 @@ import com.typesafe.sbt.pgp.PgpKeys._
 import sbt.Keys._
 import sbt._
 import sbtorgpolicies.github.GitHubOps
-import sbtorgpolicies.io.FileReader
+import sbtorgpolicies.OrgPoliciesKeys._
 import sbtorgpolicies.templates.contributorsFilePath
 import sbtorgpolicies.utils._
 
-trait bashKeys {
-
-  val orgCommitBranchSetting: SettingKey[String] =
-    settingKey[String]("Defines the target branch for committing the policy files")
-
-  val orgCommitMessageSetting: SettingKey[String] =
-    settingKey[String]("Defines the commit message when publishing files into GitHub")
-
-  val orgCommitPolicyFiles: TaskKey[Unit] = taskKey[Unit]("Commit the policy files into the specified branch")
-
-  val orgPublishRelease: TaskKey[Unit] = taskKey[Unit](
-    "This task allows to publish the artifact (publishSigned) in case of dealing with an snapshot, or, " +
-      "releasing a new version in any other case.")
-
-  val orgAfterCISuccess: TaskKey[Unit] = taskKey[Unit]("It will execute some tasks after a CI build.")
-
-}
-
-trait bash extends bashKeys with filesKeys with keys {
-
-  val fileReader: FileReader = new FileReader
-
-  val orgBashDefaultSettings = Seq(
-    orgCommitBranchSetting := "master",
-    orgCommitMessageSetting := "Updates policy files from SBT",
-    orgPublishRelease := Def.taskDyn {
-
-      val buildV       = (version in ThisBuild).value
-      val scalaV       = scalaVersion.value
-      val crossV       = crossScalaVersions.value
-      val isSnapshotV  = buildV.endsWith("-SNAPSHOT")
-      val isLastScalaV = crossV.lastOption.exists(_ == scalaV)
-
-      streams.value.log.info(s"""orgPublishRelease Initiated
-           |Build Version = $buildV
-           |Scala Version = $scalaV
-           |crossScalaVersions = $crossV
-           |isSnapshotV = $isSnapshotV
-           |isLastScalaV = $isLastScalaV
-         """.stripMargin)
-
-      (isSnapshotV, isLastScalaV) match {
-        case (true, _) =>
-          streams.value.log.info("SNAPSHOT version detected, skipping release and publishing it...")
-          Def.task(publishSigned.value)
-        case (false, true) =>
-          streams.value.log.info("Release Version detected, starting the release process...")
-          s"git checkout ${orgCommitBranchSetting.value}".!
-          "sbt release".!
-          Def.task()
-        case _ =>
-          streams.value.log.info(s"Release Version detected but it'll be skipped for Scala $scalaV...")
-          Def.task()
-      }
-    }.value
-  )
+trait bash {
 
   val orgBashTasks =
     Seq(
       orgCommitPolicyFiles := Def.task {
-        val ghOps: GitHubOps = orgGithubOps.value
+        val ghOps: GitHubOps = orgGithubOpsSetting.value
         ghOps.commitFiles(
           branch = orgCommitBranchSetting.value,
           message = s"${orgCommitMessageSetting.value} [ci skip]",
-          files = orgEnforcedFiles.value.map(_.outputPath) :+ contributorsFilePath
+          files = orgEnforcedFilesSetting.value.map(_.outputPath) :+ contributorsFilePath
         ) match {
           case Right(_) => streams.value.log.info("Policy files committed successfully")
           case Left(e) =>
             streams.value.log.error(s"Error committing files")
             e.printStackTrace()
+        }
+      }.value,
+      orgPublishRelease := Def.taskDyn {
+
+        val buildV       = (version in ThisBuild).value
+        val scalaV       = scalaVersion.value
+        val crossV       = crossScalaVersions.value
+        val isSnapshotV  = buildV.endsWith("-SNAPSHOT")
+        val isLastScalaV = crossV.lastOption.exists(_ == scalaV)
+
+        streams.value.log.info(s"""orgPublishRelease Initiated
+                                  |Build Version = $buildV
+                                  |Scala Version = $scalaV
+                                  |crossScalaVersions = $crossV
+                                  |isSnapshotV = $isSnapshotV
+                                  |isLastScalaV = $isLastScalaV
+         """.stripMargin)
+
+        (isSnapshotV, isLastScalaV) match {
+          case (true, _) =>
+            streams.value.log.info("SNAPSHOT version detected, skipping release and publishing it...")
+            Def.task(publishSigned.value)
+          case (false, true) =>
+            streams.value.log.info("Release Version detected, starting the release process...")
+            s"git checkout ${orgCommitBranchSetting.value}".!
+            "sbt release".!
+            Def.task()
+          case _ =>
+            streams.value.log.info(s"Release Version detected but it'll be skipped for Scala $scalaV...")
+            Def.task()
         }
       }.value,
       orgAfterCISuccess := Def.taskDyn {

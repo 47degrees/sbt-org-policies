@@ -20,15 +20,12 @@ import org.scalafmt.bootstrap.ScalafmtBootstrap
 import sbt.Keys._
 import sbt._
 import sbt.inc.Analysis
+import sbtorgpolicies.OrgPoliciesKeys._
 
 /**
  * https://gist.github.com/olafurpg/e045ef9d8a4273bae3e2ccf610636d66#file-automatescalafmtplugin-scala
  */
 trait scalafmt {
-
-  val orgScalafmtInc: TaskKey[Unit] = taskKey[Unit]("Incrementally format modified sources")
-
-  val orgScalafmtGenerateFile: TaskKey[Unit] = taskKey[Unit]("Generate a default scalafmt configuration")
 
   lazy val orgGenerateScalafmtTask = Seq(
     orgScalafmtGenerateFile := orgScalafmtGenerateFileDef.value
