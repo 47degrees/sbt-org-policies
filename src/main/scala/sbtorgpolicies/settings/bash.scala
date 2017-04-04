@@ -15,6 +15,7 @@ trait bash {
       orgCommitPolicyFiles := Def.task {
         val ghOps: GitHubOps = orgGithubOpsSetting.value
         ghOps.commitFiles(
+          baseDir = baseDirectory.value,
           branch = orgCommitBranchSetting.value,
           message = s"${orgCommitMessageSetting.value} [ci skip]",
           files = orgEnforcedFilesSetting.value.map(_.outputPath) :+ contributorsFilePath
@@ -56,15 +57,18 @@ trait bash {
         }
       }.value,
       orgAfterCISuccess := Def.taskDyn {
-        if (getEnvVarOrElse("TRAVIS_BRANCH") == "master" &&
+        val scalaV       = scalaVersion.value
+        val crossV       = crossScalaVersions.value
+        val isLastScalaV = crossV.lastOption.exists(_ == scalaV)
+        if (isLastScalaV &&
+          getEnvVarOrElse("TRAVIS_BRANCH") == "master" &&
           getEnvVarOrElse("TRAVIS_PULL_REQUEST") == "false") {
-          Def
-            .sequential(
-              orgCreateContributorsFile,
-              orgCreateFiles,
-              orgCommitPolicyFiles,
-              orgPublishRelease
-            )
+          Def.task {
+            orgCreateContributorsFile.value
+            orgCreateFiles.value
+            orgCommitPolicyFiles.value
+            orgPublishRelease.value
+          }
         } else Def.task()
       }.value
     )
