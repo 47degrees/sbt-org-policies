@@ -24,6 +24,7 @@ import github4s.free.interpreters.{Capture, Interpreters}
 import github4s.jvm.Implicits._
 
 import scala.util.Try
+import scala.language.implicitConversions
 import scalaj.http.HttpResponse
 
 object instances {

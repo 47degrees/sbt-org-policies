@@ -1,12 +1,11 @@
 package sbtorgpolicies.settings
 
-import cats.syntax.either._
 import com.typesafe.sbt.pgp.PgpKeys._
 import sbt.Keys._
 import sbt._
 import sbtorgpolicies.github.GitHubOps
-import sbtorgpolicies.io.{FileReader, IOResult}
-import sbtorgpolicies.templates.{FileType, contributorsFilePath}
+import sbtorgpolicies.io.FileReader
+import sbtorgpolicies.templates.contributorsFilePath
 import sbtorgpolicies.utils._
 
 trait bashKeys {
@@ -19,6 +18,10 @@ trait bashKeys {
 
   val orgCommitPolicyFiles: TaskKey[Unit] = taskKey[Unit]("Commit the policy files into the specified branch")
 
+  val orgPublishRelease: TaskKey[Unit] = taskKey[Unit](
+    "This task allows to publish the artifact (publishSigned) in case of dealing with an snapshot, or, " +
+      "releasing a new version in any other case.")
+
   val orgAfterCISuccess: TaskKey[Unit] = taskKey[Unit]("It will execute some tasks after a CI build.")
 
 }
@@ -29,37 +32,48 @@ trait bash extends bashKeys with filesKeys with keys {
 
   val orgBashDefaultSettings = Seq(
     orgCommitBranchSetting := "master",
-    orgCommitMessageSetting := "Updates policy files from SBT"
+    orgCommitMessageSetting := "Updates policy files from SBT",
+    orgPublishRelease := Def.taskDyn {
+
+      val buildV       = (version in ThisBuild).value
+      val scalaV       = scalaVersion.value
+      val crossV       = crossScalaVersions.value
+      val isSnapshotV  = buildV.endsWith("-SNAPSHOT")
+      val isLastScalaV = crossV.lastOption.exists(_ == scalaV)
+
+      streams.value.log.info(s"""orgPublishRelease Initiated
+           |Build Version = $buildV
+           |Scala Version = $scalaV
+           |crossScalaVersions = $crossV
+           |isSnapshotV = $isSnapshotV
+           |isLastScalaV = $isLastScalaV
+         """.stripMargin)
+
+      (isSnapshotV, isLastScalaV) match {
+        case (true, _) =>
+          streams.value.log.info("SNAPSHOT version detected, skipping release and publishing it...")
+          Def.task(publishSigned.value)
+        case (false, true) =>
+          streams.value.log.info("Release Version detected, starting the release process...")
+          s"git checkout ${orgCommitBranchSetting.value}".!
+          "sbt release".!
+          Def.task()
+        case _ =>
+          streams.value.log.info(s"Release Version detected but it'll be skipped for Scala $scalaV...")
+          Def.task()
+      }
+    }.value
   )
-
-  private[this] def readFileContents(list: List[FileType]): IOResult[List[(String, String)]] = {
-
-    val sbtContributors = fileReader.getFileContent(contributorsFilePath).map((contributorsFilePath, _))
-
-    list.foldLeft[IOResult[List[(String, String)]]](sbtContributors.map(List(_))) {
-      case (Right(partialResult), file) =>
-        fileReader.getFileContent(file.outputPath).map(partialResult :+ (file.outputPath, _))
-      case (Left(e), _) => Left(e)
-    }
-  }
 
   val orgBashTasks =
     Seq(
       orgCommitPolicyFiles := Def.task {
-        val ghOps = new GitHubOps(
-          orgGithubSetting.value.organization,
-          orgGithubSetting.value.project,
-          orgGithubTokenSetting.value)
-        (for {
-          filesAndContents <- readFileContents(orgEnforcedFiles.value)
-          _ <- ghOps.commitFiles(
-            owner = orgGithubSetting.value.organization,
-            repo = orgGithubSetting.value.project,
-            branch = orgCommitBranchSetting.value,
-            message = orgCommitMessageSetting.value,
-            filesAndContents = filesAndContents
-          )
-        } yield ()) match {
+        val ghOps: GitHubOps = orgGithubOps.value
+        ghOps.commitFiles(
+          branch = orgCommitBranchSetting.value,
+          message = s"${orgCommitMessageSetting.value} [ci skip]",
+          files = orgEnforcedFiles.value.map(_.outputPath) :+ contributorsFilePath
+        ) match {
           case Right(_) => streams.value.log.info("Policy files committed successfully")
           case Left(e) =>
             streams.value.log.error(s"Error committing files")
@@ -74,7 +88,7 @@ trait bash extends bashKeys with filesKeys with keys {
               orgCreateContributorsFile,
               orgCreateFiles,
               orgCommitPolicyFiles,
-              publishSigned
+              orgPublishRelease
             )
         } else Def.task()
       }.value
