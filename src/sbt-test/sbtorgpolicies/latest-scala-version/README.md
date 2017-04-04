@@ -1,1 +1,0 @@
-# Latest Scala Version Project

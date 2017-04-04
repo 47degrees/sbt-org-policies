@@ -1,10 +1,16 @@
 # checks that the orgValidateFiles sbt task works fine with the required files
 
+$ exists AUTHORS.md
+
+$ exists CHANGELOG.md
+
+$ exists CONTRIBUTING.md
+
 $ exists LICENSE
 
-$ exists README.md
+$ exists NOTICE.md
 
-$ exists AUTHORS.md
+$ exists README.md
 
 $ exists version.sbt
 
