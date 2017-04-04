@@ -4,15 +4,19 @@
 
 $ exists target/scala-2.11/resource_managed/org-policies/templates
 
-$ exists LICENSE
+$ exists AUTHORS.md
+
+$ exists CHANGELOG.md
 
 $ exists CONTRIBUTING.md
 
-$ exists AUTHORS.md
+$ exists LICENSE
 
 $ exists NOTICE.md
 
-$ exists CHANGELOG.md
+$ exists README.md
+
+$ exists version.sbt
 
 > orgValidateFiles
 

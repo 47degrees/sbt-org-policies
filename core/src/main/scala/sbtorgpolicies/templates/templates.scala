@@ -22,7 +22,7 @@ import sbtorgpolicies.model._
 import sbtorgpolicies.utils._
 import sbtorgpolicies.templates.syntax._
 
-import scala.language.implicitConversions
+import scala.language.{implicitConversions, postfixOps}
 import scala.util.matching.Regex
 
 package object templates {
@@ -45,33 +45,24 @@ package object templates {
     override def asString: String = list.map(elem => s"* ${elem.asReplaceable.asString}").mkString("\n")
   }
 
-  sealed trait FileType {
-
-    def mandatory: Boolean
-    def overWritable: Boolean
-    def templatePath: String
-    def outputPath: String
-    def replacements: Replacements
-
-  }
-
-  case class ReplaceableFileType(
+  case class FileType(
       mandatory: Boolean,
       overWritable: Boolean,
       templatePath: String,
       outputPath: String,
-      replacements: Replacements)
-      extends FileType
+      replacements: Replacements,
+      fileSections: List[FileSection] = Nil)
 
-  case class AppendableFileType(
-      mandatory: Boolean,
-      overWritable: Boolean,
-      templatePath: String,
-      outputPath: String,
-      afterLine: Regex,
+  case class FileSection(
+      appendPosition: AppendPosition,
       template: String,
-      replacements: Replacements)
-      extends FileType
+      replacements: Replacements,
+      shouldAppend: (String) => Boolean = _ => true)
+
+  sealed trait AppendPosition
+  case object AppendAtTheBeginning    extends AppendPosition
+  case object AppendAtTheEnd          extends AppendPosition
+  case class AppendAfter(line: Regex) extends AppendPosition
 
   def LicenseFileType(ghSettings: GitHubSettings, license: License, startYear: Option[Int]): FileType = {
 
@@ -81,7 +72,7 @@ package object templates {
       case _             => "templates/LICENSE.template"
     }
 
-    ReplaceableFileType(
+    FileType(
       mandatory = true,
       overWritable = true,
       templatePath = licenseFile,
@@ -94,7 +85,7 @@ package object templates {
     )
   }
 
-  def ContributingFileType(ghSettings: GitHubSettings) = ReplaceableFileType(
+  def ContributingFileType(ghSettings: GitHubSettings) = FileType(
     mandatory = true,
     overWritable = true,
     templatePath = "templates/CONTRIBUTING.md.template",
@@ -115,7 +106,7 @@ package object templates {
         case None    => s"[${dev.id}](https://github.com/${dev.id})"
       }
 
-    ReplaceableFileType(
+    FileType(
       mandatory = true,
       overWritable = true,
       templatePath = "templates/AUTHORS.md.template",
@@ -137,7 +128,7 @@ package object templates {
       s"""    Dev("${dev.id}", ${optionAsScalaString(dev.name)}, ${optionAsScalaString(dev.url)})"""
     }
 
-    ReplaceableFileType(
+    FileType(
       mandatory = false,
       overWritable = true,
       templatePath = "templates/contributors.sbt.template",
@@ -150,7 +141,7 @@ package object templates {
 
   def NoticeFileType(ghSettings: GitHubSettings, license: License, startYear: Option[Int]): FileType = {
 
-    ReplaceableFileType(
+    FileType(
       mandatory = true,
       overWritable = true,
       templatePath = "templates/NOTICE.md.template",
@@ -165,7 +156,7 @@ package object templates {
   }
 
   def VersionSbtFileType: FileType =
-    ReplaceableFileType(
+    FileType(
       mandatory = true,
       overWritable = false,
       templatePath = "templates/version.sbt.template",
@@ -173,16 +164,14 @@ package object templates {
       replacements = Map.empty
     )
 
-  def ChangelogFileType: FileType =
-    ReplaceableFileType(
-      mandatory = true,
-      overWritable = false,
-      templatePath = "templates/CHANGELOG.md.template",
-      outputPath = "CHANGELOG.md",
-      replacements = Map.empty
-    )
+  def ChangelogFileType: FileType = ChangelogFileType(None)
 
-  def ChangelogFileType(date: DateTime, version: String, changes: String): FileType = {
+  def ChangelogFileType(date: DateTime, version: String, changes: String): FileType =
+    ChangelogFileType(Some(NewReleaseSection(date, version, changes)))
+
+  private[this] case class NewReleaseSection(date: DateTime, version: String, changes: String)
+
+  private[this] def ChangelogFileType(newChange: Option[NewReleaseSection]): FileType = {
 
     val template =
       """
@@ -193,17 +182,55 @@ package object templates {
         |{{changes}} 
       """.stripMargin
 
-    AppendableFileType(
+    FileType(
       mandatory = true,
-      overWritable = true,
+      overWritable = false,
       templatePath = "templates/CHANGELOG.md.template",
       outputPath = "CHANGELOG.md",
-      afterLine = """# Changelog""".r,
-      template = template,
-      replacements = Map(
-        "date"    -> date.asReplaceable,
-        "version" -> version.asReplaceable,
-        "changes" -> changes.asReplaceable
+      replacements = Map.empty,
+      fileSections = newChange map { change =>
+        FileSection(
+          appendPosition = AppendAfter("""# Changelog""".r),
+          template = template,
+          replacements = Map(
+            "date"    -> change.date.asReplaceable,
+            "version" -> change.version.asReplaceable,
+            "changes" -> change.changes.asReplaceable
+          )
+        )
+      } toList
+    )
+  }
+
+  def ReadmeFileType(ghSettings: GitHubSettings, startYear: Option[Int]): FileType = {
+
+    val template =
+      """
+        |# Copyright
+        |
+        |{{name}} is designed and developed by {{organizationName}}
+        |
+        |Copyright (C) {{year}} {{organizationName}}. <{{organizationHomePage}}>
+      """.stripMargin
+
+    FileType(
+      mandatory = true,
+      overWritable = false,
+      templatePath = "templates/README.md.template",
+      outputPath = "README.md",
+      replacements = Map("name" -> ghSettings.project.asReplaceable),
+      fileSections = List(
+        FileSection(
+          appendPosition = AppendAtTheEnd,
+          template = template,
+          replacements = Map(
+            "year"                 -> replaceableYear(startYear).asReplaceable,
+            "name"                 -> ghSettings.project.asReplaceable,
+            "organizationName"     -> ghSettings.organizationName.asReplaceable,
+            "organizationHomePage" -> ghSettings.organizationHomePage.asReplaceable
+          ),
+          shouldAppend = !_.contains("# Copyright")
+        )
       )
     )
   }

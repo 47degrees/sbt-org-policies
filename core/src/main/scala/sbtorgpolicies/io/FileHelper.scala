@@ -20,7 +20,7 @@ import cats.syntax.either._
 import sbt.{File, URL}
 import sbtorgpolicies.exceptions.IOException
 import sbtorgpolicies.io.syntax._
-import sbtorgpolicies.templates.{AppendableFileType, FileType, ReplaceableFileType, TemplatesEngine}
+import sbtorgpolicies.templates._
 
 class FileHelper {
 
@@ -48,32 +48,70 @@ class FileHelper {
 
   def checkOrgFiles(projectDir: File, baseDir: File, fileList: List[FileType]): IOResult[Unit] = {
 
-    def checkFiles(): Unit = fileList foreach { f =>
-      if (!fileReader.exists(baseDir.getAbsolutePath.ensureFinalSlash + f.templatePath))
-        throw new IllegalArgumentException(s"File not found: ${f.templatePath}")
-    }
+    def templatePath(f: FileType): String =
+      baseDir.getAbsolutePath.ensureFinalSlash + f.templatePath
 
-    Either
-      .catchNonFatal {
-        checkFiles()
-        fileList
-          .filter(f => !fileReader.exists(f.outputPath) || f.overWritable)
-          .foreach {
-            case f: ReplaceableFileType =>
-              templatesEngine.run(
-                inputPath = baseDir.getAbsolutePath.ensureFinalSlash + f.templatePath,
-                outputPath = projectDir.getAbsolutePath.ensureFinalSlash + f.outputPath,
-                replacements = f.replacements)
-            case f: AppendableFileType =>
-              templatesEngine.runInsert(
-                inputPath = baseDir.getAbsolutePath.ensureFinalSlash + f.templatePath,
-                outputPath = projectDir.getAbsolutePath.ensureFinalSlash + f.outputPath,
-                regexpLine = f.afterLine,
-                template = f.template,
-                replacements = f.replacements)
-          }
+    def outputPath(f: FileType): String =
+      projectDir.getAbsolutePath.ensureFinalSlash + f.outputPath
+
+    def checkFiles(): IOResult[Unit] =
+      fileList.foldLeft[IOResult[Unit]](().asRight) {
+        case (Right(_), f) =>
+          if (!fileReader.exists(templatePath(f)))
+            IOException(s"File not found: ${f.templatePath}").asLeft
+          else ().asRight
+        case (Left(e), _) => Left(e)
       }
-      .leftMap(e => IOException(s"Error checking files ${fileList.map(_.outputPath).mkString(",")}", Some(e)))
+
+    def prepareFileContent(file: FileType): IOResult[Option[String]] =
+      if (!fileReader.exists(file.outputPath) || file.overWritable) {
+        templatesEngine.replaceFileContentsWith(templatePath(file), file.replacements) map (Option(_))
+      } else if (file.fileSections.nonEmpty) {
+        fileReader.getFileContent(file.outputPath) map (Option(_))
+      } else Right(None)
+
+    def replaceSection(fileContent: String, fileSection: FileSection): IOResult[String] =
+      if (fileSection.shouldAppend(fileContent)) {
+        for {
+          section <- templatesEngine.replaceWith(fileSection.template, fileSection.replacements)
+          content <- templatesEngine.insertIn(fileContent, fileSection.appendPosition, section)
+        } yield content
+      } else Right(fileContent)
+
+    def replaceSections(fileContent: String, fileSections: List[FileSection]): IOResult[String] =
+      fileSections.foldLeft[IOResult[String]](fileContent.asRight) {
+        case (Right(partialContent), fileSection) =>
+          replaceSection(partialContent, fileSection)
+        case (Left(e), _) => Left(e)
+      }
+
+    def processSectionsIfWritable(maybeContent: Option[String], fileType: FileType): IOResult[Option[String]] =
+      maybeContent map { c =>
+        replaceSections(c, fileType.fileSections) map (Option(_))
+      } getOrElse None.asRight
+
+    def writeToFileIfWritable(maybeContent: Option[String], fileType: FileType): IOResult[Unit] =
+      maybeContent map { c =>
+        fileWriter.writeContentToFile(c, outputPath(fileType))
+      } getOrElse ().asRight
+
+    def processFile(fileType: FileType): IOResult[Unit] =
+      for {
+        fileContent <- prepareFileContent(fileType)
+        newContent  <- processSectionsIfWritable(fileContent, fileType)
+        _           <- writeToFileIfWritable(newContent, fileType)
+      } yield ()
+
+    def processFiles(fileTypes: List[FileType]): IOResult[Unit] =
+      fileTypes.foldLeft[IOResult[Unit]](().asRight) {
+        case (Right(_), fileType) => processFile(fileType)
+        case (Left(e), _)         => Left(e)
+      }
+
+    for {
+      _ <- checkFiles()
+      _ <- processFiles(fileList)
+    } yield ()
   }
 
 }

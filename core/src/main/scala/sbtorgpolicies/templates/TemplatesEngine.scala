@@ -28,25 +28,7 @@ class TemplatesEngine {
 
   val fileWriter: FileWriter = new FileWriter
 
-  def run(inputPath: String, outputPath: String, replacements: Replacements): IOResult[Unit] =
-    for {
-      content <- replaceFileWith(inputPath, replacements)
-      _       <- fileWriter.writeContentToFile(content, outputPath)
-    } yield ()
-
-  def runInsert(
-      inputPath: String,
-      outputPath: String,
-      regexpLine: Regex,
-      template: String,
-      replacements: Replacements): IOResult[Unit] =
-    for {
-      fileContent     <- readFileOr(outputPath, inputPath)
-      replacedContent <- insertAfter(fileContent, regexpLine, template, replacements)
-      _               <- fileWriter.writeContentToFile(replacedContent, outputPath)
-    } yield ()
-
-  def replaceFileWith(inputPath: String, replacements: Replacements): IOResult[String] =
+  def replaceFileContentsWith(inputPath: String, replacements: Replacements): IOResult[String] =
     fileReader.withFileContent(inputPath, replaceWith(_, replacements))
 
   def replaceWith(content: String, replacements: Replacements): IOResult[String] =
@@ -59,21 +41,14 @@ class TemplatesEngine {
       }
       .leftMap(e => IOException(s"Error replacing content", Some(e)))
 
-  def readFileOr(inputPath: String, templatePath: String): IOResult[String] =
-    fileReader.getFileContent(inputPath) match {
-      case Right(c) => Right(c)
-      case Left(_)  => fileReader.getFileContent(templatePath)
-    }
-
-  def insertAfter(content: String, regexpLine: Regex, template: String, replacements: Replacements): IOResult[String] =
+  def insertIn(content: String, appendPosition: AppendPosition, section: String): IOResult[String] =
     Either
       .catchNonFatal {
-        val replaced = replacements.foldLeft(template) {
-          case (str, (key, replaceable)) =>
-            replacementPattern(key).replaceAllIn(str, replaceable.asString)
+        appendPosition match {
+          case AppendAtTheBeginning => section + "\n" + content
+          case AppendAtTheEnd       => content + "\n" + section
+          case AppendAfter(regex)   => regex.replaceFirstIn(content, "$0\n" + section)
         }
-
-        regexpLine.replaceFirstIn(content, "$0\n" + replaced)
       }
       .leftMap(e => IOException(s"Error inserting content", Some(e)))
 

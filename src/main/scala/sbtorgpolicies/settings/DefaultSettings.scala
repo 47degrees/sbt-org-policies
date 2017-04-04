@@ -76,7 +76,8 @@ trait DefaultSettings extends AllSettings {
       AuthorsFileType(orgGithubSetting.value, orgMaintainersSetting.value, orgContributorsSetting.value),
       NoticeFileType(orgGithubSetting.value, orgLicenseSetting.value, startYear.value),
       VersionSbtFileType,
-      ChangelogFileType
+      ChangelogFileType,
+      ReadmeFileType(orgGithubSetting.value, startYear.value)
     ),
     orgTemplatesDirectorySetting := (resourceDirectory in Compile).value / "org" / "templates"
   )

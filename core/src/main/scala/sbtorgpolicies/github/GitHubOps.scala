@@ -16,6 +16,8 @@
 
 package sbtorgpolicies.github
 
+import java.io.File
+
 import cats.data.{EitherT, NonEmptyList}
 import cats.implicits._
 import cats.syntax.either._
@@ -25,6 +27,7 @@ import github4s.free.domain._
 import sbtorgpolicies.exceptions.{GitHubException, OrgPolicyException}
 import sbtorgpolicies.github.instances._
 import sbtorgpolicies.github.syntax._
+import sbtorgpolicies.io.syntax._
 import sbtorgpolicies.io.{FileReader, IOResult}
 
 class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
@@ -49,12 +52,12 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
     op.execE
   }
 
-  def commitFiles(branch: String, message: String, files: List[String]): Either[OrgPolicyException, Ref] = {
+  def commitFiles(baseDir: File, branch: String, message: String, files: List[String]): Either[OrgPolicyException, Ref] = {
 
     def readFileContents: IOResult[List[(String, String)]] = {
       files.foldLeft[IOResult[List[(String, String)]]](Right(Nil)) {
         case (Right(partialResult), file) =>
-          fileReader.getFileContent(file).map(partialResult :+ (file, _))
+          fileReader.getFileContent(baseDir.getAbsolutePath.ensureFinalSlash + file).map(partialResult :+ (file, _))
         case (Left(e), _) => Left(e)
       }
     }
