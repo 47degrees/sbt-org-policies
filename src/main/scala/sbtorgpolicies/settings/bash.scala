@@ -60,8 +60,9 @@ trait bash {
         val scalaV       = scalaVersion.value
         val crossV       = crossScalaVersions.value
         val isLastScalaV = crossV.lastOption.exists(_ == scalaV)
+        val branch       = orgCommitBranchSetting.value
         if (isLastScalaV &&
-          getEnvVarOrElse("TRAVIS_BRANCH") == "master" &&
+          getEnvVarOrElse("TRAVIS_BRANCH") == branch &&
           getEnvVarOrElse("TRAVIS_PULL_REQUEST") == "false") {
           Def.task {
             orgCreateContributorsFile.value
