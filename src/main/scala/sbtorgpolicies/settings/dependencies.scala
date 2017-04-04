@@ -69,7 +69,7 @@ trait dependencies {
     "cats"            -> "0.9.0",
     "circe"           -> "0.7.0",
     "config"          -> "1.3.0",
-    "coursier"        -> "1.0.0-M15-1",
+    "coursier"        -> "1.0.0-M15-6",
     "discipline"      -> "0.7.3",
     "doobie"          -> "0.4.1",
     "embedded-redis"  -> "0.6",
