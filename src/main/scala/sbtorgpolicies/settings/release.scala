@@ -4,7 +4,7 @@ import cats.syntax.either._
 import org.joda.time.{DateTime, DateTimeZone}
 import sbt.Keys.{baseDirectory, packageOptions, version}
 import sbt.Package.ManifestAttributes
-import sbt.{Project, Setting, State}
+import sbt.{LocalRootProject, Project, Setting, State}
 import sbtorgpolicies.github.GitHubOps
 import sbtorgpolicies.io.FileHelper
 import sbtorgpolicies.OrgPoliciesKeys._
@@ -93,7 +93,7 @@ trait release {
     val (_, comment)    = st.extract.runTask(releaseTagComment, st)
     val branch          = st.extract.get(orgCommitBranchSetting)
     val commitMessage   = st.extract.get(orgCommitMessageSetting)
-    val baseDir         = st.extract.get(baseDirectory)
+    val baseDir         = st.extract.get(baseDirectory in LocalRootProject)
     val orgTemplatesDir = st.extract.get(orgTemplatesDirectorySetting)
     val orgTargetDir    = st.extract.get(orgTargetDirectorySetting)
 
@@ -124,7 +124,7 @@ trait release {
     val ghOps: GitHubOps = st.extract.get(orgGithubOpsSetting)
     val file             = st.extract.get(releaseVersionFile)
     val branch           = st.extract.get(orgCommitBranchSetting)
-    val baseDir           = st.extract.get(baseDirectory)
+    val baseDir          = st.extract.get(baseDirectory in LocalRootProject)
 
     val vs = st
       .get(versions)
