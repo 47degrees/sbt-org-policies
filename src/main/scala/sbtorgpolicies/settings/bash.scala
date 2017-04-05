@@ -15,7 +15,7 @@ trait bash {
       orgCommitPolicyFiles := Def.task {
         val ghOps: GitHubOps = orgGithubOpsSetting.value
         ghOps.commitFiles(
-          baseDir = baseDirectory.value,
+          baseDir = (baseDirectory in LocalRootProject).value,
           branch = orgCommitBranchSetting.value,
           message = s"${orgCommitMessageSetting.value} [ci skip]",
           files = orgEnforcedFilesSetting.value.map(_.outputPath) :+ contributorsFilePath
@@ -61,7 +61,11 @@ trait bash {
         val crossV       = crossScalaVersions.value
         val isLastScalaV = crossV.lastOption.exists(_ == scalaV)
         val branch       = orgCommitBranchSetting.value
+        val baseDir      = baseDirectory.value
+        val rootDir      = (baseDirectory in LocalRootProject).value
+
         if (isLastScalaV &&
+          baseDir.getAbsolutePath == rootDir.getAbsolutePath &&
           getEnvVarOrElse("TRAVIS_BRANCH") == branch &&
           getEnvVarOrElse("TRAVIS_PULL_REQUEST") == "false") {
           Def.task {
