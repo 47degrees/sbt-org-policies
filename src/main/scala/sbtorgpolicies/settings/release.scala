@@ -105,13 +105,16 @@ trait release {
       _ <- fh.createResources(orgTemplatesDir, orgTargetDir)
       fileType = ChangelogFileType(DateTime.now(DateTimeZone.UTC), vs._1, comment)
       _ <- fh.checkOrgFiles(baseDir, orgTargetDir, List(fileType))
-      _ <- ghOps.commitFiles(
+      maybeRef <- ghOps.commitFiles(
         baseDir = baseDir,
         branch = branch,
         message = s"$commitMessage [ci skip]",
         files = List(fileType.outputPath))
-    } yield ()) match {
-      case Right(_) => st.log.info("Update Change Log was finished successfully")
+    } yield maybeRef) match {
+      case Right(Some(_)) =>
+        st.log.info("Update Change Log was finished successfully")
+      case Right(None) =>
+        st.log.info(s"No changes detected in Changelog file. Skipping commit")
       case Left(e) =>
         e.printStackTrace()
         sys.error(s"Error updating Changelog file")
@@ -132,12 +135,11 @@ trait release {
 
     val commitMessage = s"$orgVersionCommitMessage to ${vs._2}"
 
-    ghOps.commitFiles(
-      baseDir = baseDir,
-      branch = branch,
-      message = commitMessage,
-      files = List(file.getName)) match {
-      case Right(_) => st.log.info("Next version was committed successfully")
+    ghOps.commitFiles(baseDir, branch, commitMessage, List(file.getName)) match {
+      case Right(Some(_)) =>
+        st.log.info("Next version was committed successfully")
+      case Right(None) =>
+        st.log.info("No changes detected in version file. Skipping commit")
       case Left(e) =>
         e.printStackTrace()
         sys.error(s"Error committing next version")

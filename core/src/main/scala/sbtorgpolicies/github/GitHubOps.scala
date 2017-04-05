@@ -19,8 +19,10 @@ package sbtorgpolicies.github
 import java.io.File
 
 import cats.data.{EitherT, NonEmptyList}
+import cats.free.Free
 import cats.implicits._
 import cats.syntax.either._
+import com.github.marklister.base64.Base64.Encoder
 import github4s.Github
 import github4s.GithubResponses._
 import github4s.free.domain._
@@ -52,7 +54,11 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
     op.execE
   }
 
-  def commitFiles(baseDir: File, branch: String, message: String, files: List[String]): Either[OrgPolicyException, Ref] = {
+  def commitFiles(
+      baseDir: File,
+      branch: String,
+      message: String,
+      files: List[String]): Either[OrgPolicyException, Option[Ref]] = {
 
     def readFileContents: IOResult[List[(String, String)]] = {
       files.foldLeft[IOResult[List[(String, String)]]](Right(Nil)) {
@@ -73,14 +79,42 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
   def commitFilesAndContents(
       branch: String,
       message: String,
-      filesAndContents: List[(String, String)]): Either[OrgPolicyException, Ref] = {
+      filesAndContents: List[(String, String)]): Either[OrgPolicyException, Option[Ref]] = {
 
     def fetchBaseTreeSha(commitSha: String): Github4sResponse[RefCommit] =
       EitherT(gh.gitData.getCommit(owner, repo, commitSha))
 
-    def createTree(baseTreeSha: String): Github4sResponse[TreeResult] = {
+    def fetchFilesContents(commitSha: String): Github4sResponse[List[(String, Option[String])]] = {
 
-      val treeData = filesAndContents.map {
+      def fetchFileContents(path: String, commitSha: String): Github4sResponse[(String, Option[String])] = {
+        val result: GHIO[GHResponse[(String, Option[String])]] = gh.repos.getContents(
+          owner = owner,
+          repo = repo,
+          path = path,
+          ref = Some(commitSha)) map {
+          case Right(ghResult) => Right(ghResult.map(list => (path, list.head.content)))
+          case Left(_)         => Right(GHResult((path, None), 200, Map.empty))
+        }
+        EitherT(result)
+      }
+
+      filesAndContents.map(_._1).traverse(fetchFileContents(_, commitSha))
+    }
+
+    def filterNonChangedFiles(remote: List[(String, Option[String])]): List[(String, String)] = {
+      val remoteMap = remote.collect {
+        case (path, Some(c)) => path -> c
+      }.toMap
+      filesAndContents.filterNot {
+        case (path, content) => remoteMap.get(path).exists { remoteContent =>
+          remoteContent.trim.replaceAll("\n", "") == content.getBytes.toBase64.trim
+        }
+      }
+    }
+
+    def createTree(baseTreeSha: String, filteredFilesContent: List[(String, String)]): Github4sResponse[TreeResult] = {
+
+      def treeData: List[TreeDataBlob] = filteredFilesContent.map {
         case (path, content) => TreeDataBlob(path, "100644", "blob", content)
       }
 
@@ -93,14 +127,32 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
     def updateHead(commitSha: String) =
       EitherT(gh.gitData.updateReference(owner, repo, s"heads/$branch", commitSha))
 
+    def commitFilesIfChanged(
+        baseTreeSha: String,
+        parentCommitSha: String,
+        filteredFilesContent: List[(String, String)]): Github4sResponse[Option[Ref]] =
+      filteredFilesContent match {
+        case Nil =>
+          val result: GHIO[GHResponse[Option[Ref]]] = Free.pure(Right(GHResult(None, 200, Map.empty)))
+          EitherT(result)
+        case list =>
+          for {
+            ghResultTree   <- createTree(baseTreeSha, list)
+            ghResultCommit <- createCommit(ghResultTree.result.sha, parentCommitSha)
+            ghResultUpdate <- updateHead(ghResultCommit.result.sha)
+          } yield ghResultUpdate.map(Option(_))
+      }
+
     val op = for {
       gHResultParentCommit <- fetchHeadCommit(branch)
       parentCommitSha = gHResultParentCommit.result.`object`.sha
       gHResultBaseTree <- fetchBaseTreeSha(parentCommitSha)
       baseTreeSha = gHResultBaseTree.result.tree.sha
-      ghResultTree   <- createTree(baseTreeSha)
-      ghResultCommit <- createCommit(ghResultTree.result.sha, parentCommitSha)
-      ghResultUpdate <- updateHead(ghResultCommit.result.sha)
+      ghResultFilesContent <- fetchFilesContents(parentCommitSha)
+      ghResultUpdate <- commitFilesIfChanged(
+        baseTreeSha,
+        parentCommitSha,
+        filterNonChangedFiles(ghResultFilesContent.result))
     } yield ghResultUpdate
 
     op.execE
@@ -129,7 +181,7 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
     val op = for {
       headCommit  <- fetchHeadCommit(branch)
       tagResponse <- createTag(headCommit.result.`object`)
-      reference   <- createTagReference(tagResponse.result.sha)
+      _           <- createTagReference(tagResponse.result.sha)
       release     <- createRelease
     } yield release
 
