@@ -25,6 +25,7 @@ import sbtorgpolicies.github.GitHubOps
 import sbtorgpolicies.model._
 import sbtorgpolicies.OrgPoliciesKeys._
 import sbtorgpolicies.templates._
+import sbtorgpolicies.utils.getEnvVarOrElse
 
 trait DefaultSettings extends AllSettings {
 
@@ -79,6 +80,17 @@ trait DefaultSettings extends AllSettings {
       ChangelogFileType,
       ReadmeFileType(orgGithubSetting.value, startYear.value)
     ),
-    orgTemplatesDirectorySetting := (resourceDirectory in Compile).value / "org" / "templates"
+    orgTemplatesDirectorySetting := (resourceDirectory in Compile).value / "org" / "templates",
+    commands += orgAfterCISuccessCommand,
+    orgAfterCISuccessCheckSetting := {
+      getEnvVarOrElse("TRAVIS_BRANCH") == orgCommitBranchSetting.value &&
+      getEnvVarOrElse("TRAVIS_PULL_REQUEST") == "false"
+    },
+    orgAfterCISuccessTaskListSetting := List(
+      orgCreateContributorsFile,
+      orgCreateFiles,
+      orgCommitPolicyFiles,
+      orgPublishRelease
+    )
   )
 }

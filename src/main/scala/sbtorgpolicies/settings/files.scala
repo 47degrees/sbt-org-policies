@@ -64,6 +64,26 @@ trait files {
             streams.value.log.error(s"Error creating contributors file")
             e.printStackTrace()
         }
+      }.value,
+      orgFetchContributors := Def.task {
+
+        val ghOps = orgGithubOpsSetting.value
+
+        (for {
+          list <- ghOps.fetchContributors
+          maintainersIds = orgMaintainersSetting.value.map(_.id)
+          filteredDevs = list
+            .map(user => Dev(user.login, user.name, user.blog))
+            .filterNot(dev => maintainersIds.contains(dev.id))
+        } yield filteredDevs) match {
+          case Right(devs) =>
+            streams.value.log.info("Contributors fetched successfully")
+            devs
+          case Left(e) =>
+            streams.value.log.error(s"Error fetching contributors")
+            e.printStackTrace()
+            Nil
+        }
       }.value
     )
 }

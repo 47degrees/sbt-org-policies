@@ -22,13 +22,21 @@ import sbtorgpolicies.model._
 import sbtorgpolicies.rules.Validation
 import sbtorgpolicies.templates.FileType
 
-trait OrgPoliciesKeys extends OrgPoliciesSettingsKeys with OrgPoliciesTaskKeys
+trait OrgPoliciesKeys extends OrgPoliciesSettingsKeys with OrgPoliciesTaskKeys with CommandKeys
 
 object OrgPoliciesKeys extends OrgPoliciesKeys
 
 sealed trait OrgPoliciesSettingsKeys {
 
   // (Settings keys are ordered alphabetically)
+
+  val orgAfterCISuccessCheckSetting: SettingKey[Boolean] =
+    settingKey[Boolean](
+      "Defines the condition that the orgAfterCISuccess command will check before running the orgAfterCISuccessTaskListSetting list.")
+
+  val orgAfterCISuccessTaskListSetting: SettingKey[List[TaskKey[Unit]]] =
+    settingKey[List[TaskKey[Unit]]](
+      "Defines the list of tasks that should be executed once the Continuous integration build has finished successfully.")
 
   val orgCommitBranchSetting: SettingKey[String] =
     settingKey[String]("Defines the target git branch where policy files will be committed.")
@@ -86,6 +94,8 @@ sealed trait OrgPoliciesTaskKeys {
   val orgCreateContributorsFile: TaskKey[Unit] =
     taskKey[Unit]("Task to fetch all the contributors from GitHub, used to create a new SBT file (contributors.sbt).")
 
+  val orgFetchContributors: TaskKey[List[Dev]] = taskKey[List[Dev]]("Task to fetch the project's contributors.")
+
   val orgPublishRelease: TaskKey[Unit] = taskKey[Unit](
     "This task allows to publish the artifact (publishSigned) in case of dealing with an snapshot, or, " +
       "releasing a new version in any other case.")
@@ -95,5 +105,11 @@ sealed trait OrgPoliciesTaskKeys {
   val orgScalafmtGenerateFile: TaskKey[Unit] = taskKey[Unit]("Generate a default scalafmt configuration")
 
   val orgValidateFiles: TaskKey[Unit] = taskKey[Unit]("Validates all files according to a set of policy rules.")
+
+}
+
+sealed trait CommandKeys {
+
+  val afterCISuccessCommandKey = "orgAfterCISuccess"
 
 }

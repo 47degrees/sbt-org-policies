@@ -2,11 +2,15 @@ package sbtorgpolicies.settings
 
 import com.typesafe.sbt.pgp.PgpKeys._
 import sbt.Keys._
+import sbt.Package.ManifestAttributes
 import sbt._
+import sbt.complete.DefaultParsers.OptNotSpace
 import sbtorgpolicies.github.GitHubOps
 import sbtorgpolicies.OrgPoliciesKeys._
+import sbtorgpolicies.model.Dev
 import sbtorgpolicies.templates.contributorsFilePath
-import sbtorgpolicies.utils._
+import sbtrelease.ReleasePlugin.autoImport.releaseTagComment
+import sbtrelease.ReleaseStateTransformations.reapply
 
 trait bash {
 
@@ -38,11 +42,11 @@ trait bash {
         val isLastScalaV = crossV.lastOption.exists(_ == scalaV)
 
         streams.value.log.info(s"""orgPublishRelease Initiated
-                                  |Build Version = $buildV
-                                  |Scala Version = $scalaV
-                                  |crossScalaVersions = $crossV
-                                  |isSnapshotV = $isSnapshotV
-                                  |isLastScalaV = $isLastScalaV
+             |Build Version = $buildV
+             |Scala Version = $scalaV
+             |crossScalaVersions = $crossV
+             |isSnapshotV = $isSnapshotV
+             |isLastScalaV = $isLastScalaV
          """.stripMargin)
 
         (isSnapshotV, isLastScalaV) match {
@@ -58,27 +62,47 @@ trait bash {
             streams.value.log.info(s"Release Version detected but it'll be skipped for Scala $scalaV...")
             Def.task()
         }
-      }.value,
-      orgAfterCISuccess := Def.taskDyn {
-        val scalaV       = scalaVersion.value
-        val crossV       = crossScalaVersions.value
-        val isLastScalaV = crossV.lastOption.exists(_ == scalaV)
-        val branch       = orgCommitBranchSetting.value
-        val baseDir      = baseDirectory.value
-        val rootDir      = (baseDirectory in LocalRootProject).value
-
-        if (isLastScalaV &&
-          baseDir.getAbsolutePath == rootDir.getAbsolutePath &&
-          getEnvVarOrElse("TRAVIS_BRANCH") == branch &&
-          getEnvVarOrElse("TRAVIS_PULL_REQUEST") == "false") {
-          Def.task {
-            orgCreateContributorsFile.value
-            orgCreateFiles.value
-            orgCommitPolicyFiles.value
-            orgPublishRelease.value
-          }
-        } else Def.task()
       }.value
     )
 
+  val orgAfterCISuccessCommand: Command = Command(afterCISuccessCommandKey)(_ => OptNotSpace) { (st, _) =>
+    val extracted = Project.extract(st)
+
+    val scalaV            = extracted.get(scalaVersion)
+    val crossV            = extracted.get(crossScalaVersions)
+    val baseDir           = extracted.get(baseDirectory)
+    val maybeToken        = extracted.get(orgGithubTokenSetting)
+    val rootDir           = extracted.get(baseDirectory in LocalRootProject)
+    val afterSuccessCheck = extracted.get(orgAfterCISuccessCheckSetting)
+
+    val isLastScalaV = crossV.lastOption.exists(_ == scalaV)
+
+    if (isLastScalaV &&
+      baseDir.getAbsolutePath == rootDir.getAbsolutePath &&
+      afterSuccessCheck) {
+
+      st.log.info(
+        "Initiating orgAfterCISuccessCommand set of tasks " +
+          "configured at orgAfterCISuccessTaskListSetting setting")
+
+      println(s"Token = $maybeToken")
+
+      val (fetchContributorsState, contributorList) =
+        if (maybeToken.nonEmpty) {
+          extracted.runTask[List[Dev]](orgFetchContributors, st)
+        } else (st, Nil)
+
+      println(s"contributorList = $contributorList")
+
+      val newState = reapply(Seq[Setting[_]](orgContributorsSetting := contributorList), fetchContributorsState)
+
+      val taskList = extracted.get(orgAfterCISuccessTaskListSetting)
+
+      taskList map (Project.extract(newState).runTask(_, newState))
+      newState
+    } else {
+      st.log.info("Skipping after CI Success tasks")
+      st
+    }
+  }
 }
