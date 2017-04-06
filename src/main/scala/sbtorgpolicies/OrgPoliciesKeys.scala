@@ -91,9 +91,6 @@ sealed trait OrgPoliciesTaskKeys {
   val orgCreateFiles: TaskKey[Unit] =
     taskKey[Unit]("Task to create the files that must exists in a project to accomplish the Organization's policies.")
 
-  val orgCreateContributorsFile: TaskKey[Unit] =
-    taskKey[Unit]("Task to fetch all the contributors from GitHub, used to create a new SBT file (contributors.sbt).")
-
   val orgFetchContributors: TaskKey[List[Dev]] = taskKey[List[Dev]]("Task to fetch the project's contributors.")
 
   val orgPublishRelease: TaskKey[Unit] = taskKey[Unit](

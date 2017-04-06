@@ -2,14 +2,11 @@ package sbtorgpolicies.settings
 
 import com.typesafe.sbt.pgp.PgpKeys._
 import sbt.Keys._
-import sbt.Package.ManifestAttributes
 import sbt._
 import sbt.complete.DefaultParsers.OptNotSpace
-import sbtorgpolicies.github.GitHubOps
 import sbtorgpolicies.OrgPoliciesKeys._
+import sbtorgpolicies.github.GitHubOps
 import sbtorgpolicies.model.Dev
-import sbtorgpolicies.templates.contributorsFilePath
-import sbtrelease.ReleasePlugin.autoImport.releaseTagComment
 import sbtrelease.ReleaseStateTransformations.reapply
 
 trait bash {
@@ -22,7 +19,7 @@ trait bash {
           baseDir = (baseDirectory in LocalRootProject).value,
           branch = orgCommitBranchSetting.value,
           message = s"${orgCommitMessageSetting.value} [ci skip]",
-          files = orgEnforcedFilesSetting.value.map(_.outputPath) :+ contributorsFilePath
+          files = orgEnforcedFilesSetting.value.map(_.outputPath)
         ) match {
           case Right(Some(_)) =>
             streams.value.log.info("Policy files committed successfully")
@@ -85,17 +82,12 @@ trait bash {
         "Initiating orgAfterCISuccessCommand set of tasks " +
           "configured at orgAfterCISuccessTaskListSetting setting")
 
-      println(s"Token = $maybeToken")
-
       val (fetchContributorsState, contributorList) =
         if (maybeToken.nonEmpty) {
           extracted.runTask[List[Dev]](orgFetchContributors, st)
         } else (st, Nil)
 
-      println(s"contributorList = $contributorList")
-
       val newState = reapply(Seq[Setting[_]](orgContributorsSetting := contributorList), fetchContributorsState)
-
       val taskList = extracted.get(orgAfterCISuccessTaskListSetting)
 
       taskList map (Project.extract(newState).runTask(_, newState))

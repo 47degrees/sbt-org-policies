@@ -19,13 +19,13 @@ package sbtorgpolicies.settings
 import de.heikoseeberger.sbtheader.AutomateHeaderPlugin
 import de.heikoseeberger.sbtheader.HeaderKey.headers
 import de.heikoseeberger.sbtheader.license.Apache2_0
+import dependencies.DependenciesPlugin.autoImport._
 import sbt.Keys._
 import sbt._
 import sbtorgpolicies.github.GitHubOps
 import sbtorgpolicies.model._
 import sbtorgpolicies.OrgPoliciesKeys._
 import sbtorgpolicies.templates._
-import sbtorgpolicies.utils.getEnvVarOrElse
 
 trait DefaultSettings extends AllSettings {
 
@@ -44,6 +44,7 @@ trait DefaultSettings extends AllSettings {
       orgFileValidationTasks ++
       orgEnforcementSettingsTasks ++
       orgBashTasks ++
+      orgCommonTasks ++
       sbtDependenciesSettings ++
       fileValidationDefaultSettings ++
       AutomateHeaderPlugin.automateFor(Compile, Test)
@@ -87,9 +88,9 @@ trait DefaultSettings extends AllSettings {
       getEnvVarOrElse("TRAVIS_PULL_REQUEST") == "false"
     },
     orgAfterCISuccessTaskListSetting := List(
-      orgCreateContributorsFile,
       orgCreateFiles,
       orgCommitPolicyFiles,
+      depUpdateDependencyIssues,
       orgPublishRelease
     )
   )

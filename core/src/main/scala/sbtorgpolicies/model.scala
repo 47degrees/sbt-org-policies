@@ -17,7 +17,7 @@
 package sbtorgpolicies
 
 import sbt.Append.Value
-import sbt.{url, Append, State, URL}
+import sbt.{url, Append, URL}
 
 object model {
 

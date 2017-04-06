@@ -2,8 +2,6 @@
 
 > orgAfterCISuccessCommand
 
-$ exists contributors.sbt
-
 $ exists AUTHORS.md
 
 $ exists CHANGELOG.md

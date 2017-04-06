@@ -40,6 +40,7 @@ trait AllSettings
     with enforcement
     with bash
     with release
+    with common
     with utils {
 
   /**
