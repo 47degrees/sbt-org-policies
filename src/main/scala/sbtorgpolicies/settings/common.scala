@@ -20,25 +20,31 @@ import cats.syntax.either._
 import sbt.Keys._
 import sbt._
 import sbtorgpolicies.OrgPoliciesKeys._
-import sbtorgpolicies.io._
+import sbtorgpolicies.model._
 
-trait files {
+trait common {
 
-  val orgFilesTasks =
+  val orgCommonTasks =
     Seq(
-      orgCreateFiles := Def.task {
-        val fh = new FileHelper
+      orgFetchContributors := Def.task {
+
+        val ghOps = orgGithubOpsSetting.value
 
         (for {
-          _ <- fh.createResources(orgTemplatesDirectorySetting.value, orgTargetDirectorySetting.value)
-          _ <- fh.checkOrgFiles(baseDirectory.value, orgTargetDirectorySetting.value, orgEnforcedFilesSetting.value)
-        } yield ()) match {
-          case Right(_) => streams.value.log.info("Over-writable files have been created successfully")
+          list <- ghOps.fetchContributors
+          maintainersIds = orgMaintainersSetting.value.map(_.id)
+          filteredDevs = list
+            .map(user => Dev(user.login, user.name, user.blog))
+            .filterNot(dev => maintainersIds.contains(dev.id))
+        } yield filteredDevs) match {
+          case Right(devs) =>
+            streams.value.log.info("Contributors fetched successfully")
+            devs
           case Left(e) =>
-            streams.value.log.error(s"Error creating files")
+            streams.value.log.error(s"Error fetching contributors")
             e.printStackTrace()
+            Nil
         }
-
       }.value
     )
 }

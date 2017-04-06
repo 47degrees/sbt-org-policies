@@ -27,8 +27,7 @@ import scala.util.matching.Regex
 
 package object templates {
 
-  val contributorsFilePath: String = "contributors.sbt"
-  val versionFilePath: String      = "version.sbt"
+  val versionFilePath: String = "version.sbt"
 
   type Replacements = Map[String, Replaceable]
 
@@ -115,26 +114,6 @@ package object templates {
         "name"         -> ghSettings.project.asReplaceable,
         "maintainers"  -> maintainers.map(devTemplate).asReplaceable,
         "contributors" -> contributors.map(devTemplate).asReplaceable
-      )
-    )
-  }
-
-  def ContributorsSBTFileType(list: List[Dev]): FileType = {
-
-    def optionAsScalaString(o: Option[String]): String =
-      o.map(v => s"""Some("$v")""").getOrElse("None")
-
-    def devsAsScalaListString: List[String] = list.map { dev =>
-      s"""    Dev("${dev.id}", ${optionAsScalaString(dev.name)}, ${optionAsScalaString(dev.url)})"""
-    }
-
-    FileType(
-      mandatory = false,
-      overWritable = true,
-      templatePath = "templates/contributors.sbt.template",
-      outputPath = contributorsFilePath,
-      replacements = Map(
-        "devs" -> devsAsScalaListString.mkString(",\n").asReplaceable
       )
     )
   }

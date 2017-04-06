@@ -1,9 +1,0 @@
-# check that the sbt-org-policies plugin creates the contributors.sbt file
-
-> orgCreateContributorsFile
-
-$ exists contributors.sbt
-
-> reload
-
-> testCheck

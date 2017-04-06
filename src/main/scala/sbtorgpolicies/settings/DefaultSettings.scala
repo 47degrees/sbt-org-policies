@@ -19,6 +19,7 @@ package sbtorgpolicies.settings
 import de.heikoseeberger.sbtheader.AutomateHeaderPlugin
 import de.heikoseeberger.sbtheader.HeaderKey.headers
 import de.heikoseeberger.sbtheader.license.Apache2_0
+import dependencies.DependenciesPlugin.autoImport._
 import sbt.Keys._
 import sbt._
 import sbtorgpolicies.github.GitHubOps
@@ -43,6 +44,7 @@ trait DefaultSettings extends AllSettings {
       orgFileValidationTasks ++
       orgEnforcementSettingsTasks ++
       orgBashTasks ++
+      orgCommonTasks ++
       sbtDependenciesSettings ++
       fileValidationDefaultSettings ++
       AutomateHeaderPlugin.automateFor(Compile, Test)
@@ -79,6 +81,17 @@ trait DefaultSettings extends AllSettings {
       ChangelogFileType,
       ReadmeFileType(orgGithubSetting.value, startYear.value)
     ),
-    orgTemplatesDirectorySetting := (resourceDirectory in Compile).value / "org" / "templates"
+    orgTemplatesDirectorySetting := (resourceDirectory in Compile).value / "org" / "templates",
+    commands += orgAfterCISuccessCommand,
+    orgAfterCISuccessCheckSetting := {
+      getEnvVarOrElse("TRAVIS_BRANCH") == orgCommitBranchSetting.value &&
+      getEnvVarOrElse("TRAVIS_PULL_REQUEST") == "false"
+    },
+    orgAfterCISuccessTaskListSetting := List(
+      orgCreateFiles.toOrgTask,
+      orgCommitPolicyFiles.toOrgTask,
+      depUpdateDependencyIssues.toOrgTask,
+      orgPublishRelease.toOrgTask(allModulesScope = true, crossScalaVersionsScope = true)
+    )
   )
 }
