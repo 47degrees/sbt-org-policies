@@ -72,7 +72,7 @@ object libraries {
     "scalaj"          -> "2.3.0",
     "scalatest"       -> "3.0.1",
     "scalaz"          -> "7.2.9",
-    "scalazspecs2"    -> "0.4.0",
+    "scalazspecs2"    -> "0.5.0",
     "scanamo"         -> "0.9.1",
     "shapeless"       -> "2.3.2",
     "shocon"          -> "0.1.7",
