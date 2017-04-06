@@ -88,10 +88,10 @@ trait DefaultSettings extends AllSettings {
       getEnvVarOrElse("TRAVIS_PULL_REQUEST") == "false"
     },
     orgAfterCISuccessTaskListSetting := List(
-      orgCreateFiles,
-      orgCommitPolicyFiles,
-      depUpdateDependencyIssues,
-      orgPublishRelease
+      orgCreateFiles.toOrgTask,
+      orgCommitPolicyFiles.toOrgTask,
+      depUpdateDependencyIssues.toOrgTask,
+      orgPublishRelease.toOrgTask(allModulesScope = true, crossScalaVersionsScope = true)
     )
   )
 }

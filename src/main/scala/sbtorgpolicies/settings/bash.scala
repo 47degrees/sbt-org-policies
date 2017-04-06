@@ -65,36 +65,56 @@ trait bash {
   val orgAfterCISuccessCommand: Command = Command(afterCISuccessCommandKey)(_ => OptNotSpace) { (st, _) =>
     val extracted = Project.extract(st)
 
-    val scalaV            = extracted.get(scalaVersion)
-    val crossV            = extracted.get(crossScalaVersions)
-    val baseDir           = extracted.get(baseDirectory)
-    val maybeToken        = extracted.get(orgGithubTokenSetting)
-    val rootDir           = extracted.get(baseDirectory in LocalRootProject)
     val afterSuccessCheck = extracted.get(orgAfterCISuccessCheckSetting)
 
-    val isLastScalaV = crossV.lastOption.exists(_ == scalaV)
+    if (afterSuccessCheck) {
 
-    if (isLastScalaV &&
-      baseDir.getAbsolutePath == rootDir.getAbsolutePath &&
-      afterSuccessCheck) {
+      val scalaV     = extracted.get(scalaVersion)
+      val crossV     = extracted.get(crossScalaVersions)
+      val baseDir    = extracted.get(baseDirectory)
+      val maybeToken = extracted.get(orgGithubTokenSetting)
+      val rootDir    = extracted.get(baseDirectory in LocalRootProject)
 
-      st.log.info(
-        "Initiating orgAfterCISuccessCommand set of tasks " +
-          "configured at orgAfterCISuccessTaskListSetting setting")
+      val isLastScalaV = crossV.lastOption.exists(_ == scalaV)
+      val isRootModule = baseDir.getAbsolutePath == rootDir.getAbsolutePath
+      val taskList     = extracted.get(orgAfterCISuccessTaskListSetting)
 
-      val (fetchContributorsState, contributorList) =
-        if (maybeToken.nonEmpty) {
-          extracted.runTask[List[Dev]](orgFetchContributors, st)
-        } else (st, Nil)
+      val executableTasks = taskList.filter { tsk =>
+        (isLastScalaV || tsk.crossScalaVersionsScope) &&
+        (isRootModule || tsk.allModulesScope)
+      } map (_.task)
 
-      val newState = reapply(Seq[Setting[_]](orgContributorsSetting := contributorList), fetchContributorsState)
-      val taskList = extracted.get(orgAfterCISuccessTaskListSetting)
+      if (executableTasks.nonEmpty) {
 
-      taskList map (Project.extract(newState).runTask(_, newState))
-      newState
+        st.log.info(
+          s"[orgAfterCISuccess] Initiating orgAfterCISuccessCommand " +
+            s"with this set of tasks: ${toStringListTask(executableTasks)}")
+
+        val (fetchContributorsState, contributorList) =
+          if (maybeToken.nonEmpty) {
+            extracted.runTask[List[Dev]](orgFetchContributors, st)
+          } else (st, Nil)
+
+        val newState = reapply(Seq[Setting[_]](orgContributorsSetting := contributorList), fetchContributorsState)
+
+        executableTasks map (Project.extract(newState).runTask(_, newState))
+        newState
+      } else {
+        st.log.info("[orgAfterCISuccess] No tasks to execute")
+        st
+      }
     } else {
-      st.log.info("Skipping after CI Success tasks")
+      st.log.info("[orgAfterCISuccess] orgAfterCISuccessCheckSetting is false, skipping tasks after CI success")
       st
     }
   }
+
+  private[this] def toStringListTask[T](taskList: List[TaskKey[T]]): String =
+    s"""
+      |${taskList.map(toStringTask).mkString("\n")}
+      |
+      |""".stripMargin
+
+  private[this] def toStringTask[T](task: TaskKey[T]): String =
+    s"* ${task.key.label}${task.key.description map (d => s": $d") getOrElse ""}"
 }

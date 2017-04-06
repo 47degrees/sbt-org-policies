@@ -34,8 +34,8 @@ sealed trait OrgPoliciesSettingsKeys {
     settingKey[Boolean](
       "Defines the condition that the orgAfterCISuccess command will check before running the orgAfterCISuccessTaskListSetting list.")
 
-  val orgAfterCISuccessTaskListSetting: SettingKey[List[TaskKey[Unit]]] =
-    settingKey[List[TaskKey[Unit]]](
+  val orgAfterCISuccessTaskListSetting: SettingKey[List[AfterSuccessTask]] =
+    settingKey[List[AfterSuccessTask]](
       "Defines the list of tasks that should be executed once the Continuous integration build has finished successfully.")
 
   val orgCommitBranchSetting: SettingKey[String] =

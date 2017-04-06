@@ -17,7 +17,7 @@
 package sbtorgpolicies
 
 import sbt.Append.Value
-import sbt.{url, Append, URL}
+import sbt.{url, Append, TaskKey, URL}
 
 object model {
 
@@ -115,6 +115,20 @@ object model {
         { name.fold(xml.NodeSeq.Empty)(x => <name>{x}</name>) }
         <url>http://github.com/{ id }</url>
       </developer>
+  }
+
+  case class AfterSuccessTask(
+      task: TaskKey[Unit],
+      allModulesScope: Boolean = false,
+      crossScalaVersionsScope: Boolean = false)
+
+  implicit class AfterSuccessTaskOps(taskKey: TaskKey[Unit]) {
+
+    def toOrgTask: AfterSuccessTask = toOrgTask(allModulesScope = false, crossScalaVersionsScope = false)
+
+    def toOrgTask(allModulesScope: Boolean, crossScalaVersionsScope: Boolean): AfterSuccessTask =
+      AfterSuccessTask(taskKey, allModulesScope, crossScalaVersionsScope)
+
   }
 
   object scalac {
