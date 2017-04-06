@@ -106,9 +106,10 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
         case (path, Some(c)) => path -> c
       }.toMap
       filesAndContents.filterNot {
-        case (path, content) => remoteMap.get(path).exists { remoteContent =>
-          remoteContent.trim.replaceAll("\n", "") == content.getBytes.toBase64.trim
-        }
+        case (path, content) =>
+          remoteMap.get(path).exists { remoteContent =>
+            remoteContent.trim.replaceAll("\n", "") == content.getBytes.toBase64.trim
+          }
       }
     }
 
