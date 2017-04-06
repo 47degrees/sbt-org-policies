@@ -25,14 +25,14 @@ trait ExceptionArbitraries {
 
   implicit val ioExceptionArbitrary: Arbitrary[IOException] = Arbitrary {
     for {
-      msg <- Gen.alphaStr
+      msg            <- Gen.alphaStr
       maybeException <- Gen.option(new RuntimeException(exceptionMessage))
     } yield IOException(msg, maybeException)
   }
 
   implicit val validationExceptionArbitrary: Arbitrary[ValidationException] = Arbitrary {
     for {
-      msg <- Gen.alphaStr
+      msg            <- Gen.alphaStr
       maybeException <- Gen.option(new RuntimeException(exceptionMessage))
     } yield ValidationException(msg, maybeException)
   }

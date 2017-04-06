@@ -1,17 +1,11 @@
-import com.timushev.sbt.updates.UpdatesPlugin.autoImport.dependencyUpdatesExclusions
-import com.typesafe.sbt.SbtPgp.autoImportImpl.PgpKeys.gpgCommand
-import com.typesafe.sbt.SbtPgp.autoImportImpl._
-import dependencies.DependenciesPlugin
-import dependencies.DependenciesPlugin.autoImport._
 import sbt.Keys._
 import sbt.Resolver.sonatypeRepo
 import sbt.ScriptedPlugin._
 import sbt._
-import sbtorgpolicies.libraries._
 import sbtorgpolicies.OrgPoliciesPlugin
 import sbtorgpolicies.OrgPoliciesPlugin.autoImport._
-import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
-import sbtrelease.ReleasePlugin.autoImport._
+import sbtorgpolicies.libraries._
+import sbtorgpolicies.model._
 
 object ProjectPlugin extends AutoPlugin {
 
@@ -62,6 +56,7 @@ object ProjectPlugin extends AutoPlugin {
       libraryDependencies ++= Seq(
         %%("github4s"),
         %%("cats"),
+        %("joda-convert"),
         %("joda-time"),
         %%("base64"),
         %%("scalatest")  % "test",
@@ -71,10 +66,13 @@ object ProjectPlugin extends AutoPlugin {
       )
     )
 
-    lazy val autoCheckDepSettings = Seq()
-//      libraryDependencies ++= scalaLibs.mapValues(lib => lib._1 %% lib._2 % lib._3)
-//        ++ javaLibs.mapValues(lib => lib._1                     %% lib._2 % lib._3)
-//    )
+    lazy val autoCheckDepSettings = Seq(
+      scalaVersion := "2.11.8",
+      resolvers += Resolver.sonatypeRepo("snapshots"),
+      libraryDependencies ++=
+        scalaLibs.mapValues(lib => lib._1  %% lib._2 % lib._3).values.toList ++
+          javaLibs.mapValues(lib => lib._1 % lib._2  % lib._3).values.toList
+    )
 
   }
 

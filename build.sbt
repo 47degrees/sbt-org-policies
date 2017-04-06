@@ -19,5 +19,5 @@ addCommandAlias(
   ";org-policies-core/publishLocal;org-policies-auto-dep-check/publishLocal;sbt-org-policies/publishLocal")
 
 pgpPassphrase := Some(getEnvVar("PGP_PASSPHRASE").getOrElse("").toCharArray)
-pgpPublicRing := file(s"$gpgFolder/pubring.asc")
-pgpSecretRing := file(s"$gpgFolder/secring.asc")
+pgpPublicRing := file(s"$gpgFolder/pubring.gpg")
+pgpSecretRing := file(s"$gpgFolder/secring.gpg")
