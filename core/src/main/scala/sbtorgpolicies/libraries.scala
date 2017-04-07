@@ -41,7 +41,6 @@ object libraries {
     "discipline"      -> "0.7.3",
     "doobie"          -> "0.4.1",
     "embedded-redis"  -> "0.6",
-    "evaluator"       -> "0.1.1-SNAPSHOT",
     "export-hook"     -> "1.2.0",
     "finch"           -> "0.13.0",
     "fs2"             -> "0.9.4",

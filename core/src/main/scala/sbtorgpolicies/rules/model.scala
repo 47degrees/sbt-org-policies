@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-package sbtorgpolicies
+package sbtorgpolicies.rules
 
-import cats.data.{Validated, ValidatedNel}
-import sbtorgpolicies.exceptions.ValidationException
+sealed abstract class PolicyLevel extends Product with Serializable
 
-package object rules {
+case object PolicyWarning extends PolicyLevel
 
-  type ValidationResult = ValidatedNel[ValidationException, Unit]
+case object PolicyError extends PolicyLevel
 
-  type ValidationFunction = (String) => ValidationResult
+case class Validation(policyLevel: PolicyLevel, validationRule: ValidationRule)
 
-  val emptyValidation: ValidationFunction = _ => Validated.valid((): Unit)
-
-  def mkValidation(path: String, list: List[ValidationFunction], policyLevel: PolicyLevel = PolicyError): Validation =
-    Validation(policyLevel, ValidationRule(path, list))
-}
+case class ValidationRule(inputPath: String, validationList: List[ValidationFunction])
