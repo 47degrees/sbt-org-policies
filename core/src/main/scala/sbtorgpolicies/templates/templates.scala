@@ -23,45 +23,12 @@ import sbtorgpolicies.utils._
 import sbtorgpolicies.templates.syntax._
 
 import scala.language.{implicitConversions, postfixOps}
-import scala.util.matching.Regex
 
 package object templates {
 
   val versionFilePath: String = "version.sbt"
 
   type Replacements = Map[String, Replaceable]
-
-  trait Replaceable {
-
-    def asString: String
-  }
-
-  case class ReplaceableT[T](t: T) extends Replaceable {
-    override def asString: String = t.toString
-  }
-
-  case class ReplaceableList[T](list: List[T]) extends Replaceable {
-    override def asString: String = list.map(elem => s"* ${elem.asReplaceable.asString}").mkString("\n")
-  }
-
-  case class FileType(
-      mandatory: Boolean,
-      overWritable: Boolean,
-      templatePath: String,
-      outputPath: String,
-      replacements: Replacements,
-      fileSections: List[FileSection] = Nil)
-
-  case class FileSection(
-      appendPosition: AppendPosition,
-      template: String,
-      replacements: Replacements,
-      shouldAppend: (String) => Boolean = _ => true)
-
-  sealed trait AppendPosition
-  case object AppendAtTheBeginning    extends AppendPosition
-  case object AppendAtTheEnd          extends AppendPosition
-  case class AppendAfter(line: Regex) extends AppendPosition
 
   def LicenseFileType(ghSettings: GitHubSettings, license: License, startYear: Option[Int]): FileType = {
 
@@ -147,8 +114,6 @@ package object templates {
 
   def ChangelogFileType(date: DateTime, version: String, changes: String): FileType =
     ChangelogFileType(Some(NewReleaseSection(date, version, changes)))
-
-  private[this] case class NewReleaseSection(date: DateTime, version: String, changes: String)
 
   private[this] def ChangelogFileType(newChange: Option[NewReleaseSection]): FileType = {
 
