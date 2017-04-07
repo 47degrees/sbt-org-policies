@@ -1,5 +1,13 @@
 # Changelog
 
+## 04/07/2017 - Version 0.4.4
+
+Release changes:
+
+* Removes Compilation Warnings ([#128](https://github.com/47deg/sbt-org-policies/pull/128))
+* SOP-122 - Switch from CrossVersion.full to CrossVersion.patch ([#129](https://github.com/47deg/sbt-org-policies/pull/129)) 
+      
+
 ## 04/07/2017 - Version 0.4.3
 
 Release changes:
