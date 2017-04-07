@@ -11,3 +11,10 @@ Add the following line to `project/plugins.sbt`:
 ```scala
 addSbtPlugin("com.47deg" % "sbt-org-policies" % "0.4.2")
 ```
+
+# Copyright
+
+sbt-org-policies is designed and developed by 47 Degrees
+
+Copyright (C) 2017 47 Degrees. <http://47deg.com>
+      
