@@ -9,7 +9,7 @@
 Add the following line to `project/plugins.sbt`:
 
 ```scala
-addSbtPlugin("com.47deg" % "sbt-org-policies" % "0.4.3")
+addSbtPlugin("com.47deg" % "sbt-org-policies" % "0.4.4")
 ```
 
 # Copyright

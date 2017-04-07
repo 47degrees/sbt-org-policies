@@ -117,9 +117,9 @@ trait AllSettings
   /** Using the supplied Versions map, adds the dependencies for scala macros.*/
   lazy val scalaMacroDependencies: Seq[Setting[_]] = {
     Seq(
-      libraryDependencies += "org.scala-lang" % "scala-compiler" % scalaVersion.value % "provided",
-      libraryDependencies += "org.scala-lang" % "scala-reflect"  % scalaVersion.value % "provided",
-      libraryDependencies += compilerPlugin(%%("paradise") cross CrossVersion.full),
+      libraryDependencies += scalaOrganization.value % "scala-compiler" % scalaVersion.value % "provided",
+      libraryDependencies += scalaOrganization.value % "scala-reflect"  % scalaVersion.value % "provided",
+      libraryDependencies += compilerPlugin(%%("paradise") cross CrossVersion.patch),
       libraryDependencies ++= {
         CrossVersion.partialVersion(scalaVersion.value) match {
           // if scala 2.11+ is used, quasiquotes are merged into scala-reflect
