@@ -62,6 +62,7 @@ object ProjectPlugin extends AutoPlugin {
         %%("scalatest")  % "test",
         %%("scalacheck") % "test",
         "org.mockito"    % "mockito-all" % "2.0.2-beta" % "test",
+        "com.fortysevendeg"     %% "scalacheck-toolbox-datetime" % "0.2.1" % "test",
         "org.scala-sbt"  % "scripted-plugin" % sbtVersion.value
       )
     )
