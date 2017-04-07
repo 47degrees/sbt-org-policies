@@ -82,6 +82,7 @@ object ProjectPlugin extends AutoPlugin {
     scalaVersion := "2.10.6",
     crossScalaVersions := Seq("2.10.6"),
     scalaOrganization := "org.scala-lang",
-    startYear := Some(2017)
+    startYear := Some(2017),
+    orgGithubTokenSetting := Option(System.getenv().get("GITHUB_TOKEN_REPO"))
   )
 }
