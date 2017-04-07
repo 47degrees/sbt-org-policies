@@ -69,6 +69,9 @@ trait bash {
           case (false, true) =>
             streams.value.log.info("Release Version detected, starting the release process...")
             s"git checkout ${orgCommitBranchSetting.value}".!
+            "git reset --hard HEAD".!
+            "git clean -f".!
+            "git pull origin master".!
             "sbt release".!
             Def.task((): Unit)
           case _ =>
