@@ -109,8 +109,8 @@ trait AllSettings
 
   /** Settings to make the module not published*/
   lazy val noPublishSettings = Seq(
-    publish := (),
-    publishLocal := (),
+    publish := ((): Unit),
+    publishLocal := ((): Unit),
     publishArtifact := false
   )
 

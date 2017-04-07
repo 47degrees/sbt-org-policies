@@ -63,7 +63,7 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
     def readFileContents: IOResult[List[(String, String)]] = {
       files.foldLeft[IOResult[List[(String, String)]]](Right(Nil)) {
         case (Right(partialResult), file) =>
-          fileReader.getFileContent(baseDir.getAbsolutePath.ensureFinalSlash + file).map(partialResult :+ (file, _))
+          fileReader.getFileContent(baseDir.getAbsolutePath.ensureFinalSlash + file).map((file, _) :: partialResult)
         case (Left(e), _) => Left(e)
       }
     }
@@ -106,9 +106,10 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
         case (path, Some(c)) => path -> c
       }.toMap
       filesAndContents.filterNot {
-        case (path, content) => remoteMap.get(path).exists { remoteContent =>
-          remoteContent.trim.replaceAll("\n", "") == content.getBytes.toBase64.trim
-        }
+        case (path, content) =>
+          remoteMap.get(path).exists { remoteContent =>
+            remoteContent.trim.replaceAll("\n", "") == content.getBytes.toBase64.trim
+          }
       }
     }
 

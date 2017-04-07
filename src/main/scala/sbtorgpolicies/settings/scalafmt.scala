@@ -35,7 +35,10 @@ trait scalafmt {
     configurations.flatMap { c =>
       inConfig(c)(
         Seq(
-          orgScalafmtInc := orgScalafmtIncDef.value,
+          orgScalafmtInc := {
+            orgScalafmtIncDef.value
+            (): Unit
+          },
           sourceDirectories.in(orgScalafmtInc) := Seq(scalaSource.value),
           compileInputs.in(compile) := (compileInputs.in(compile) dependsOn orgScalafmtInc).value
         )
