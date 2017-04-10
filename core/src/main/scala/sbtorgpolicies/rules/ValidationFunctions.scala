@@ -70,7 +70,10 @@ trait ValidationFunctions {
       }
   }
 
-  def validTravisFile(crossScalaVersions: Seq[String], expectedTasks: Seq[String]): ValidationFunction = {
+  def validTravisFile(
+      crossScalaVersions: Seq[String],
+      scriptExpectedTasks: Seq[String],
+      afterSuccessTasks: Seq[String]): ValidationFunction = {
 
     def validateCrossScalaVersions(content: String): ValidationResult = {
 
@@ -82,19 +85,20 @@ trait ValidationFunctions {
             s"cross scala versions for this project: $crossScalaVersions").invalidNel
     }
 
-    def validateTasks(content: String): ValidationResult = {
-      val scriptTasks: List[String] = yamlOps.getFields(content, "script").toList
+    def validateTasks(content: String, section: String, expectedTasks: Seq[String]): ValidationResult = {
+      val tasksInTravisFile: List[String] = yamlOps.getFields(content, section).toList
 
-      val checkResult = expectedTasks.forall(et => scriptTasks.exists(_.contains(et)))
-
-      if (checkResult) ().valid
+      if (expectedTasks.forall(expectedTsk => tasksInTravisFile.exists(_.contains(expectedTsk))))
+        ().valid
       else
         ValidationException(
           s".travis.yml is not valid, it doesn't contain all the " +
-            s"expected tasks: $expectedTasks").invalidNel
+            s"expected tasks in the $section section: $expectedTasks").invalidNel
     }
 
     content: String =>
-      validateCrossScalaVersions(content) combine validateTasks(content)
+      validateCrossScalaVersions(content) combine
+        validateTasks(content, "script", scriptExpectedTasks) combine
+        validateTasks(content, "after_success", afterSuccessTasks)
   }
 }
