@@ -173,7 +173,7 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
     def createTag(obj: RefObject): Github4sResponse[Tag] =
       EitherT(gh.gitData.createTag(owner, repo, tag, message, obj.sha, obj.`type`))
 
-    def createTagReference(commitSha: String) =
+    def createTagReference(commitSha: String): Github4sResponse[Ref] =
       EitherT(gh.gitData.createReference(owner, repo, s"refs/tags/$tag", commitSha))
 
     def createRelease: Github4sResponse[Release] =
@@ -233,7 +233,7 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
     op.execE
   }
 
-  private[this] def fetchHeadCommit(branch: String): Github4sResponse[Ref] = {
+  def fetchHeadCommit(branch: String): Github4sResponse[Ref] = {
 
     def findReference(gHResult: GHResult[NonEmptyList[Ref]]): GHResponse[Ref] =
       gHResult.result.toList.find(_.ref == s"refs/heads/$branch") match {

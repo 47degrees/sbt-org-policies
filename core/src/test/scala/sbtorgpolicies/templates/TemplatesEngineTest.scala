@@ -27,9 +27,6 @@ import sbtorgpolicies.arbitraries.TemplateArbitraries._
 import sbtorgpolicies.exceptions.IOException
 import sbtorgpolicies.io._
 import sbtorgpolicies.templates.syntax._
-import sbtorgpolicies.io.syntax._
-
-import scala.util.matching.Regex
 
 class TemplatesEngineTest extends TestOps {
 
