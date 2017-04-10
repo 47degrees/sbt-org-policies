@@ -5,3 +5,4 @@ LICENSE
 NOTICE.md
 README.md
 version.sbt
+.travis.yml

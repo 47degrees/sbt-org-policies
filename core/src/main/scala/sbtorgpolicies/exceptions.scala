@@ -33,4 +33,6 @@ object exceptions {
   case class ValidationException(msg: String, cause: Option[Throwable] = None) extends OrgPolicyException(msg, cause)
 
   case class GitHubException(msg: String, cause: Option[Throwable] = None) extends OrgPolicyException(msg, cause)
+
+  case class YamlException(msg: String, cause: Option[Throwable] = None) extends OrgPolicyException(msg, cause)
 }
