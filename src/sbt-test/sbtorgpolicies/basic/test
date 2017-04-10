@@ -34,6 +34,10 @@ $ exists .travis.yml
 
 > orgCheckSettings
 
+> set crossScalaVersions:=Seq("2.10.6","2.11.8","2.12.1")
+
+> orgCheckSettings
+
 > set scoverage.ScoverageKeys.coverageMinimum:=50
 
 > testCheckSettings
