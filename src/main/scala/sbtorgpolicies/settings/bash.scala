@@ -23,6 +23,7 @@ import sbt.complete.DefaultParsers.OptNotSpace
 import sbtorgpolicies.OrgPoliciesKeys._
 import sbtorgpolicies.github.GitHubOps
 import sbtorgpolicies.model.Dev
+import sbtorgpolicies.utils._
 import sbtrelease.ReleaseStateTransformations.reapply
 
 trait bash {
@@ -88,11 +89,12 @@ trait bash {
 
     if (afterSuccessCheck) {
 
-      val scalaV     = extracted.get(scalaVersion)
-      val crossV     = extracted.get(crossScalaVersions)
-      val baseDir    = extracted.get(baseDirectory)
-      val maybeToken = extracted.get(orgGithubTokenSetting)
-      val rootDir    = extracted.get(baseDirectory in LocalRootProject)
+      val scalaV      = extracted.get(scalaVersion)
+      val crossV      = extracted.get(crossScalaVersions)
+      val baseDir     = extracted.get(baseDirectory)
+      val envVarToken = extracted.get(orgGithubTokenSetting)
+      val maybeToken  = getEnvVar(envVarToken)
+      val rootDir     = extracted.get(baseDirectory in LocalRootProject)
 
       val isLastScalaV = crossV.lastOption.exists(_ == scalaV)
       val isRootModule = baseDir.getAbsolutePath == rootDir.getAbsolutePath

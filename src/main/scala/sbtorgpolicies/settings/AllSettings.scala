@@ -269,6 +269,6 @@ trait AllSettings
     DependenciesPlugin.defaultSettings ++ Seq(
       depGithubOwnerSetting := orgGithubSetting.value.organization,
       depGithubRepoSetting := orgGithubSetting.value.project,
-      depGithubTokenSetting := orgGithubTokenSetting.value
+      depGithubTokenSetting := getEnvVar(orgGithubTokenSetting.value)
     )
 }
