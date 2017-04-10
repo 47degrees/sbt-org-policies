@@ -1,5 +1,14 @@
 # Changelog
 
+## 04/10/2017 - Version 0.4.5
+
+Release changes:
+
+* Adds New Libraries ([#131](https://github.com/47deg/sbt-org-policies/pull/131))
+* Adds tests for GitHubOps ([#134](https://github.com/47deg/sbt-org-policies/pull/134))
+* SOP-28 - Enforce travis.yml file with standard tasks ([#133](https://github.com/47deg/sbt-org-policies/pull/133)) 
+      
+
 ## 04/07/2017 - Version 0.4.4
 
 Release changes:
