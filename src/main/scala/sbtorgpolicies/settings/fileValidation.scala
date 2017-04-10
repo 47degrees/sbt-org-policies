@@ -31,7 +31,7 @@ trait fileValidation extends ValidationFunctions {
 
   val fileValidationDefaultSettings = Seq(
     orgValidationListSetting := List(
-      mkValidation(getChildPath(baseDirectory.value, "README.md"), List(emptyValidation)),
+      mkValidation(getChildPath(baseDirectory.value, "README.md"), List(requiredStrings(readmeSections(name.value)))),
       mkValidation(getChildPath(baseDirectory.value, "CONTRIBUTING.md"), List(emptyValidation)),
       mkValidation(
         getChildPath(baseDirectory.value, "AUTHORS.md"),
@@ -63,6 +63,9 @@ trait fileValidation extends ValidationFunctions {
       validationFilesTask(orgValidationListSetting.value, streams.value.log)
     }.value
   )
+
+  private[this] def readmeSections(name: String): List[String] =
+    List(s"$name in the wild")
 
   private[this] def devListStrings(list: List[Dev]): List[String] =
     list.map(_.id) ++ list.flatMap(_.name)
