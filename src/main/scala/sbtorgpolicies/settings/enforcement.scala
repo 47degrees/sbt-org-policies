@@ -48,9 +48,10 @@ trait enforcement {
 
   private[this] def checkCrossScalaVersion = Def.task {
     val crossScalaVersionsValue = crossScalaVersions.value
-    if (crossScalaVersionsValue != scalac.crossScalaVersions) {
-      throw ValidationException(
-        s"crossScalaVersions is $crossScalaVersionsValue. It should be ${scalac.crossScalaVersions}")
+    if (!scalac.crossScalaVersions.forall(crossScalaVersionsValue.contains)) {
+      throw ValidationException(s"""
+           |crossScalaVersions is $crossScalaVersionsValue.
+           |It should have at least these versions: ${scalac.crossScalaVersions.mkString(",")}""".stripMargin)
     }
   }
 
