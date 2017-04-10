@@ -35,10 +35,8 @@ install:
 script:
 - sbt ++$TRAVIS_SCALA_VERSION orgValidateFiles
 - sbt ++$TRAVIS_SCALA_VERSION orgCheckSettings
-- sbt ++$TRAVIS_SCALA_VERSION orgCheckSettings
-- sbt ++$TRAVIS_SCALA_VERSION clean compile test
+- sbt ++$TRAVIS_SCALA_VERSION clean coverage compile test coverageReport
 - sbt ++$TRAVIS_SCALA_VERSION tut
-- sbt ++$TRAVIS_SCALA_VERSION clean coverage test coverageReport
 
 after_success:
 - sbt ++$TRAVIS_SCALA_VERSION orgAfterCISuccess
