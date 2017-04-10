@@ -54,6 +54,9 @@ class GitHubOpsTest extends TestOps {
     override val gh: Github             = githubMock
   }
 
+  def toLeftResult[T](e: GHException): Either[GitHubException, T] =
+    Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
+
   def resetMocks(): Unit = Mockito.reset(ghGitData, ghPullRequests, ghRepos, ghUsers, fileReaderMock)
 
   test("GithubOps.fetchContributors works as expected") {
@@ -78,9 +81,9 @@ class GitHubOpsTest extends TestOps {
 
         (list1.left.toOption, list2.find(_.isLeft).flatMap(_.left.toOption)) match {
           case (Some(e), _) =>
-            result shouldBeEq Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
+            result shouldBeEq toLeftResult(e)
           case (_, Some(e)) =>
-            result shouldBeEq Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
+            result shouldBeEq toLeftResult(e)
           case _ =>
             val resultList = list2.collect {
               case Right(gHResult) => gHResult.result
@@ -131,12 +134,12 @@ class GitHubOpsTest extends TestOps {
 
         (nelRefResponse, refCommitResponse) match {
           case (Left(e), _) =>
-            result shouldBeEq Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
+            result shouldBeEq toLeftResult(e)
           case (Right(gHResult), _) if !gHResult.result.exists(_.ref == s"refs/heads/$branch") =>
-            val ex = UnexpectedException(s"Branch $branch not found")
-            result shouldBeEq Left(GitHubException(s"GitHub returned an error: ${ex.getMessage}", Some(ex)))
+            val e = UnexpectedException(s"Branch $branch not found")
+            result shouldBeEq toLeftResult(e)
           case (_, Left(e)) =>
-            result shouldBeEq Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
+            result shouldBeEq toLeftResult(e)
           case _ =>
             result shouldBeEq Right(None)
         }
@@ -192,18 +195,18 @@ class GitHubOpsTest extends TestOps {
 
         (nelRefR, refCommitR, treeResultR, createCommitR, updateReferenceR) match {
           case (Left(e), _, _, _, _) =>
-            result shouldBeEq Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
+            result shouldBeEq toLeftResult(e)
           case (Right(gHResult), _, _, _, _) if !gHResult.result.exists(_.ref == s"refs/heads/$branch") =>
-            val ex = UnexpectedException(s"Branch $branch not found")
-            result shouldBeEq Left(GitHubException(s"GitHub returned an error: ${ex.getMessage}", Some(ex)))
+            val e = UnexpectedException(s"Branch $branch not found")
+            result shouldBeEq toLeftResult(e)
           case (_, Left(e), _, _, _) =>
-            result shouldBeEq Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
+            result shouldBeEq toLeftResult(e)
           case (_, _, Left(e), _, _) =>
-            result shouldBeEq Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
+            result shouldBeEq toLeftResult(e)
           case (_, _, _, Left(e), _) =>
-            result shouldBeEq Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
+            result shouldBeEq toLeftResult(e)
           case (_, _, _, _, Left(e)) =>
-            result shouldBeEq Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
+            result shouldBeEq toLeftResult(e)
           case _ =>
             result shouldBeEq Right(None)
         }
@@ -260,12 +263,12 @@ class GitHubOpsTest extends TestOps {
 
         (nelRefResponse, refCommitResponse) match {
           case (Left(e), _) =>
-            result shouldBeEq Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
+            result shouldBeEq toLeftResult(e)
           case (Right(gHResult), _) if !gHResult.result.exists(_.ref == s"refs/heads/$branch") =>
-            val ex = UnexpectedException(s"Branch $branch not found")
-            result shouldBeEq Left(GitHubException(s"GitHub returned an error: ${ex.getMessage}", Some(ex)))
+            val e = UnexpectedException(s"Branch $branch not found")
+            result shouldBeEq toLeftResult(e)
           case (_, Left(e)) =>
-            result shouldBeEq Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
+            result shouldBeEq toLeftResult(e)
           case _ =>
             result shouldBeEq Right(None)
         }
@@ -314,18 +317,18 @@ class GitHubOpsTest extends TestOps {
 
         (nelRefR, refCommitR, treeResultR, createCommitR, updateReferenceR) match {
           case (Left(e), _, _, _, _) =>
-            result shouldBeEq Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
+            result shouldBeEq toLeftResult(e)
           case (Right(gHResult), _, _, _, _) if !gHResult.result.exists(_.ref == s"refs/heads/$branch") =>
-            val ex = UnexpectedException(s"Branch $branch not found")
-            result shouldBeEq Left(GitHubException(s"GitHub returned an error: ${ex.getMessage}", Some(ex)))
+            val e = UnexpectedException(s"Branch $branch not found")
+            result shouldBeEq toLeftResult(e)
           case (_, Left(e), _, _, _) =>
-            result shouldBeEq Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
+            result shouldBeEq toLeftResult(e)
           case (_, _, Left(e), _, _) =>
-            result shouldBeEq Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
+            result shouldBeEq toLeftResult(e)
           case (_, _, _, Left(e), _) =>
-            result shouldBeEq Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
+            result shouldBeEq toLeftResult(e)
           case (_, _, _, _, Left(e)) =>
-            result shouldBeEq Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
+            result shouldBeEq toLeftResult(e)
           case _ =>
             result shouldBeEq Right(None)
         }
@@ -347,7 +350,7 @@ class GitHubOpsTest extends TestOps {
 
       refResponse match {
         case Left(e) =>
-          result shouldBeEq Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
+          result shouldBeEq toLeftResult(e)
         case Right(gHResult) =>
           result shouldBeEq Right(gHResult.result)
       }
@@ -399,16 +402,16 @@ class GitHubOpsTest extends TestOps {
 
         (nelRefResponse, tagResponse, refResponse, releaseResponse) match {
           case (Left(e), _, _, _) =>
-            result shouldBeEq Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
+            result shouldBeEq toLeftResult(e)
           case (Right(gHResult), _, _, _) if !gHResult.result.exists(_.ref == s"refs/heads/$branch") =>
-            val ex = UnexpectedException(s"Branch $branch not found")
-            result shouldBeEq Left(GitHubException(s"GitHub returned an error: ${ex.getMessage}", Some(ex)))
+            val e = UnexpectedException(s"Branch $branch not found")
+            result shouldBeEq toLeftResult(e)
           case (_, Left(e), _, _) =>
-            result shouldBeEq Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
+            result shouldBeEq toLeftResult(e)
           case (_, _, Left(e), _) =>
-            result shouldBeEq Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
+            result shouldBeEq toLeftResult(e)
           case (_, _, _, Left(e)) =>
-            result shouldBeEq Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
+            result shouldBeEq toLeftResult(e)
           case (_, _, _, Right(gHResult)) =>
             result shouldBeEq Right(gHResult.result)
         }
@@ -443,7 +446,7 @@ class GitHubOpsTest extends TestOps {
         case Right(gHResult) =>
           result.map(_.toSet) shouldBeEq Right(gHResult.result.filter(_.merged_at.nonEmpty).toSet)
         case Left(e) =>
-          result shouldBeEq Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
+          result shouldBeEq toLeftResult(e)
       }
     }
     check(property)
@@ -475,9 +478,9 @@ class GitHubOpsTest extends TestOps {
 
       (commitsResponse, prResponse) match {
         case (Left(e), _) =>
-          result shouldBeEq Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
+          result shouldBeEq toLeftResult(e)
         case (_, Left(e)) =>
-          result shouldBeEq Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
+          result shouldBeEq toLeftResult(e)
         case (Right(_), Right(gHResult)) =>
           result.map(_.toSet) shouldBeEq Right(gHResult.result.filter(_.merged_at.nonEmpty).toSet)
       }
@@ -525,9 +528,9 @@ class GitHubOpsTest extends TestOps {
 
         (commitsResponse, prResponse) match {
           case (Left(e), _) =>
-            result shouldBeEq Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
+            result shouldBeEq toLeftResult(e)
           case (_, Left(e)) =>
-            result shouldBeEq Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
+            result shouldBeEq toLeftResult(e)
           case (Right(_), Right(gHResult)) =>
             val expected =
               gHResult.result.filter(_.merged_at.exists(s => dateTimeFormat.parseDateTime(s).isAfter(date2015))).toSet
@@ -552,12 +555,12 @@ class GitHubOpsTest extends TestOps {
 
       refResponse match {
         case Left(e) =>
-          result shouldBeEq Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
+          result shouldBeEq toLeftResult(e)
         case Right(gHResult) if gHResult.result.exists(_.ref == s"refs/heads/$branch") =>
           result shouldBeEq Right(gHResult.result.head)
         case _ =>
-          val ex = UnexpectedException(s"Branch $branch not found")
-          result shouldBeEq Left(GitHubException(s"GitHub returned an error: ${ex.getMessage}", Some(ex)))
+          val e = UnexpectedException(s"Branch $branch not found")
+          result shouldBeEq toLeftResult(e)
       }
     }
 
