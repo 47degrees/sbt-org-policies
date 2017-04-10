@@ -44,7 +44,16 @@ trait fileValidation extends ValidationFunctions {
         getChildPath(baseDirectory.value, "NOTICE.md"),
         List(requiredStrings(List(name.value, orgLicenseSetting.value.name)))
       ),
-      mkValidation(getChildPath(baseDirectory.value, sbtorgpolicies.templates.versionFilePath), List(emptyValidation))
+      mkValidation(getChildPath(baseDirectory.value, sbtorgpolicies.templates.versionFilePath), List(emptyValidation)),
+      mkValidation(
+        getChildPath(baseDirectory.value, ".travis.yml"),
+        List(
+          validTravisFile(
+            crossScalaVersions.value,
+            Seq(orgCheckSettings.key.label, orgValidateFiles.key.label)
+          )
+        )
+      )
     )
   )
 

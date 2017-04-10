@@ -21,10 +21,13 @@ import cats.kernel.instances.unit._
 import cats.syntax.foldable._
 import cats.syntax.validated._
 import sbtorgpolicies.exceptions.ValidationException
+import sbtorgpolicies.rules.syntax._
 
 import scala.util.matching.Regex
 
 trait ValidationFunctions {
+
+  val yamlOps = new YamlOps
 
   def requiredStrings(list: List[String]): ValidationFunction = {
 
@@ -65,5 +68,33 @@ trait ValidationFunctions {
       } else {
         validation(sectionLines.lines.mkString("\n"))
       }
+  }
+
+  def validTravisFile(crossScalaVersions: Seq[String], expectedTasks: Seq[String]): ValidationFunction = {
+
+    def validateCrossScalaVersions(content: String): ValidationResult = {
+
+      val travisCrossScalaVersion: List[String] = yamlOps.getFields(content, "scala").toList.sorted
+      if (travisCrossScalaVersion == crossScalaVersions.sorted) ().valid
+      else
+        ValidationException(
+          s".travis.yml is not valid, it doesn't contain all the " +
+            s"cross scala versions for this project: $crossScalaVersions").invalidNel
+    }
+
+    def validateTasks(content: String): ValidationResult = {
+      val scriptTasks: List[String] = yamlOps.getFields(content, "script").toList
+
+      val checkResult = expectedTasks.forall(et => scriptTasks.exists(_.contains(et)))
+
+      if (checkResult) ().valid
+      else
+        ValidationException(
+          s".travis.yml is not valid, it doesn't contain all the " +
+            s"expected tasks: $expectedTasks").invalidNel
+    }
+
+    content: String =>
+      validateCrossScalaVersions(content) combine validateTasks(content)
   }
 }

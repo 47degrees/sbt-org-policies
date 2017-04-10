@@ -16,17 +16,19 @@
 
 package sbtorgpolicies
 
+import net.jcazevedo.moultingyaml._
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import sbtorgpolicies.model._
-import sbtorgpolicies.utils._
 import sbtorgpolicies.templates.syntax._
+import sbtorgpolicies.utils._
 
 import scala.language.{implicitConversions, postfixOps}
 
 package object templates {
 
   val versionFilePath: String = "version.sbt"
+  val travisFilePath: String  = ".travis.yml"
 
   type Replacements = Map[String, Replaceable]
 
@@ -175,6 +177,21 @@ package object templates {
           ),
           shouldAppend = !_.contains("# Copyright")
         )
+      )
+    )
+  }
+
+  def TravisFileType(crossScalaV: Seq[String]): FileType = {
+
+    import sbtorgpolicies.model.YamlFormats._
+
+    FileType(
+      mandatory = true,
+      overWritable = false,
+      templatePath = "templates/travis.yml.template",
+      outputPath = travisFilePath,
+      replacements = Map(
+        "crossScalaVersions" -> crossScalaV.toYaml.prettyPrint.asReplaceable
       )
     )
   }

@@ -14,4 +14,6 @@ $ exists README.md
 
 $ exists version.sbt
 
+$ exists .travis.yml
+
 > orgValidateFiles

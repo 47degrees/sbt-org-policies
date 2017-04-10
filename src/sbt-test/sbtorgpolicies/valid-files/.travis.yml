@@ -1,0 +1,46 @@
+language: scala
+
+scala:
+- 2.11.8
+- 2.12.1
+
+jdk:
+- oraclejdk8
+
+before_cache:
+- du -h -d 1 $HOME/.ivy2/
+- du -h -d 2 $HOME/.sbt/
+- du -h -d 4 $HOME/.coursier/
+- find $HOME/.sbt -name "*.lock" -type f -delete
+- find $HOME/.ivy2/cache -name "ivydata-*.properties" -type f -delete
+
+cache:
+  directories:
+  - $HOME/.sbt/cache
+  - $HOME/.sbt/0.13
+  - $HOME/.sbt/boot/
+  - $HOME/.sbt/boot/scala*
+  - $HOME/.sbt/launchers
+  - $HOME/.ivy2/cache
+  - $HOME/.ivy2
+
+before_install:
+- export PATH=${PATH}:./vendor/bundle
+
+install:
+- rvm use 2.2.3 --install --fuzzy
+- gem update --system
+- gem install sass
+- gem install jekyll -v 3.4.3
+- pip install --user codecov
+
+script:
+- sbt ++$TRAVIS_SCALA_VERSION orgValidateFiles
+- sbt ++$TRAVIS_SCALA_VERSION orgCheckSettings
+- sbt ++$TRAVIS_SCALA_VERSION clean compile test
+- sbt ++$TRAVIS_SCALA_VERSION tut
+- sbt ++$TRAVIS_SCALA_VERSION clean coverage test coverageReport
+
+after_success:
+- sbt ++$TRAVIS_SCALA_VERSION orgAfterCISuccess
+- codecov

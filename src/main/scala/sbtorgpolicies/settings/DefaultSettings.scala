@@ -79,7 +79,8 @@ trait DefaultSettings extends AllSettings {
       NoticeFileType(orgGithubSetting.value, orgLicenseSetting.value, startYear.value),
       VersionSbtFileType,
       ChangelogFileType,
-      ReadmeFileType(orgGithubSetting.value, startYear.value)
+      ReadmeFileType(orgGithubSetting.value, startYear.value),
+      TravisFileType(crossScalaVersions.value)
     ),
     orgTemplatesDirectorySetting := (resourceDirectory in Compile).value / "org" / "templates",
     commands += orgAfterCISuccessCommand,
