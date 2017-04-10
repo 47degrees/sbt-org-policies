@@ -53,8 +53,9 @@ sealed trait OrgPoliciesSettingsKeys {
   val orgGithubSetting: SettingKey[GitHubSettings] =
     settingKey[GitHubSettings]("General Organization Github Settings. 47 Degrees data by default.")
 
-  val orgGithubTokenSetting: SettingKey[Option[String]] =
-    settingKey[Option[String]]("Github token, needed to be used to interact with Github, empty by default.")
+  val orgGithubTokenSetting: SettingKey[String] =
+    settingKey[String](
+      "Environment variable name where the Github token will be stored. Default value: 'ORG_GITHUB_TOKEN'")
 
   val orgGithubOpsSetting: SettingKey[GitHubOps] =
     settingKey[GitHubOps]("Github wrapper to interact with github4s and the Github API.")

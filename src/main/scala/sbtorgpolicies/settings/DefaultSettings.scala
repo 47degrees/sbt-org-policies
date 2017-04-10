@@ -58,11 +58,11 @@ trait DefaultSettings extends AllSettings {
       organizationHomePage = url("http://47deg.com"),
       organizationEmail = "hello@47deg.com"
     ),
-    orgGithubTokenSetting := None,
+    orgGithubTokenSetting := "ORG_GITHUB_TOKEN",
     orgGithubOpsSetting := new GitHubOps(
       orgGithubSetting.value.organization,
       orgGithubSetting.value.project,
-      orgGithubTokenSetting.value),
+      getEnvVar(orgGithubTokenSetting.value)),
     orgLicenseSetting := ApacheLicense,
     headers := Map(
       "scala" -> Apache2_0(replaceableYear(startYear.value), "47 Degrees, LLC. <http://www.47deg.com>")
