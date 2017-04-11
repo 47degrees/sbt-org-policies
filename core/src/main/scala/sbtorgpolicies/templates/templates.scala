@@ -16,11 +16,15 @@
 
 package sbtorgpolicies
 
+import cats.syntax.option._
 import net.jcazevedo.moultingyaml._
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import sbtorgpolicies.model._
+import sbtorgpolicies.templates.badges.{BadgeBuilder, BadgeInformation}
+import sbtorgpolicies.templates.sectionTemplates._
 import sbtorgpolicies.templates.syntax._
+import sbtorgpolicies.templates.utils._
 import sbtorgpolicies.utils._
 
 import scala.language.{implicitConversions, postfixOps}
@@ -117,17 +121,7 @@ package object templates {
   def ChangelogFileType(date: DateTime, version: String, changes: String): FileType =
     ChangelogFileType(Some(NewReleaseSection(date, version, changes)))
 
-  private[this] def ChangelogFileType(newChange: Option[NewReleaseSection]): FileType = {
-
-    val template =
-      """
-        |## {{date}} - Version {{version}}
-        |
-        |Release changes:
-        |
-        |{{changes}} 
-      """.stripMargin
-
+  private[this] def ChangelogFileType(newChange: Option[NewReleaseSection]): FileType =
     FileType(
       mandatory = true,
       overWritable = false,
@@ -137,7 +131,7 @@ package object templates {
       fileSections = newChange map { change =>
         FileSection(
           appendPosition = AppendAfter("""# Changelog""".r),
-          template = template,
+          template = changelogSectionTemplate,
           replacements = Map(
             "date"    -> change.date.asReplaceable,
             "version" -> change.version.asReplaceable,
@@ -146,18 +140,28 @@ package object templates {
         )
       } toList
     )
-  }
 
-  def ReadmeFileType(ghSettings: GitHubSettings, startYear: Option[Int]): FileType = {
+  def ReadmeFileType(
+      ghSettings: GitHubSettings,
+      startYear: Option[Int],
+      license: License,
+      branch: String,
+      scalaVersion: String,
+      badgeBuilderList: List[BadgeBuilder] = Nil): FileType = {
 
-    val template =
-      """
-        |# Copyright
-        |
-        |{{name}} is designed and developed by {{organizationName}}
-        |
-        |Copyright (C) {{year}} {{organizationName}}. <{{organizationHomePage}}>
-      """.stripMargin
+    def replaceableBadges: Replaceable = {
+      val info = BadgeInformation(
+        owner = ghSettings.organization,
+        repo = ghSettings.project,
+        branch = branch,
+        libOrg = ghSettings.groupId.some,
+        libName = ghSettings.project.some,
+        scalaV = scalaVersion.some,
+        scalaJSV = None,
+        license = license.some
+      )
+      badgeBuilderList.map(_(info)).map(_.asMarkDown.getOrElse("")).mkString(" ").asReplaceable
+    }
 
     FileType(
       mandatory = true,
@@ -167,15 +171,23 @@ package object templates {
       replacements = Map("name" -> ghSettings.project.asReplaceable),
       fileSections = List(
         FileSection(
-          appendPosition = AppendAtTheEnd,
-          template = template,
+          appendPosition = replaceSection(copyrightSectionTitle, top = false),
+          template = copyrightSectionTemplate,
           replacements = Map(
             "year"                 -> replaceableYear(startYear).asReplaceable,
             "name"                 -> ghSettings.project.asReplaceable,
             "organizationName"     -> ghSettings.organizationName.asReplaceable,
             "organizationHomePage" -> ghSettings.organizationHomePage.asReplaceable
           ),
-          shouldAppend = !_.contains("# Copyright")
+          shouldAppend = content => {
+            content.contains(sectionSep(copyrightSectionTitle)) ||
+            !content.contains(s"# $copyrightSectionTitle")
+          }
+        ),
+        FileSection(
+          appendPosition = replaceSection(badgesSectionTitle, top = true),
+          template = badgesSectionTemplate,
+          replacements = Map("badges" -> replaceableBadges)
         )
       )
     )

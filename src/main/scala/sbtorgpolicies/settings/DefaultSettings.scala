@@ -26,6 +26,7 @@ import sbtorgpolicies.github.GitHubOps
 import sbtorgpolicies.model._
 import sbtorgpolicies.OrgPoliciesKeys._
 import sbtorgpolicies.templates._
+import sbtorgpolicies.templates.badges._
 
 trait DefaultSettings extends AllSettings {
 
@@ -72,6 +73,15 @@ trait DefaultSettings extends AllSettings {
     orgCommitBranchSetting := "master",
     orgCommitMessageSetting := "Updates policy files from SBT",
     orgTargetDirectorySetting := resourceManaged.value / "org-policies",
+    orgBadgeListSetting := List(
+      TravisBadge.apply,
+      MavenCentralBadge.apply,
+      CodecovBadge.apply,
+      LicenseBadge.apply,
+      ScalaLangBadge.apply,
+      GitterBadge.apply,
+      GitHubIssuesBadge.apply
+    ),
     orgEnforcedFilesSetting := List(
       LicenseFileType(orgGithubSetting.value, orgLicenseSetting.value, startYear.value),
       ContributingFileType(orgGithubSetting.value),
@@ -79,7 +89,13 @@ trait DefaultSettings extends AllSettings {
       NoticeFileType(orgGithubSetting.value, orgLicenseSetting.value, startYear.value),
       VersionSbtFileType,
       ChangelogFileType,
-      ReadmeFileType(orgGithubSetting.value, startYear.value),
+      ReadmeFileType(
+        orgGithubSetting.value,
+        startYear.value,
+        orgLicenseSetting.value,
+        orgCommitBranchSetting.value,
+        scalaVersion.value,
+        orgBadgeListSetting.value),
       TravisFileType(crossScalaVersions.value)
     ),
     orgTemplatesDirectorySetting := (resourceDirectory in Compile).value / "org" / "templates",
