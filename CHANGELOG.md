@@ -1,5 +1,15 @@
 # Changelog
 
+## 04/11/2017 - Version 0.4.6
+
+Release changes:
+
+* orgGithubTokenSetting as Env Var Name ([#136](https://github.com/47deg/sbt-org-policies/pull/136))
+* Fixes the check for cross scala ([#137](https://github.com/47deg/sbt-org-policies/pull/137))
+* Enforces a "used by" section in the README file ([#139](https://github.com/47deg/sbt-org-policies/pull/139))
+* Bumps g4s version. Adds other minor changes ([#140](https://github.com/47deg/sbt-org-policies/pull/140)) 
+      
+
 ## 04/10/2017 - Version 0.4.5
 
 Release changes:
