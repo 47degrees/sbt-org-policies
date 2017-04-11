@@ -175,7 +175,7 @@ class TemplatesEngineTest extends TestOps {
         | Other Stuff
       """.stripMargin
 
-    val secion = "\n2017 (47 Degrees)"
+    val section = "\n2017 (47 Degrees)"
 
     val expectedContent =
       """
@@ -186,7 +186,7 @@ class TemplatesEngineTest extends TestOps {
         | Other Stuff
       """.stripMargin
 
-    val result = templatesEngine.insertIn(originalContent, AppendAfter(" Title".r), secion)
+    val result = templatesEngine.insertIn(originalContent, AppendAfter(" Title".r), section)
 
     result.isRight shouldBe true
     result.right.get shouldBe expectedContent
