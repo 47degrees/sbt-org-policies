@@ -5,7 +5,6 @@ import sbt._
 import sbtorgpolicies.OrgPoliciesPlugin
 import sbtorgpolicies.OrgPoliciesPlugin.autoImport._
 import sbtorgpolicies.libraries._
-import sbtorgpolicies.model._
 
 object ProjectPlugin extends AutoPlugin {
 
@@ -59,12 +58,12 @@ object ProjectPlugin extends AutoPlugin {
         %("joda-convert"),
         %("joda-time"),
         %%("base64"),
-        "net.jcazevedo"  %% "moultingyaml" % "0.4.0",
-        %%("scalatest")  % "test",
-        %%("scalacheck") % "test",
-        "org.mockito"    % "mockito-all" % "2.0.2-beta" % "test",
-        "com.fortysevendeg"     %% "scalacheck-toolbox-datetime" % "0.2.1" % "test",
-        "org.scala-sbt"  % "scripted-plugin" % sbtVersion.value
+        %%("moultingyaml"),
+        %%("scalatest")     % "test",
+        %%("scalacheck")    % "test",
+        "org.mockito"       % "mockito-all" % "2.0.2-beta" % "test",
+        "com.fortysevendeg" %% "scalacheck-toolbox-datetime" % "0.2.1" % "test",
+        "org.scala-sbt"     % "scripted-plugin" % sbtVersion.value
       )
     )
 
@@ -94,6 +93,6 @@ object ProjectPlugin extends AutoPlugin {
     crossScalaVersions := Seq("2.10.6"),
     scalaOrganization := "org.scala-lang",
     startYear := Some(2017),
-    orgGithubTokenSetting := Option(System.getenv().get("GITHUB_TOKEN_REPO"))
+    orgGithubTokenSetting := "GITHUB_TOKEN_REPO"
   )
 }

@@ -23,7 +23,7 @@ object libraries {
   val v47: Map[String, String] = Map[String, String](
     "case-classy" -> "0.3.0",
     "fetch"       -> "0.6.0",
-    "github4s"    -> "0.14.1"
+    "github4s"    -> "0.14.2"
   )
 
   protected val vOthers: Map[String, String] = Map[String, String](
@@ -97,6 +97,7 @@ object libraries {
     "aws-sdk"        -> (("com.amazonaws", "aws-java-sdk", v("aws-sdk"))),
     "config"         -> (("com.typesafe", "config", v("config"))),
     "embedded-redis" -> (("com.orange.redis-embedded", "embedded-redis", v("embedded-redis"))),
+    "h2"             -> (("com.h2database", "h2", v("h2"))),
     "joda-convert"   -> (("org.joda", "joda-convert", v("joda-convert"))),
     "joda-time"      -> (("joda-time", "joda-time", v("joda-time"))),
     "mockito-core"   -> (("org.mockito", "mockito-core", v("mockito"))),
@@ -162,7 +163,6 @@ object libraries {
     "fs2-io"                 -> (("co.fs2", "fs2-io", v("fs2"))),
     "fs2-cats"               -> (("co.fs2", "fs2-cats", v("fs2-cats"))),
     "github4s"               -> (("com.47deg", "github4s", v("github4s"))),
-    "h2"                     -> (("com.h2database", "h2", v("h2"))),
     "http4s-blaze-client"    -> (("org.http4s", "http4s-blaze-client", v("http4s"))),
     "http4s-blaze-server"    -> (("org.http4s", "http4s-blaze-server", v("http4s"))),
     "http4s-circe"           -> (("org.http4s", "http4s-circe", v("http4s"))),
