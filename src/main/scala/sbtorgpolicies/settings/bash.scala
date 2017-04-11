@@ -48,7 +48,8 @@ trait bash {
         }
       }.value,
       orgPublishReleaseTask := Def.task {
-        s"sbt $orgPublishReleaseCommandKey".!
+        val scalaV = scalaVersion.value
+        s"sbt ++$scalaV $orgPublishReleaseCommandKey".!
         (): Unit
       }.value
     )
