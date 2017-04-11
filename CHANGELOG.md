@@ -1,5 +1,12 @@
 # Changelog
 
+## 04/11/2017 - Version 0.4.7
+
+Release changes:
+
+* Turns orgPublishRelease into a sbt command ([#142](https://github.com/47deg/sbt-org-policies/pull/142)) 
+      
+
 ## 04/11/2017 - Version 0.4.6
 
 Release changes:
