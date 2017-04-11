@@ -36,7 +36,7 @@ trait common {
           filteredDevs = list
             .map(user => Dev(user.login, user.name, user.blog))
             .filterNot(dev => maintainersIds.contains(dev.id))
-        } yield filteredDevs) match {
+        } yield filteredDevs.sortBy(_.name)) match {
           case Right(devs) =>
             streams.value.log.info("Contributors fetched successfully")
             devs
