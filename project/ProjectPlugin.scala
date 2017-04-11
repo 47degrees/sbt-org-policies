@@ -33,7 +33,7 @@ object ProjectPlugin extends AutoPlugin {
       addSbtPlugin("com.eed3si9n"       % "sbt-buildinfo"          % "0.6.1"),
       addSbtPlugin("com.geirsson"       % "sbt-scalafmt"           % "0.6.8"),
       addSbtPlugin("com.47deg"          % "sbt-dependencies"       % "0.1.0"),
-      addSbtPlugin("com.47deg"          % "sbt-microsites"         % "0.5.1")
+      addSbtPlugin("com.47deg"          % "sbt-microsites"         % "0.5.3")
     ) ++
       ScriptedPlugin.scriptedSettings ++ Seq(
       scriptedDependencies := (compile in Test) map { _ =>

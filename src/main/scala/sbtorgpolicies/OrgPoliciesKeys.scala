@@ -94,7 +94,7 @@ sealed trait OrgPoliciesTaskKeys {
 
   val orgFetchContributors: TaskKey[List[Dev]] = taskKey[List[Dev]]("Task to fetch the project's contributors.")
 
-  val orgPublishRelease: TaskKey[Unit] = taskKey[Unit](
+  val orgPublishReleaseTask: TaskKey[Unit] = taskKey[Unit](
     "This task allows to publish the artifact (publishSigned) in case of dealing with an snapshot, or, " +
       "releasing a new version in any other case.")
 
@@ -108,6 +108,8 @@ sealed trait OrgPoliciesTaskKeys {
 
 sealed trait CommandKeys {
 
-  val afterCISuccessCommandKey = "orgAfterCISuccess"
+  val orgAfterCISuccessCommandKey = "orgAfterCISuccess"
+
+  val orgPublishReleaseCommandKey = "orgPublishRelease"
 
 }

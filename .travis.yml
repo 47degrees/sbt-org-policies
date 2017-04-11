@@ -8,8 +8,10 @@ cache:
   - $HOME/.ivy2/cache
   - $HOME/.sbt/boot/
 before_install:
-- openssl aes-256-cbc -K $encrypted_7c61f7d7bb76_key -iv $encrypted_7c61f7d7bb76_iv
-  -in secring.gpg.enc -out secring.gpg -d
+- if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then
+    openssl aes-256-cbc -K $encrypted_7c61f7d7bb76_key -iv $encrypted_7c61f7d7bb76_iv
+    -in secring.gpg.enc -out secring.gpg -d;
+  fi
 - rm -rf $HOME/.ivy2/cache/scala_2.10/sbt_0.13/com.47deg/sbt-org-policies
 script:
 - sbt ++$TRAVIS_SCALA_VERSION clean compile test

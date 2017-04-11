@@ -30,7 +30,6 @@ install:
 - gem update --system
 - gem install sass
 - gem install jekyll -v 3.4.3
-- pip install --user codecov
 
 script:
 - sbt ++$TRAVIS_SCALA_VERSION orgValidateFiles
@@ -40,4 +39,4 @@ script:
 
 after_success:
 - sbt ++$TRAVIS_SCALA_VERSION orgAfterCISuccess
-- codecov
+- bash <(curl -s https://codecov.io/bash) -t token_replace-me

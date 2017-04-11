@@ -83,7 +83,7 @@ trait DefaultSettings extends AllSettings {
       TravisFileType(crossScalaVersions.value)
     ),
     orgTemplatesDirectorySetting := (resourceDirectory in Compile).value / "org" / "templates",
-    commands += orgAfterCISuccessCommand,
+    commands ++= Seq(orgPublishReleaseCommand, orgAfterCISuccessCommand),
     orgAfterCISuccessCheckSetting := {
       getEnvVarOrElse("TRAVIS_BRANCH") == orgCommitBranchSetting.value &&
       getEnvVarOrElse("TRAVIS_PULL_REQUEST") == "false"
@@ -92,7 +92,7 @@ trait DefaultSettings extends AllSettings {
       orgCreateFiles.toOrgTask,
       orgCommitPolicyFiles.toOrgTask,
       depUpdateDependencyIssues.toOrgTask,
-      orgPublishRelease.toOrgTask(allModulesScope = true, crossScalaVersionsScope = true)
+      orgPublishReleaseTask.toOrgTask(allModulesScope = true, crossScalaVersionsScope = true)
     )
   )
 }
