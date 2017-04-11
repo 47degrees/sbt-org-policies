@@ -22,7 +22,9 @@ import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import sbtorgpolicies.model._
 import sbtorgpolicies.templates.badges.{BadgeBuilder, BadgeInformation}
+import sbtorgpolicies.templates.sectionTemplates._
 import sbtorgpolicies.templates.syntax._
+import sbtorgpolicies.templates.utils._
 import sbtorgpolicies.utils._
 
 import scala.language.{implicitConversions, postfixOps}
@@ -119,17 +121,7 @@ package object templates {
   def ChangelogFileType(date: DateTime, version: String, changes: String): FileType =
     ChangelogFileType(Some(NewReleaseSection(date, version, changes)))
 
-  private[this] def ChangelogFileType(newChange: Option[NewReleaseSection]): FileType = {
-
-    val template =
-      """
-        |## {{date}} - Version {{version}}
-        |
-        |Release changes:
-        |
-        |{{changes}} 
-      """.stripMargin
-
+  private[this] def ChangelogFileType(newChange: Option[NewReleaseSection]): FileType =
     FileType(
       mandatory = true,
       overWritable = false,
@@ -139,7 +131,7 @@ package object templates {
       fileSections = newChange map { change =>
         FileSection(
           appendPosition = AppendAfter("""# Changelog""".r),
-          template = template,
+          template = changelogSectionTemplate,
           replacements = Map(
             "date"    -> change.date.asReplaceable,
             "version" -> change.version.asReplaceable,
@@ -148,7 +140,6 @@ package object templates {
         )
       } toList
     )
-  }
 
   def ReadmeFileType(
       ghSettings: GitHubSettings,
@@ -157,25 +148,6 @@ package object templates {
       branch: String,
       scalaVersion: String,
       badgeBuilderList: List[BadgeBuilder] = Nil): FileType = {
-
-    val copyrightTemplate =
-      """
-        |# Copyright
-        |
-        |{{name}} is designed and developed by {{organizationName}}
-        |
-        |Copyright (C) {{year}} {{organizationName}}. <{{organizationHomePage}}>
-      """.stripMargin
-
-    val badgesTemplate =
-      """
-        |
-        |[comment]: # (Start Badges)
-        |
-        |{{badges}}
-        |
-        |[comment]: # (End Badges)
-      """.stripMargin
 
     def replaceableBadges: Replaceable = {
       val info = BadgeInformation(
@@ -199,23 +171,23 @@ package object templates {
       replacements = Map("name" -> ghSettings.project.asReplaceable),
       fileSections = List(
         FileSection(
-          appendPosition = AppendAtTheEnd,
-          template = copyrightTemplate,
+          appendPosition = replaceSection(copyrightSectionTitle, top = false),
+          template = copyrightSectionTemplate,
           replacements = Map(
             "year"                 -> replaceableYear(startYear).asReplaceable,
             "name"                 -> ghSettings.project.asReplaceable,
             "organizationName"     -> ghSettings.organizationName.asReplaceable,
             "organizationHomePage" -> ghSettings.organizationHomePage.asReplaceable
           ),
-          shouldAppend = !_.contains("# Copyright")
+          shouldAppend = content => {
+            content.contains(sectionSep(copyrightSectionTitle)) ||
+            !content.contains(s"# $copyrightSectionTitle")
+          }
         ),
         FileSection(
-          appendPosition = AppendAtTheBeginning,
-          template = badgesTemplate,
-          replacements = Map("badges" -> replaceableBadges),
-          shouldAppend = content => {
-            !content.contains("[comment]: # (Badges)") && !content.contains("Build Status")
-          }
+          appendPosition = replaceSection(badgesSectionTitle, top = true),
+          template = badgesSectionTemplate,
+          replacements = Map("badges" -> replaceableBadges)
         )
       )
     )

@@ -175,12 +175,7 @@ class TemplatesEngineTest extends TestOps {
         | Other Stuff
       """.stripMargin
 
-    val template = "\n2017 (47 Degrees)"
-
-    val replacements = Map(
-      "year" -> 2017.asReplaceable,
-      "name" -> "47 Degrees".asReplaceable
-    )
+    val secion = "\n2017 (47 Degrees)"
 
     val expectedContent =
       """
@@ -191,9 +186,62 @@ class TemplatesEngineTest extends TestOps {
         | Other Stuff
       """.stripMargin
 
-    val result = templatesEngine.insertIn(originalContent, AppendAfter(" Title".r), template)
+    val result = templatesEngine.insertIn(originalContent, AppendAfter(" Title".r), secion)
 
     result.isRight shouldBe true
     result.right.get shouldBe expectedContent
+  }
+
+  test("TemplatesEngine.insertIn works as expected when passing ReplaceSection") {
+
+    val originalContent =
+      """
+        | (Start section)
+        |
+        | Old text
+        |
+        | (End section)
+        |
+        | Other Stuff
+      """.stripMargin
+
+    val originalContentWithoutSection =
+      """
+        | Other Stuff
+      """.stripMargin
+
+    val section =
+      """
+        | (Start section)
+        |
+        | New text
+        |
+        | (End section)""".stripMargin
+
+    val expectedContent =
+      """
+        | (Start section)
+        |
+        | New text
+        |
+        | (End section)
+        |
+        | Other Stuff
+      """.stripMargin
+
+    val from = "\n \\(Start section\\)".r
+    val to   = "\\(End section\\)".r
+
+    val result1 = templatesEngine.insertIn(originalContent, ReplaceSection(from, to), section)
+    result1 shouldBe Right(expectedContent)
+
+    val result2 = templatesEngine.insertIn(originalContentWithoutSection, ReplaceSection(from, to), section)
+    result2 shouldBe Right(expectedContent)
+
+    val result3 = templatesEngine.insertIn(
+      originalContentWithoutSection,
+      ReplaceSection(from, to, insertIfNotFound = false),
+      section)
+    result3 shouldBe Right(originalContentWithoutSection)
   }
 }

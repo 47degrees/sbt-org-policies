@@ -52,5 +52,7 @@ sealed trait AppendPosition
 case object AppendAtTheBeginning    extends AppendPosition
 case object AppendAtTheEnd          extends AppendPosition
 case class AppendAfter(line: Regex) extends AppendPosition
+case class ReplaceSection(from: Regex, to: Regex, insertIfNotFound: Boolean = true, defaultTop: Boolean = true)
+    extends AppendPosition
 
 case class NewReleaseSection(date: DateTime, version: String, changes: String)
