@@ -42,4 +42,4 @@ script:
 
 after_success:
 - sbt ++$TRAVIS_SCALA_VERSION orgAfterCISuccess
-- codecov
+- bash <(curl -s https://codecov.io/bash) -t token_replace-me

@@ -21,9 +21,10 @@ object libraries {
   type Artifact = (String, String, String)
 
   val v47: Map[String, String] = Map[String, String](
-    "case-classy" -> "0.3.0",
-    "fetch"       -> "0.6.0",
-    "github4s"    -> "0.14.2"
+    "case-classy"           -> "0.3.0",
+    "fetch"                 -> "0.6.0",
+    "github4s"              -> "0.14.2",
+    "scheckToolboxDatetime" -> "0.2.1"
   )
 
   protected val vOthers: Map[String, String] = Map[String, String](
@@ -201,6 +202,7 @@ object libraries {
     "roshttp"                -> (("fr.hmil", "roshttp", v("roshttp"))),
     "scalacheck"             -> (("org.scalacheck", "scalacheck", v("scalacheck"))),
     "scheckShapeless"        -> (("com.github.alexarchambault", "scalacheck-shapeless_1.13", v("scheckShapeless"))),
+    "scheckToolboxDatetime"  -> (("com.fortysevendeg", "scalacheck-toolbox-datetime", v("scheckToolboxDatetime"))),
     "scalaj"                 -> (("org.scalaj", "scalaj-http", v("scalaj"))),
     "scalatest"              -> (("org.scalatest", "scalatest", v("scalatest"))),
     "scalaz-concurrent"      -> (("org.scalaz", "scalaz-concurrent", v("scalaz"))),

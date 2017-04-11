@@ -47,42 +47,55 @@ trait bash {
             e.printStackTrace()
         }
       }.value,
-      orgPublishRelease := Def.taskDyn {
-
-        val buildV       = (version in ThisBuild).value
-        val scalaV       = scalaVersion.value
-        val crossV       = crossScalaVersions.value
-        val isSnapshotV  = buildV.endsWith("-SNAPSHOT")
-        val isLastScalaV = crossV.lastOption.exists(_ == scalaV)
-
-        streams.value.log.info(s"""orgPublishRelease Initiated
-             |Build Version = $buildV
-             |Scala Version = $scalaV
-             |crossScalaVersions = $crossV
-             |isSnapshotV = $isSnapshotV
-             |isLastScalaV = $isLastScalaV
-         """.stripMargin)
-
-        (isSnapshotV, isLastScalaV) match {
-          case (true, _) =>
-            streams.value.log.info("SNAPSHOT version detected, skipping release and publishing it...")
-            Def.task(publishSigned.value)
-          case (false, true) =>
-            streams.value.log.info("Release Version detected, starting the release process...")
-            s"git checkout ${orgCommitBranchSetting.value}".!
-            "git reset --hard HEAD".!
-            "git clean -f".!
-            "git pull origin master".!
-            "sbt release".!
-            Def.task((): Unit)
-          case _ =>
-            streams.value.log.info(s"Release Version detected but it'll be skipped for Scala $scalaV...")
-            Def.task((): Unit)
-        }
+      orgPublishReleaseTask := Def.task {
+        s"sbt $orgPublishReleaseCommandKey".!
+        (): Unit
       }.value
     )
 
-  val orgAfterCISuccessCommand: Command = Command(afterCISuccessCommandKey)(_ => OptNotSpace) { (st, _) =>
+  val orgPublishReleaseCommand: Command = Command(orgPublishReleaseCommandKey)(_ => OptNotSpace) { (st, _) =>
+    val extracted = Project.extract(st)
+
+    val buildV    = extracted.get(version in ThisBuild)
+    val scalaV    = extracted.get(scalaVersion)
+    val crossV    = extracted.get(crossScalaVersions)
+    val orgBranch = extracted.get(orgCommitBranchSetting)
+
+    val isLastScalaV = crossV.lastOption.exists(_ == scalaV)
+    val isSnapshotV  = buildV.endsWith("-SNAPSHOT")
+
+    st.log.info(s"""orgPublishRelease Command Initiated
+                              |Build Version = $buildV
+                              |Scala Version = $scalaV
+                              |crossScalaVersions = $crossV
+                              |isSnapshotV = $isSnapshotV
+                              |isLastScalaV = $isLastScalaV
+         """.stripMargin)
+
+    val finalState = (isSnapshotV, isLastScalaV) match {
+      case (true, _) =>
+        st.log.info("SNAPSHOT version detected, skipping release and publishing it...")
+
+        val (newState, _) = extracted.runTask[Unit](publishSigned, st)
+        newState
+      case (false, true) =>
+        st.log.info("Release Version detected, starting the release process...")
+
+        s"git checkout $orgBranch" ::
+          "git reset --hard HEAD" ::
+          "git clean -f" ::
+          "git pull origin master" ::
+          "release" ::
+          st
+      case _ =>
+        st.log.info(s"Release Version detected but it'll be skipped for Scala $scalaV...")
+        st
+    }
+
+    finalState
+  }
+
+  val orgAfterCISuccessCommand: Command = Command(orgAfterCISuccessCommandKey)(_ => OptNotSpace) { (st, _) =>
     val extracted = Project.extract(st)
 
     val afterSuccessCheck = extracted.get(orgAfterCISuccessCheckSetting)
