@@ -16,10 +16,12 @@
 
 package sbtorgpolicies
 
+import cats.syntax.option._
 import net.jcazevedo.moultingyaml._
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import sbtorgpolicies.model._
+import sbtorgpolicies.templates.badges.{BadgeBuilder, BadgeInformation}
 import sbtorgpolicies.templates.syntax._
 import sbtorgpolicies.utils._
 
@@ -148,9 +150,15 @@ package object templates {
     )
   }
 
-  def ReadmeFileType(ghSettings: GitHubSettings, startYear: Option[Int]): FileType = {
+  def ReadmeFileType(
+      ghSettings: GitHubSettings,
+      startYear: Option[Int],
+      license: License,
+      branch: String,
+      scalaVersion: String,
+      badgeBuilderList: List[BadgeBuilder] = Nil): FileType = {
 
-    val template =
+    val copyrightTemplate =
       """
         |# Copyright
         |
@@ -158,6 +166,30 @@ package object templates {
         |
         |Copyright (C) {{year}} {{organizationName}}. <{{organizationHomePage}}>
       """.stripMargin
+
+    val badgesTemplate =
+      """
+        |
+        |[comment]: # (Start Badges)
+        |
+        |{{badges}}
+        |
+        |[comment]: # (End Badges)
+      """.stripMargin
+
+    def replaceableBadges: Replaceable = {
+      val info = BadgeInformation(
+        owner = ghSettings.organization,
+        repo = ghSettings.project,
+        branch = branch,
+        libOrg = ghSettings.groupId.some,
+        libName = ghSettings.project.some,
+        scalaV = scalaVersion.some,
+        scalaJSV = None,
+        license = license.some
+      )
+      badgeBuilderList.map(_(info)).map(_.asMarkDown.getOrElse("")).mkString(" ").asReplaceable
+    }
 
     FileType(
       mandatory = true,
@@ -168,7 +200,7 @@ package object templates {
       fileSections = List(
         FileSection(
           appendPosition = AppendAtTheEnd,
-          template = template,
+          template = copyrightTemplate,
           replacements = Map(
             "year"                 -> replaceableYear(startYear).asReplaceable,
             "name"                 -> ghSettings.project.asReplaceable,
@@ -176,6 +208,14 @@ package object templates {
             "organizationHomePage" -> ghSettings.organizationHomePage.asReplaceable
           ),
           shouldAppend = !_.contains("# Copyright")
+        ),
+        FileSection(
+          appendPosition = AppendAtTheBeginning,
+          template = badgesTemplate,
+          replacements = Map("badges" -> replaceableBadges),
+          shouldAppend = content => {
+            !content.contains("[comment]: # (Badges)") && !content.contains("Build Status")
+          }
         )
       )
     )

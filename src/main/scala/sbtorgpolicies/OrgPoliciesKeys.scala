@@ -21,6 +21,7 @@ import sbtorgpolicies.github.GitHubOps
 import sbtorgpolicies.model._
 import sbtorgpolicies.rules.Validation
 import sbtorgpolicies.templates.FileType
+import sbtorgpolicies.templates.badges.BadgeBuilder
 
 trait OrgPoliciesKeys extends OrgPoliciesSettingsKeys with OrgPoliciesTaskKeys with CommandKeys
 
@@ -37,6 +38,9 @@ sealed trait OrgPoliciesSettingsKeys {
   val orgAfterCISuccessTaskListSetting: SettingKey[List[AfterSuccessTask]] =
     settingKey[List[AfterSuccessTask]](
       "Defines the list of tasks that should be executed once the Continuous integration build has finished successfully.")
+
+  val orgBadgeListSetting: SettingKey[List[BadgeBuilder]] =
+    settingKey[List[BadgeBuilder]]("Defines the list of badges that will be included in the README file.")
 
   val orgCommitBranchSetting: SettingKey[String] =
     settingKey[String]("Defines the target git branch where policy files will be committed.")
