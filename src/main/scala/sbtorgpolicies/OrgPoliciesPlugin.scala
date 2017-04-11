@@ -24,13 +24,11 @@ object OrgPoliciesPlugin extends AutoPlugin {
 
   object autoImport extends OrgPoliciesKeys with DefaultSettings
 
-  import autoImport._
-
   override def requires: Plugins = plugins.JvmPlugin && ScalafmtPlugin
 
   override def trigger: PluginTrigger = allRequirements
 
-  override def projectSettings: Seq[Def.Setting[_]] = orgDefaultSettings
+  override def projectSettings: Seq[Def.Setting[_]] = autoImport.orgDefaultSettings
 
-  override def globalSettings: Seq[Def.Setting[_]] = pgpSettings
+  override def globalSettings: Seq[Def.Setting[_]] = autoImport.pgpSettings
 }
