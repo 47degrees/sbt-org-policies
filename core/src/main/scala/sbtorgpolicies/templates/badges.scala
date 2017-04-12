@@ -27,7 +27,7 @@ object badges {
       branch: String,
       libOrg: Option[String] = None,
       libName: Option[String] = None,
-      scalaV: Option[String] = None,
+      libVersion: Option[String] = None,
       scalaJSV: Option[String] = None,
       license: Option[License] = None)
 
@@ -57,8 +57,8 @@ object badges {
     override def badgeIcon: Option[BadgeIcon] =
       BadgeIcon(
         title = "GitHub Issues",
-        icon = s"https://img.shields.io/github/issues/${info.repo}/${info.repo}.svg",
-        url = s"https://github.com/${info.repo}/${info.repo}/issues"
+        icon = s"https://img.shields.io/github/issues/${info.owner}/${info.repo}.svg",
+        url = s"https://github.com/${info.owner}/${info.repo}/issues"
       ).some
   }
 
@@ -94,12 +94,12 @@ object badges {
   case class MavenCentralBadge(info: BadgeInformation) extends Badge(info) {
 
     override def badgeIcon: Option[BadgeIcon] =
-      (info.libOrg, info.libName, info.scalaV) match {
-        case (Some(org), Some(name), Some(scalaV)) =>
+      (info.libOrg, info.libName, info.libVersion) match {
+        case (Some(org), Some(name), Some(version)) =>
           BadgeIcon(
             "Maven Central",
-            s"https://maven-badges.herokuapp.com/maven-central/$org/${name}_$scalaV/badge.svg",
-            s"https://maven-badges.herokuapp.com/maven-central/$org/${name}_$scalaV"
+            s"https://img.shields.io/badge/maven%20central-$version-green.svg",
+            s"https://maven-badges.herokuapp.com/maven-central/$org/$name"
           ).some
         case _ => None
       }
