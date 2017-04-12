@@ -114,7 +114,6 @@ trait DefaultSettings extends AllSettings {
     orgScriptTaskListSetting := List(
       orgValidateFiles.toOrgTask,
       orgCheckSettings.toOrgTask,
-      clean.toOrgTask(allModulesScope = true, crossScalaVersionsScope = true),
       (orgCompile in ThisBuild).toOrgTask(allModulesScope = true, crossScalaVersionsScope = true),
       (test in Test).toOrgTask(allModulesScope = true, crossScalaVersionsScope = true),
       ScoverageKeys.coverageReport.toOrgTask

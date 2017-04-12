@@ -73,7 +73,7 @@ sealed trait OrgPoliciesSettingsKeys {
   val orgScriptTaskListSetting: SettingKey[List[RunnableCITask]] =
     settingKey[List[RunnableCITask]](
       "Defines the list of tasks that should be executed to figure out whether the build is correct. " +
-        "By default, it'be something like this: 'sbt clean coverage compile test coverageReport'")
+        "By default, it'd be something like this: 'sbt clean coverage compile test coverageReport'")
 
   val orgTargetDirectorySetting: SettingKey[File] =
     SettingKey[File]("orgTargetDirectory", "Where sbt-org-policies output goes.")
