@@ -59,11 +59,11 @@ object ProjectPlugin extends AutoPlugin {
         %("joda-time"),
         %%("base64"),
         %%("moultingyaml"),
-        %%("scalatest")     % "test",
-        %%("scalacheck")    % "test",
-        "org.mockito"       % "mockito-all" % "2.0.2-beta" % "test",
-        "com.fortysevendeg" %% "scalacheck-toolbox-datetime" % "0.2.1" % "test",
-        "org.scala-sbt"     % "scripted-plugin" % sbtVersion.value
+        %%("scalatest")             % "test",
+        %%("scalacheck")            % "test",
+        %("mockito-core", "2.6.6")  % "test",
+        %%("scheckToolboxDatetime") % "test",
+        "org.scala-sbt"             % "scripted-plugin" % sbtVersion.value
       )
     )
 

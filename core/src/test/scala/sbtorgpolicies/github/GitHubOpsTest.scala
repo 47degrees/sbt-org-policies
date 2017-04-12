@@ -23,7 +23,7 @@ import github4s.GithubResponses.{GHException, GHResponse, GHResult, UnexpectedEx
 import github4s.app.GitHub4s
 import github4s._
 import github4s.free.domain._
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
 import org.mockito.Mockito._
 import org.scalacheck.Prop._
