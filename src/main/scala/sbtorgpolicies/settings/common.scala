@@ -46,6 +46,11 @@ trait common {
             Nil
         }
       }.value,
-      orgCompile in ThisBuild := Def.task((compile in Compile).map(_ => (): Unit)).value
+      orgCompile in ThisBuild := Def
+        .task[Unit] {
+          compile in Compile
+          (): Unit
+        }
+        .value
     )
 }

@@ -35,9 +35,7 @@ install:
 - pip install --user codecov
 
 script:
-- sbt ++$TRAVIS_SCALA_VERSION orgValidateFiles
-- sbt ++$TRAVIS_SCALA_VERSION orgCheckSettings
-- sbt ++$TRAVIS_SCALA_VERSION clean coverage compile test coverageReport
+- sbt ++$TRAVIS_SCALA_VERSION orgScriptCI
 - sbt ++$TRAVIS_SCALA_VERSION tut
 
 after_success:

@@ -173,8 +173,6 @@ trait bash {
       newState.log.info(s"[$commandName] Initiating with this set of tasks: ${toStringListTask(executableTasks)}")
 
       executableTasks.foldLeft(newState) { (st, task) =>
-        st.log.info(s"Running task ${task.key} with scope ${task.scope.toString}")
-
         Project.extract(st).runTask(task, st)._1
       }
     } else {

@@ -1,0 +1,11 @@
+# checks that the orgScriptCI sbt task works correctly for the default set of tasks
+
+> orgCreateFiles
+
+> orgScriptCI
+
+$ exists target/scala-2.12/coverage-report/cobertura.xml
+
+$ exists target/scala-2.12/scoverage-report/scoverage.xml
+
+$ exists target/scala-2.12/scoverage-report/index.html
