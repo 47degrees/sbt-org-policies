@@ -26,8 +26,8 @@ object sectionTemplates {
       |
       |Release changes:
       |
-      |{{changes}} 
-    """.stripMargin
+      |{{changes}}
+      |""".stripMargin
 
   val copyrightSectionTitle: String = "Copyright"
 
