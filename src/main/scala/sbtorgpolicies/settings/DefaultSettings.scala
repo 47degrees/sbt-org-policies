@@ -20,6 +20,7 @@ import de.heikoseeberger.sbtheader.AutomateHeaderPlugin
 import de.heikoseeberger.sbtheader.HeaderKey.headers
 import de.heikoseeberger.sbtheader.license.Apache2_0
 import dependencies.DependenciesPlugin.autoImport._
+import scoverage.ScoverageKeys
 import sbt.Keys._
 import sbt._
 import sbtorgpolicies.github.GitHubOps
@@ -99,7 +100,7 @@ trait DefaultSettings extends AllSettings {
       TravisFileType(crossScalaVersions.value)
     ),
     orgTemplatesDirectorySetting := (resourceDirectory in Compile).value / "org" / "templates",
-    commands ++= Seq(orgPublishReleaseCommand, orgAfterCISuccessCommand),
+    commands ++= Seq(orgScriptCICommand, orgPublishReleaseCommand, orgAfterCISuccessCommand),
     orgAfterCISuccessCheckSetting := {
       getEnvVarOrElse("TRAVIS_BRANCH") == orgCommitBranchSetting.value &&
       getEnvVarOrElse("TRAVIS_PULL_REQUEST") == "false"
@@ -109,6 +110,13 @@ trait DefaultSettings extends AllSettings {
       orgCommitPolicyFiles.toOrgTask,
       depUpdateDependencyIssues.toOrgTask,
       orgPublishReleaseTask.toOrgTask(allModulesScope = true, crossScalaVersionsScope = true)
+    ),
+    orgScriptTaskListSetting := List(
+      orgValidateFiles.toOrgTask,
+      orgCheckSettings.toOrgTask,
+      (orgCompile in ThisBuild).toOrgTask(allModulesScope = true, crossScalaVersionsScope = true),
+      (test in Test).toOrgTask(allModulesScope = true, crossScalaVersionsScope = true),
+      ScoverageKeys.coverageReport.toOrgTask
     )
   )
 }

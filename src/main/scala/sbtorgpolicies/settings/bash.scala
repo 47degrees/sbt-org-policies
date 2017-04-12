@@ -22,9 +22,10 @@ import sbt._
 import sbt.complete.DefaultParsers.OptNotSpace
 import sbtorgpolicies.OrgPoliciesKeys._
 import sbtorgpolicies.github.GitHubOps
-import sbtorgpolicies.model.Dev
+import sbtorgpolicies.model.{Dev, RunnableCITask}
 import sbtorgpolicies.utils._
 import sbtrelease.ReleaseStateTransformations.reapply
+import scoverage.ScoverageKeys
 
 trait bash {
 
@@ -96,50 +97,86 @@ trait bash {
     finalState
   }
 
+  val orgScriptCICommand: Command = Command(orgScriptCICommandKey)(_ => OptNotSpace) { (st, _) =>
+    runTaskListCommand("orgScriptCI", orgScriptTaskListSetting, st)
+  }
+
   val orgAfterCISuccessCommand: Command = Command(orgAfterCISuccessCommandKey)(_ => OptNotSpace) { (st, _) =>
     val extracted = Project.extract(st)
 
-    val afterSuccessCheck = extracted.get(orgAfterCISuccessCheckSetting)
+    if (extracted.get(orgAfterCISuccessCheckSetting)) {
 
-    if (afterSuccessCheck) {
-
-      val scalaV      = extracted.get(scalaVersion)
-      val crossV      = extracted.get(crossScalaVersions)
-      val baseDir     = extracted.get(baseDirectory)
-      val envVarToken = extracted.get(orgGithubTokenSetting)
-      val maybeToken  = getEnvVar(envVarToken)
-      val rootDir     = extracted.get(baseDirectory in LocalRootProject)
-
-      val isLastScalaV = crossV.lastOption.exists(_ == scalaV)
-      val isRootModule = baseDir.getAbsolutePath == rootDir.getAbsolutePath
-      val taskList     = extracted.get(orgAfterCISuccessTaskListSetting)
-
-      val executableTasks = taskList.filter { tsk =>
-        (isLastScalaV || tsk.crossScalaVersionsScope) &&
-        (isRootModule || tsk.allModulesScope)
-      } map (_.task)
-
-      if (executableTasks.nonEmpty) {
-
-        st.log.info(
-          s"[orgAfterCISuccess] Initiating orgAfterCISuccessCommand " +
-            s"with this set of tasks: ${toStringListTask(executableTasks)}")
+      val beforeTasksState = (st: State) => {
+        val envVarToken = extracted.get(orgGithubTokenSetting)
+        val maybeToken  = getEnvVar(envVarToken)
 
         val (fetchContributorsState, contributorList) =
           if (maybeToken.nonEmpty) {
             extracted.runTask[List[Dev]](orgFetchContributors, st)
           } else (st, Nil)
 
-        val newState = reapply(Seq[Setting[_]](orgContributorsSetting := contributorList), fetchContributorsState)
-
-        executableTasks map (Project.extract(newState).runTask(_, newState))
-        newState
-      } else {
-        st.log.info("[orgAfterCISuccess] No tasks to execute")
-        st
+        reapply(Seq[Setting[_]](orgContributorsSetting := contributorList), fetchContributorsState)
       }
+
+      runTaskListCommand(
+        "orgAfterCISuccess",
+        orgAfterCISuccessTaskListSetting,
+        st,
+        beforeTasksState
+      )
+
     } else {
       st.log.info("[orgAfterCISuccess] orgAfterCISuccessCheckSetting is false, skipping tasks after CI success")
+      st
+    }
+  }
+
+  private[this] def runTaskListCommand(
+      commandName: String,
+      taskListSettingKey: SettingKey[List[RunnableCITask]],
+      st: State,
+      stateToState: (State) => State = st => st): State = {
+
+    val extracted = Project.extract(st)
+
+    val scalaV  = extracted.get(scalaVersion)
+    val crossV  = extracted.get(crossScalaVersions)
+    val baseDir = extracted.get(baseDirectory)
+    val rootDir = extracted.get(baseDirectory in LocalRootProject)
+
+    val isLastScalaV = crossV.lastOption.exists(_ == scalaV)
+    val isRootModule = baseDir.getAbsolutePath == rootDir.getAbsolutePath
+
+    val taskList = extracted.get(taskListSettingKey)
+
+    val executableTasks = taskList.filter { tsk =>
+      (isLastScalaV || tsk.crossScalaVersionsScope) &&
+      (isRootModule || tsk.allModulesScope)
+    } map (_.task)
+
+    if (executableTasks.nonEmpty) {
+
+      val stateToStateResult = stateToState(st)
+
+      val newState =
+        if (executableTasks.exists(_.key == ScoverageKeys.coverageReport.key))
+          extracted
+            .runTask(
+              clean,
+              Project
+                .extract(stateToStateResult)
+                .append(Seq(ScoverageKeys.coverageEnabled := true), stateToStateResult))
+            ._1
+        else
+          stateToStateResult
+
+      newState.log.info(s"[$commandName] Initiating with this set of tasks: ${toStringListTask(executableTasks)}")
+
+      executableTasks.foldLeft(newState) { (st, task) =>
+        Project.extract(st).runTask(task, st)._1
+      }
+    } else {
+      st.log.info(s"[$commandName] No tasks to execute")
       st
     }
   }

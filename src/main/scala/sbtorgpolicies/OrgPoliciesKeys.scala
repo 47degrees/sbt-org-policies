@@ -35,8 +35,8 @@ sealed trait OrgPoliciesSettingsKeys {
     settingKey[Boolean](
       "Defines the condition that the orgAfterCISuccess command will check before running the orgAfterCISuccessTaskListSetting list.")
 
-  val orgAfterCISuccessTaskListSetting: SettingKey[List[AfterSuccessTask]] =
-    settingKey[List[AfterSuccessTask]](
+  val orgAfterCISuccessTaskListSetting: SettingKey[List[RunnableCITask]] =
+    settingKey[List[RunnableCITask]](
       "Defines the list of tasks that should be executed once the Continuous integration build has finished successfully.")
 
   val orgBadgeListSetting: SettingKey[List[BadgeBuilder]] =
@@ -70,6 +70,11 @@ sealed trait OrgPoliciesSettingsKeys {
   val orgMaintainersSetting: SettingKey[List[Dev]] =
     settingKey[List[Dev]]("List of Maintainers of the project.")
 
+  val orgScriptTaskListSetting: SettingKey[List[RunnableCITask]] =
+    settingKey[List[RunnableCITask]](
+      "Defines the list of tasks that should be executed to figure out whether the build is correct. " +
+        "By default, it'd be something like this: 'sbt clean coverage compile test coverageReport'")
+
   val orgTargetDirectorySetting: SettingKey[File] =
     SettingKey[File]("orgTargetDirectory", "Where sbt-org-policies output goes.")
 
@@ -93,6 +98,9 @@ sealed trait OrgPoliciesTaskKeys {
 
   val orgCommitPolicyFiles: TaskKey[Unit] = taskKey[Unit]("Commits the policy files into the specified branch.")
 
+  val orgCompile: TaskKey[Unit] =
+    taskKey[Unit]("Just a (compile in Compile) but ignoring the result (Analysis type) and returning Unit.")
+
   val orgCreateFiles: TaskKey[Unit] =
     taskKey[Unit]("Task to create the files that must exists in a project to accomplish the Organization's policies.")
 
@@ -115,5 +123,7 @@ sealed trait CommandKeys {
   val orgAfterCISuccessCommandKey = "orgAfterCISuccess"
 
   val orgPublishReleaseCommandKey = "orgPublishRelease"
+
+  val orgScriptCICommandKey = "orgScriptCI"
 
 }
