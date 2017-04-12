@@ -17,7 +17,7 @@
 package sbtorgpolicies.templates
 
 import cats.syntax.either._
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
 import org.mockito.Mockito._
 import org.scalacheck.Prop._
