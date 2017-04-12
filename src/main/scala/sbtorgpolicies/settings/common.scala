@@ -45,6 +45,7 @@ trait common {
             e.printStackTrace()
             Nil
         }
-      }.value
+      }.value,
+      orgCompile in ThisBuild := Def.task((compile in Compile).map(_ => (): Unit)).value
     )
 }

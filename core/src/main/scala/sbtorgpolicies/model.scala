@@ -118,17 +118,17 @@ object model {
       </developer>
   }
 
-  case class AfterSuccessTask(
+  case class RunnableCITask(
       task: TaskKey[Unit],
       allModulesScope: Boolean = false,
       crossScalaVersionsScope: Boolean = false)
 
   implicit class AfterSuccessTaskOps(taskKey: TaskKey[Unit]) {
 
-    def toOrgTask: AfterSuccessTask = toOrgTask(allModulesScope = false, crossScalaVersionsScope = false)
+    def toOrgTask: RunnableCITask = toOrgTask(allModulesScope = false, crossScalaVersionsScope = false)
 
-    def toOrgTask(allModulesScope: Boolean, crossScalaVersionsScope: Boolean): AfterSuccessTask =
-      AfterSuccessTask(taskKey, allModulesScope, crossScalaVersionsScope)
+    def toOrgTask(allModulesScope: Boolean, crossScalaVersionsScope: Boolean): RunnableCITask =
+      RunnableCITask(taskKey, allModulesScope, crossScalaVersionsScope)
 
   }
 
