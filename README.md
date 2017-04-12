@@ -1,5 +1,5 @@
 
-[comment]: # (Badges)
+[comment]: # (Start Badges)
 [![Build Status](https://travis-ci.org/47deg/sbt-org-policies.svg?branch=master)](https://travis-ci.org/47deg/sbt-org-policies)
 
 [comment]: # (End Badges)

@@ -149,6 +149,12 @@ package object templates {
       version: String,
       badgeBuilderList: List[BadgeBuilder] = Nil): FileType = {
 
+    def replaceSection(title: String, top: Boolean): ReplaceSection =
+      ReplaceSection(
+        from = markdownComment(title, scape = true).r,
+        to = markdownComment(title, start = false, scape = true).r,
+        defaultTop = top)
+
     def replaceableBadges: Replaceable = {
       val info = BadgeInformation(
         owner = ghSettings.organization,
@@ -180,7 +186,7 @@ package object templates {
             "organizationHomePage" -> ghSettings.organizationHomePage.asReplaceable
           ),
           shouldAppend = content => {
-            content.contains(sectionSep(copyrightSectionTitle)) ||
+            content.contains(markdownComment(copyrightSectionTitle)) ||
             !content.contains(s"# $copyrightSectionTitle")
           }
         ),

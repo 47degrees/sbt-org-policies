@@ -18,19 +18,20 @@ package sbtorgpolicies.templates
 
 object utils {
 
-  def str(s: String, scape: Boolean): String = if (scape) s"\\$s" else s
+  def safeSubStr(str: String, pos: Int): String = if (pos < str.length) str.substring(pos) else ""
 
-  def sectionSep(title: String, start: Boolean = true, scape: Boolean = false): String =
+  def safeSubStr(str: String, start: Int, end: Int): String =
+    if (start < str.length && end <= str.length && start < end) str.substring(start, end) else ""
+
+  def markdownComment(title: String, start: Boolean = true, scape: Boolean = false): String = {
+
+    def str(s: String, scape: Boolean): String = if (scape) s"\\$s" else s
+
     (if (start) "\n" else "") +
       str("[", scape) + "comment" + str("]", scape) +
       ": " +
       str("#", scape) + " " +
       str("(", scape) + (if (start) "Start" else "End") + " " + title + str(")", scape)
-
-  def replaceSection(title: String, top: Boolean): ReplaceSection =
-    ReplaceSection(
-      from = sectionSep(title, scape = true).r,
-      to = sectionSep(title, start = false, scape = true).r,
-      defaultTop = top)
+  }
 
 }
