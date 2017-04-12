@@ -94,7 +94,7 @@ trait DefaultSettings extends AllSettings {
         startYear.value,
         orgLicenseSetting.value,
         orgCommitBranchSetting.value,
-        scalaVersion.value,
+        version.value,
         orgBadgeListSetting.value),
       TravisFileType(crossScalaVersions.value)
     ),

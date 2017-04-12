@@ -146,7 +146,7 @@ package object templates {
       startYear: Option[Int],
       license: License,
       branch: String,
-      scalaVersion: String,
+      version: String,
       badgeBuilderList: List[BadgeBuilder] = Nil): FileType = {
 
     def replaceableBadges: Replaceable = {
@@ -156,7 +156,7 @@ package object templates {
         branch = branch,
         libOrg = ghSettings.groupId.some,
         libName = ghSettings.project.some,
-        scalaV = scalaVersion.some,
+        libVersion = version.some,
         scalaJSV = None,
         license = license.some
       )
