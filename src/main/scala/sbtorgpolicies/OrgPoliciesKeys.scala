@@ -96,9 +96,6 @@ sealed trait OrgPoliciesTaskKeys {
 
   // (Task keys are ordered alphabetically)
 
-  val orgAfterCISuccess: TaskKey[Unit] =
-    taskKey[Unit]("Predefined set of tasks that can be launched after after a successful CI build.")
-
   val orgCheckSettings: TaskKey[Unit] = taskKey[Unit]("Task to check the project settings.")
 
   val orgCommitPolicyFiles: TaskKey[Unit] = taskKey[Unit]("Commits the policy files into the specified branch.")

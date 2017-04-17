@@ -4,6 +4,7 @@ import sbt.ScriptedPlugin._
 import sbt._
 import sbtorgpolicies.OrgPoliciesPlugin
 import sbtorgpolicies.OrgPoliciesPlugin.autoImport._
+import sbtorgpolicies.templates.badges._
 import sbtorgpolicies.libraries._
 
 object ProjectPlugin extends AutoPlugin {
@@ -93,6 +94,12 @@ object ProjectPlugin extends AutoPlugin {
     crossScalaVersions := Seq("2.10.6"),
     scalaOrganization := "org.scala-lang",
     startYear := Some(2017),
-    orgGithubTokenSetting := "GITHUB_TOKEN_REPO"
+    orgGithubTokenSetting := "GITHUB_TOKEN_REPO",
+    orgBadgeListSetting := List(
+      TravisBadge.apply,
+      MavenCentralBadge.apply,
+      LicenseBadge.apply,
+      GitHubIssuesBadge.apply
+    )
   )
 }
