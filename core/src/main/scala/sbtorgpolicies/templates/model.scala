@@ -37,6 +37,7 @@ case class ReplaceableList[T](list: List[T]) extends Replaceable {
 case class FileType(
     mandatory: Boolean,
     overWritable: Boolean,
+    finalVersionOnly: Boolean,
     templatePath: String,
     outputPath: String,
     replacements: Replacements,

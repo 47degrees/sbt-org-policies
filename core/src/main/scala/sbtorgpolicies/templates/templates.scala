@@ -47,6 +47,7 @@ package object templates {
     FileType(
       mandatory = true,
       overWritable = true,
+      finalVersionOnly = false,
       templatePath = licenseFile,
       outputPath = "LICENSE",
       replacements = Map(
@@ -60,6 +61,7 @@ package object templates {
   def ContributingFileType(ghSettings: GitHubSettings) = FileType(
     mandatory = true,
     overWritable = true,
+    finalVersionOnly = false,
     templatePath = "templates/CONTRIBUTING.md.template",
     outputPath = "CONTRIBUTING.md",
     replacements = Map(
@@ -81,6 +83,7 @@ package object templates {
     FileType(
       mandatory = true,
       overWritable = true,
+      finalVersionOnly = false,
       templatePath = "templates/AUTHORS.md.template",
       outputPath = "AUTHORS.md",
       replacements = Map(
@@ -96,6 +99,7 @@ package object templates {
     FileType(
       mandatory = true,
       overWritable = true,
+      finalVersionOnly = false,
       templatePath = "templates/NOTICE.md.template",
       outputPath = "NOTICE.md",
       replacements = Map(
@@ -111,6 +115,7 @@ package object templates {
     FileType(
       mandatory = true,
       overWritable = false,
+      finalVersionOnly = false,
       templatePath = "templates/version.sbt.template",
       outputPath = versionFilePath,
       replacements = Map.empty
@@ -125,6 +130,7 @@ package object templates {
     FileType(
       mandatory = true,
       overWritable = false,
+      finalVersionOnly = true,
       templatePath = "templates/CHANGELOG.md.template",
       outputPath = "CHANGELOG.md",
       replacements = Map.empty,
@@ -172,6 +178,7 @@ package object templates {
     FileType(
       mandatory = true,
       overWritable = false,
+      finalVersionOnly = true,
       templatePath = "templates/README.md.template",
       outputPath = "README.md",
       replacements = Map("name" -> ghSettings.project.asReplaceable),
@@ -206,6 +213,7 @@ package object templates {
     FileType(
       mandatory = true,
       overWritable = false,
+      finalVersionOnly = false,
       templatePath = "templates/travis.yml.template",
       outputPath = travisFilePath,
       replacements = Map(
