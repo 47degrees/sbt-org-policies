@@ -76,8 +76,8 @@ class ReplaceTextEngine {
     } yield modified
 
     result match {
-      case Right(m) => ProcessedFile(in, SuccessfullyProcessed(modified = m))
-      case Left(e)  => ProcessedFile(in, ErrorProcessing(e))
+      case Right(m) => ProcessedFile(in, successStatus(modified = m))
+      case Left(e)  => ProcessedFile(in, failureStatus(e))
     }
   }
 
@@ -120,9 +120,14 @@ class ReplaceTextEngine {
 
 object ReplaceTextEngine {
 
-  sealed trait ProcessedFileStatus
-  case class SuccessfullyProcessed(modified: Boolean) extends ProcessedFileStatus
-  case class ErrorProcessing(exception: IOException)  extends ProcessedFileStatus
+  case class ProcessedFileStatus(success: Boolean, modified: Boolean, error: Option[IOException]) {
+    def failure: Boolean = !success
+  }
+
+  def successStatus(modified: Boolean): ProcessedFileStatus =
+    ProcessedFileStatus(success = true, modified, error = None)
+  def failureStatus(e: IOException): ProcessedFileStatus =
+    ProcessedFileStatus(success = false, modified = false, error = Some(e))
 
   case class ProcessedFile(file: File, status: ProcessedFileStatus)
 

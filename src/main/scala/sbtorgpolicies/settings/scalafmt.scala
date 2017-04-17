@@ -84,10 +84,11 @@ trait scalafmt {
   }
 
   val orgScalafmtGenerateFileDef: Def.Initialize[Task[Unit]] = Def.task {
-    if (!file(".scalafmt.conf").exists()) {
-      IO.write(
-        file(".scalafmt.conf"),
-        """style = defaultWithAlign
+    onlyRootUnitTask(baseDirectory.value, (baseDirectory in LocalRootProject).value, streams.value.log) {
+      if (!file(".scalafmt.conf").exists()) {
+        IO.write(
+          file(".scalafmt.conf"),
+          """style = defaultWithAlign
           |maxColumn = 100
           |
           |continuationIndent.callSite = 2
@@ -110,7 +111,8 @@ trait scalafmt {
           |  redundantBraces.maxLines = 1
           |}
         """.stripMargin.getBytes(IO.utf8)
-      )
+        )
+      }
     }
   }
 

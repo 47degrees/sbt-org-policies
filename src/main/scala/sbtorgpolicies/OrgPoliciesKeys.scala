@@ -23,7 +23,7 @@ import sbtorgpolicies.rules.Validation
 import sbtorgpolicies.templates.FileType
 import sbtorgpolicies.templates.badges.BadgeBuilder
 
-trait OrgPoliciesKeys extends OrgPoliciesSettingsKeys with OrgPoliciesTaskKeys with CommandKeys
+trait OrgPoliciesKeys extends OrgPoliciesSettingsKeys with OrgPoliciesTaskKeys with CommandKeys with TaskKeysUtils
 
 object OrgPoliciesKeys extends OrgPoliciesKeys
 
@@ -130,5 +130,23 @@ sealed trait CommandKeys {
   val orgPublishReleaseCommandKey = "orgPublishRelease"
 
   val orgScriptCICommandKey = "orgScriptCI"
+
+}
+
+sealed trait TaskKeysUtils {
+
+  def onlyRootUnitTask(baseDir: File, rootDir: File, log: Logger)(functionTask: => Unit): Unit =
+    onlyRootTask[Unit](baseDir, rootDir, log, (): Unit)(functionTask)
+
+  def onlyRootTask[T](baseDir: File, rootDir: File, log: Logger, defaultValue: T)(functionTask: => T): T = {
+    if (baseDir.getAbsolutePath == rootDir.getAbsolutePath) {
+      functionTask
+    } else {
+      log.info(s"Skipping task for module '${baseDir.getName}'")
+      defaultValue
+    }
+  }
+
+  def printList(message: String, list: List[String]): String = s"$message\n * ${list.mkString("\n * ")}"
 
 }
