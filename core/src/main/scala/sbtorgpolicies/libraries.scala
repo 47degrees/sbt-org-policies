@@ -23,7 +23,7 @@ object libraries {
   val v47: Map[String, String] = Map[String, String](
     "case-classy"           -> "0.3.0",
     "fetch"                 -> "0.6.0",
-    "github4s"              -> "0.14.2",
+    "github4s"              -> "0.14.3",
     "scheckToolboxDatetime" -> "0.2.1"
   )
 

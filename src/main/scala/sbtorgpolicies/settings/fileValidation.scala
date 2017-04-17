@@ -51,7 +51,7 @@ trait fileValidation extends ValidationFunctions {
           validTravisFile(
             crossScalaVersions.value,
             Seq(orgScriptCICommandKey),
-            Seq(orgAfterCISuccess.key.label)
+            Seq(orgAfterCISuccessCommandKey)
           )
         )
       )
