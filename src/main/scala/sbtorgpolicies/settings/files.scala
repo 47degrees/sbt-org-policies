@@ -37,9 +37,14 @@ trait files {
       orgCreateFiles := Def.task {
         val fh = new FileHelper
 
+        val buildV     = version.value
+        val isSnapshot = buildV.endsWith("-SNAPSHOT")
+
+        val enforcedFiles = orgEnforcedFilesSetting.value.filter(ft => !ft.finalVersionOnly || !isSnapshot)
+
         (for {
           _ <- fh.createResources(orgTemplatesDirectorySetting.value, orgTargetDirectorySetting.value)
-          _ <- fh.checkOrgFiles(baseDirectory.value, orgTargetDirectorySetting.value, orgEnforcedFilesSetting.value)
+          _ <- fh.checkOrgFiles(baseDirectory.value, orgTargetDirectorySetting.value, enforcedFiles)
         } yield ()) match {
           case Right(_) => streams.value.log.info("Over-writable files have been created successfully")
           case Left(e) =>

@@ -1,3 +1,5 @@
+version := "1.0"
+
 scalaVersion := "2.12.1"
 
 lazy val testCheckSettings = TaskKey[Unit]("testCheckSettings")
