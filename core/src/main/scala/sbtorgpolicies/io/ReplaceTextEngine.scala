@@ -33,14 +33,6 @@ class ReplaceTextEngine {
   val fileReader: FileReader = new FileReader
   val fileWriter: FileWriter = new FileWriter
 
-//  val blockTitle: String     = "Replace"
-//  val startBlockRegex: Regex = markdownComment(blockTitle, scape = true).r
-//  val endBlockRegex: Regex   = markdownComment(blockTitle, start = false, scape = true).r
-//
-//  val defaultFileSupported: (File) => Boolean = file => {
-//    file.getName.indexOf('.') < 0 || file.getName.endsWithOne(".md")
-//  }
-
   final def replaceBlocks(
       startBlockRegex: Regex,
       endBlockRegex: Regex,
