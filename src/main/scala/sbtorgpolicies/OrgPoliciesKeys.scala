@@ -85,6 +85,11 @@ sealed trait OrgPoliciesSettingsKeys {
   val orgValidationListSetting: SettingKey[List[Validation]] =
     settingKey[List[Validation]]("Validation list the plugin must check")
 
+  val orgUpdateDocFilesSetting: SettingKey[List[File]] =
+    settingKey[List[File]]("List of files and directories whose replace blocks will be replaced with the new values")
+
+  val orgUpdateDocFilesReplacementsSetting: SettingKey[Map[String, String]] =
+    settingKey[Map[String, String]]("Replacements for the replace blocks")
 }
 
 sealed trait OrgPoliciesTaskKeys {
@@ -115,6 +120,9 @@ sealed trait OrgPoliciesTaskKeys {
   val orgScalafmtGenerateFile: TaskKey[Unit] = taskKey[Unit]("Generate a default scalafmt configuration")
 
   val orgValidateFiles: TaskKey[Unit] = taskKey[Unit]("Validates all files according to a set of policy rules.")
+
+  val orgUpdateDocFiles: TaskKey[Unit] =
+    taskKey[Unit]("Updates all replace blocks in the defined files and directories")
 
 }
 

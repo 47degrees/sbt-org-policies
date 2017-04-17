@@ -43,6 +43,7 @@ trait DefaultSettings extends AllSettings {
       sharedScoverageSettings() ++
       scalafmtSettings ++
       orgFilesTasks ++
+      orgFilesSettings ++
       orgFileValidationTasks ++
       orgEnforcementSettingsTasks ++
       orgBashTasks ++

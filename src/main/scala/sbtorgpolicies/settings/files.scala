@@ -21,8 +21,16 @@ import sbt.Keys._
 import sbt._
 import sbtorgpolicies.OrgPoliciesKeys._
 import sbtorgpolicies.io._
+import sbtorgpolicies.templates.utils._
+
+import scala.util.matching.Regex
 
 trait files {
+
+  val orgFilesSettings = Seq(
+    orgUpdateDocFilesSetting := List(baseDirectory.value / "docs"),
+    orgUpdateDocFilesReplacementsSetting := Map.empty
+  )
 
   val orgFilesTasks =
     Seq(
@@ -39,6 +47,23 @@ trait files {
             e.printStackTrace()
         }
 
+      }.value,
+      orgUpdateDocFiles := Def.task {
+        val replaceTextEngine      = new ReplaceTextEngine
+        val blockTitle: String     = "Replace"
+        val startBlockRegex: Regex = markdownComment(blockTitle, scape = true).r
+        val endBlockRegex: Regex   = markdownComment(blockTitle, start = false, scape = true).r
+
+        val isFileSupported: (File) => Boolean = file => {
+          file.getName.indexOf('.') < 0 || file.getName.endsWith(".md")
+        }
+
+        replaceTextEngine.replaceBlocks(
+          startBlockRegex,
+          endBlockRegex,
+          orgUpdateDocFilesReplacementsSetting.value,
+          orgUpdateDocFilesSetting.value,
+          isFileSupported)
       }.value
     )
 }
