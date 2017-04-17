@@ -78,8 +78,7 @@ trait bash {
       case (true, _) =>
         st.log.info("SNAPSHOT version detected, skipping release and publishing it...")
 
-        val (newState, _) = extracted.runTask[Unit](publishSigned, st)
-        newState
+        extracted.runTask[Unit](publishSigned, st)._1
       case (false, true) =>
         st.log.info("Release Version detected, starting the release process...")
 
