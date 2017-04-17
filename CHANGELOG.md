@@ -1,5 +1,14 @@
 # Changelog
 
+## 04/17/2017 - Version 0.4.9
+
+Release changes:
+
+* Replace text engine ([#156](https://github.com/47deg/sbt-org-policies/pull/156))
+* Maven Central Badge ([#157](https://github.com/47deg/sbt-org-policies/pull/157))
+* Bumps monix and http4s versions ([#160](https://github.com/47deg/sbt-org-policies/pull/160))
+
+
 ## 04/13/2017 - Version 0.4.8
 
 Release changes:
