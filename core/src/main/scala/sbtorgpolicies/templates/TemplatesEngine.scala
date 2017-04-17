@@ -19,6 +19,7 @@ package sbtorgpolicies.templates
 import cats.syntax.either._
 import sbtorgpolicies.io._
 import sbtorgpolicies.exceptions._
+import sbtorgpolicies.templates.utils._
 
 import scala.util.matching.Regex
 
@@ -43,16 +44,12 @@ class TemplatesEngine {
 
   def insertIn(content: String, appendPosition: AppendPosition, section: String): IOResult[String] = {
 
-    def insertBetween(content: String, from: Regex, to: Regex, section: String): Option[String] = {
-
-      def subStr(str: String, pos: Int): String = if (pos < str.length) str.substring(pos) else ""
-
+    def insertBetween(content: String, from: Regex, to: Regex, section: String): Option[String] =
       for {
         startMatch <- from.findFirstMatchIn(content)
-        endContent = subStr(content, startMatch.end)
+        endContent = safeSubStr(content, startMatch.end)
         endMatch <- to.findFirstMatchIn(endContent)
-      } yield content.substring(0, startMatch.start) + section + subStr(endContent, endMatch.end)
-    }
+      } yield content.substring(0, startMatch.start) + section + safeSubStr(endContent, endMatch.end)
 
     def replaceSection(
         content: String,

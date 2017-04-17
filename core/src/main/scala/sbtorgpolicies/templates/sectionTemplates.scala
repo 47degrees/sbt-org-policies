@@ -16,7 +16,7 @@
 
 package sbtorgpolicies.templates
 
-import sbtorgpolicies.templates.utils.sectionSep
+import utils.markdownComment
 
 object sectionTemplates {
 
@@ -32,22 +32,22 @@ object sectionTemplates {
   val copyrightSectionTitle: String = "Copyright"
 
   val copyrightSectionTemplate: String =
-    s"""${sectionSep(copyrightSectionTitle)}
+    s"""${markdownComment(copyrightSectionTitle)}
        |# Copyright
        |
        |{{name}} is designed and developed by {{organizationName}}
        |
        |Copyright (C) {{year}} {{organizationName}}. <{{organizationHomePage}}>
        |
-       |${sectionSep(copyrightSectionTitle, start = false)}""".stripMargin
+       |${markdownComment(copyrightSectionTitle, start = false)}""".stripMargin
 
   val badgesSectionTitle: String = "Badges"
 
   val badgesSectionTemplate: String =
-    s"""${sectionSep(badgesSectionTitle)}
+    s"""${markdownComment(badgesSectionTitle)}
        |
        |{{badges}}
        |
-       |${sectionSep(badgesSectionTitle, start = false)}""".stripMargin
+       |${markdownComment(badgesSectionTitle, start = false)}""".stripMargin
 
 }

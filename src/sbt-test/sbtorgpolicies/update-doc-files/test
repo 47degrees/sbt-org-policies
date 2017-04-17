@@ -1,0 +1,11 @@
+# check that the update doc files tasks works as expected
+
+> orgUpdateDocFiles
+
+> testCheckSettings
+
+> set orgUpdateDocFilesSetting:=List(baseDirectory.value/"other-docs")
+
+> orgUpdateDocFiles
+
+> testCheckSettings2
