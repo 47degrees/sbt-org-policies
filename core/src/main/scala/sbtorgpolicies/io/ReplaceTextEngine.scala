@@ -48,35 +48,25 @@ class ReplaceTextEngine {
       replacement: String,
       in: List[File],
       isFileSupported: (File) => Boolean): List[ProcessedFile] =
-    replaceBlocks(
-      startBlockRegex,
-      endBlockRegex,
-      target = target,
-      replacement = replacement,
-      in = in,
-      fileSupported = isFileSupported,
-      replacedFiles = Nil)
+    findAllFiles(in, isFileSupported) map {
+      replaceBlocksInFile(startBlockRegex, endBlockRegex, target, replacement, _)
+    }
 
   @tailrec
-  private[this] final def replaceBlocks(
-      startBlockRegex: Regex,
-      endBlockRegex: Regex,
-      target: String,
-      replacement: String,
-      in: List[File],
-      fileSupported: (File) => Boolean,
-      replacedFiles: List[ProcessedFile]): List[ProcessedFile] = {
+  private[this] final def findAllFiles(
+    in: List[File],
+    isFileSupported: (File) => Boolean,
+    processedFiles: List[File] = Nil,
+    processedDirs: List[String] = Nil): List[File] = {
 
-    val files: List[File] = in.filter(file => file.isFile && fileSupported(file))
-    val replaced: List[ProcessedFile] =
-      files.map(replaceBlocksInFile(startBlockRegex, endBlockRegex, target, replacement, _))
-    val allFiles: List[ProcessedFile] = replacedFiles ++ replaced
+    val files: List[File] = in.filter(file => file.isFile && isFileSupported(file))
+    val allFiles          = processedFiles ++ files
 
-    in.filter(_.isDirectory) match {
+    in.filter(f => f.isDirectory && !processedDirs.contains(f.getCanonicalPath)) match {
       case Nil => allFiles
       case list =>
         val subFiles = list.flatMap(_.listFiles().toList)
-        replaceBlocks(startBlockRegex, endBlockRegex, target, replacement, subFiles, fileSupported, allFiles)
+        findAllFiles(subFiles, isFileSupported, allFiles, processedDirs ++ list.map(_.getCanonicalPath))
     }
   }
 
