@@ -10,9 +10,9 @@ The maintainers of the project are:
 
 These are the people that have contributed to the sbt-org-policies project:
 
-* Juan Pedro Moreno <[juanpedromoreno](https://github.com/juanpedromoreno)>
-* Fede Fernández <[fedefernandez](https://github.com/fedefernandez)>
-* Raúl Raja Martínez <[raulraja](https://github.com/raulraja)>
 * Ana Mª Marquez <[anamariamv](https://github.com/anamariamv)>
 * Diego Esteban Alonso Blas <[diesalbla](https://github.com/diesalbla)>
+* Fede Fernández <[fedefernandez](https://github.com/fedefernandez)>
+* Juan Pedro Moreno <[juanpedromoreno](https://github.com/juanpedromoreno)>
 * Peter Neyens <[peterneyens](https://github.com/peterneyens)>
+* Raúl Raja Martínez <[raulraja](https://github.com/raulraja)>
