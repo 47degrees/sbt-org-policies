@@ -35,40 +35,59 @@ trait files {
   val orgFilesTasks =
     Seq(
       orgCreateFiles := Def.task {
-        val fh = new FileHelper
+        onlyRootUnitTask(baseDirectory.value, (baseDirectory in LocalRootProject).value, streams.value.log) {
+          val fh = new FileHelper
 
-        val buildV     = version.value
-        val isSnapshot = buildV.endsWith("-SNAPSHOT")
+          val buildV     = version.value
+          val isSnapshot = buildV.endsWith("-SNAPSHOT")
 
-        val enforcedFiles = orgEnforcedFilesSetting.value.filter(ft => !ft.finalVersionOnly || !isSnapshot)
+          val enforcedFiles = orgEnforcedFilesSetting.value.filter(ft => !ft.finalVersionOnly || !isSnapshot)
 
-        (for {
-          _ <- fh.createResources(orgTemplatesDirectorySetting.value, orgTargetDirectorySetting.value)
-          _ <- fh.checkOrgFiles(baseDirectory.value, orgTargetDirectorySetting.value, enforcedFiles)
-        } yield ()) match {
-          case Right(_) => streams.value.log.info("Over-writable files have been created successfully")
-          case Left(e) =>
-            streams.value.log.error(s"Error creating files")
-            e.printStackTrace()
+          (for {
+            _ <- fh.createResources(orgTemplatesDirectorySetting.value, orgTargetDirectorySetting.value)
+            _ <- fh.checkOrgFiles(baseDirectory.value, orgTargetDirectorySetting.value, enforcedFiles)
+          } yield ()) match {
+            case Right(_) =>
+              streams.value.log.info(
+                printList("The following files where created and/or modified:", enforcedFiles.map(_.outputPath)))
+            case Left(e) =>
+              streams.value.log.error(s"Error creating files")
+              e.printStackTrace()
+          }
         }
-
       }.value,
       orgUpdateDocFiles := Def.task {
-        val replaceTextEngine      = new ReplaceTextEngine
-        val blockTitle: String     = "Replace"
-        val startBlockRegex: Regex = markdownComment(blockTitle, scape = true).r
-        val endBlockRegex: Regex   = markdownComment(blockTitle, start = false, scape = true).r
+        onlyRootUnitTask(baseDirectory.value, (baseDirectory in LocalRootProject).value, streams.value.log) {
+          val replaceTextEngine      = new ReplaceTextEngine
+          val blockTitle: String     = "Replace"
+          val startBlockRegex: Regex = markdownComment(blockTitle, scape = true).r
+          val endBlockRegex: Regex   = markdownComment(blockTitle, start = false, scape = true).r
 
-        val isFileSupported: (File) => Boolean = file => {
-          file.getName.indexOf('.') < 0 || file.getName.endsWith(".md")
+          val isFileSupported: (File) => Boolean = file => {
+            file.getName.indexOf('.') < 0 || file.getName.endsWith(".md")
+          }
+
+          val replaced = replaceTextEngine.replaceBlocks(
+            startBlockRegex,
+            endBlockRegex,
+            orgUpdateDocFilesReplacementsSetting.value,
+            orgUpdateDocFilesSetting.value,
+            isFileSupported)
+
+          val errorFiles = replaced.filter(_.status.failure).map(_.file.getAbsolutePath)
+          if (errorFiles.nonEmpty) {
+            streams.value.log.warn(printList("The following files where processed with errors:", errorFiles))
+          }
+
+          val modified = replaced.filter(f => f.status.success && f.status.modified).map(_.file.getAbsolutePath)
+          if (modified.nonEmpty) {
+            streams.value.log.info(printList("The following files where modified:", modified))
+          }
+
+          if (errorFiles.isEmpty && modified.isEmpty) {
+            streams.value.log.info("No files updated")
+          }
         }
-
-        replaceTextEngine.replaceBlocks(
-          startBlockRegex,
-          endBlockRegex,
-          orgUpdateDocFilesReplacementsSetting.value,
-          orgUpdateDocFilesSetting.value,
-          isFileSupported)
       }.value
     )
 }

@@ -27,23 +27,24 @@ trait common {
   val orgCommonTasks =
     Seq(
       orgFetchContributors := Def.task {
+        onlyRootTask[List[Dev]](baseDirectory.value, (baseDirectory in LocalRootProject).value, streams.value.log, Nil) {
+          val ghOps = orgGithubOpsSetting.value
 
-        val ghOps = orgGithubOpsSetting.value
-
-        (for {
-          list <- ghOps.fetchContributors
-          maintainersIds = orgMaintainersSetting.value.map(_.id)
-          filteredDevs = list
-            .map(user => Dev(user.login, user.name, user.blog))
-            .filterNot(dev => maintainersIds.contains(dev.id))
-        } yield filteredDevs.sortBy(_.name)) match {
-          case Right(devs) =>
-            streams.value.log.info("Contributors fetched successfully")
-            devs
-          case Left(e) =>
-            streams.value.log.error(s"Error fetching contributors")
-            e.printStackTrace()
-            Nil
+          (for {
+            list <- ghOps.fetchContributors
+            maintainersIds = orgMaintainersSetting.value.map(_.id)
+            filteredDevs = list
+              .map(user => Dev(user.login, user.name, user.blog))
+              .filterNot(dev => maintainersIds.contains(dev.id))
+          } yield filteredDevs.sortBy(_.name)) match {
+            case Right(devs) =>
+              streams.value.log.info("Contributors fetched successfully")
+              devs
+            case Left(e) =>
+              streams.value.log.error(s"Error fetching contributors")
+              e.printStackTrace()
+              Nil
+          }
         }
       }.value,
       orgCompile in ThisBuild := Def

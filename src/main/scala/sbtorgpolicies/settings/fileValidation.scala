@@ -60,7 +60,9 @@ trait fileValidation extends ValidationFunctions {
 
   val orgFileValidationTasks = Seq(
     orgValidateFiles := Def.task {
-      validationFilesTask(orgValidationListSetting.value, streams.value.log)
+      onlyRootUnitTask(baseDirectory.value, (baseDirectory in LocalRootProject).value, streams.value.log) {
+        validationFilesTask(orgValidationListSetting.value, streams.value.log)
+      }
     }.value
   )
 

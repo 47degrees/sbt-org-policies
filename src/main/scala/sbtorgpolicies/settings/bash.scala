@@ -32,20 +32,22 @@ trait bash {
   val orgBashTasks =
     Seq(
       orgCommitPolicyFiles := Def.task {
-        val ghOps: GitHubOps = orgGithubOpsSetting.value
-        ghOps.commitFiles(
-          baseDir = (baseDirectory in LocalRootProject).value,
-          branch = orgCommitBranchSetting.value,
-          message = s"${orgCommitMessageSetting.value} [ci skip]",
-          files = orgEnforcedFilesSetting.value.map(_.outputPath)
-        ) match {
-          case Right(Some(_)) =>
-            streams.value.log.info("Policy files committed successfully")
-          case Right(None) =>
-            streams.value.log.info("No changes detected in policy files. Skipping commit")
-          case Left(e) =>
-            streams.value.log.error(s"Error committing files")
-            e.printStackTrace()
+        onlyRootUnitTask(baseDirectory.value, (baseDirectory in LocalRootProject).value, streams.value.log) {
+          val ghOps: GitHubOps = orgGithubOpsSetting.value
+          ghOps.commitFiles(
+            baseDir = (baseDirectory in LocalRootProject).value,
+            branch = orgCommitBranchSetting.value,
+            message = s"${orgCommitMessageSetting.value} [ci skip]",
+            files = orgEnforcedFilesSetting.value.map(_.outputPath)
+          ) match {
+            case Right(Some(_)) =>
+              streams.value.log.info("Policy files committed successfully")
+            case Right(None) =>
+              streams.value.log.info("No changes detected in policy files. Skipping commit")
+            case Left(e) =>
+              streams.value.log.error(s"Error committing files")
+              e.printStackTrace()
+          }
         }
       }.value,
       orgPublishReleaseTask := Def.task {
