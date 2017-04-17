@@ -1,4 +1,5 @@
 import sbt.Keys._
+import sbtorgpolicies.model._
 
 lazy val `sbt-org-policies` = (project in file("."))
   .dependsOn(`org-policies-core`)
@@ -21,3 +22,11 @@ addCommandAlias(
 pgpPassphrase := Some(getEnvVar("PGP_PASSPHRASE").getOrElse("").toCharArray)
 pgpPublicRing := file(s"$gpgFolder/pubring.gpg")
 pgpSecretRing := file(s"$gpgFolder/secring.gpg")
+
+orgAfterCISuccessTaskListSetting := List(
+  orgCreateFiles.toOrgTask,
+  orgCommitPolicyFiles.toOrgTask,
+  depUpdateDependencyIssues.toOrgTask,
+  (depUpdateDependencyIssues in `org-policies-auto-dep-check`).toOrgTask,
+  orgPublishReleaseTask.toOrgTask(allModulesScope = true, crossScalaVersionsScope = true)
+)
