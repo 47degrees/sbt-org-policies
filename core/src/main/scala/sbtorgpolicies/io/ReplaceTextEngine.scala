@@ -1,0 +1,163 @@
+/*
+ * Copyright 2017 47 Degrees, LLC. <http://www.47deg.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package sbtorgpolicies.io
+
+import cats.syntax.either._
+import java.io.File
+
+import sbtorgpolicies.exceptions.IOException
+import sbtorgpolicies.templates.utils._
+
+import scala.annotation.tailrec
+import scala.util.matching.Regex
+
+class ReplaceTextEngine {
+
+  import ReplaceTextEngine._
+  import textSyntax._
+
+  val fileReader: FileReader = new FileReader
+  val fileWriter: FileWriter = new FileWriter
+
+//  val blockTitle: String     = "Replace"
+//  val startBlockRegex: Regex = markdownComment(blockTitle, scape = true).r
+//  val endBlockRegex: Regex   = markdownComment(blockTitle, start = false, scape = true).r
+//
+//  val defaultFileSupported: (File) => Boolean = file => {
+//    file.getName.indexOf('.') < 0 || file.getName.endsWithOne(".md")
+//  }
+
+  final def replaceBlocks(
+      startBlockRegex: Regex,
+      endBlockRegex: Regex,
+      target: String,
+      replacement: String,
+      in: List[File],
+      isFileSupported: (File) => Boolean): List[ProcessedFile] =
+    replaceBlocks(
+      startBlockRegex,
+      endBlockRegex,
+      target = target,
+      replacement = replacement,
+      in = in,
+      fileSupported = isFileSupported,
+      replacedFiles = Nil)
+
+  @tailrec
+  private[this] final def replaceBlocks(
+      startBlockRegex: Regex,
+      endBlockRegex: Regex,
+      target: String,
+      replacement: String,
+      in: List[File],
+      fileSupported: (File) => Boolean,
+      replacedFiles: List[ProcessedFile]): List[ProcessedFile] = {
+
+    val files: List[File] = in.filter(file => file.isFile && fileSupported(file))
+    val replaced: List[ProcessedFile] =
+      files.map(replaceBlocksInFile(startBlockRegex, endBlockRegex, target, replacement, _))
+    val allFiles: List[ProcessedFile] = replacedFiles ++ replaced
+
+    in.filter(_.isDirectory) match {
+      case Nil => allFiles
+      case list =>
+        val subFiles = list.flatMap(_.listFiles().toList)
+        replaceBlocks(startBlockRegex, endBlockRegex, target, replacement, subFiles, fileSupported, allFiles)
+    }
+  }
+
+  private[this] def replaceBlocksInFile(
+      startBlockRegex: Regex,
+      endBlockRegex: Regex,
+      target: String,
+      replacement: String,
+      in: File): ProcessedFile = {
+
+    val result: IOResult[Boolean] = for {
+      content <- fileReader.getFileContent(in.getAbsolutePath)
+      replaced = replaceContent(content, startBlockRegex, endBlockRegex, target, replacement)
+      modified <- if (replaced != content) {
+        fileWriter.writeContentToFile(replaced, in.getAbsolutePath).map(_ => true)
+      } else Right(false)
+    } yield modified
+
+    result match {
+      case Right(m) => ProcessedFile(in, SuccessfullyProcessed(modified = m))
+      case Left(e)  => ProcessedFile(in, ErrorProcessing(e))
+    }
+  }
+
+  @tailrec
+  private[this] final def replaceContent(
+      unprocessed: String,
+      startBlockRegex: Regex,
+      endBlockRegex: Regex,
+      target: String,
+      replacement: String,
+      replaced: String = ""): String = {
+
+    def tryToReplace: Option[(String, Int)] =
+      (startBlockRegex.findFirstMatchIn(unprocessed), endBlockRegex.findFirstMatchIn(unprocessed)) match {
+        case (Some(startMatch), Some(endMatch)) if startMatch.end < endMatch.start =>
+          val newContent = unprocessed.subStr(0, startMatch.end) +
+            unprocessed.subStr(startMatch.end, endMatch.start).replaceAllLiterally(target, replacement) +
+            unprocessed.subStr(endMatch.start, endMatch.end)
+          Some((newContent, endMatch.end))
+        case _ => None
+      }
+
+    tryToReplace match {
+      case None => replaced + unprocessed
+      case Some((replacedBlock, endPosition)) =>
+        replaceContent(
+          unprocessed.subStr(endPosition),
+          startBlockRegex,
+          endBlockRegex,
+          target,
+          replacement,
+          replaced + replacedBlock)
+    }
+  }
+
+}
+
+object ReplaceTextEngine {
+
+  sealed trait ProcessedFileStatus
+  case class SuccessfullyProcessed(modified: Boolean) extends ProcessedFileStatus
+  case class ErrorProcessing(exception: IOException)  extends ProcessedFileStatus
+
+  case class ProcessedFile(file: File, status: ProcessedFileStatus)
+
+}
+
+object textSyntax {
+
+  implicit def stringOps(string: String): StringOps = new StringOps(string)
+
+  final class StringOps(string: String) {
+
+    def subStr(pos: Int): String = safeSubStr(string, pos)
+
+    def subStr(start: Int, end: Int): String = safeSubStr(string, start, end)
+
+    def endsWithOne(suffix: String*): Boolean =
+      suffix.foldLeft(false)((result, suffix) => result || string.endsWith(suffix))
+
+  }
+
+}
