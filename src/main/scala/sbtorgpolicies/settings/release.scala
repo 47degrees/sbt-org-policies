@@ -20,7 +20,7 @@ import cats.syntax.either._
 import org.joda.time.{DateTime, DateTimeZone}
 import sbt.Keys.{baseDirectory, packageOptions, version}
 import sbt.Package.ManifestAttributes
-import sbt.{LocalRootProject, Project, Setting, State}
+import sbt.{File, LocalRootProject, Project, Setting, State}
 import sbtorgpolicies.github.GitHubOps
 import sbtorgpolicies.io.FileHelper
 import sbtorgpolicies.OrgPoliciesKeys._
@@ -121,10 +121,9 @@ trait release {
       fileType = ChangelogFileType(DateTime.now(DateTimeZone.UTC), vs._1, comment)
       _ <- fh.checkOrgFiles(baseDir, orgTargetDir, List(fileType))
       maybeRef <- ghOps.commitFiles(
-        baseDir = baseDir,
         branch = branch,
         message = s"$commitMessage [ci skip]",
-        files = List(fileType.outputPath))
+        files = List(new File(baseDir, fileType.outputPath)))
     } yield maybeRef) match {
       case Right(Some(_)) =>
         st.log.info("Update Change Log was finished successfully")
@@ -142,7 +141,6 @@ trait release {
     val ghOps: GitHubOps = st.extract.get(orgGithubOpsSetting)
     val file             = st.extract.get(releaseVersionFile)
     val branch           = st.extract.get(orgCommitBranchSetting)
-    val baseDir          = st.extract.get(baseDirectory in LocalRootProject)
 
     val vs = st
       .get(versions)
@@ -150,7 +148,7 @@ trait release {
 
     val commitMessage = s"$orgVersionCommitMessage to ${vs._2}"
 
-    ghOps.commitFiles(baseDir, branch, commitMessage, List(file.getName)) match {
+    ghOps.commitFiles(branch, commitMessage, List(file)) match {
       case Right(Some(_)) =>
         st.log.info("Next version was committed successfully")
       case Right(None) =>

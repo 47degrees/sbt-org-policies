@@ -89,10 +89,15 @@ sealed trait OrgPoliciesSettingsKeys {
     settingKey[List[Validation]]("Validation list the plugin must check")
 
   val orgUpdateDocFilesSetting: SettingKey[List[File]] =
-    settingKey[List[File]]("List of files and directories whose replace blocks will be replaced with the new values")
+    settingKey[List[File]]("List of files and directories whose replace blocks will be replaced with the new values.")
+
+  val orgUpdateDocFilesCommitSetting: SettingKey[Boolean] =
+    settingKey[Boolean]("Determines if the files should be committed after the update. 'true' by default.")
 
   val orgUpdateDocFilesReplacementsSetting: SettingKey[Map[String, String]] =
-    settingKey[Map[String, String]]("Replacements for the replace blocks")
+    settingKey[Map[String, String]](
+      "Replacements for the replace blocks. " +
+        "By default, the regular expression \"\\\\d+.\\\\d+.\\\\d+\" will be replaced by the project version.")
 }
 
 sealed trait OrgPoliciesTaskKeys {

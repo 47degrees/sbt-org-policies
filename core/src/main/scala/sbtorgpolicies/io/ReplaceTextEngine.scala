@@ -94,8 +94,7 @@ class ReplaceTextEngine {
         case (Some(startMatch), Some(endMatch)) if startMatch.end < endMatch.start =>
           val textToBeReplaced = unprocessed.subStr(startMatch.end, endMatch.start)
           val replaced = replacements.foldLeft(textToBeReplaced) {
-            case (text, (target, replacement)) =>
-              text.replaceAllLiterally(target, replacement)
+            case (text, (target, replacement)) => text.replaceAll(target, replacement)
           }
           val newContent = unprocessed.subStr(0, startMatch.end) + replaced + unprocessed.subStr(
             endMatch.start,

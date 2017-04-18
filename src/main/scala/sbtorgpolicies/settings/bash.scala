@@ -33,12 +33,13 @@ trait bash {
     Seq(
       orgCommitPolicyFiles := Def.task {
         onlyRootUnitTask(baseDirectory.value, (baseDirectory in LocalRootProject).value, streams.value.log) {
-          val ghOps: GitHubOps = orgGithubOpsSetting.value
+          val ghOps: GitHubOps  = orgGithubOpsSetting.value
+          val baseDir: File     = (baseDirectory in LocalRootProject).value
+          val files: List[File] = orgEnforcedFilesSetting.value.map(f => baseDir / f.outputPath)
           ghOps.commitFiles(
-            baseDir = (baseDirectory in LocalRootProject).value,
             branch = orgCommitBranchSetting.value,
             message = s"${orgCommitMessageSetting.value} [ci skip]",
-            files = orgEnforcedFilesSetting.value.map(_.outputPath)
+            files = files
           ) match {
             case Right(Some(_)) =>
               streams.value.log.info("Policy files committed successfully")

@@ -115,6 +115,7 @@ trait DefaultSettings extends AllSettings {
     orgAfterCISuccessTaskListSetting := List(
       orgCreateFiles.toOrgTask,
       orgCommitPolicyFiles.toOrgTask,
+      orgUpdateDocFiles.toOrgTask,
       depUpdateDependencyIssues.toOrgTask,
       orgPublishReleaseTask.toOrgTask(allModulesScope = true, crossScalaVersionsScope = true)
     ),

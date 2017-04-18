@@ -20,6 +20,7 @@ import cats.syntax.either._
 import sbt.Keys._
 import sbt._
 import sbtorgpolicies.OrgPoliciesKeys._
+import sbtorgpolicies.github.GitHubOps
 import sbtorgpolicies.io._
 import sbtorgpolicies.templates.utils._
 
@@ -28,8 +29,9 @@ import scala.util.matching.Regex
 trait files {
 
   val orgFilesSettings = Seq(
-    orgUpdateDocFilesSetting := List(baseDirectory.value / "docs"),
-    orgUpdateDocFilesReplacementsSetting := Map.empty
+    orgUpdateDocFilesSetting := List(baseDirectory.value / "docs", baseDirectory.value / "README.md"),
+    orgUpdateDocFilesCommitSetting := true,
+    orgUpdateDocFilesReplacementsSetting := Map("\"\\d+\\.\\d+\\.\\d+\"" -> ("\"" + version.value + "\""))
   )
 
   val orgFilesTasks =
@@ -79,9 +81,26 @@ trait files {
             streams.value.log.warn(printList("The following files where processed with errors:", errorFiles))
           }
 
-          val modified = replaced.filter(f => f.status.success && f.status.modified).map(_.file.getAbsolutePath)
+          val modified = replaced.filter(f => f.status.success && f.status.modified).map(_.file)
           if (modified.nonEmpty) {
-            streams.value.log.info(printList("The following files where modified:", modified))
+            streams.value.log.info(printList("The following files where modified:", modified.map(_.getAbsolutePath)))
+            if (orgUpdateDocFilesCommitSetting.value) {
+              streams.value.log.info("Committing files")
+              val ghOps: GitHubOps = orgGithubOpsSetting.value
+              ghOps.commitFiles(
+                branch = orgCommitBranchSetting.value,
+                message = s"${orgCommitMessageSetting.value} [ci skip]",
+                files = modified
+              ) match {
+                case Right(Some(_)) =>
+                  streams.value.log.info("Docs files committed successfully")
+                case Right(None) =>
+                  streams.value.log.info("No changes detected in docs files. Skipping commit")
+                case Left(e) =>
+                  streams.value.log.error(s"Error committing files")
+                  e.printStackTrace()
+              }
+            }
           }
 
           if (errorFiles.isEmpty && modified.isEmpty) {

@@ -54,16 +54,12 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
     op.execE
   }
 
-  def commitFiles(
-      baseDir: File,
-      branch: String,
-      message: String,
-      files: List[String]): Either[OrgPolicyException, Option[Ref]] = {
+  def commitFiles(branch: String, message: String, files: List[File]): Either[OrgPolicyException, Option[Ref]] = {
 
     def readFileContents: IOResult[List[(String, String)]] = {
       files.foldLeft[IOResult[List[(String, String)]]](Right(Nil)) {
         case (Right(partialResult), file) =>
-          fileReader.getFileContent(baseDir.getAbsolutePath.ensureFinalSlash + file).map((file, _) :: partialResult)
+          fileReader.getFileContent(file.getAbsolutePath).map((file.getName, _) :: partialResult)
         case (Left(e), _) => Left(e)
       }
     }
