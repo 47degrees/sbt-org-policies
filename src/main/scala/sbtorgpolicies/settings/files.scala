@@ -31,7 +31,7 @@ trait files {
   val orgFilesSettings = Seq(
     orgUpdateDocFilesSetting := List(baseDirectory.value / "docs", baseDirectory.value / "README.md"),
     orgUpdateDocFilesCommitSetting := true,
-    orgUpdateDocFilesReplacementsSetting := Map("\"\\d+\\.\\d+\\.\\d+\"" -> ("\"" + version.value + "\""))
+    orgUpdateDocFilesReplacementsSetting := Map("\"\\d+\\.\\d+\\.\\d+\"(-SNAPSHOT)?" -> ("\"" + version.value + "\""))
   )
 
   val orgFilesTasks =
