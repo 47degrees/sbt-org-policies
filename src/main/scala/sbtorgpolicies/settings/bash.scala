@@ -21,7 +21,6 @@ import sbt.Keys._
 import sbt._
 import sbt.complete.DefaultParsers.OptNotSpace
 import sbtorgpolicies.OrgPoliciesKeys._
-import sbtorgpolicies.github.GitHubOps
 import sbtorgpolicies.model.{Dev, RunnableCITask}
 import sbtorgpolicies.utils._
 import sbtrelease.ReleaseStateTransformations.reapply
@@ -61,7 +60,9 @@ trait bash {
       case (true, _) =>
         st.log.info("SNAPSHOT version detected, skipping release and publishing it...")
 
-        extracted.runTask[Unit](publishSigned, st)._1
+        val ref = extracted.get(thisProjectRef)
+
+        extracted.runAggregated[Unit](publishSigned in Global in ref, st)
       case (false, true) =>
         st.log.info("Release Version detected, starting the release process...")
 
