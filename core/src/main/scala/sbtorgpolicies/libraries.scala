@@ -73,7 +73,7 @@ object libraries {
     "scalacheck"      -> "1.13.5",
     "scheckShapeless" -> "1.1.4",
     "scalaj"          -> "2.3.0",
-    "scalatest"       -> "3.0.1",
+    "scalatest"       -> "3.0.2",
     "scalaz"          -> "7.2.9",
     "scalazspecs2"    -> "0.5.0",
     "scanamo"         -> "0.9.1",
