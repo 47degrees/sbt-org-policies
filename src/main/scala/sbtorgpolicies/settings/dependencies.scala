@@ -17,6 +17,8 @@
 package sbtorgpolicies.settings
 
 import org.scalajs.sbtplugin.ScalaJSCrossVersion
+import org.scalajs.sbtplugin.cross.CrossProject
+import sbt.Keys.libraryDependencies
 import sbt._
 import sbtorgpolicies.libraries._
 
@@ -48,6 +50,19 @@ trait dependencies {
 
   def %%%(artifactId: String, version: String): ModuleID =
     getLib(artifactId, Some(version)).toJsModuleId
+
+  implicit class CrossProjectOps(crossProject: CrossProject) {
+
+    def crossDepSettings(modules: ModuleID*): CrossProject = {
+      val dependencyList: Seq[(ModuleID, ModuleID)] = modules.toList.map { moduleID =>
+        (%%(moduleID.name, moduleID.revision), %%%(moduleID.name, moduleID.revision))
+      }
+      crossProject
+        .jvmSettings(libraryDependencies ++= dependencyList.map(_._1))
+        .jsSettings(libraryDependencies ++= dependencyList.map(_._2))
+    }
+
+  }
 
   private[this] def getLib(lib: String, maybeVersion: Option[String] = None) = {
     val artifact: (String, String, String) = libs(lib)
