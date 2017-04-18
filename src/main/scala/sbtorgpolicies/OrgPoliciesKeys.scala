@@ -70,6 +70,8 @@ sealed trait OrgPoliciesSettingsKeys {
   val orgMaintainersSetting: SettingKey[List[Dev]] =
     settingKey[List[Dev]]("List of Maintainers of the project.")
 
+  val orgProjectName: SettingKey[String] = settingKey[String]("Name that will be used in docs. By default, the module name will be used.")
+
   val orgScriptTaskListSetting: SettingKey[List[RunnableCITask]] =
     settingKey[List[RunnableCITask]](
       "Defines the list of tasks that should be executed to figure out whether the build is correct. " +

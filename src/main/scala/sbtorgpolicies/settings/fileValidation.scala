@@ -31,7 +31,9 @@ trait fileValidation extends ValidationFunctions {
 
   val fileValidationDefaultSettings = Seq(
     orgValidationListSetting := List(
-      mkValidation(getChildPath(baseDirectory.value, "README.md"), List(requiredStrings(readmeSections(name.value)))),
+      mkValidation(
+        getChildPath(baseDirectory.value, "README.md"),
+        List(requiredStrings(readmeSections(orgProjectName.value)))),
       mkValidation(getChildPath(baseDirectory.value, "CONTRIBUTING.md"), List(emptyValidation)),
       mkValidation(
         getChildPath(baseDirectory.value, "AUTHORS.md"),
@@ -42,7 +44,7 @@ trait fileValidation extends ValidationFunctions {
       ),
       mkValidation(
         getChildPath(baseDirectory.value, "NOTICE.md"),
-        List(requiredStrings(List(name.value, orgLicenseSetting.value.name)))
+        List(requiredStrings(List(orgProjectName.value, orgLicenseSetting.value.name)))
       ),
       mkValidation(getChildPath(baseDirectory.value, sbtorgpolicies.templates.versionFilePath), List(emptyValidation)),
       mkValidation(
