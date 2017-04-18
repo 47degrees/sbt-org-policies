@@ -20,7 +20,7 @@ import org.joda.time.{DateTime, DateTimeZone}
 
 trait utils {
 
-  def guard[T](flag: Boolean)(res: Seq[T]): Seq[T] = if (flag) res else Seq.empty
+  def guard[T](flag: Boolean)(res: T*): List[T] = if (flag) res.toList else Nil
 
   def getEnvVar(name: String): Option[String] = Option(System.getenv().get(name))
 

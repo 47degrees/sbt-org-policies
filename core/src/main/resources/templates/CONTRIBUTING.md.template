@@ -1,7 +1,7 @@
 # Contributing
 
-Discussion around {{name}} happens in the [Gitter channel](https://gitter.im/{{organization}}/{{name}}) as well as on
-[GitHub issues](https://github.com/{{organization}}/{{name}}/issues) and [pull requests](https://github.com/{{organization}}/{{name}}/pulls).
+Discussion around {{name}} happens in the [Gitter channel](https://gitter.im/{{organization}}/{{project}}) as well as on
+[GitHub issues](https://github.com/{{organization}}/{{project}}/issues) and [pull requests](https://github.com/{{organization}}/{{project}}/pulls).
 
 Feel free to open an issue if you notice a bug, have an idea for a feature, or have a question about
 the code. Pull requests are also welcome.
