@@ -53,18 +53,14 @@ trait dependencies {
 
   implicit class CrossProjectOps(crossProject: CrossProject) {
 
-    def crossDepSettings(modules: ModuleID*): CrossProject = {
-      val dependencyList: Seq[(ModuleID, ModuleID)] = modules.toList.map { moduleID =>
-        (%%(moduleID.name, moduleID.revision), %%%(moduleID.name, moduleID.revision))
-      }
+    def crossDepSettings(modules: ModuleID*): CrossProject =
       crossProject
-        .jvmSettings(libraryDependencies ++= dependencyList.map(_._1))
-        .jsSettings(libraryDependencies ++= dependencyList.map(_._2))
-    }
+        .jvmSettings(libraryDependencies ++= modules.map(_.cross(CrossVersion.binary)))
+        .jsSettings(libraryDependencies ++= modules.map(_.cross(ScalaJSCrossVersion.binary)))
 
   }
 
-  private[this] def getLib(lib: String, maybeVersion: Option[String] = None) = {
+  private[this] def getLib(lib: String, maybeVersion: Option[String] = None): Dep = {
     val artifact: (String, String, String) = libs(lib)
     val dep                                = Dep(artifact._1, artifact._2, artifact._3)
     maybeVersion.foldLeft(dep)((module, revision) => module.copy(revision = revision))
