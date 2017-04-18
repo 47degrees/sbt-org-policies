@@ -31,26 +31,6 @@ trait bash {
 
   val orgBashTasks =
     Seq(
-      orgCommitPolicyFiles := Def.task {
-        onlyRootUnitTask(baseDirectory.value, (baseDirectory in LocalRootProject).value, streams.value.log) {
-          val ghOps: GitHubOps  = orgGithubOpsSetting.value
-          val baseDir: File     = (baseDirectory in LocalRootProject).value
-          val files: List[File] = orgEnforcedFilesSetting.value.map(f => baseDir / f.outputPath)
-          ghOps.commitFiles(
-            branch = orgCommitBranchSetting.value,
-            message = s"${orgCommitMessageSetting.value} [ci skip]",
-            files = files
-          ) match {
-            case Right(Some(_)) =>
-              streams.value.log.info("Policy files committed successfully")
-            case Right(None) =>
-              streams.value.log.info("No changes detected in policy files. Skipping commit")
-            case Left(e) =>
-              streams.value.log.error(s"Error committing files")
-              e.printStackTrace()
-          }
-        }
-      }.value,
       orgPublishReleaseTask := Def.task {
         val scalaV = scalaVersion.value
         s"sbt ++$scalaV $orgPublishReleaseCommandKey".!

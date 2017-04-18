@@ -106,8 +106,6 @@ sealed trait OrgPoliciesTaskKeys {
 
   val orgCheckSettings: TaskKey[Unit] = taskKey[Unit]("Task to check the project settings.")
 
-  val orgCommitPolicyFiles: TaskKey[Unit] = taskKey[Unit]("Commits the policy files into the specified branch.")
-
   val orgCompile: TaskKey[Unit] =
     taskKey[Unit]("Just a (compile in Compile) but ignoring the result (Analysis type) and returning Unit.")
 
@@ -127,7 +125,9 @@ sealed trait OrgPoliciesTaskKeys {
   val orgValidateFiles: TaskKey[Unit] = taskKey[Unit]("Validates all files according to a set of policy rules.")
 
   val orgUpdateDocFiles: TaskKey[Unit] =
-    taskKey[Unit]("Updates all replace blocks in the defined files and directories")
+    taskKey[Unit](
+      "Updates all replace blocks in the defined files and directories and commits both, " +
+        "the modified files and the policy files, only if `orgUpdateDocFilesCommitSetting` is `true`")
 
 }
 

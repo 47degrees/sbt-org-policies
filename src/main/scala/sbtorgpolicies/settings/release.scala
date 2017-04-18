@@ -121,6 +121,7 @@ trait release {
       fileType = ChangelogFileType(DateTime.now(DateTimeZone.UTC), vs._1, comment)
       _ <- fh.checkOrgFiles(baseDir, orgTargetDir, List(fileType))
       maybeRef <- ghOps.commitFiles(
+        baseDir = baseDir,
         branch = branch,
         message = s"$commitMessage [ci skip]",
         files = List(new File(baseDir, fileType.outputPath)))
@@ -141,6 +142,7 @@ trait release {
     val ghOps: GitHubOps = st.extract.get(orgGithubOpsSetting)
     val file             = st.extract.get(releaseVersionFile)
     val branch           = st.extract.get(orgCommitBranchSetting)
+    val baseDir          = st.extract.get(baseDirectory in LocalRootProject)
 
     val vs = st
       .get(versions)
@@ -148,7 +150,7 @@ trait release {
 
     val commitMessage = s"$orgVersionCommitMessage to ${vs._2}"
 
-    ghOps.commitFiles(branch, commitMessage, List(file)) match {
+    ghOps.commitFiles(baseDir, branch, commitMessage, List(file)) match {
       case Right(Some(_)) =>
         st.log.info("Next version was committed successfully")
       case Right(None) =>

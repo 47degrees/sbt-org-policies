@@ -26,6 +26,7 @@ import com.github.marklister.base64.Base64.Encoder
 import github4s.Github
 import github4s.GithubResponses._
 import github4s.free.domain._
+import sbt.IO
 import sbtorgpolicies.exceptions.{GitHubException, OrgPolicyException}
 import sbtorgpolicies.github.instances._
 import sbtorgpolicies.github.syntax._
@@ -54,12 +55,20 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
     op.execE
   }
 
-  def commitFiles(branch: String, message: String, files: List[File]): Either[OrgPolicyException, Option[Ref]] = {
+  def commitFiles(
+      baseDir: File,
+      branch: String,
+      message: String,
+      files: List[File]): Either[OrgPolicyException, Option[Ref]] = {
+
+    def relativePath(file: File): String = IO.relativize(baseDir, file).getOrElse(file.getName)
 
     def readFileContents: IOResult[List[(String, String)]] = {
       files.foldLeft[IOResult[List[(String, String)]]](Right(Nil)) {
         case (Right(partialResult), file) =>
-          fileReader.getFileContent(file.getAbsolutePath).map((file.getName, _) :: partialResult)
+          fileReader.getFileContent(file.getAbsolutePath).map { content =>
+            (relativePath(file), content) :: partialResult
+          }
         case (Left(e), _) => Left(e)
       }
     }
