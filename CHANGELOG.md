@@ -1,5 +1,15 @@
 # Changelog
 
+## 04/18/2017 - Version 0.4.10
+
+Release changes:
+
+* Changes the default badge configuration ([#162](https://github.com/47deg/sbt-org-policies/pull/162))
+* Avoids some task executions in non-root modules ([#171](https://github.com/47deg/sbt-org-policies/pull/171))
+* Adds a new setting for defining the project name ([#172](https://github.com/47deg/sbt-org-policies/pull/172))
+* ScalaJS Testing Bug fix ([#173](https://github.com/47deg/sbt-org-policies/pull/173))
+
+
 ## 04/17/2017 - Version 0.4.9
 
 Release changes:
