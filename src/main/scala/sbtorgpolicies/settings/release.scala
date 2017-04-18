@@ -20,7 +20,7 @@ import cats.syntax.either._
 import org.joda.time.{DateTime, DateTimeZone}
 import sbt.Keys.{baseDirectory, packageOptions, version}
 import sbt.Package.ManifestAttributes
-import sbt.{LocalRootProject, Project, Setting, State}
+import sbt.{File, LocalRootProject, Project, Setting, State}
 import sbtorgpolicies.github.GitHubOps
 import sbtorgpolicies.io.FileHelper
 import sbtorgpolicies.OrgPoliciesKeys._
@@ -124,7 +124,7 @@ trait release {
         baseDir = baseDir,
         branch = branch,
         message = s"$commitMessage [ci skip]",
-        files = List(fileType.outputPath))
+        files = List(new File(baseDir, fileType.outputPath)))
     } yield maybeRef) match {
       case Right(Some(_)) =>
         st.log.info("Update Change Log was finished successfully")
@@ -150,7 +150,7 @@ trait release {
 
     val commitMessage = s"$orgVersionCommitMessage to ${vs._2}"
 
-    ghOps.commitFiles(baseDir, branch, commitMessage, List(file.getName)) match {
+    ghOps.commitFiles(baseDir, branch, commitMessage, List(file)) match {
       case Right(Some(_)) =>
         st.log.info("Next version was committed successfully")
       case Right(None) =>

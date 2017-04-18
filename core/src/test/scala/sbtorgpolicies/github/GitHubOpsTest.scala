@@ -16,6 +16,8 @@
 
 package sbtorgpolicies.github
 
+import java.io.File
+
 import cats.data.NonEmptyList
 import cats.free.Free
 import cats.syntax.either._
@@ -130,7 +132,7 @@ class GitHubOpsTest extends TestOps {
         }
 
         val result: Either[OrgPolicyException, Option[Ref]] =
-          githubOps.commitFiles(baseDir, branch, sampleMessage, filesAndContents.map(_._1))
+          githubOps.commitFiles(baseDir, branch, sampleMessage, filesAndContents.map(t => new File(baseDir, t._1)))
 
         (nelRefResponse, refCommitResponse) match {
           case (Left(e), _) =>
@@ -191,7 +193,7 @@ class GitHubOpsTest extends TestOps {
           .thenReturn(Free.pure[GitHub4s, GHResponse[Ref]](updateReferenceR))
 
         val result: Either[OrgPolicyException, Option[Ref]] =
-          githubOps.commitFiles(baseDir, branch, sampleMessage, filesAndContents.map(_._1))
+          githubOps.commitFiles(baseDir, branch, sampleMessage, filesAndContents.map(t => new File(baseDir, t._1)))
 
         (nelRefR, refCommitR, treeResultR, createCommitR, updateReferenceR) match {
           case (Left(e), _, _, _, _) =>
@@ -224,7 +226,7 @@ class GitHubOpsTest extends TestOps {
     when(fileReaderMock.getFileContent(any[String])).thenReturn(ioException.asLeft)
 
     val result: Either[OrgPolicyException, Option[Ref]] =
-      githubOps.commitFiles(baseDir, branch, sampleMessage, filesAndContents.map(_._1))
+      githubOps.commitFiles(baseDir, branch, sampleMessage, filesAndContents.map(t => new File(baseDir, t._1)))
 
     result shouldBe ioException.asLeft
 

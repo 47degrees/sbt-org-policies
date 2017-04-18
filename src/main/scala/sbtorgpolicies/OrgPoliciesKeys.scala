@@ -89,10 +89,15 @@ sealed trait OrgPoliciesSettingsKeys {
     settingKey[List[Validation]]("Validation list the plugin must check")
 
   val orgUpdateDocFilesSetting: SettingKey[List[File]] =
-    settingKey[List[File]]("List of files and directories whose replace blocks will be replaced with the new values")
+    settingKey[List[File]]("List of files and directories whose replace blocks will be replaced with the new values.")
+
+  val orgUpdateDocFilesCommitSetting: SettingKey[Boolean] =
+    settingKey[Boolean]("Determines if the files should be committed after the update. 'true' by default.")
 
   val orgUpdateDocFilesReplacementsSetting: SettingKey[Map[String, String]] =
-    settingKey[Map[String, String]]("Replacements for the replace blocks")
+    settingKey[Map[String, String]](
+      "Replacements for the replace blocks. " +
+        "By default, the regular expression \"\\\\d+.\\\\d+.\\\\d+\" will be replaced by the project version.")
 }
 
 sealed trait OrgPoliciesTaskKeys {
@@ -100,8 +105,6 @@ sealed trait OrgPoliciesTaskKeys {
   // (Task keys are ordered alphabetically)
 
   val orgCheckSettings: TaskKey[Unit] = taskKey[Unit]("Task to check the project settings.")
-
-  val orgCommitPolicyFiles: TaskKey[Unit] = taskKey[Unit]("Commits the policy files into the specified branch.")
 
   val orgCompile: TaskKey[Unit] =
     taskKey[Unit]("Just a (compile in Compile) but ignoring the result (Analysis type) and returning Unit.")
@@ -122,7 +125,9 @@ sealed trait OrgPoliciesTaskKeys {
   val orgValidateFiles: TaskKey[Unit] = taskKey[Unit]("Validates all files according to a set of policy rules.")
 
   val orgUpdateDocFiles: TaskKey[Unit] =
-    taskKey[Unit]("Updates all replace blocks in the defined files and directories")
+    taskKey[Unit](
+      "Updates all replace blocks in the defined files and directories and commits both, " +
+        "the modified files and the policy files, only if `orgUpdateDocFilesCommitSetting` is `true`")
 
 }
 

@@ -20,6 +20,7 @@ import cats.syntax.either._
 import sbt.Keys._
 import sbt._
 import sbtorgpolicies.OrgPoliciesKeys._
+import sbtorgpolicies.github.GitHubOps
 import sbtorgpolicies.io._
 import sbtorgpolicies.templates.utils._
 
@@ -28,8 +29,9 @@ import scala.util.matching.Regex
 trait files {
 
   val orgFilesSettings = Seq(
-    orgUpdateDocFilesSetting := List(baseDirectory.value / "docs"),
-    orgUpdateDocFilesReplacementsSetting := Map.empty
+    orgUpdateDocFilesSetting := List(baseDirectory.value / "docs", baseDirectory.value / "README.md"),
+    orgUpdateDocFilesCommitSetting := true,
+    orgUpdateDocFilesReplacementsSetting := Map("\"\\d+\\.\\d+\\.\\d+\"(-SNAPSHOT)?" -> ("\"" + version.value + "\""))
   )
 
   val orgFilesTasks =
@@ -58,34 +60,57 @@ trait files {
       }.value,
       orgUpdateDocFiles := Def.task {
         onlyRootUnitTask(baseDirectory.value, (baseDirectory in LocalRootProject).value, streams.value.log) {
-          val replaceTextEngine      = new ReplaceTextEngine
-          val blockTitle: String     = "Replace"
-          val startBlockRegex: Regex = markdownComment(blockTitle, scape = true).r
-          val endBlockRegex: Regex   = markdownComment(blockTitle, start = false, scape = true).r
 
-          val isFileSupported: (File) => Boolean = file => {
-            file.getName.indexOf('.') < 0 || file.getName.endsWith(".md")
-          }
+          val modifiedDocFiles: List[File] = if (!version.value.endsWith("-SNAPSHOT")) {
+            val replaceTextEngine      = new ReplaceTextEngine
+            val blockTitle: String     = "Replace"
+            val startBlockRegex: Regex = markdownComment(blockTitle, scape = true).r
+            val endBlockRegex: Regex   = markdownComment(blockTitle, start = false, scape = true).r
 
-          val replaced = replaceTextEngine.replaceBlocks(
-            startBlockRegex,
-            endBlockRegex,
-            orgUpdateDocFilesReplacementsSetting.value,
-            orgUpdateDocFilesSetting.value,
-            isFileSupported)
+            val isFileSupported: (File) => Boolean = file => {
+              file.getName.indexOf('.') < 0 || file.getName.endsWith(".md")
+            }
 
-          val errorFiles = replaced.filter(_.status.failure).map(_.file.getAbsolutePath)
-          if (errorFiles.nonEmpty) {
-            streams.value.log.warn(printList("The following files where processed with errors:", errorFiles))
-          }
+            val replaced = replaceTextEngine.replaceBlocks(
+              startBlockRegex,
+              endBlockRegex,
+              orgUpdateDocFilesReplacementsSetting.value,
+              orgUpdateDocFilesSetting.value,
+              isFileSupported)
 
-          val modified = replaced.filter(f => f.status.success && f.status.modified).map(_.file.getAbsolutePath)
-          if (modified.nonEmpty) {
-            streams.value.log.info(printList("The following files where modified:", modified))
-          }
+            val errorFiles = replaced.filter(_.status.failure).map(_.file.getAbsolutePath)
+            if (errorFiles.nonEmpty) {
+              streams.value.log.warn(printList("The following files where processed with errors:", errorFiles))
+            }
 
-          if (errorFiles.isEmpty && modified.isEmpty) {
-            streams.value.log.info("No files updated")
+            replaced.filter(f => f.status.success && f.status.modified).map(_.file)
+          } else Nil
+
+          val baseDir: File           = (baseDirectory in LocalRootProject).value
+          val policyFiles: List[File] = orgEnforcedFilesSetting.value.map(f => baseDir / f.outputPath)
+          val allFiles: List[File]    = policyFiles ++ modifiedDocFiles
+
+          if (allFiles.nonEmpty) {
+            if (orgUpdateDocFilesCommitSetting.value) {
+              streams.value.log.info(printList("Committing files", allFiles.map(_.getAbsolutePath)))
+              val ghOps: GitHubOps = orgGithubOpsSetting.value
+              ghOps.commitFiles(
+                baseDir = baseDir,
+                branch = orgCommitBranchSetting.value,
+                message = s"${orgCommitMessageSetting.value} [ci skip]",
+                files = allFiles
+              ) match {
+                case Right(Some(_)) =>
+                  streams.value.log.info("Files committed successfully")
+                case Right(None) =>
+                  streams.value.log.info("No changes detected in docs and policy files. Skipping commit")
+                case Left(e) =>
+                  streams.value.log.error(s"Error committing files")
+                  e.printStackTrace()
+              }
+            } else streams.value.log.info("orgUpdateDocFilesCommitSetting set to `false`. Skipping commit")
+          } else {
+            streams.value.log.info("No files to be committed")
           }
         }
       }.value
