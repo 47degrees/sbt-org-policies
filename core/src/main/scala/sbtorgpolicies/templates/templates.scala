@@ -66,6 +66,7 @@ package object templates {
     outputPath = "CONTRIBUTING.md",
     replacements = Map(
       "name"              -> projectName.asReplaceable,
+      "project"           -> ghSettings.project.asReplaceable,
       "organization"      -> ghSettings.organization.asReplaceable,
       "organizationName"  -> ghSettings.organizationName.asReplaceable,
       "organizationEmail" -> ghSettings.organizationEmail.asReplaceable

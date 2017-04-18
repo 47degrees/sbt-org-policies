@@ -77,13 +77,12 @@ trait DefaultSettings extends AllSettings {
     orgCommitMessageSetting := "Updates policy files from SBT",
     orgTargetDirectorySetting := resourceManaged.value / "org-policies",
     orgBadgeListSetting := List(
-      TravisBadge.apply,
-      MavenCentralBadge.apply,
-      LicenseBadge.apply,
-      ScalaLangBadge.apply,
-      GitterBadge.apply,
-      GitHubIssuesBadge.apply
-    ),
+      TravisBadge.apply(_),
+      MavenCentralBadge.apply(_),
+      LicenseBadge.apply(_),
+      GitterBadge.apply(_),
+      GitHubIssuesBadge.apply(_)
+    ) ++ guard(sbtPlugin.value)(ScalaLangBadge.apply(_)),
     orgEnforcedFilesSetting := List(
       LicenseFileType(orgGithubSetting.value, orgLicenseSetting.value, startYear.value),
       ContributingFileType(orgProjectName.value, orgGithubSetting.value),
