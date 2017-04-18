@@ -53,9 +53,10 @@ trait DefaultSettings extends AllSettings {
       AutomateHeaderPlugin.automateFor(Compile, Test)
 
   lazy val orgCommonDefaultSettings = Seq(
+    orgProjectName := name.value,
     orgGithubSetting := GitHubSettings(
       organization = "47deg",
-      project = name.value,
+      project = (name in LocalRootProject).value,
       organizationName = "47 Degrees",
       groupId = "com.47deg",
       organizationHomePage = url("http://47deg.com"),
@@ -78,7 +79,6 @@ trait DefaultSettings extends AllSettings {
     orgBadgeListSetting := List(
       TravisBadge.apply,
       MavenCentralBadge.apply,
-      CodecovBadge.apply,
       LicenseBadge.apply,
       ScalaLangBadge.apply,
       GitterBadge.apply,
@@ -86,18 +86,24 @@ trait DefaultSettings extends AllSettings {
     ),
     orgEnforcedFilesSetting := List(
       LicenseFileType(orgGithubSetting.value, orgLicenseSetting.value, startYear.value),
-      ContributingFileType(orgGithubSetting.value),
-      AuthorsFileType(orgGithubSetting.value, orgMaintainersSetting.value, orgContributorsSetting.value),
-      NoticeFileType(orgGithubSetting.value, orgLicenseSetting.value, startYear.value),
+      ContributingFileType(orgProjectName.value, orgGithubSetting.value),
+      AuthorsFileType(
+        orgProjectName.value,
+        orgGithubSetting.value,
+        orgMaintainersSetting.value,
+        orgContributorsSetting.value),
+      NoticeFileType(orgProjectName.value, orgGithubSetting.value, orgLicenseSetting.value, startYear.value),
       VersionSbtFileType,
       ChangelogFileType,
       ReadmeFileType(
+        orgProjectName.value,
         orgGithubSetting.value,
         startYear.value,
         orgLicenseSetting.value,
         orgCommitBranchSetting.value,
         version.value,
-        orgBadgeListSetting.value),
+        orgBadgeListSetting.value
+      ),
       TravisFileType(crossScalaVersions.value)
     ),
     orgTemplatesDirectorySetting := (resourceDirectory in Compile).value / "org" / "templates",

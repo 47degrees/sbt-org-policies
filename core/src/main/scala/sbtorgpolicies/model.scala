@@ -100,7 +100,8 @@ object model {
     def api: String          = s"https://$organization.github.io/$project/api/"
     def organisation: String = s"com.github.$organization"
     override def toString: String =
-      s"""GitHubSettings:home = $home
+      s"""GitHubSettings:project = $project
+         |GitHubSettings:home = $home
          |GitHubSettings:homePage = $homePage
          |GitHubSettings:repo = $repo
          |GitHubSettings:api = $api

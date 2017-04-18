@@ -58,21 +58,25 @@ package object templates {
     )
   }
 
-  def ContributingFileType(ghSettings: GitHubSettings) = FileType(
+  def ContributingFileType(projectName: String, ghSettings: GitHubSettings) = FileType(
     mandatory = true,
     overWritable = true,
     finalVersionOnly = false,
     templatePath = "templates/CONTRIBUTING.md.template",
     outputPath = "CONTRIBUTING.md",
     replacements = Map(
-      "name"              -> ghSettings.project.asReplaceable,
+      "name"              -> projectName.asReplaceable,
       "organization"      -> ghSettings.organization.asReplaceable,
       "organizationName"  -> ghSettings.organizationName.asReplaceable,
       "organizationEmail" -> ghSettings.organizationEmail.asReplaceable
     )
   )
 
-  def AuthorsFileType(ghSettings: GitHubSettings, maintainers: List[Dev], contributors: List[Dev]): FileType = {
+  def AuthorsFileType(
+      projectName: String,
+      ghSettings: GitHubSettings,
+      maintainers: List[Dev],
+      contributors: List[Dev]): FileType = {
 
     def devTemplate(dev: Dev): String =
       dev.name match {
@@ -87,14 +91,18 @@ package object templates {
       templatePath = "templates/AUTHORS.md.template",
       outputPath = "AUTHORS.md",
       replacements = Map(
-        "name"         -> ghSettings.project.asReplaceable,
+        "name"         -> projectName.asReplaceable,
         "maintainers"  -> maintainers.map(devTemplate).asReplaceable,
         "contributors" -> contributors.map(devTemplate).asReplaceable
       )
     )
   }
 
-  def NoticeFileType(ghSettings: GitHubSettings, license: License, startYear: Option[Int]): FileType = {
+  def NoticeFileType(
+      projectName: String,
+      ghSettings: GitHubSettings,
+      license: License,
+      startYear: Option[Int]): FileType = {
 
     FileType(
       mandatory = true,
@@ -104,7 +112,7 @@ package object templates {
       outputPath = "NOTICE.md",
       replacements = Map(
         "year"             -> replaceableYear(startYear).asReplaceable,
-        "name"             -> ghSettings.project.asReplaceable,
+        "name"             -> projectName.asReplaceable,
         "organizationName" -> ghSettings.organizationName.asReplaceable,
         "licenseName"      -> license.name.asReplaceable
       )
@@ -148,6 +156,7 @@ package object templates {
     )
 
   def ReadmeFileType(
+      projectName: String,
       ghSettings: GitHubSettings,
       startYear: Option[Int],
       license: License,
@@ -188,7 +197,7 @@ package object templates {
           template = copyrightSectionTemplate,
           replacements = Map(
             "year"                 -> replaceableYear(startYear).asReplaceable,
-            "name"                 -> ghSettings.project.asReplaceable,
+            "name"                 -> projectName.asReplaceable,
             "organizationName"     -> ghSettings.organizationName.asReplaceable,
             "organizationHomePage" -> ghSettings.organizationHomePage.asReplaceable
           ),
