@@ -136,8 +136,8 @@ object model {
   object scalac {
 
     val `2.10`: String = "2.10.6"
-    val `2.11`: String = "2.11.8"
-    val `2.12`: String = "2.12.1"
+    val `2.11`: String = "2.11.11"
+    val `2.12`: String = "2.12.2"
 
     val latestScalaVersion: String = `2.12`
 
