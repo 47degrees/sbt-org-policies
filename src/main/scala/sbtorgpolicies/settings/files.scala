@@ -22,6 +22,7 @@ import sbt._
 import sbtorgpolicies.OrgPoliciesKeys._
 import sbtorgpolicies.github.GitHubOps
 import sbtorgpolicies.io._
+import sbtorgpolicies.templates.FileType
 import sbtorgpolicies.templates.utils._
 
 import scala.util.matching.Regex
@@ -38,30 +39,32 @@ trait files {
     Seq(
       orgCreateFiles := Def.task {
         onlyRootUnitTask(baseDirectory.value, (baseDirectory in LocalRootProject).value, streams.value.log) {
-          val fh = new FileHelper
-
-          val buildV     = version.value
-          val isSnapshot = buildV.endsWith("-SNAPSHOT")
-
-          val enforcedFiles = orgEnforcedFilesSetting.value.filter(ft => !ft.finalVersionOnly || !isSnapshot)
-
-          (for {
-            _         <- fh.createResources(orgTemplatesDirectorySetting.value, orgTargetDirectorySetting.value)
-            fileTypes <- fh.checkOrgFiles(baseDirectory.value, orgTargetDirectorySetting.value, enforcedFiles)
-          } yield fileTypes) match {
-            case Right(l) =>
-              streams.value.log.info(
-                printList("The following files where created and/or modified:", l.map(_.outputPath)))
-            case Left(e) =>
-              streams.value.log.error(s"Error creating files")
-              e.printStackTrace()
-          }
+          createPolicyFiles(
+            baseDir = (baseDirectory in LocalRootProject).value,
+            templatesDir = orgTemplatesDirectorySetting.value,
+            targetDir = orgTargetDirectorySetting.value,
+            isSnapshot = version.value.endsWith("-SNAPSHOT"),
+            fileTypes = orgEnforcedFilesSetting.value,
+            log = streams.value.log
+          )
         }
       }.value,
       orgUpdateDocFiles := Def.task {
         onlyRootUnitTask(baseDirectory.value, (baseDirectory in LocalRootProject).value, streams.value.log) {
 
-          val modifiedDocFiles: List[File] = if (!version.value.endsWith("-SNAPSHOT")) {
+          val baseDir: File       = (baseDirectory in LocalRootProject).value
+          val isSnapshot: Boolean = version.value.endsWith("-SNAPSHOT")
+
+          val policyFiles: List[File] = createPolicyFiles(
+            baseDir = baseDir,
+            templatesDir = orgTemplatesDirectorySetting.value,
+            targetDir = orgTargetDirectorySetting.value,
+            isSnapshot = isSnapshot,
+            fileTypes = orgEnforcedFilesSetting.value,
+            log = streams.value.log
+          )
+
+          val modifiedDocFiles: List[File] = if (!isSnapshot) {
             val replaceTextEngine      = new ReplaceTextEngine
             val blockTitle: String     = "Replace"
             val startBlockRegex: Regex = markdownComment(blockTitle, scape = true).r
@@ -86,9 +89,7 @@ trait files {
             replaced.filter(f => f.status.success && f.status.modified).map(_.file)
           } else Nil
 
-          val baseDir: File           = (baseDirectory in LocalRootProject).value
-          val policyFiles: List[File] = orgEnforcedFilesSetting.value.map(f => baseDir / f.outputPath)
-          val allFiles: List[File]    = policyFiles ++ modifiedDocFiles
+          val allFiles: List[File] = policyFiles ++ modifiedDocFiles
 
           if (allFiles.nonEmpty) {
             if (orgUpdateDocFilesCommitSetting.value) {
@@ -115,4 +116,29 @@ trait files {
         }
       }.value
     )
+
+  private[this] def createPolicyFiles(
+      baseDir: File,
+      templatesDir: File,
+      targetDir: File,
+      isSnapshot: Boolean,
+      fileTypes: List[FileType],
+      log: Logger): List[File] = {
+    val fh = new FileHelper
+
+    val enforcedFiles = fileTypes.filter(ft => !ft.finalVersionOnly || !isSnapshot)
+
+    (for {
+      _         <- fh.createResources(templatesDir, targetDir)
+      fileTypes <- fh.checkOrgFiles(baseDir, targetDir, enforcedFiles)
+    } yield fileTypes) match {
+      case Right(modifiedFileTypes) =>
+        log.info(printList("The following files where created and/or modified:", modifiedFileTypes.map(_.outputPath)))
+        modifiedFileTypes.map(f => baseDir / f.outputPath)
+      case Left(e) =>
+        log.error(s"Error creating files")
+        e.printStackTrace()
+        Nil
+    }
+  }
 }
