@@ -78,6 +78,9 @@ sealed trait OrgPoliciesSettingsKeys {
       "Defines the list of tasks that should be executed to figure out whether the build is correct. " +
         "By default, it'd be something like this: 'sbt clean coverage compile test coverageReport'")
 
+  val orgSupportedScalaJSVersion: SettingKey[Option[String]] =
+    settingKey[Option[String]]("Defines the ScalaJS version supported. None by default")
+
   val orgTargetDirectorySetting: SettingKey[File] =
     SettingKey[File]("orgTargetDirectory", "Where sbt-org-policies output goes.")
 
@@ -119,8 +122,6 @@ sealed trait OrgPoliciesTaskKeys {
       "releasing a new version in any other case.")
 
   val orgScalafmtInc: TaskKey[Unit] = taskKey[Unit]("Incrementally format modified sources")
-
-  val orgScalafmtGenerateFile: TaskKey[Unit] = taskKey[Unit]("Generate a default scalafmt configuration")
 
   val orgValidateFiles: TaskKey[Unit] = taskKey[Unit]("Validates all files according to a set of policy rules.")
 

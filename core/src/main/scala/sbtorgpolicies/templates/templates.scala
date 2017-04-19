@@ -31,8 +31,9 @@ import scala.language.{implicitConversions, postfixOps}
 
 package object templates {
 
-  val versionFilePath: String = "version.sbt"
-  val travisFilePath: String  = ".travis.yml"
+  val versionFilePath: String  = "version.sbt"
+  val scalafmtFilePath: String = ".scalafmt.conf"
+  val travisFilePath: String   = ".travis.yml"
 
   type Replacements = Map[String, Replaceable]
 
@@ -163,6 +164,7 @@ package object templates {
       license: License,
       branch: String,
       version: String,
+      scalaJSVersion: Option[String],
       badgeBuilderList: List[BadgeBuilder] = Nil): FileType = {
 
     def replaceSection(title: String, top: Boolean): ReplaceSection =
@@ -179,7 +181,7 @@ package object templates {
         libOrg = ghSettings.groupId.some,
         libName = ghSettings.project.some,
         libVersion = version.some,
-        scalaJSV = None,
+        scalaJSV = scalaJSVersion,
         license = license.some
       )
       badgeBuilderList.map(_(info)).map(_.asMarkDown.getOrElse("")).mkString(" ").asReplaceable
@@ -213,6 +215,18 @@ package object templates {
           replacements = Map("badges" -> replaceableBadges)
         )
       )
+    )
+  }
+
+  def ScalafmtFileType: FileType = {
+
+    FileType(
+      mandatory = true,
+      overWritable = false,
+      finalVersionOnly = false,
+      templatePath = "templates/scalafmt.conf.template",
+      outputPath = scalafmtFilePath,
+      replacements = Map.empty
     )
   }
 

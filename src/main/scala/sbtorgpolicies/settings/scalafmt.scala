@@ -27,10 +27,6 @@ import sbtorgpolicies.OrgPoliciesKeys._
  */
 trait scalafmt {
 
-  lazy val orgGenerateScalafmtTask = Seq(
-    orgScalafmtGenerateFile := orgScalafmtGenerateFileDef.value
-  )
-
   def orgAutomateScalafmtFor(configurations: Configuration*): Seq[Setting[_]] =
     configurations.flatMap { c =>
       inConfig(c)(
@@ -81,39 +77,6 @@ trait scalafmt {
 
     format(formattingHandler, "Formatting")
     format(_ => (), "Reformatted") // Recalculate the cache
-  }
-
-  val orgScalafmtGenerateFileDef: Def.Initialize[Task[Unit]] = Def.task {
-    onlyRootUnitTask(baseDirectory.value, (baseDirectory in LocalRootProject).value, streams.value.log) {
-      if (!file(".scalafmt.conf").exists()) {
-        IO.write(
-          file(".scalafmt.conf"),
-          """style = defaultWithAlign
-          |maxColumn = 100
-          |
-          |continuationIndent.callSite = 2
-          |
-          |newlines {
-          |  sometimesBeforeColonInMethodReturnType = false
-          |}
-          |
-          |align {
-          |  arrowEnumeratorGenerator = false
-          |  ifWhileOpenParen = false
-          |  openParenCallSite = false
-          |  openParenDefnSite = false
-          |}
-          |
-          |docstrings = JavaDoc
-          |
-          |rewrite {
-          |  rules = [SortImports, RedundantBraces]
-          |  redundantBraces.maxLines = 1
-          |}
-        """.stripMargin.getBytes(IO.utf8)
-        )
-      }
-    }
   }
 
 }
