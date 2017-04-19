@@ -46,12 +46,12 @@ trait files {
           val enforcedFiles = orgEnforcedFilesSetting.value.filter(ft => !ft.finalVersionOnly || !isSnapshot)
 
           (for {
-            _ <- fh.createResources(orgTemplatesDirectorySetting.value, orgTargetDirectorySetting.value)
-            _ <- fh.checkOrgFiles(baseDirectory.value, orgTargetDirectorySetting.value, enforcedFiles)
-          } yield ()) match {
-            case Right(_) =>
+            _         <- fh.createResources(orgTemplatesDirectorySetting.value, orgTargetDirectorySetting.value)
+            fileTypes <- fh.checkOrgFiles(baseDirectory.value, orgTargetDirectorySetting.value, enforcedFiles)
+          } yield fileTypes) match {
+            case Right(l) =>
               streams.value.log.info(
-                printList("The following files where created and/or modified:", enforcedFiles.map(_.outputPath)))
+                printList("The following files where created and/or modified:", l.map(_.outputPath)))
             case Left(e) =>
               streams.value.log.error(s"Error creating files")
               e.printStackTrace()

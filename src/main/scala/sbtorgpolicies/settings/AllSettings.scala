@@ -218,10 +218,10 @@ trait AllSettings
   )
 
   lazy val scalafmtSettings: Seq[Setting[_]] =
-    (List(
+    List(
       includeFilter.in(orgScalafmtInc) := "*.scala",
       excludeFilter.in(orgScalafmtInc) := ".scalafmt.conf"
-    ) ++ orgAutomateScalafmtFor(Compile, Test)) ++ orgGenerateScalafmtTask
+    ) ++ orgAutomateScalafmtFor(Compile, Test)
 
   /** Common unidoc settings, adding the "-Ymacro-no-expand" scalac option.*/
   lazy val unidocCommonSettings = Seq(

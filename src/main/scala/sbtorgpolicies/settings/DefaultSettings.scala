@@ -76,6 +76,7 @@ trait DefaultSettings extends AllSettings {
     orgCommitBranchSetting := "master",
     orgCommitMessageSetting := "Updates policy files from SBT",
     orgTargetDirectorySetting := resourceManaged.value / "org-policies",
+    orgSupportedScalaJSVersion := None,
     orgBadgeListSetting := List(
       TravisBadge.apply(_),
       MavenCentralBadge.apply(_),
@@ -101,8 +102,10 @@ trait DefaultSettings extends AllSettings {
         orgLicenseSetting.value,
         orgCommitBranchSetting.value,
         version.value,
+        orgSupportedScalaJSVersion.value,
         orgBadgeListSetting.value
       ),
+      ScalafmtFileType,
       TravisFileType(crossScalaVersions.value)
     ),
     orgTemplatesDirectorySetting := (resourceDirectory in Compile).value / "org" / "templates",

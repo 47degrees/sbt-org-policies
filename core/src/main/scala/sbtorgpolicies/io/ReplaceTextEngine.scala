@@ -33,6 +33,8 @@ class ReplaceTextEngine {
   val fileReader: FileReader = new FileReader
   val fileWriter: FileWriter = new FileWriter
 
+  val excludeDirs: Set[String] = Set("target", "bin", "output")
+
   final def replaceBlocks(
       startBlockRegex: Regex,
       endBlockRegex: Regex,
@@ -50,10 +52,14 @@ class ReplaceTextEngine {
       processedFiles: List[File] = Nil,
       processedDirs: List[String] = Nil): List[File] = {
 
-    val files: List[File] = in.filter(file => file.isFile && isFileSupported(file))
-    val allFiles          = processedFiles ++ files
+    val allFiles: List[File] = processedFiles ++ in.filter(f => f.isFile && isFileSupported(f))
 
-    in.filter(f => f.isDirectory && !processedDirs.contains(f.getCanonicalPath)) match {
+    in.filter { f =>
+      f.isDirectory &&
+      !excludeDirs.contains(f.getName) &&
+      !f.getName.startsWith(".") &&
+      !processedDirs.contains(f.getCanonicalPath)
+    } match {
       case Nil => allFiles
       case list =>
         val subFiles = list.flatMap(_.listFiles().toList)
