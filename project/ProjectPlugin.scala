@@ -5,7 +5,6 @@ import sbt._
 import sbtorgpolicies.OrgPoliciesPlugin
 import sbtorgpolicies.OrgPoliciesPlugin.autoImport._
 import sbtorgpolicies.templates.badges._
-import sbtorgpolicies.libraries._
 
 object ProjectPlugin extends AutoPlugin {
 
@@ -68,14 +67,6 @@ object ProjectPlugin extends AutoPlugin {
       )
     )
 
-    lazy val autoCheckDepSettings = Seq(
-      scalaVersion := "2.11.8",
-      resolvers += Resolver.sonatypeRepo("snapshots"),
-      libraryDependencies ++=
-        scalaLibs.mapValues(lib => lib._1  %% lib._2 % lib._3).values.toList ++
-          javaLibs.mapValues(lib => lib._1 % lib._2  % lib._3).values.toList
-    )
-
     implicit class ModuleExcludes(module: ModuleID) {
 
       def commonExcludes: ModuleID =
@@ -94,7 +85,6 @@ object ProjectPlugin extends AutoPlugin {
     crossScalaVersions := Seq("2.10.6"),
     scalaOrganization := "org.scala-lang",
     startYear := Some(2017),
-    orgGithubTokenSetting := "GITHUB_TOKEN_REPO",
     orgBadgeListSetting := List(
       TravisBadge.apply,
       MavenCentralBadge.apply,
