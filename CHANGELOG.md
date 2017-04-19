@@ -1,5 +1,15 @@
 # Changelog
 
+## 04/19/2017 - Version 0.4.11
+
+Release changes:
+
+* Update docs and commit files in release process ([#174](https://github.com/47deg/sbt-org-policies/pull/174))
+* Filtered Badges in case of sbt-plugins ([#175](https://github.com/47deg/sbt-org-policies/pull/175))
+* Fixes the aggregated `publishSigned` for multimodule projects ([#176](https://github.com/47deg/sbt-org-policies/pull/176))
+* Makes the autocheck module Self-Managed ([#215](https://github.com/47deg/sbt-org-policies/pull/215))
+
+
 ## 04/18/2017 - Version 0.4.10
 
 Release changes:
