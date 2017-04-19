@@ -1,5 +1,13 @@
 # Changelog
 
+## 04/19/2017 - Version 0.4.12
+
+Release changes:
+
+* Creates the scalafmt in orgCreateFiles and update docs task ([#220](https://github.com/47deg/sbt-org-policies/pull/220))
+* Avoids committing files not modified by the plugin ([#226](https://github.com/47deg/sbt-org-policies/pull/226))
+
+
 ## 04/19/2017 - Version 0.4.11
 
 Release changes:
