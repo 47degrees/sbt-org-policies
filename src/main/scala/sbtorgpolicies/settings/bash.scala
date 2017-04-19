@@ -66,9 +66,9 @@ trait bash {
       case (false, true) =>
         st.log.info("Release Version detected, starting the release process...")
 
-        s"git checkout $orgBranch" ::
-          "git reset --hard HEAD" ::
+        "git reset --hard HEAD" ::
           "git clean -f" ::
+          s"git checkout $orgBranch" ::
           "git pull origin master" ::
           "release" ::
           st

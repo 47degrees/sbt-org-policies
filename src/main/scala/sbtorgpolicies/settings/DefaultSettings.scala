@@ -83,7 +83,7 @@ trait DefaultSettings extends AllSettings {
       LicenseBadge.apply(_),
       GitterBadge.apply(_),
       GitHubIssuesBadge.apply(_)
-    ) ++ guard(sbtPlugin.value)(ScalaLangBadge.apply(_)),
+    ) ++ guard(!sbtPlugin.value)(ScalaLangBadge.apply(_)),
     orgEnforcedFilesSetting := List(
       LicenseFileType(orgGithubSetting.value, orgLicenseSetting.value, startYear.value),
       ContributingFileType(orgProjectName.value, orgGithubSetting.value),
