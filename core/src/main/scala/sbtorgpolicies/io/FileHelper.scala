@@ -46,7 +46,7 @@ class FileHelper {
     } yield ()
   }
 
-  def checkOrgFiles(projectDir: File, baseDir: File, fileList: List[FileType]): IOResult[Unit] = {
+  def checkOrgFiles(projectDir: File, baseDir: File, fileList: List[FileType]): IOResult[List[FileType]] = {
 
     def templatePath(f: FileType): String =
       baseDir.getAbsolutePath.ensureFinalSlash + f.templatePath
@@ -90,28 +90,28 @@ class FileHelper {
         replaceSections(c, fileType.fileSections) map (Option(_))
       } getOrElse None.asRight
 
-    def writeToFileIfWritable(maybeContent: Option[String], fileType: FileType): IOResult[Unit] =
+    def writeToFileIfWritable(maybeContent: Option[String], fileType: FileType): IOResult[Option[FileType]] =
       maybeContent map { c =>
-        fileWriter.writeContentToFile(c, outputPath(fileType))
-      } getOrElse ().asRight
+        fileWriter.writeContentToFile(c, outputPath(fileType)) map (_ => Option(fileType))
+      } getOrElse None.asRight
 
-    def processFile(fileType: FileType): IOResult[Unit] =
+    def processFile(fileType: FileType): IOResult[Option[FileType]] =
       for {
-        fileContent <- prepareFileContent(fileType)
-        newContent  <- processSectionsIfWritable(fileContent, fileType)
-        _           <- writeToFileIfWritable(newContent, fileType)
-      } yield ()
+        fileContent   <- prepareFileContent(fileType)
+        newContent    <- processSectionsIfWritable(fileContent, fileType)
+        maybeFileType <- writeToFileIfWritable(newContent, fileType)
+      } yield maybeFileType
 
-    def processFiles(fileTypes: List[FileType]): IOResult[Unit] =
-      fileTypes.foldLeft[IOResult[Unit]](().asRight) {
-        case (Right(_), fileType) => processFile(fileType)
+    def processFiles(fileTypes: List[FileType]): IOResult[List[FileType]] =
+      fileTypes.foldLeft[IOResult[List[FileType]]](Nil.asRight) {
+        case (Right(l), fileType) => processFile(fileType).map(l ++ _.toList)
         case (Left(e), _)         => Left(e)
       }
 
     for {
-      _ <- checkFiles()
-      _ <- processFiles(fileList)
-    } yield ()
+      _              <- checkFiles()
+      processedFiles <- processFiles(fileList)
+    } yield processedFiles
   }
 
 }

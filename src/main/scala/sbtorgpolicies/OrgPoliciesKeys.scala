@@ -151,7 +151,7 @@ sealed trait TaskKeysUtils {
     if (baseDir.getAbsolutePath == rootDir.getAbsolutePath) {
       functionTask
     } else {
-      log.info(s"Skipping task for module '${baseDir.getName}'")
+      log.info(s"Skipping task for module '${IO.relativize(rootDir, baseDir).getOrElse(baseDir.getName)}'")
       defaultValue
     }
   }
