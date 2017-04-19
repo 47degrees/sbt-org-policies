@@ -1,7 +1,7 @@
 
 [comment]: # (Start Badges)
 
-[![Build Status](https://travis-ci.org/47deg/sbt-org-policies.svg?branch=master)](https://travis-ci.org/47deg/sbt-org-policies) [![Maven Central](https://img.shields.io/badge/maven%20central-0.4.11-green.svg)](https://maven-badges.herokuapp.com/maven-central/com.47deg/sbt-org-policies) [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/47deg/sbt-org-policies/master/LICENSE) [![GitHub Issues](https://img.shields.io/github/issues/47deg/sbt-org-policies.svg)](https://github.com/47deg/sbt-org-policies/issues)
+[![Build Status](https://travis-ci.org/47deg/sbt-org-policies.svg?branch=master)](https://travis-ci.org/47deg/sbt-org-policies) [![Maven Central](https://img.shields.io/badge/maven%20central-0.4.12-green.svg)](https://maven-badges.herokuapp.com/maven-central/com.47deg/sbt-org-policies) [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/47deg/sbt-org-policies/master/LICENSE) [![GitHub Issues](https://img.shields.io/github/issues/47deg/sbt-org-policies.svg)](https://github.com/47deg/sbt-org-policies/issues)
 
 [comment]: # (End Badges)
 # sbt-org-policies
