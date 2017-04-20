@@ -32,6 +32,7 @@ import sbtorgpolicies.github.instances._
 import sbtorgpolicies.github.syntax._
 import sbtorgpolicies.io.syntax._
 import sbtorgpolicies.io.{FileReader, IOResult}
+import com.github.marklister.base64.Base64._
 
 class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
 
@@ -98,7 +99,7 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
           path = path,
           ref = Some(commitSha)) map {
           case Right(ghResult) => Right(ghResult.map(list => (path, list.head.content)))
-          case Left(_)         => Right(GHResult((path, None), 200, Map.empty))
+          case Left(_)         => Right(newGHResult((path, None)))
         }
         EitherT(result)
       }
@@ -130,7 +131,7 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
     def createCommit(treeSha: String, baseCommitSha: String): Github4sResponse[RefCommit] =
       EitherT(gh.gitData.createCommit(owner, repo, message, treeSha, List(baseCommitSha)))
 
-    def updateHead(commitSha: String) =
+    def updateHead(commitSha: String): Github4sResponse[Ref] =
       EitherT(gh.gitData.updateReference(owner, repo, s"heads/$branch", commitSha))
 
     def commitFilesIfChanged(
@@ -139,7 +140,7 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
         filteredFilesContent: List[(String, String)]): Github4sResponse[Option[Ref]] =
       filteredFilesContent match {
         case Nil =>
-          val result: GHIO[GHResponse[Option[Ref]]] = Free.pure(Right(GHResult(None, 200, Map.empty)))
+          val result: GHIO[GHResponse[Option[Ref]]] = Free.pure(Right(newGHResult(None)))
           EitherT(result)
         case list =>
           for {
@@ -160,6 +161,78 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
         parentCommitSha,
         filterNonChangedFiles(ghResultFilesContent.result))
     } yield ghResultUpdate
+
+    op.execE
+  }
+
+  def commitDir(branch: String, message: String, dir: File): Either[OrgPolicyException, Ref] = {
+
+    def getAllFilesAsGithub4sResponse(dir: File): Github4sResponse[List[File]] = {
+      val ghio: GHIO[GHResponse[List[File]]] = Free.pure {
+        fileReader
+          .fetchFilesRecursively(dir)
+          .bimap(
+            e => UnexpectedException(e.getMessage),
+            v => newGHResult(v)
+          )
+      }
+      EitherT(ghio)
+    }
+
+    def createBlobs(files: List[File]): Github4sResponse[List[(String, RefInfo)]] = {
+
+      def readFileAsGithub4sResponse(file: File): Github4sResponse[Array[Byte]] = {
+        val ghio: GHIO[GHResponse[Array[Byte]]] = Free.pure {
+          fileReader
+            .getFileBytes(file)
+            .bimap(e => UnexpectedException(e.getMessage), newGHResult)
+        }
+        EitherT(ghio)
+      }
+
+      def path(file: File): Github4sResponse[String] = {
+        val ghio: GHIO[GHResponse[String]] = Free.pure {
+          IO.relativize(dir, file) match {
+            case Some(p) => Right(newGHResult(p))
+            case None    => Left(UnexpectedException(s"Can't determine path for ${file.getAbsolutePath}"))
+          }
+        }
+        EitherT(ghio)
+      }
+
+      def createBlob(file: File): Github4sResponse[(String, RefInfo)] =
+        for {
+          filePath <- path(file)
+          array    <- readFileAsGithub4sResponse(file)
+          refInfo  <- EitherT(gh.gitData.createBlob(owner, repo, array.result.toBase64, Some("base64")))
+        } yield refInfo.map(v => (filePath.result, v))
+
+      files.traverse(createBlob)
+    }
+
+    def createTree(filesSha: List[(String, String)]): Github4sResponse[TreeResult] = {
+
+      def treeData: List[TreeDataSha] = filesSha.map {
+        case (path, sha) => TreeDataSha(path, "100644", "blob", sha)
+      }
+
+      EitherT(gh.gitData.createTree(owner, repo, baseTree = None, treeData))
+    }
+
+    def createCommit(treeSha: String, parentCommit: String): Github4sResponse[RefCommit] =
+      EitherT(gh.gitData.createCommit(owner, repo, message, treeSha, List(parentCommit)))
+
+    def updateHead(commitSha: String): Github4sResponse[Ref] =
+      EitherT(gh.gitData.updateReference(owner, repo, s"heads/$branch", commitSha))
+
+    val op = for {
+      allFiles     <- getAllFilesAsGithub4sResponse(dir)
+      parentCommit <- fetchHeadCommit(branch)
+      blobs        <- createBlobs(allFiles.result)
+      treeResult   <- createTree(blobs.result.map(t => (t._1, t._2.sha)))
+      refCommit    <- createCommit(treeResult.result.sha, parentCommit.result.`object`.sha)
+      headRef      <- updateHead(refCommit.result.sha)
+    } yield headRef
 
     op.execE
   }
@@ -242,9 +315,8 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
 
     def findReference(gHResult: GHResult[NonEmptyList[Ref]]): GHResponse[Ref] =
       gHResult.result.toList.find(_.ref == s"refs/heads/$branch") match {
-        case Some(ref) =>
-          Right(GHResult(ref, gHResult.statusCode, gHResult.headers))
-        case None => Left(UnexpectedException(s"Branch $branch not found"))
+        case Some(ref) => Right(gHResult.map(_ => ref))
+        case None      => Left(UnexpectedException(s"Branch $branch not found"))
       }
 
     val result: GHIO[GHResponse[Ref]] =

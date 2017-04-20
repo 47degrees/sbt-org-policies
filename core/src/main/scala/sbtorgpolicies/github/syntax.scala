@@ -62,4 +62,6 @@ object syntax {
       gHResult.copy(result = f(gHResult.result))
 
   }
+
+  def newGHResult[T](v: T): GHResult[T] = GHResult(v, 200, Map.empty)
 }

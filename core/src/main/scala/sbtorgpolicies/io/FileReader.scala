@@ -42,6 +42,11 @@ class FileReader {
       .catchNonFatal(IO.readLines(file(filePath)).mkString("\n"))
       .leftMap(e => IOException(s"Error loading $filePath content", Some(e)))
 
+  def getFileBytes(file: File): IOResult[Array[Byte]] =
+    Either
+      .catchNonFatal(IO.readBytes(file))
+      .leftMap(e => IOException(s"Error loading ${file.getAbsolutePath} content", Some(e)))
+
   def fetchFilesRecursivelyFromPath(sourcePath: String, acceptedExtensions: List[String] = Nil): IOResult[List[File]] =
     fetchFilesRecursively(sourcePath.toFile, acceptedExtensions)
 
