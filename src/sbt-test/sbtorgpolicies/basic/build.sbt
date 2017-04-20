@@ -1,6 +1,6 @@
 version := "1.0"
 
-scalaVersion := "2.11.11"
+scalaVersion := sbtorgpolicies.model.scalac.`2.11`
 
 lazy val testCheckSettings = TaskKey[Unit]("testCheckSettings")
 

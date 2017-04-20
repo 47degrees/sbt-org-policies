@@ -1,4 +1,4 @@
-scalaVersion := "2.12.2"
+scalaVersion := sbtorgpolicies.model.scalac.`2.12`
 
 version := "2.0.0"
 

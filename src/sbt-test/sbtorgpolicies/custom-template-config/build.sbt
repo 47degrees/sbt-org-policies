@@ -2,7 +2,7 @@ import sbtorgpolicies.model._
 
 version := "1.0"
 
-scalaVersion := "2.11.11"
+scalaVersion := sbtorgpolicies.model.scalac.`2.11`
 
 orgGithubSetting := GitHubSettings(
   organization = "myorg",

@@ -24,17 +24,17 @@ $ exists .travis.yml
 
 > testCheckSettings
 
-> set scalaVersion:="2.12.2"
+> set scalaVersion:=sbtorgpolicies.model.scalac.`2.12`
 
-> set crossScalaVersions:=Seq("2.11.11")
+> set crossScalaVersions:=Seq(sbtorgpolicies.model.scalac.`2.11`)
 
 > testCheckSettings
 
-> set crossScalaVersions:=Seq("2.11.11","2.12.2")
+> set crossScalaVersions:=Seq(sbtorgpolicies.model.scalac.`2.11`,sbtorgpolicies.model.scalac.`2.12`)
 
 > orgCheckSettings
 
-> set crossScalaVersions:=Seq("2.10.6","2.11.11","2.12.2")
+> set crossScalaVersions:=Seq("2.10.6",sbtorgpolicies.model.scalac.`2.11`,sbtorgpolicies.model.scalac.`2.12`)
 
 > orgCheckSettings
 
