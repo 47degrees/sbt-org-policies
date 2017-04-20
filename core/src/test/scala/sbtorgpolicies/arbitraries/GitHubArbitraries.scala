@@ -43,7 +43,7 @@ trait GitHubArbitraries {
   val sampleMessage: String      = "Hello World"
   val releaseDescription: String = "Release description"
   val nonExistingMessage: String = "this is a commit message"
-  val baseDir: File              = new File(".")
+  val baseDir: File              = new File("/tmp/")
   val date2015: DateTime         = dateTimeFormat.parseDateTime("2015-01-01T00:00:00.000Z")
   val filesAndContents: List[(String, String)] = 1 to 5 map { index =>
     (s"file$index", s"Content file $index")
@@ -289,6 +289,10 @@ trait GitHubArbitraries {
 
   implicit val ghResponseTreeResultArbitrary: Arbitrary[GHResponse[TreeResult]] = Arbitrary {
     genGHResponse(genTreeResult)
+  }
+
+  implicit val ghResponseRefObjectArbitrary: Arbitrary[GHResponse[RefInfo]] = Arbitrary {
+    genGHResponse(genRefObject)
   }
 
 }
