@@ -156,7 +156,7 @@ trait bash {
             extractedRunnable.runTask(task, currentState)._1
 
           case RunnableItemConfigScope(RunnableSetSetting(setSetting), _, _) =>
-            extractedRunnable.append(Seq(setSetting.setting := setSetting.value), currentState)
+            reapply(Seq[Setting[_]](setSetting.setting := setSetting.value), currentState)
 
           case RunnableItemConfigScope(RunnableProcess(process), _, _) =>
             process.!
