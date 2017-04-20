@@ -127,11 +127,10 @@ trait DefaultSettings extends AllSettings {
       orgValidateFiles.asRunnableItem,
       orgCheckSettings.asRunnableItem,
       (clean in Global).asRunnableItem(allModulesScope = true, crossScalaVersionsScope = true),
-      SetSetting(coverageEnabled in Global, true)
-        .asRunnableItem(allModulesScope = true, crossScalaVersionsScope = true),
+      SetSetting(coverageEnabled in Global, true).asRunnableItem,
       (compile in Compile).asRunnableItem(allModulesScope = true, crossScalaVersionsScope = true),
       (test in Test).asRunnableItem(allModulesScope = true, crossScalaVersionsScope = true),
-      ScoverageKeys.coverageReport.asRunnableItem
+      (ScoverageKeys.coverageReport in Test).asRunnableItem(allModulesScope = true, crossScalaVersionsScope = true)
     )
   )
 }
