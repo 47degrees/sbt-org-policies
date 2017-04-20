@@ -1,5 +1,13 @@
 # Changelog
 
+## 04/20/2017 - Version 0.4.13
+
+Release changes:
+
+* Method for updating ref with dir contents ([#232](https://github.com/47deg/sbt-org-policies/pull/232))
+* Script Runnable Items Enhancements ([#233](https://github.com/47deg/sbt-org-policies/pull/233))
+
+
 ## 04/19/2017 - Version 0.4.12
 
 Release changes:
