@@ -1,6 +1,6 @@
 version := "1.0"
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.11.11"
 
 def getLines(fileName: String) =
   IO.readLines(file(fileName))
