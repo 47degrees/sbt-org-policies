@@ -30,31 +30,49 @@ object syntax {
 
   final class RunnableTaskOps[T](taskKey: TaskKey[T]) {
 
-    def asRunnableItem: RunnableItemConfigScope[T] =
-      asRunnableItem(allModulesScope = false, crossScalaVersionsScope = false)
+    def asRunnableItemFull: RunnableItemConfigScope[T] =
+      asRunnableItem(allModules = true, aggregated = true, crossScalaVersions = true)
 
-    def asRunnableItem(allModulesScope: Boolean, crossScalaVersionsScope: Boolean): RunnableItemConfigScope[T] =
-      RunnableItemConfigScope(RunnableTask(taskKey), allModulesScope, crossScalaVersionsScope)
+    def asRunnableItem: RunnableItemConfigScope[T] =
+      asRunnableItem(allModules = false, aggregated = false, crossScalaVersions = false)
+
+    def asRunnableItem(
+        allModules: Boolean,
+        aggregated: Boolean,
+        crossScalaVersions: Boolean): RunnableItemConfigScope[T] =
+      RunnableItemConfigScope(RunnableTask(taskKey), allModules, aggregated, crossScalaVersions)
 
   }
 
   final class RunnableSetSettingOps[T](setSetting: SetSetting[T]) {
 
-    def asRunnableItem: RunnableItemConfigScope[T] =
-      asRunnableItem(allModulesScope = false, crossScalaVersionsScope = false)
+    def asRunnableItemFull: RunnableItemConfigScope[T] =
+      asRunnableItem(allModules = true, aggregated = true, crossScalaVersions = true)
 
-    def asRunnableItem(allModulesScope: Boolean, crossScalaVersionsScope: Boolean): RunnableItemConfigScope[T] =
-      RunnableItemConfigScope(RunnableSetSetting(setSetting), allModulesScope, crossScalaVersionsScope)
+    def asRunnableItem: RunnableItemConfigScope[T] =
+      asRunnableItem(allModules = false, aggregated = false, crossScalaVersions = false)
+
+    def asRunnableItem(
+        allModules: Boolean,
+        aggregated: Boolean,
+        crossScalaVersions: Boolean): RunnableItemConfigScope[T] =
+      RunnableItemConfigScope(RunnableSetSetting(setSetting), allModules, aggregated, crossScalaVersions)
 
   }
 
   final class RunnableCommandOps(command: String) {
 
-    def asRunnableItem: RunnableItemConfigScope[Unit] =
-      asRunnableItem(allModulesScope = false, crossScalaVersionsScope = false)
+    def asRunnableItemFull: RunnableItemConfigScope[Unit] =
+      asRunnableItem(allModules = true, aggregated = true, crossScalaVersions = true)
 
-    def asRunnableItem(allModulesScope: Boolean, crossScalaVersionsScope: Boolean): RunnableItemConfigScope[Unit] =
-      RunnableItemConfigScope(RunnableProcess(command), allModulesScope, crossScalaVersionsScope)
+    def asRunnableItem: RunnableItemConfigScope[Unit] =
+      asRunnableItem(allModules = false, aggregated = false, crossScalaVersions = false)
+
+    def asRunnableItem(
+        allModules: Boolean,
+        aggregated: Boolean,
+        crossScalaVersions: Boolean): RunnableItemConfigScope[Unit] =
+      RunnableItemConfigScope(RunnableProcess(command), allModules, aggregated, crossScalaVersions)
 
   }
 

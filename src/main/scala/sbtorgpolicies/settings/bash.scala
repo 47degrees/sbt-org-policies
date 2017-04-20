@@ -134,7 +134,7 @@ trait bash {
       extracted
         .get(runnableItemListSettingKey)
         .filter { runnableItem =>
-          (isLastScalaV || runnableItem.crossScalaVersionsScope) && (isRootModule || runnableItem.allModulesScope)
+          (isLastScalaV || runnableItem.crossScalaVersions) && (isRootModule || runnableItem.allModules)
         }
 
     if (runnableItemList.nonEmpty) {
@@ -148,17 +148,17 @@ trait bash {
         val extractedRunnable: Extracted = Project.extract(currentState)
 
         item match {
-          case RunnableItemConfigScope(RunnableTask(task), true, _) =>
+          case RunnableItemConfigScope(RunnableTask(task), true, true, _) =>
             val ref: Reference = extractedRunnable.get(thisProjectRef)
             extractedRunnable.runAggregated(task in ref, currentState)
 
-          case RunnableItemConfigScope(RunnableTask(task), _, _) =>
+          case RunnableItemConfigScope(RunnableTask(task), _, _, _) =>
             extractedRunnable.runTask(task, currentState)._1
 
-          case RunnableItemConfigScope(RunnableSetSetting(setSetting), _, _) =>
+          case RunnableItemConfigScope(RunnableSetSetting(setSetting), _, _, _) =>
             reapply(Seq[Setting[_]](setSetting.setting := setSetting.value), currentState)
 
-          case RunnableItemConfigScope(RunnableProcess(process), _, _) =>
+          case RunnableItemConfigScope(RunnableProcess(process), _, _, _) =>
             process.!
             currentState
         }
@@ -178,13 +178,13 @@ trait bash {
   private[this] def toStringRunnableItem(runnableItem: RunnableItemConfigScope[_]): String = {
     val (label: String, description: Option[String]) = runnableItem match {
 
-      case RunnableItemConfigScope(RunnableTask(task), _, _) =>
+      case RunnableItemConfigScope(RunnableTask(task), _, _, _) =>
         (task.key.label, task.key.description)
 
-      case RunnableItemConfigScope(RunnableSetSetting(setSetting), _, _) =>
+      case RunnableItemConfigScope(RunnableSetSetting(setSetting), _, _, _) =>
         (s"Setting ${setSetting.setting.key.label} to ${setSetting.value}", setSetting.setting.key.description)
 
-      case RunnableItemConfigScope(RunnableProcess(process), _, _) =>
+      case RunnableItemConfigScope(RunnableProcess(process), _, _, _) =>
         (s"Running process $process", None)
     }
 
