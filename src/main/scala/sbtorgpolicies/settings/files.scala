@@ -47,6 +47,7 @@ trait files {
             fileTypes = orgEnforcedFilesSetting.value,
             log = streams.value.log
           )
+          (): Unit
         }
       }.value,
       orgUpdateDocFiles := Def.task {

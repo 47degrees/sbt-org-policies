@@ -18,7 +18,7 @@ package sbtorgpolicies
 
 import net.jcazevedo.moultingyaml._
 import sbt.Append.Value
-import sbt.{url, Append, TaskKey, URL}
+import sbt.{url, Append, URL}
 
 object model {
 
@@ -117,20 +117,6 @@ object model {
         { name.fold(xml.NodeSeq.Empty)(x => <name>{x}</name>) }
         <url>http://github.com/{ id }</url>
       </developer>
-  }
-
-  case class RunnableCITask(
-      task: TaskKey[Unit],
-      allModulesScope: Boolean = false,
-      crossScalaVersionsScope: Boolean = false)
-
-  implicit class AfterSuccessTaskOps(taskKey: TaskKey[Unit]) {
-
-    def toOrgTask: RunnableCITask = toOrgTask(allModulesScope = false, crossScalaVersionsScope = false)
-
-    def toOrgTask(allModulesScope: Boolean, crossScalaVersionsScope: Boolean): RunnableCITask =
-      RunnableCITask(taskKey, allModulesScope, crossScalaVersionsScope)
-
   }
 
   object scalac {

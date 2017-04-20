@@ -19,6 +19,7 @@ package sbtorgpolicies
 import sbt._
 import sbtorgpolicies.github.GitHubOps
 import sbtorgpolicies.model._
+import sbtorgpolicies.runnable._
 import sbtorgpolicies.rules.Validation
 import sbtorgpolicies.templates.FileType
 import sbtorgpolicies.templates.badges.BadgeBuilder
@@ -35,8 +36,8 @@ sealed trait OrgPoliciesSettingsKeys {
     settingKey[Boolean](
       "Defines the condition that the orgAfterCISuccess command will check before running the orgAfterCISuccessTaskListSetting list.")
 
-  val orgAfterCISuccessTaskListSetting: SettingKey[List[RunnableCITask]] =
-    settingKey[List[RunnableCITask]](
+  val orgAfterCISuccessTaskListSetting: SettingKey[List[RunnableItemConfigScope[_]]] =
+    settingKey[List[RunnableItemConfigScope[_]]](
       "Defines the list of tasks that should be executed once the Continuous integration build has finished successfully.")
 
   val orgBadgeListSetting: SettingKey[List[BadgeBuilder]] =
@@ -73,8 +74,8 @@ sealed trait OrgPoliciesSettingsKeys {
   val orgProjectName: SettingKey[String] =
     settingKey[String]("Name that will be used in docs. By default, the module name will be used.")
 
-  val orgScriptTaskListSetting: SettingKey[List[RunnableCITask]] =
-    settingKey[List[RunnableCITask]](
+  val orgScriptTaskListSetting: SettingKey[List[RunnableItemConfigScope[_]]] =
+    settingKey[List[RunnableItemConfigScope[_]]](
       "Defines the list of tasks that should be executed to figure out whether the build is correct. " +
         "By default, it'd be something like this: 'sbt clean coverage compile test coverageReport'")
 

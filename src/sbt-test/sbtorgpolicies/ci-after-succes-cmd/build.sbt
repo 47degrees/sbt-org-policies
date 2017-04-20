@@ -1,4 +1,4 @@
-import sbtorgpolicies.model._
+import sbtorgpolicies.runnable.syntax._
 
 name := "sbt-org-policies"
 
@@ -10,4 +10,4 @@ orgGithubTokenSetting := "GITHUB_TOKEN_REPO"
 
 orgAfterCISuccessCheckSetting := true
 
-orgAfterCISuccessTaskListSetting := List(orgCreateFiles.toOrgTask)
+orgAfterCISuccessTaskListSetting := List(orgCreateFiles.asRunnableItem)

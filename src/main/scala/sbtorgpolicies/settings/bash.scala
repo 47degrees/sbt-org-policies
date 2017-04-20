@@ -21,10 +21,10 @@ import sbt.Keys._
 import sbt._
 import sbt.complete.DefaultParsers.OptNotSpace
 import sbtorgpolicies.OrgPoliciesKeys._
-import sbtorgpolicies.model.{Dev, RunnableCITask}
+import sbtorgpolicies.model.Dev
+import sbtorgpolicies.runnable._
 import sbtorgpolicies.utils._
 import sbtrelease.ReleaseStateTransformations.reapply
-import scoverage.ScoverageKeys
 
 trait bash {
 
@@ -116,7 +116,7 @@ trait bash {
 
   private[this] def runTaskListCommand(
       commandName: String,
-      taskListSettingKey: SettingKey[List[RunnableCITask]],
+      runnableItemListSettingKey: SettingKey[List[RunnableItemConfigScope[_]]],
       st: State,
       stateToState: (State) => State = st => st): State = {
 
@@ -130,46 +130,64 @@ trait bash {
     val isLastScalaV = crossV.lastOption.exists(_ == scalaV)
     val isRootModule = baseDir.getAbsolutePath == rootDir.getAbsolutePath
 
-    val taskList = extracted.get(taskListSettingKey)
+    val runnableItemList: List[RunnableItemConfigScope[_]] =
+      extracted
+        .get(runnableItemListSettingKey)
+        .filter { runnableItem =>
+          (isLastScalaV || runnableItem.crossScalaVersionsScope) && (isRootModule || runnableItem.allModulesScope)
+        }
 
-    val executableTasks = taskList.filter { tsk =>
-      (isLastScalaV || tsk.crossScalaVersionsScope) &&
-      (isRootModule || tsk.allModulesScope)
-    } map (_.task)
-
-    if (executableTasks.nonEmpty) {
+    if (runnableItemList.nonEmpty) {
 
       val stateToStateResult = stateToState(st)
 
-      val newState =
-        if (executableTasks.exists(_.key == ScoverageKeys.coverageReport.key))
-          extracted
-            .runTask(
-              clean,
-              Project
-                .extract(stateToStateResult)
-                .append(Seq(ScoverageKeys.coverageEnabled := true), stateToStateResult))
-            ._1
-        else
-          stateToStateResult
+      stateToStateResult.log.info(
+        s"[$commandName] Initiating with this set of items: ${toStringListRunnableItems(runnableItemList)}")
 
-      newState.log.info(s"[$commandName] Initiating with this set of tasks: ${toStringListTask(executableTasks)}")
+      runnableItemList.foldLeft(stateToStateResult) { (currentState, item) =>
+        val extractedRunnable: Extracted = Project.extract(currentState)
 
-      executableTasks.foldLeft(newState) { (st, task) =>
-        Project.extract(st).runTask(task, st)._1
+        item match {
+          case RunnableItemConfigScope(RunnableTask(task), true, _) =>
+            val ref: Reference = extractedRunnable.get(thisProjectRef)
+            extractedRunnable.runAggregated(task in ref, currentState)
+
+          case RunnableItemConfigScope(RunnableTask(task), _, _) =>
+            extractedRunnable.runTask(task, currentState)._1
+
+          case RunnableItemConfigScope(RunnableSetSetting(setSetting), _, _) =>
+            extractedRunnable.append(Seq(setSetting.setting := setSetting.value), currentState)
+
+          case RunnableItemConfigScope(RunnableProcess(process), _, _) =>
+            process.!
+            currentState
+        }
       }
     } else {
-      st.log.info(s"[$commandName] No tasks to execute")
+      st.log.info(s"[$commandName] No runnable items to execute")
       st
     }
   }
 
-  private[this] def toStringListTask[T](taskList: List[TaskKey[T]]): String =
+  private[this] def toStringListRunnableItems(list: List[RunnableItemConfigScope[_]]): String =
     s"""
-      |${taskList.map(toStringTask).mkString("\n")}
+      |${list.map(toStringRunnableItem).mkString("\n")}
       |
       |""".stripMargin
 
-  private[this] def toStringTask[T](task: TaskKey[T]): String =
-    s"* ${task.key.label}${task.key.description map (d => s": $d") getOrElse ""}"
+  private[this] def toStringRunnableItem(runnableItem: RunnableItemConfigScope[_]): String = {
+    val (label: String, description: Option[String]) = runnableItem match {
+
+      case RunnableItemConfigScope(RunnableTask(task), _, _) =>
+        (task.key.label, task.key.description)
+
+      case RunnableItemConfigScope(RunnableSetSetting(setSetting), _, _) =>
+        (s"Setting ${setSetting.setting.key.label} to ${setSetting.value}", setSetting.setting.key.description)
+
+      case RunnableItemConfigScope(RunnableProcess(process), _, _) =>
+        (s"Running process $process", None)
+    }
+
+    s"* $label${description map (d => s": $d") getOrElse ""}"
+  }
 }
