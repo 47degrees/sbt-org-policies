@@ -361,6 +361,83 @@ class GitHubOpsTest extends TestOps {
     check(property)
   }
 
+  test("GithubOps.commitDir works as expected") {
+    val property = forAll {
+      (
+          refInfoR: GHResponse[RefInfo],
+          treeResultR: GHResponse[TreeResult],
+          nelRefR: GHResponse[NonEmptyList[Ref]],
+          createCommitR: GHResponse[RefCommit],
+          updateReferenceR: GHResponse[Ref]) =>
+        resetMocks()
+
+        val files: List[(File, String)] = filesAndContents.map(t => (new File(baseDir, t._1), t._2))
+
+        when(fileReaderMock.fetchFilesRecursively(any[File], any[List[String]]))
+          .thenReturn(files.map(_._1).asRight)
+
+        files foreach {
+          case (file, content) =>
+            when(fileReaderMock.getFileBytes(file)).thenReturn(content.getBytes.asRight)
+        }
+
+        when(ghGitData.getReference(any[String], any[String], any[String]))
+          .thenReturn(Free.pure[GitHub4s, GHResponse[NonEmptyList[Ref]]](nelRefR))
+
+        when(ghGitData.createBlob(any[String], any[String], any[String], any[Option[String]]))
+          .thenReturn(Free.pure[GitHub4s, GHResponse[RefInfo]](refInfoR))
+
+        when(ghGitData.createTree(any[String], any[String], any[Option[String]], any[List[TreeData]]))
+          .thenReturn(Free.pure[GitHub4s, GHResponse[TreeResult]](treeResultR))
+
+        when(ghGitData
+          .createCommit(any[String], any[String], any[String], any[String], any[List[String]], any[Option[RefAuthor]]))
+          .thenReturn(Free.pure[GitHub4s, GHResponse[RefCommit]](createCommitR))
+
+        when(ghGitData.updateReference(any[String], any[String], any[String], any[String], any[Option[Boolean]]))
+          .thenReturn(Free.pure[GitHub4s, GHResponse[Ref]](updateReferenceR))
+
+        val result: Either[OrgPolicyException, Ref] =
+          githubOps.commitDir(branch, sampleMessage, baseDir)
+
+        (nelRefR, refInfoR, treeResultR, createCommitR, updateReferenceR) match {
+          case (Left(e), _, _, _, _) =>
+            result shouldBeEq toLeftResult(e)
+          case (Right(gHResult), _, _, _, _) if !gHResult.result.exists(_.ref == s"refs/heads/$branch") =>
+            val e = UnexpectedException(s"Branch $branch not found")
+            result shouldBeEq toLeftResult(e)
+          case (_, Left(e), _, _, _) =>
+            result shouldBeEq toLeftResult(e)
+          case (_, _, Left(e), _, _) =>
+            result shouldBeEq toLeftResult(e)
+          case (_, _, _, Left(e), _) =>
+            result shouldBeEq toLeftResult(e)
+          case (_, _, _, _, Left(e)) =>
+            result shouldBeEq toLeftResult(e)
+          case (_, _, _, _, Right(r)) =>
+            result shouldBeEq r.result.asRight
+        }
+    }
+    check(property)
+
+  }
+
+  test("GithubOps.commitDir should return an error when the file reader returns an error") {
+
+    resetMocks()
+
+    val ioException: IOException = IOException("Test error")
+
+    when(fileReaderMock.fetchFilesRecursively(any[File], any[List[String]]))
+      .thenReturn(ioException.asLeft)
+
+    val result: Either[OrgPolicyException, Ref] =
+      githubOps.commitDir(branch, sampleMessage, baseDir)
+
+    result.isLeft shouldBe true
+
+  }
+
   test("GithubOps.createTagRelease works as expected") {
     val property = forAll {
       (
