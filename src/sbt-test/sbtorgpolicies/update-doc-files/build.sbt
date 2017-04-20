@@ -1,4 +1,4 @@
-scalaVersion := "2.12.1"
+scalaVersion := sbtorgpolicies.model.scalac.`2.12`
 
 version := "2.0.0"
 
@@ -20,7 +20,7 @@ def checkFiles(version: String, list: List[File]): Boolean = {
   }
 }
 
-lazy val testCheckSettings = TaskKey[Unit]("testCheckSettings")
+lazy val testCheckSettings  = TaskKey[Unit]("testCheckSettings")
 lazy val testCheckSettings2 = TaskKey[Unit]("testCheckSettings2")
 
 testCheckSettings := Def.task {

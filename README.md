@@ -10,11 +10,14 @@
 
 ## Installation
 
+[comment]: # (Start Replace)
 Add the following line to `project/plugins.sbt`:
 
 ```scala
 addSbtPlugin("com.47deg" % "sbt-org-policies" % "0.4.4")
 ```
+
+[comment]: # (End Replace)
 
 [comment]: # (Start Copyright)
 # Copyright

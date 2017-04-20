@@ -160,7 +160,7 @@ trait AllSettings
     homepage := Option(orgGithubSetting.value.homePage),
     organizationHomepage := Option(orgGithubSetting.value.organizationHomePage),
     startYear := Some(currentYear),
-    scalaOrganization := "org.typelevel",
+    scalaOrganization := "org.scala-lang",
     scalaVersion := scalac.`2.12`,
     crossScalaVersions := scalac.crossScalaVersions,
     scalacOptions ++= scalacAllOptions

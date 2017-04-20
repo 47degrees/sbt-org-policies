@@ -18,7 +18,7 @@ package sbtorgpolicies
 
 import net.jcazevedo.moultingyaml._
 import sbt.Append.Value
-import sbt.{url, Append, TaskKey, URL}
+import sbt.{url, Append, URL}
 
 object model {
 
@@ -119,25 +119,11 @@ object model {
       </developer>
   }
 
-  case class RunnableCITask(
-      task: TaskKey[Unit],
-      allModulesScope: Boolean = false,
-      crossScalaVersionsScope: Boolean = false)
-
-  implicit class AfterSuccessTaskOps(taskKey: TaskKey[Unit]) {
-
-    def toOrgTask: RunnableCITask = toOrgTask(allModulesScope = false, crossScalaVersionsScope = false)
-
-    def toOrgTask(allModulesScope: Boolean, crossScalaVersionsScope: Boolean): RunnableCITask =
-      RunnableCITask(taskKey, allModulesScope, crossScalaVersionsScope)
-
-  }
-
   object scalac {
 
     val `2.10`: String = "2.10.6"
-    val `2.11`: String = "2.11.8"
-    val `2.12`: String = "2.12.1"
+    val `2.11`: String = "2.11.11"
+    val `2.12`: String = "2.12.2"
 
     val latestScalaVersion: String = `2.12`
 

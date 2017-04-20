@@ -21,11 +21,14 @@ import de.heikoseeberger.sbtheader.HeaderKey.headers
 import de.heikoseeberger.sbtheader.license.Apache2_0
 import dependencies.DependenciesPlugin.autoImport._
 import scoverage.ScoverageKeys
+import scoverage.ScoverageKeys.coverageEnabled
 import sbt.Keys._
 import sbt._
 import sbtorgpolicies.github.GitHubOps
 import sbtorgpolicies.model._
+import sbtorgpolicies.runnable.syntax._
 import sbtorgpolicies.OrgPoliciesKeys._
+import sbtorgpolicies.runnable.SetSetting
 import sbtorgpolicies.templates._
 import sbtorgpolicies.templates.badges._
 
@@ -83,7 +86,7 @@ trait DefaultSettings extends AllSettings {
       LicenseBadge.apply(_),
       GitterBadge.apply(_),
       GitHubIssuesBadge.apply(_)
-    ) ++ guard(sbtPlugin.value)(ScalaLangBadge.apply(_)),
+    ) ++ guard(!sbtPlugin.value)(ScalaLangBadge.apply(_)),
     orgEnforcedFilesSetting := List(
       LicenseFileType(orgGithubSetting.value, orgLicenseSetting.value, startYear.value),
       ContributingFileType(orgProjectName.value, orgGithubSetting.value),
@@ -115,17 +118,19 @@ trait DefaultSettings extends AllSettings {
       getEnvVarOrElse("TRAVIS_PULL_REQUEST") == "false"
     },
     orgAfterCISuccessTaskListSetting := List(
-      orgCreateFiles.toOrgTask,
-      orgUpdateDocFiles.toOrgTask,
-      depUpdateDependencyIssues.toOrgTask,
-      orgPublishReleaseTask.toOrgTask(allModulesScope = true, crossScalaVersionsScope = true)
+      orgCreateFiles.asRunnableItem,
+      orgUpdateDocFiles.asRunnableItem,
+      depUpdateDependencyIssues.asRunnableItem,
+      orgPublishReleaseTask.asRunnableItem(allModulesScope = true, crossScalaVersionsScope = true)
     ),
     orgScriptTaskListSetting := List(
-      orgValidateFiles.toOrgTask,
-      orgCheckSettings.toOrgTask,
-      (orgCompile in ThisBuild).toOrgTask(allModulesScope = true, crossScalaVersionsScope = true),
-      (test in Test).toOrgTask(allModulesScope = true, crossScalaVersionsScope = true),
-      ScoverageKeys.coverageReport.toOrgTask
+      orgValidateFiles.asRunnableItem,
+      orgCheckSettings.asRunnableItem,
+      (clean in Global).asRunnableItem(allModulesScope = true, crossScalaVersionsScope = true),
+      SetSetting(coverageEnabled in Global, true).asRunnableItem,
+      (compile in Compile).asRunnableItem(allModulesScope = true, crossScalaVersionsScope = true),
+      (test in Test).asRunnableItem(allModulesScope = true, crossScalaVersionsScope = true),
+      (ScoverageKeys.coverageReport in Test).asRunnableItem(allModulesScope = true, crossScalaVersionsScope = true)
     )
   )
 }
