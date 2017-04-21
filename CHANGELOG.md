@@ -1,5 +1,12 @@
 # Changelog
 
+## 04/21/2017 - Version 0.4.14
+
+Release changes:
+
+* orgPublishRelease shouldn't be invoked as aggregated task ([#239](https://github.com/47deg/sbt-org-policies/pull/239))
+
+
 ## 04/20/2017 - Version 0.4.13
 
 Release changes:
