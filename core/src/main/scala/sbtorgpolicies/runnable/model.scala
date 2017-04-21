@@ -20,8 +20,9 @@ import sbt._
 
 case class RunnableItemConfigScope[T](
     item: RunnableItem[T],
-    allModulesScope: Boolean = false,
-    crossScalaVersionsScope: Boolean = false)
+    allModules: Boolean = false,
+    aggregated: Boolean = false,
+    crossScalaVersions: Boolean = false)
 
 case class SetSetting[T](setting: SettingKey[T], value: T)
 

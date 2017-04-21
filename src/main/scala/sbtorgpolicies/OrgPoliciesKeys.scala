@@ -110,9 +110,6 @@ sealed trait OrgPoliciesTaskKeys {
 
   val orgCheckSettings: TaskKey[Unit] = taskKey[Unit]("Task to check the project settings.")
 
-  val orgCompile: TaskKey[Unit] =
-    taskKey[Unit]("Just a (compile in Compile) but ignoring the result (Analysis type) and returning Unit.")
-
   val orgCreateFiles: TaskKey[Unit] =
     taskKey[Unit]("Task to create the files that must exists in a project to accomplish the Organization's policies.")
 

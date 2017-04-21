@@ -46,12 +46,6 @@ trait common {
               Nil
           }
         }
-      }.value,
-      orgCompile in ThisBuild := Def
-        .task[Unit] {
-          compile in Compile
-          (): Unit
-        }
-        .value
+      }.value
     )
 }

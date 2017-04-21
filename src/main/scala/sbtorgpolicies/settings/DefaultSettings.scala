@@ -20,17 +20,17 @@ import de.heikoseeberger.sbtheader.AutomateHeaderPlugin
 import de.heikoseeberger.sbtheader.HeaderKey.headers
 import de.heikoseeberger.sbtheader.license.Apache2_0
 import dependencies.DependenciesPlugin.autoImport._
-import scoverage.ScoverageKeys
-import scoverage.ScoverageKeys.coverageEnabled
 import sbt.Keys._
 import sbt._
+import sbtorgpolicies.OrgPoliciesKeys._
 import sbtorgpolicies.github.GitHubOps
 import sbtorgpolicies.model._
-import sbtorgpolicies.runnable.syntax._
-import sbtorgpolicies.OrgPoliciesKeys._
 import sbtorgpolicies.runnable.SetSetting
+import sbtorgpolicies.runnable.syntax._
 import sbtorgpolicies.templates._
 import sbtorgpolicies.templates.badges._
+import scoverage.ScoverageKeys
+import scoverage.ScoverageKeys.coverageEnabled
 
 trait DefaultSettings extends AllSettings {
 
@@ -121,16 +121,16 @@ trait DefaultSettings extends AllSettings {
       orgCreateFiles.asRunnableItem,
       orgUpdateDocFiles.asRunnableItem,
       depUpdateDependencyIssues.asRunnableItem,
-      orgPublishReleaseTask.asRunnableItem(allModulesScope = true, crossScalaVersionsScope = true)
+      orgPublishReleaseTask.asRunnableItem(allModules = true, aggregated = false, crossScalaVersions = true)
     ),
     orgScriptTaskListSetting := List(
       orgValidateFiles.asRunnableItem,
       orgCheckSettings.asRunnableItem,
-      (clean in Global).asRunnableItem(allModulesScope = true, crossScalaVersionsScope = true),
+      (clean in Global).asRunnableItemFull,
       SetSetting(coverageEnabled in Global, true).asRunnableItem,
-      (compile in Compile).asRunnableItem(allModulesScope = true, crossScalaVersionsScope = true),
-      (test in Test).asRunnableItem(allModulesScope = true, crossScalaVersionsScope = true),
-      (ScoverageKeys.coverageReport in Test).asRunnableItem(allModulesScope = true, crossScalaVersionsScope = true)
+      (compile in Compile).asRunnableItemFull,
+      (test in Test).asRunnableItemFull,
+      (ScoverageKeys.coverageReport in Test).asRunnableItemFull
     )
   )
 }
