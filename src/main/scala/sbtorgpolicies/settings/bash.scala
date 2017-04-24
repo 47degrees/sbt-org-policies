@@ -37,7 +37,8 @@ trait bash {
       }.value
     )
 
-  val orgPublishReleaseCommand: Command = Command(orgPublishReleaseCommandKey)(_ => OptNotSpace) { (st, _) =>
+  val orgPublishReleaseCommand: Command = Command(orgPublishReleaseCommandKey)(_ => OptNotSpace) { (inputState, _) =>
+    val st: State = deferredFetchContributorsState(inputState)
     val extracted = Project.extract(st)
 
     val buildV    = extracted.get(version in ThisBuild)
@@ -89,23 +90,11 @@ trait bash {
 
     if (extracted.get(orgAfterCISuccessCheckSetting)) {
 
-      val beforeTasksState = (st: State) => {
-        val envVarToken = extracted.get(orgGithubTokenSetting)
-        val maybeToken  = getEnvVar(envVarToken)
-
-        val (fetchContributorsState, contributorList) =
-          if (maybeToken.nonEmpty) {
-            extracted.runTask[List[Dev]](orgFetchContributors, st)
-          } else (st, Nil)
-
-        reapply(Seq[Setting[_]](orgContributorsSetting := contributorList), fetchContributorsState)
-      }
-
       runTaskListCommand(
         "orgAfterCISuccess",
         orgAfterCISuccessTaskListSetting,
         st,
-        beforeTasksState
+        deferredFetchContributorsState
       )
 
     } else {
@@ -159,14 +148,34 @@ trait bash {
             reapply(Seq[Setting[_]](setSetting.setting := setSetting.value), currentState)
 
           case RunnableItemConfigScope(RunnableProcess(process), _, _, _) =>
-            process.!
-            currentState
+            Command.process(process, currentState)
         }
       }
     } else {
       st.log.info(s"[$commandName] No runnable items to execute")
       st
     }
+  }
+
+  private[this] def deferredFetchContributorsState(st: State) = {
+    val extracted = Project.extract(st)
+
+    val envVarToken        = extracted.get(orgGithubTokenSetting)
+    val projectMaintainers = extracted.get(orgMaintainersSetting)
+
+    val maybeToken = getEnvVar(envVarToken)
+
+    val (fetchContributorsState, contributorList) =
+      if (maybeToken.nonEmpty) {
+        extracted.runTask[List[Dev]](orgFetchContributors, st)
+      } else (st, Nil)
+
+    val devs = projectMaintainers ++ contributorList
+
+    val setContributorState =
+      reapply(Seq[Setting[_]](orgContributorsSetting := contributorList), fetchContributorsState)
+
+    reapply(Seq[Setting[_]](pomExtra := <developers> { devs.map(_.pomExtra) } </developers>), setContributorState)
   }
 
   private[this] def toStringListRunnableItems(list: List[RunnableItemConfigScope[_]]): String =

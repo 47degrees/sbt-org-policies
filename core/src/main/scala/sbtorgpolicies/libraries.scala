@@ -21,9 +21,9 @@ object libraries {
   type Artifact = (String, String, String)
 
   val v47: Map[String, String] = Map[String, String](
-    "case-classy"           -> "0.3.0",
+    "case-classy"           -> "0.4.0",
     "fetch"                 -> "0.6.1",
-    "github4s"              -> "0.14.3",
+    "github4s"              -> "0.14.5",
     "scheckToolboxDatetime" -> "0.2.1"
   )
 
@@ -32,10 +32,10 @@ object libraries {
     "akka-http"       -> "10.0.5",
     "algebra"         -> "0.7.0",
     "alleycats"       -> "0.1.9",
-    "aws-sdk"         -> "1.11.121",
+    "aws-sdk"         -> "1.11.123",
     "base64"          -> "0.2.3",
     "catalysts"       -> "0.0.5",
-    "catbird"         -> "0.13.0",
+    "catbird"         -> "0.14.0",
     "cats"            -> "0.9.0",
     "circe"           -> "0.7.1",
     "config"          -> "1.3.1",
@@ -47,7 +47,7 @@ object libraries {
     "finch"           -> "0.14.0",
     "fs2"             -> "0.9.5",
     "fs2-cats"        -> "0.3.0",
-    "h2"              -> "1.4.194",
+    "h2"              -> "1.4.195",
     "http4s"          -> "0.17.0-M1",
     "joda-convert"    -> "1.8.1",
     "joda-time"       -> "2.9.9",
