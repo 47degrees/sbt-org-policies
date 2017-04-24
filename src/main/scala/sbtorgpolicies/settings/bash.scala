@@ -159,8 +159,7 @@ trait bash {
             reapply(Seq[Setting[_]](setSetting.setting := setSetting.value), currentState)
 
           case RunnableItemConfigScope(RunnableProcess(process), _, _, _) =>
-            process.!
-            currentState
+            Command.process(process, currentState)
         }
       }
     } else {
