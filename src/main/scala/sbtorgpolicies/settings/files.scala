@@ -90,7 +90,7 @@ trait files {
             replaced.filter(f => f.status.success && f.status.modified).map(_.file)
           } else Nil
 
-          val allFiles: List[File] = policyFiles ++ modifiedDocFiles
+          val allFiles: List[File] = (policyFiles ++ modifiedDocFiles).map(_.getAbsolutePath).distinct.map(file)
 
           if (allFiles.nonEmpty) {
             if (orgUpdateDocFilesCommitSetting.value) {
