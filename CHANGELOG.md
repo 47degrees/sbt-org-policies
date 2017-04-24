@@ -1,5 +1,14 @@
 # Changelog
 
+## 04/24/2017 - Version 0.4.15
+
+Release changes:
+
+* Fixes maven central badge ([#245](https://github.com/47deg/sbt-org-policies/pull/245))
+* Fixes pom.xml in afterSuccess sbt task ([#251](https://github.com/47deg/sbt-org-policies/pull/251))
+* Unifies FileType and validation types ([#252](https://github.com/47deg/sbt-org-policies/pull/252))
+
+
 ## 04/21/2017 - Version 0.4.14
 
 Release changes:
