@@ -90,15 +90,22 @@ trait bash {
     if (extracted.get(orgAfterCISuccessCheckSetting)) {
 
       val beforeTasksState = (st: State) => {
-        val envVarToken = extracted.get(orgGithubTokenSetting)
-        val maybeToken  = getEnvVar(envVarToken)
+        val envVarToken        = extracted.get(orgGithubTokenSetting)
+        val projectMaintainers = extracted.get(orgMaintainersSetting)
+
+        val maybeToken = getEnvVar(envVarToken)
 
         val (fetchContributorsState, contributorList) =
           if (maybeToken.nonEmpty) {
             extracted.runTask[List[Dev]](orgFetchContributors, st)
           } else (st, Nil)
 
-        reapply(Seq[Setting[_]](orgContributorsSetting := contributorList), fetchContributorsState)
+        val devs = projectMaintainers ++ contributorList
+
+        val contributorsState =
+          reapply(Seq[Setting[_]](orgContributorsSetting := contributorList), fetchContributorsState)
+
+        reapply(Seq[Setting[_]](pomExtra := <developers> { devs.map(_.pomExtra) } </developers>), contributorsState)
       }
 
       runTaskListCommand(
