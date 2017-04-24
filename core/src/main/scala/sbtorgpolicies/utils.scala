@@ -34,6 +34,9 @@ trait utils {
       case start                         => s"$start-$currentYear"
     }
   }
+
+  def libraryName(project: String, scalaBinaryVersion: String, sbtBinaryVersion: Option[String]): String =
+    s"${project}_$scalaBinaryVersion${sbtBinaryVersion map (v => s"_$v") getOrElse ""}"
 }
 
 object utils extends utils

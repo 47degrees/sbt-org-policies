@@ -25,6 +25,7 @@ object badges {
       owner: String,
       repo: String,
       branch: String,
+      sbtPlugin: Boolean,
       libOrg: Option[String] = None,
       libName: Option[String] = None,
       libVersion: Option[String] = None,
@@ -93,13 +94,20 @@ object badges {
 
   case class MavenCentralBadge(info: BadgeInformation) extends Badge(info) {
 
+    private[this] def url(org: String, name: String): String =
+      if (info.sbtPlugin) {
+        s"https://repo1.maven.org/maven2/${org.replaceAllLiterally(".", "/")}/$name"
+      } else {
+        s"https://maven-badges.herokuapp.com/maven-central/$org/$name"
+      }
+
     override def badgeIcon: Option[BadgeIcon] =
       (info.libOrg, info.libName, info.libVersion) match {
         case (Some(org), Some(name), Some(version)) =>
           BadgeIcon(
             "Maven Central",
             s"https://img.shields.io/badge/maven%20central-$version-green.svg",
-            s"https://maven-badges.herokuapp.com/maven-central/$org/$name"
+            url(org, name)
           ).some
         case _ => None
       }
