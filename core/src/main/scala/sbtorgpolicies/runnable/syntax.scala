@@ -28,6 +28,9 @@ object syntax {
   implicit def runnableSetSettingOpsSyntax[T](setSetting: SetSetting[T]): RunnableSetSettingOps[T] =
     new RunnableSetSettingOps[T](setSetting)
 
+  implicit def runnableCommandOpsSyntax[T](command: String): RunnableCommandOps =
+    new RunnableCommandOps(command)
+
   final class RunnableTaskOps[T](taskKey: TaskKey[T]) {
 
     def asRunnableItemFull: RunnableItemConfigScope[T] =

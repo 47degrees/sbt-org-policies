@@ -209,7 +209,8 @@ trait GitHubArbitraries {
         merged_at = mergedAt,
         base = None,
         user = None,
-        assignee = None
+        assignee = None,
+        head = None
       )
 
   val genCommit: Gen[Commit] =
