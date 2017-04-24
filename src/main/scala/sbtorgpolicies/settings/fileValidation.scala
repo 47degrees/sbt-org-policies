@@ -20,59 +20,29 @@ import cats.data.Validated.{Invalid, Valid}
 import sbt.Keys._
 import sbt._
 import sbtorgpolicies.exceptions.ValidationException
-import sbtorgpolicies.model.Dev
 import sbtorgpolicies.rules._
 import sbtorgpolicies.OrgPoliciesKeys._
+import sbtorgpolicies.templates.FileType
 
 trait fileValidation extends ValidationFunctions {
 
   val fileValidation = new FileValidation
-  import fileValidation.fileReader._
-
-  val fileValidationDefaultSettings = Seq(
-    orgValidationListSetting := List(
-      mkValidation(
-        getChildPath(baseDirectory.value, "README.md"),
-        List(requiredStrings(readmeSections(orgProjectName.value)))),
-      mkValidation(getChildPath(baseDirectory.value, "CONTRIBUTING.md"), List(emptyValidation)),
-      mkValidation(
-        getChildPath(baseDirectory.value, "AUTHORS.md"),
-        List(requiredStrings(devListStrings(orgMaintainersSetting.value ++ orgContributorsSetting.value)))),
-      mkValidation(
-        getChildPath(baseDirectory.value, "LICENSE"),
-        List(requiredStrings(List(orgLicenseSetting.value.name)))
-      ),
-      mkValidation(
-        getChildPath(baseDirectory.value, "NOTICE.md"),
-        List(requiredStrings(List(orgProjectName.value, orgLicenseSetting.value.name)))
-      ),
-      mkValidation(getChildPath(baseDirectory.value, sbtorgpolicies.templates.versionFilePath), List(emptyValidation)),
-      mkValidation(
-        getChildPath(baseDirectory.value, ".travis.yml"),
-        List(
-          validTravisFile(
-            crossScalaVersions.value,
-            Seq(orgScriptCICommandKey),
-            Seq(orgAfterCISuccessCommandKey)
-          )
-        )
-      )
-    )
-  )
 
   val orgFileValidationTasks = Seq(
     orgValidateFiles := Def.task {
-      onlyRootUnitTask(baseDirectory.value, (baseDirectory in LocalRootProject).value, streams.value.log) {
-        validationFilesTask(orgValidationListSetting.value, streams.value.log)
+      val baseDirFile: File = (baseDirectory in LocalRootProject).value
+      onlyRootUnitTask(baseDirectory.value, baseDirFile, streams.value.log) {
+        val files: List[FileType] = orgEnforcedFilesSetting.value
+        val validations: List[Validation] = files.flatMap {
+          case FileType(true, _, _, _, path, _, _, list) =>
+            List(mkValidation((baseDirFile / path).getAbsolutePath, if (list.isEmpty) List(emptyValidation) else list))
+          case _ =>
+            Nil
+        }
+        validationFilesTask(validations, streams.value.log)
       }
     }.value
   )
-
-  private[this] def readmeSections(name: String): List[String] =
-    List(s"$name in the wild")
-
-  private[this] def devListStrings(list: List[Dev]): List[String] =
-    list.map(_.id) ++ list.flatMap(_.name)
 
   private[this] def validationFilesTask(list: List[Validation], log: Logger): Unit =
     list foreach (validationFileTask(_, log))

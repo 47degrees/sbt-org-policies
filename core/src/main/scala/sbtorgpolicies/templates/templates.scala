@@ -21,6 +21,7 @@ import net.jcazevedo.moultingyaml._
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import sbtorgpolicies.model._
+import sbtorgpolicies.rules.ValidationFunctions._
 import sbtorgpolicies.templates.badges.{BadgeBuilder, BadgeInformation}
 import sbtorgpolicies.templates.sectionTemplates._
 import sbtorgpolicies.templates.syntax._
@@ -55,7 +56,8 @@ package object templates {
         "year"                 -> replaceableYear(startYear).asReplaceable,
         "organizationName"     -> ghSettings.organizationName.asReplaceable,
         "organizationHomePage" -> ghSettings.organizationHomePage.asReplaceable
-      )
+      ),
+      validations = List(requiredStrings(List(license.name)))
     )
   }
 
@@ -86,6 +88,8 @@ package object templates {
         case None    => s"[${dev.id}](https://github.com/${dev.id})"
       }
 
+    def devListStrings(list: List[Dev]): List[String] = list.map(_.id) ++ list.flatMap(_.name)
+
     FileType(
       mandatory = true,
       overWritable = true,
@@ -96,7 +100,8 @@ package object templates {
         "name"         -> projectName.asReplaceable,
         "maintainers"  -> maintainers.map(devTemplate).asReplaceable,
         "contributors" -> contributors.map(devTemplate).asReplaceable
-      )
+      ),
+      validations = List(requiredStrings(devListStrings(maintainers ++ contributors)))
     )
   }
 
@@ -117,7 +122,8 @@ package object templates {
         "name"             -> projectName.asReplaceable,
         "organizationName" -> ghSettings.organizationName.asReplaceable,
         "licenseName"      -> license.name.asReplaceable
-      )
+      ),
+      validations = List(requiredStrings(List(projectName, license.name)))
     )
   }
 
@@ -190,6 +196,8 @@ package object templates {
       badgeBuilderList.map(_(info)).map(_.asMarkDown.getOrElse("")).mkString(" ").asReplaceable
     }
 
+    def readmeSections(name: String): List[String] = List(s"$name in the wild")
+
     FileType(
       mandatory = true,
       overWritable = false,
@@ -217,7 +225,8 @@ package object templates {
           template = badgesSectionTemplate,
           replacements = Map("badges" -> replaceableBadges)
         )
-      )
+      ),
+      validations = List(requiredStrings(readmeSections(projectName)))
     )
   }
 
@@ -233,7 +242,7 @@ package object templates {
     )
   }
 
-  def TravisFileType(crossScalaV: Seq[String]): FileType = {
+  def TravisFileType(crossScalaV: Seq[String], scriptCICommand: String, afterCISuccessCommand: String): FileType = {
 
     import sbtorgpolicies.model.YamlFormats._
 
@@ -245,6 +254,13 @@ package object templates {
       outputPath = travisFilePath,
       replacements = Map(
         "crossScalaVersions" -> crossScalaV.toYaml.prettyPrint.asReplaceable
+      ),
+      validations = List(
+        validTravisFile(
+          crossScalaV,
+          Seq(scriptCICommand),
+          Seq(afterCISuccessCommand)
+        )
       )
     )
   }

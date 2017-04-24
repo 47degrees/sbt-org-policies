@@ -27,9 +27,6 @@ import scala.annotation.tailrec
 
 class FileReader {
 
-  def getChildPath(parent: File, childPath: String): String =
-    new File(parent, childPath).getAbsolutePath
-
   def exists(path: String): Boolean =
     Either
       .catchNonFatal(file(path).exists()) getOrElse false
@@ -47,44 +44,50 @@ class FileReader {
       .catchNonFatal(IO.readBytes(file))
       .leftMap(e => IOException(s"Error loading ${file.getAbsolutePath} content", Some(e)))
 
-  def fetchFilesRecursivelyFromPath(sourcePath: String, acceptedExtensions: List[String] = Nil): IOResult[List[File]] =
-    fetchFilesRecursively(sourcePath.toFile, acceptedExtensions)
+  private[this] val defaultValidDirs: (File) => Boolean = (f: File) => {
+    !Set("target", "bin", "output").contains(f.getName) && !f.getName.startsWith(".")
+  }
 
-  def fetchFilesRecursively(sourceFile: File, acceptedExtensions: List[String] = Nil): IOResult[List[File]] =
+  def fetchFilesRecursivelyFromPath(
+      sourcePath: String,
+      isFileSupported: (File) => Boolean = _ => true,
+      isDirSupported: (File) => Boolean = defaultValidDirs): IOResult[List[File]] =
+    fetchFilesRecursively(List(sourcePath.toFile))
+
+  def fetchFilesRecursively(
+      in: List[File],
+      isFileSupported: (File) => Boolean = _ => true,
+      isDirSupported: (File) => Boolean = defaultValidDirs): IOResult[List[File]] =
     Either
       .catchNonFatal {
-
         @tailrec
-        def innerRecursive(files: List[File], accum: List[File]): List[File] = {
+        def findAllFiles(
+            in: List[File],
+            isFileSupported: (File) => Boolean,
+            isDirSupported: (File) => Boolean,
+            processedFiles: List[File] = Nil,
+            processedDirs: List[String] = Nil): List[File] = {
 
-          val acceptedFiles    = files filter acceptedExtension
-          val filesDirectories = files filter (_.isDirectory) flatMap (_.listFiles().toList)
+          val allFiles: List[File] = processedFiles ++ in.filter(f => f.exists && f.isFile && isFileSupported(f))
 
-          val newAccum = accum ++ acceptedFiles
-
-          filesDirectories match {
-            case Nil => newAccum
-            case _   => innerRecursive(filesDirectories, newAccum)
+          in.filter { f =>
+            f.isDirectory &&
+            isDirSupported(f) &&
+            !processedDirs.contains(f.getCanonicalPath)
+          } match {
+            case Nil => allFiles
+            case list =>
+              val subFiles = list.flatMap(_.listFiles().toList)
+              findAllFiles(
+                subFiles,
+                isFileSupported,
+                isDirSupported,
+                allFiles,
+                processedDirs ++ list.map(_.getCanonicalPath))
           }
         }
 
-        def acceptedExtension(file: File): Boolean =
-          file.isFile &&
-            (acceptedExtensions.isEmpty ||
-              acceptedExtensions.foldLeft(false) { (b, ext) =>
-                b || file.getName.endsWith(ext)
-              })
-
-        (sourceFile.exists(), sourceFile.isFile, acceptedExtension(sourceFile)) match {
-          case (false, _, _) =>
-            Nil
-          case (_, true, false) =>
-            Nil
-          case (_, true, true) =>
-            List(sourceFile)
-          case _ =>
-            innerRecursive(Option(sourceFile.listFiles.toList).toList.flatten, Nil)
-        }
+        findAllFiles(in, isFileSupported, isDirSupported)
       }
-      .leftMap(e => IOException(s"Error fetching files recursively from ${sourceFile.getAbsolutePath}", Some(e)))
+      .leftMap(e => IOException(s"Error fetching files recursively", Some(e)))
 }

@@ -102,3 +102,5 @@ trait ValidationFunctions {
         validateTasks(content, "after_success", afterSuccessTasks)
   }
 }
+
+object ValidationFunctions extends ValidationFunctions

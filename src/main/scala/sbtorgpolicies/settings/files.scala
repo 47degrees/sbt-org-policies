@@ -21,6 +21,7 @@ import sbt.Keys._
 import sbt._
 import sbtorgpolicies.OrgPoliciesKeys._
 import sbtorgpolicies.github.GitHubOps
+import sbtorgpolicies.io.ReplaceTextEngine.ProcessedFile
 import sbtorgpolicies.io._
 import sbtorgpolicies.templates.FileType
 import sbtorgpolicies.templates.utils._
@@ -75,12 +76,18 @@ trait files {
               file.getName.indexOf('.') < 0 || file.getName.endsWith(".md")
             }
 
-            val replaced = replaceTextEngine.replaceBlocks(
+            val replaced: List[ProcessedFile] = replaceTextEngine.replaceBlocks(
               startBlockRegex,
               endBlockRegex,
               orgUpdateDocFilesReplacementsSetting.value,
               orgUpdateDocFilesSetting.value,
-              isFileSupported)
+              isFileSupported) match {
+              case Left(e) =>
+                streams.value.log.error(s"Error updating policy files")
+                e.printStackTrace()
+                Nil
+              case Right(l) => l
+            }
 
             val errorFiles = replaced.filter(_.status.failure).map(_.file.getAbsolutePath)
             if (errorFiles.nonEmpty) {
