@@ -52,6 +52,7 @@ trait DefaultSettings extends AllSettings {
       orgBashTasks ++
       orgCommonTasks ++
       sbtDependenciesSettings ++
+      sbtMicrositesSettings ++
       AutomateHeaderPlugin.automateFor(Compile, Test)
 
   lazy val orgCommonDefaultSettings = Seq(

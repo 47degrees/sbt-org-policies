@@ -20,6 +20,7 @@ import com.typesafe.sbt.pgp.PgpKeys
 import com.typesafe.sbt.pgp.PgpKeys._
 import dependencies.DependenciesPlugin
 import dependencies.DependenciesPlugin.autoImport._
+import microsites.MicrositeKeys._
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 import sbt.Keys._
 import sbt._
@@ -270,5 +271,15 @@ trait AllSettings
       depGithubOwnerSetting := orgGithubSetting.value.organization,
       depGithubRepoSetting := orgGithubSetting.value.project,
       depGithubTokenSetting := getEnvVar(orgGithubTokenSetting.value)
+    )
+
+  /**
+   * Sets the default properties for the sbt-microsites plugin.
+   *
+   */
+  val sbtMicrositesSettings: Seq[Setting[_]] =
+    Seq(
+      micrositeGithubToken := getEnvVar(orgGithubTokenSetting.value),
+      micrositePushSiteWith := GitHub4s
     )
 }
