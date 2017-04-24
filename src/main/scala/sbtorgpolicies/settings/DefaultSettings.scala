@@ -104,6 +104,11 @@ trait DefaultSettings extends AllSettings {
         startYear.value,
         orgLicenseSetting.value,
         orgCommitBranchSetting.value,
+        sbtPlugin.value,
+        libraryName(
+          orgGithubSetting.value.project,
+          scalaBinaryVersion.value,
+          guard(sbtPlugin.value)(sbtBinaryVersion.value).headOption),
         version.value,
         orgSupportedScalaJSVersion.value,
         orgBadgeListSetting.value
@@ -118,7 +123,6 @@ trait DefaultSettings extends AllSettings {
       getEnvVarOrElse("TRAVIS_PULL_REQUEST") == "false"
     },
     orgAfterCISuccessTaskListSetting := List(
-      orgCreateFiles.asRunnableItem,
       orgUpdateDocFiles.asRunnableItem,
       depUpdateDependencyIssues.asRunnableItem,
       orgPublishReleaseTask.asRunnableItem(allModules = true, aggregated = false, crossScalaVersions = true)
