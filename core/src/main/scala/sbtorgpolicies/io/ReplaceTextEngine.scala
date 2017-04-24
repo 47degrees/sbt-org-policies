@@ -33,39 +33,15 @@ class ReplaceTextEngine {
   val fileReader: FileReader = new FileReader
   val fileWriter: FileWriter = new FileWriter
 
-  val excludeDirs: Set[String] = Set("target", "bin", "output")
-
   final def replaceBlocks(
       startBlockRegex: Regex,
       endBlockRegex: Regex,
       replacements: Map[String, String],
       in: List[File],
-      isFileSupported: (File) => Boolean): List[ProcessedFile] =
-    findAllFiles(in, isFileSupported) map {
-      replaceBlocksInFile(startBlockRegex, endBlockRegex, replacements, _)
+      isFileSupported: (File) => Boolean): IOResult[List[ProcessedFile]] =
+    fileReader.fetchFilesRecursively(in, isFileSupported) map { files =>
+      files.map(replaceBlocksInFile(startBlockRegex, endBlockRegex, replacements, _))
     }
-
-  @tailrec
-  private[this] final def findAllFiles(
-      in: List[File],
-      isFileSupported: (File) => Boolean,
-      processedFiles: List[File] = Nil,
-      processedDirs: List[String] = Nil): List[File] = {
-
-    val allFiles: List[File] = processedFiles ++ in.filter(f => f.isFile && isFileSupported(f))
-
-    in.filter { f =>
-      f.isDirectory &&
-      !excludeDirs.contains(f.getName) &&
-      !f.getName.startsWith(".") &&
-      !processedDirs.contains(f.getCanonicalPath)
-    } match {
-      case Nil => allFiles
-      case list =>
-        val subFiles = list.flatMap(_.listFiles().toList)
-        findAllFiles(subFiles, isFileSupported, allFiles, processedDirs ++ list.map(_.getCanonicalPath))
-    }
-  }
 
   private[this] def replaceBlocksInFile(
       startBlockRegex: Regex,

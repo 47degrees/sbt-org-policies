@@ -67,7 +67,7 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
     def readFileContents: IOResult[List[(String, String)]] = {
       files.foldLeft[IOResult[List[(String, String)]]](Right(Nil)) {
         case (Right(partialResult), file) =>
-          fileReader.getFileContent(file.getAbsolutePath).map { content =>
+          fileReader.getFileContent(file.getAbsolutePath) map { content =>
             (relativePath(file), content) :: partialResult
           }
         case (Left(e), _) => Left(e)
@@ -170,7 +170,7 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
     def getAllFilesAsGithub4sResponse(dir: File): Github4sResponse[List[File]] = {
       val ghio: GHIO[GHResponse[List[File]]] = Free.pure {
         fileReader
-          .fetchFilesRecursively(dir)
+          .fetchFilesRecursively(List(dir))
           .bimap(
             e => UnexpectedException(e.getMessage),
             v => newGHResult(v)

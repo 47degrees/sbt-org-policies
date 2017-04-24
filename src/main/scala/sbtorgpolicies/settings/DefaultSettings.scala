@@ -52,7 +52,6 @@ trait DefaultSettings extends AllSettings {
       orgBashTasks ++
       orgCommonTasks ++
       sbtDependenciesSettings ++
-      fileValidationDefaultSettings ++
       AutomateHeaderPlugin.automateFor(Compile, Test)
 
   lazy val orgCommonDefaultSettings = Seq(
@@ -109,7 +108,7 @@ trait DefaultSettings extends AllSettings {
         orgBadgeListSetting.value
       ),
       ScalafmtFileType,
-      TravisFileType(crossScalaVersions.value)
+      TravisFileType(crossScalaVersions.value, orgScriptCICommandKey, orgAfterCISuccessCommandKey)
     ),
     orgTemplatesDirectorySetting := (resourceDirectory in Compile).value / "org" / "templates",
     commands ++= Seq(orgScriptCICommand, orgPublishReleaseCommand, orgAfterCISuccessCommand),

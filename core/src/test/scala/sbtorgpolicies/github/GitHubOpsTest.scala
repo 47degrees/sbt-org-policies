@@ -373,7 +373,12 @@ class GitHubOpsTest extends TestOps {
 
         val files: List[(File, String)] = filesAndContents.map(t => (new File(baseDir, t._1), t._2))
 
-        when(fileReaderMock.fetchFilesRecursively(any[File], any[List[String]]))
+        when(
+          fileReaderMock
+            .fetchFilesRecursively(
+              any[List[File]],
+              any[Function1[File, Boolean]].apply,
+              any[Function1[File, Boolean]].apply))
           .thenReturn(files.map(_._1).asRight)
 
         files foreach {
@@ -428,7 +433,11 @@ class GitHubOpsTest extends TestOps {
 
     val ioException: IOException = IOException("Test error")
 
-    when(fileReaderMock.fetchFilesRecursively(any[File], any[List[String]]))
+    when(
+      fileReaderMock.fetchFilesRecursively(
+        any[List[File]],
+        any[Function1[File, Boolean]].apply,
+        any[Function1[File, Boolean]].apply))
       .thenReturn(ioException.asLeft)
 
     val result: Either[OrgPolicyException, Ref] =

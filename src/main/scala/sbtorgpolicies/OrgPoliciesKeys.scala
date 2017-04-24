@@ -89,9 +89,6 @@ sealed trait OrgPoliciesSettingsKeys {
     "Optional. Directory where are placed the different templates it'll be used. " +
       "By default, it'll be the resourcesDirectory + '/org/templates'")
 
-  val orgValidationListSetting: SettingKey[List[Validation]] =
-    settingKey[List[Validation]]("Validation list the plugin must check")
-
   val orgUpdateDocFilesSetting: SettingKey[List[File]] =
     settingKey[List[File]]("List of files and directories whose replace blocks will be replaced with the new values.")
 

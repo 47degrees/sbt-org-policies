@@ -17,6 +17,7 @@
 package sbtorgpolicies.templates
 
 import org.joda.time.DateTime
+import sbtorgpolicies.rules.ValidationFunction
 import sbtorgpolicies.templates.syntax._
 
 import scala.util.matching.Regex
@@ -41,7 +42,8 @@ case class FileType(
     templatePath: String,
     outputPath: String,
     replacements: Replacements,
-    fileSections: List[FileSection] = Nil)
+    fileSections: List[FileSection] = Nil,
+    validations: List[ValidationFunction] = Nil)
 
 case class FileSection(
     appendPosition: AppendPosition,
