@@ -1,5 +1,12 @@
 # Changelog
 
+## 04/25/2017 - Version 0.4.17
+
+Release changes:
+
+* Dependencies auto-check Enhancements ([#258](https://github.com/47deg/sbt-org-policies/pull/258))
+
+
 ## 04/25/2017 - Version 0.4.16
 
 Release changes:
