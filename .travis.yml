@@ -21,7 +21,4 @@ script:
   fi
 after_success:
 - sbt ++$TRAVIS_SCALA_VERSION orgAfterCISuccess
-- if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then
-    cd autocheck;
-    sbt -Dplugin.version=$(cat ../version.sbt | sed 's/.*"\(.*\)".*/\1/') depUpdateDependencyIssues;
-  fi
+- cd autocheck && sbt -Dplugin.version=$(cat ../version.sbt | sed 's/.*"\(.*\)".*/\1/') checkDependencies
