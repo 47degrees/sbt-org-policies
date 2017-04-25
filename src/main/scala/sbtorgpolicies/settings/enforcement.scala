@@ -41,14 +41,16 @@ trait enforcement {
 
   private[this] def checkScalaVersion = Def.task {
     val scalaVersionValue = scalaVersion.value
-    if (scalaVersionValue != scalac.latestScalaVersion) {
+    val isSbtPlugin       = sbtPlugin.value
+    if (!isSbtPlugin && scalaVersionValue != scalac.latestScalaVersion) {
       throw ValidationException(s"scalaVersion is $scalaVersionValue. It should be ${scalac.latestScalaVersion}")
     }
   }
 
   private[this] def checkCrossScalaVersion = Def.task {
     val crossScalaVersionsValue = crossScalaVersions.value
-    if (!scalac.crossScalaVersions.forall(crossScalaVersionsValue.contains)) {
+    val isSbtPlugin             = sbtPlugin.value
+    if (!isSbtPlugin && !scalac.crossScalaVersions.forall(crossScalaVersionsValue.contains)) {
       throw ValidationException(s"""
            |crossScalaVersions is $crossScalaVersionsValue.
            |It should have at least these versions: ${scalac.crossScalaVersions.mkString(",")}""".stripMargin)
