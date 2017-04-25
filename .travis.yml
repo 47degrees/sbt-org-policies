@@ -15,8 +15,8 @@ before_install:
 - rm -rf $HOME/.ivy2/cache/scala_2.10/sbt_0.13/com.47deg/sbt-org-policies
 script:
 - sbt ++$TRAVIS_SCALA_VERSION clean compile test
+- sbt ++$TRAVIS_SCALA_VERSION publishLocal;
 - if [ "$TRAVIS_BRANCH" = "master" ]; then
-    sbt ++$TRAVIS_SCALA_VERSION publishLocal;
     sbt ++$TRAVIS_SCALA_VERSION scripted;
   fi
 after_success:
