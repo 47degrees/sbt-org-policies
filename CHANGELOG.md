@@ -1,5 +1,13 @@
 # Changelog
 
+## 04/25/2017 - Version 0.4.16
+
+Release changes:
+
+* Adds New default settings for sbt-microsites ([#256](https://github.com/47deg/sbt-org-policies/pull/256))
+* Adds Optional publishMicrosite ([#257](https://github.com/47deg/sbt-org-policies/pull/257))
+
+
 ## 04/24/2017 - Version 0.4.15
 
 Release changes:
