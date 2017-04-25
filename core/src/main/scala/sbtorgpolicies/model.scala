@@ -19,6 +19,8 @@ package sbtorgpolicies
 import net.jcazevedo.moultingyaml._
 import sbt.Append.Value
 import sbt.{url, Append, URL}
+import sbtorgpolicies.runnable.RunnableItemConfigScope
+import sbtorgpolicies.runnable.syntax._
 
 object model {
 
@@ -85,6 +87,11 @@ object model {
 
   /** Combines all scalac options.*/
   lazy val scalacAllOptions: Seq[String] = scalacCommonOptions ++ scalacLanguageOptions ++ scalacStrictOptions
+
+  /**
+   * Alias helper for the publishMicrosite task when docs module is located in the "docs" sbt module.
+   */
+  lazy val defaultPublishMicrosite: RunnableItemConfigScope[Unit] = ";project docs;publishMicrosite".asRunnableItem
 
   /** Github settings and related settings usually found in a Github README.*/
   case class GitHubSettings(

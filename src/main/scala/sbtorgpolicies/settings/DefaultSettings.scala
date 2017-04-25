@@ -126,7 +126,7 @@ trait DefaultSettings extends AllSettings {
       orgUpdateDocFiles.asRunnableItem,
       depUpdateDependencyIssues.asRunnableItem,
       orgPublishReleaseTask.asRunnableItem(allModules = true, aggregated = false, crossScalaVersions = true)
-    ),
+    ) ++ guard(((baseDirectory in LocalRootProject).value / "docs").exists())(defaultPublishMicrosite),
     orgScriptTaskListSetting := List(
       orgValidateFiles.asRunnableItem,
       orgCheckSettings.asRunnableItem,
