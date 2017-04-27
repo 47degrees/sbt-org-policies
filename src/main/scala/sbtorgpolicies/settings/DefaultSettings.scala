@@ -105,11 +105,10 @@ trait DefaultSettings extends AllSettings {
         orgLicenseSetting.value,
         orgCommitBranchSetting.value,
         sbtPlugin.value,
-        libraryName(
-          orgGithubSetting.value.project,
-          scalaBinaryVersion.value,
-          guard(sbtPlugin.value)(sbtBinaryVersion.value).headOption),
+        name.value,
         version.value,
+        scalaBinaryVersion.value,
+        sbtBinaryVersion.value,
         orgSupportedScalaJSVersion.value,
         orgBadgeListSetting.value
       ),
