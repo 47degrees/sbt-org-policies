@@ -19,6 +19,39 @@ addSbtPlugin("com.47deg" % "sbt-org-policies" % "0.4.18")
 
 [comment]: # (End Replace)
 
+## Creating New Org Project
+
+1. Create project from our g8 template:
+
+```scala
+sbt new 47deg/org-template.g8
+```
+
+2. Fill the required information (you can see an example below):
+
+```bash
+
+...
+
+name [Project Name]: Test
+projectDescription [Project Description]:
+project [project-name]: org-test
+package [com.fortysevendeg]:
+startYear [2017]:
+organization_web [http://47deg.com]:
+github_owner [47deg]:
+github_repo [org-test]:
+sbt_org_policies_version [0.4.18]:
+Skipping existing file: ./test/.gitignore
+Skipping existing file: ./test/build.sbt
+Skipping existing file: ./test/project/build.properties
+Skipping existing file: ./test/project/plugins.sbt
+
+Template applied in ./test
+```
+
+The new project will be created in the `test` folder, with the basic structure and basic sbt configuration based on the sbt-org-policies plugin.
+
 [comment]: # (Start Copyright)
 # Copyright
 
