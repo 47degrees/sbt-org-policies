@@ -35,8 +35,7 @@ lazy val `org-policies-auto-dep-check` = (project in file("."))
         case _                      => None
       }
 
-      val isTravisMaster = getEnvVarOrElse("TRAVIS_BRANCH", "") == "master" &&
-        getEnvVarOrElse("TRAVIS_PULL_REQUEST", "") == "true"
+      val isTravisMaster = getEnvVarOrElse("TRAVIS_BRANCH") == "master"
 
       if (isTravisMaster && currentPluginVersion.isDefined)
         Def.task(depUpdateDependencyIssues.value)
