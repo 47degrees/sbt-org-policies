@@ -172,6 +172,8 @@ package object templates {
       sbtPlugin: Boolean,
       libraryName: String,
       libraryVersion: String,
+      scalaBinaryVersion: String,
+      sbtBinaryVersion: String,
       scalaJSVersion: Option[String],
       badgeBuilderList: List[BadgeBuilder] = Nil): FileType = {
 
@@ -187,9 +189,11 @@ package object templates {
         repo = ghSettings.project,
         branch = branch,
         sbtPlugin = sbtPlugin,
-        libOrg = ghSettings.groupId.some,
-        libName = libraryName.some,
-        libVersion = libraryVersion.some,
+        libOrg = ghSettings.groupId,
+        libName = libraryName,
+        libVersion = libraryVersion,
+        scalaBinaryVersion = scalaBinaryVersion,
+        sbtBinaryVersion = sbtBinaryVersion,
         scalaJSV = scalaJSVersion,
         license = license.some
       )
