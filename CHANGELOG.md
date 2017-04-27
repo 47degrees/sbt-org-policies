@@ -1,5 +1,12 @@
 # Changelog
 
+## 04/27/2017 - Version 0.4.18
+
+Release changes:
+
+* Fixes maven and scalacenter badges ([#260](https://github.com/47deg/sbt-org-policies/pull/260))
+
+
 ## 04/25/2017 - Version 0.4.17
 
 Release changes:
