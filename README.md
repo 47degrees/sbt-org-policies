@@ -21,7 +21,7 @@ addSbtPlugin("com.47deg" % "sbt-org-policies" % "0.4.18")
 
 ## Creating New Org Project
 
-1. Create project from our g8 template:
+1. Create a new project from our g8 template:
 
 ```scala
 sbt new 47deg/org-template.g8
@@ -51,6 +51,12 @@ Template applied in ./test
 ```
 
 The new project will be created in the `test` folder, with the basic structure and basic sbt configuration based on the sbt-org-policies plugin.
+
+3. Create the organization files, to do so, from the project folder, you could just run:
+
+```scala
+sbt orgCreateFiles
+```
 
 [comment]: # (Start Copyright)
 # Copyright
