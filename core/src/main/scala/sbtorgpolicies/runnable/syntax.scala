@@ -31,6 +31,9 @@ object syntax {
   implicit def runnableCommandOpsSyntax[T](command: String): RunnableCommandOps =
     new RunnableCommandOps(command)
 
+  implicit def runnableCommandListOpsSyntax[T](commandList: List[String]): RunnableCommandListOps =
+    new RunnableCommandListOps(commandList)
+
   final class RunnableTaskOps[T](taskKey: TaskKey[T]) {
 
     def asRunnableItemFull: RunnableItemConfigScope[T] =
@@ -77,6 +80,14 @@ object syntax {
         crossScalaVersions: Boolean): RunnableItemConfigScope[Unit] =
       RunnableItemConfigScope(RunnableProcess(command), allModules, aggregated, crossScalaVersions)
 
+    def asCmd: String =
+      if (command.contains("/")) s";project ${command.replaceAll("/", ";")}"
+      else s";$command"
+  }
+
+  final class RunnableCommandListOps(commandList: List[String]) {
+
+    def asCmd: String = commandList.map(_.asCmd).mkString("")
   }
 
 }
