@@ -90,4 +90,31 @@ class FileReader {
         findAllFiles(in, isFileSupported, isDirSupported)
       }
       .leftMap(e => IOException(s"Error fetching files recursively", Some(e)))
+
+  def fetchDirsRecursively(
+      in: List[File],
+      isDirSupported: (File) => Boolean = defaultValidDirs): IOResult[List[File]] =
+    Either
+      .catchNonFatal {
+        @tailrec
+        def findAllDirs(
+            in: List[File],
+            isDirSupported: (File) => Boolean,
+            processedDirs: List[File] = Nil): List[File] = {
+
+          in.filter { f =>
+            f.isDirectory &&
+            isDirSupported(f) &&
+            !processedDirs.map(_.getCanonicalPath).contains(f.getCanonicalPath)
+          } match {
+            case Nil => processedDirs
+            case list =>
+              val subDirs = list.flatMap(_.listFiles().toList)
+              findAllDirs(subDirs, isDirSupported, processedDirs ++ list)
+          }
+        }
+
+        findAllDirs(in, isDirSupported)
+      }
+      .leftMap(e => IOException(s"Error fetching files recursively", Some(e)))
 }
