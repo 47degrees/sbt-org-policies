@@ -119,21 +119,27 @@ trait bash {
     val isLastScalaV = crossV.lastOption.exists(_ == scalaV)
     val isRootModule = baseDir.getAbsolutePath == rootDir.getAbsolutePath
 
-    val runnableItemList: List[RunnableItemConfigScope[_]] =
-      extracted
-        .get(runnableItemListSettingKey)
+    val runnableItemList: List[RunnableItemConfigScope[_]] = extracted.get(runnableItemListSettingKey)
+
+    val filteredRunnableItemList: List[RunnableItemConfigScope[_]] =
+      runnableItemList
         .filter { runnableItem =>
           (isLastScalaV || runnableItem.crossScalaVersions) && (isRootModule || runnableItem.allModules)
         }
 
-    if (runnableItemList.nonEmpty) {
+    logInfo(commandName, isLastScalaV, isRootModule, runnableItemList, filteredRunnableItemList, st)
 
-      val stateToStateResult = stateToState(st)
+    runFilteredCommandList(filteredRunnableItemList, st, stateToState)
+  }
 
-      stateToStateResult.log.info(
-        s"[$commandName] Initiating with this set of items: ${toStringListRunnableItems(runnableItemList)}")
+  private[this] def runFilteredCommandList(
+      runnableList: List[RunnableItemConfigScope[_]],
+      st: State,
+      stateToState: (State) => State): State = {
 
-      runnableItemList.foldLeft(stateToStateResult) { (currentState, item) =>
+    if (runnableList.nonEmpty) {
+
+      runnableList.foldLeft(stateToState(st)) { (currentState, item) =>
         val extractedRunnable: Extracted = Project.extract(currentState)
 
         item match {
@@ -151,10 +157,7 @@ trait bash {
             Command.process(process, currentState)
         }
       }
-    } else {
-      st.log.info(s"[$commandName] No runnable items to execute")
-      st
-    }
+    } else st
   }
 
   private[this] def deferredFetchContributorsState(st: State) = {
@@ -176,6 +179,55 @@ trait bash {
       reapply(Seq[Setting[_]](orgContributorsSetting := contributorList), fetchContributorsState)
 
     reapply(Seq[Setting[_]](pomExtra := <developers> { devs.map(_.pomExtra) } </developers>), setContributorState)
+  }
+
+  private[this] def logInfo(
+      commandName: String,
+      isLastScalaV: Boolean,
+      isRootModule: Boolean,
+      runnableItemList: List[RunnableItemConfigScope[_]],
+      filteredRunnableItemList: List[RunnableItemConfigScope[_]],
+      st: State) = {
+
+    val nonRunnableItems: Set[RunnableItemConfigScope[_]] = runnableItemList.toSet -- filteredRunnableItemList.toSet
+
+    def debugDiscardedItem(i: RunnableItemConfigScope[_]) =
+      s"""
+         |${toStringRunnableItem(i)}
+         |
+         |    => Item Info:
+         |      # crossScalaVersions = ${i.crossScalaVersions}
+         |      # allModules         = ${i.allModules}
+         |      # Is last scalaVersion or the runnable item is crossScalaVersions? = ${isLastScalaV || i.crossScalaVersions}
+         |      # Are we in the root module or the item should be apply to all modules? = ${isRootModule || i.allModules}
+         |
+         |      * At least, one of the conditions above is false.
+         |
+         |""".stripMargin
+
+    if (nonRunnableItems.nonEmpty) {
+
+      val discardedItems =
+        s"""
+           |${nonRunnableItems.map(debugDiscardedItem).mkString("\n")}
+           |
+           |""".stripMargin
+
+      st.log.info(s"[$commandName] Skipping the next runnable items: $discardedItems")
+
+    } else
+      st.log.info(s"[$commandName] None command will be skipped, all of them are going to be executed")
+
+    if (filteredRunnableItemList.nonEmpty) {
+
+      st.log.info(s"""
+                     |
+                     |[$commandName] Items that will be executed:
+                     |${toStringListRunnableItems(filteredRunnableItemList)}
+                     |""".stripMargin)
+
+    } else
+      st.log.info(s"[$commandName] No runnable items to execute")
   }
 
   private[this] def toStringListRunnableItems(list: List[RunnableItemConfigScope[_]]): String =
