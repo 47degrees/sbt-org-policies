@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package sbtorgpolicies
+package sbtorgpolicies.github
 
-package object github {
+object config {
 
   val blobMode: String = "100644"
   val blobType: String = "blob"
