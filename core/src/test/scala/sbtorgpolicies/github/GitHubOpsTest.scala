@@ -365,6 +365,7 @@ class GitHubOpsTest extends TestOps {
     val property = forAll {
       (
           refInfoR: GHResponse[RefInfo],
+          refCommitR: GHResponse[RefCommit],
           treeResultR: GHResponse[TreeResult],
           nelRefR: GHResponse[NonEmptyList[Ref]],
           createCommitR: GHResponse[RefCommit],
@@ -375,10 +376,7 @@ class GitHubOpsTest extends TestOps {
 
         when(
           fileReaderMock
-            .fetchFilesRecursively(
-              any[List[File]],
-              any[Function1[File, Boolean]].apply,
-              any[Function1[File, Boolean]].apply))
+            .fetchDirsRecursively(any[List[File]], any[Function1[File, Boolean]].apply))
           .thenReturn(files.map(_._1).asRight)
 
         files foreach {
@@ -388,6 +386,9 @@ class GitHubOpsTest extends TestOps {
 
         when(ghGitData.getReference(any[String], any[String], any[String]))
           .thenReturn(Free.pure[GitHub4s, GHResponse[NonEmptyList[Ref]]](nelRefR))
+
+        when(ghGitData.getCommit(any[String], any[String], any[String]))
+          .thenReturn(Free.pure[GitHub4s, GHResponse[RefCommit]](refCommitR))
 
         when(ghGitData.createBlob(any[String], any[String], any[String], any[Option[String]]))
           .thenReturn(Free.pure[GitHub4s, GHResponse[RefInfo]](refInfoR))
@@ -405,21 +406,23 @@ class GitHubOpsTest extends TestOps {
         val result: Either[OrgPolicyException, Ref] =
           githubOps.commitDir(branch, sampleMessage, baseDir)
 
-        (nelRefR, refInfoR, treeResultR, createCommitR, updateReferenceR) match {
-          case (Left(e), _, _, _, _) =>
+        (nelRefR, refCommitR, refInfoR, treeResultR, createCommitR, updateReferenceR) match {
+          case (Left(e), _, _, _, _, _) =>
             result shouldBeEq toLeftResult(e)
-          case (Right(gHResult), _, _, _, _) if !gHResult.result.exists(_.ref == s"refs/heads/$branch") =>
+          case (Right(gHResult), _, _, _, _, _) if !gHResult.result.exists(_.ref == s"refs/heads/$branch") =>
             val e = UnexpectedException(s"Branch $branch not found")
             result shouldBeEq toLeftResult(e)
-          case (_, Left(e), _, _, _) =>
+          case (_, Left(e), _, _, _, _) =>
             result shouldBeEq toLeftResult(e)
-          case (_, _, Left(e), _, _) =>
+          case (_, _, Left(e), _, _, _) =>
             result shouldBeEq toLeftResult(e)
-          case (_, _, _, Left(e), _) =>
+          case (_, _, _, Left(e), _, _) =>
             result shouldBeEq toLeftResult(e)
-          case (_, _, _, _, Left(e)) =>
+          case (_, _, _, _, Left(e), _) =>
             result shouldBeEq toLeftResult(e)
-          case (_, _, _, _, Right(r)) =>
+          case (_, _, _, _, _, Left(e)) =>
+            result shouldBeEq toLeftResult(e)
+          case (_, _, _, _, _, Right(r)) =>
             result shouldBeEq r.result.asRight
         }
     }
@@ -434,10 +437,8 @@ class GitHubOpsTest extends TestOps {
     val ioException: IOException = IOException("Test error")
 
     when(
-      fileReaderMock.fetchFilesRecursively(
-        any[List[File]],
-        any[Function1[File, Boolean]].apply,
-        any[Function1[File, Boolean]].apply))
+      fileReaderMock
+        .fetchDirsRecursively(any[List[File]], any[Function1[File, Boolean]].apply))
       .thenReturn(ioException.asLeft)
 
     val result: Either[OrgPolicyException, Ref] =
