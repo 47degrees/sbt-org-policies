@@ -1,5 +1,17 @@
 # Changelog
 
+## 05/01/2017 - Version 0.4.19
+
+Release changes:
+
+* Fixes Autocheck Dependency Triggering ([#261](https://github.com/47deg/sbt-org-policies/pull/261))
+* Adds basic docs to create a new project ([#262](https://github.com/47deg/sbt-org-policies/pull/262))
+* Adds Logging Statements ([#264](https://github.com/47deg/sbt-org-policies/pull/264))
+* Adds syntax to make easier the use of command aliases ([#270](https://github.com/47deg/sbt-org-policies/pull/270))
+* Improves GitHubOps ([#271](https://github.com/47deg/sbt-org-policies/pull/271))
+* Add iota-core as a 47 dependency ([#276](https://github.com/47deg/sbt-org-policies/pull/276))
+
+
 ## 04/27/2017 - Version 0.4.18
 
 Release changes:
