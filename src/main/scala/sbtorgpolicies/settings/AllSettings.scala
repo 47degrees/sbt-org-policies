@@ -144,7 +144,7 @@ trait AllSettings
     scalaJSStage in Global := FastOptStage,
     parallelExecution := false,
     requiresDOM := false,
-    jsEnv := NodeJSEnv().value,
+    jsEnv := new org.scalajs.jsenv.nodejs.NodeJSEnv(),
     // batch mode decreases the amount of memory needed to compile scala.js code
     scalaJSOptimizerOptions := scalaJSOptimizerOptions.value.withBatchMode(getEnvVar("TRAVIS").isDefined)
   )
