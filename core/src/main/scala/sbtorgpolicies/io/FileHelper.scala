@@ -16,7 +16,13 @@
 
 package sbtorgpolicies.io
 
+import cats.instances.either._
+import cats.instances.list._
+import cats.syntax.cartesian._
 import cats.syntax.either._
+import cats.syntax.foldable._
+import cats.syntax.traverse._
+import cats.syntax.traverseFilter._
 import sbt.{File, URL}
 import sbtorgpolicies.exceptions.IOException
 import sbtorgpolicies.io.syntax._
@@ -55,12 +61,10 @@ class FileHelper {
       projectDir.getAbsolutePath.ensureFinalSlash + f.outputPath
 
     def checkFiles(): IOResult[Unit] =
-      fileList.foldLeft[IOResult[Unit]](().asRight) {
-        case (Right(_), f) =>
-          if (!fileReader.exists(templatePath(f)))
-            IOException(s"File not found: ${f.templatePath}").asLeft
-          else ().asRight
-        case (Left(e), _) => Left(e)
+      fileList.traverseU_ { f =>
+        if (!fileReader.exists(templatePath(f)))
+          IOException(s"File not found: ${f.templatePath}").asLeft
+        else ().asRight
       }
 
     def prepareFileContent(file: FileType): IOResult[Option[String]] =
@@ -79,11 +83,7 @@ class FileHelper {
       } else Right(fileContent)
 
     def replaceSections(fileContent: String, fileSections: List[FileSection]): IOResult[String] =
-      fileSections.foldLeft[IOResult[String]](fileContent.asRight) {
-        case (Right(partialContent), fileSection) =>
-          replaceSection(partialContent, fileSection)
-        case (Left(e), _) => Left(e)
-      }
+      fileSections.foldM(fileContent)(replaceSection)
 
     def processSectionsIfWritable(maybeContent: Option[String], fileType: FileType): IOResult[Option[String]] =
       maybeContent map { c =>
@@ -103,15 +103,9 @@ class FileHelper {
       } yield maybeFileType
 
     def processFiles(fileTypes: List[FileType]): IOResult[List[FileType]] =
-      fileTypes.foldLeft[IOResult[List[FileType]]](Nil.asRight) {
-        case (Right(l), fileType) => processFile(fileType).map(l ++ _.toList)
-        case (Left(e), _)         => Left(e)
-      }
+      fileTypes.traverseFilter(processFile)
 
-    for {
-      _              <- checkFiles()
-      processedFiles <- processFiles(fileList)
-    } yield processedFiles
+    checkFiles *> processFiles(fileList)
   }
 
 }
