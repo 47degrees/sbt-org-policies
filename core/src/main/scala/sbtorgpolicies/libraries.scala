@@ -21,11 +21,12 @@ object libraries {
   type Artifact = (String, String, String)
 
   val v47: Map[String, String] = Map[String, String](
-    "iota"                  -> "0.0.2",
-    "case-classy"           -> "0.4.0",
-    "fetch"                 -> "0.6.1",
-    "github4s"              -> "0.14.6",
-    "scheckToolboxDatetime" -> "0.2.1"
+    "iota"          -> "0.0.2",
+    "case-classy"   -> "0.4.0",
+    "fetch"         -> "0.6.1",
+    "freestyle"     -> "0.1.0-SNAPSHOT",
+    "github4s"      -> "0.14.6",
+    "scheckToolbox" -> "0.2.2"
   )
 
   protected val vOthers: Map[String, String] = Map[String, String](
@@ -33,7 +34,7 @@ object libraries {
     "akka-http"       -> "10.0.5",
     "algebra"         -> "0.7.0",
     "alleycats"       -> "0.1.9",
-    "aws-sdk"         -> "1.11.124",
+    "aws-sdk"         -> "1.11.125",
     "base64"          -> "0.2.3",
     "catalysts"       -> "0.0.5",
     "catbird"         -> "0.14.0",
@@ -49,7 +50,7 @@ object libraries {
     "fs2"             -> "0.9.5",
     "fs2-cats"        -> "0.3.0",
     "h2"              -> "1.4.195",
-    "http4s"          -> "0.17.0-M1",
+    "http4s"          -> "0.17.0-M2",
     "joda-convert"    -> "1.8.1",
     "joda-time"       -> "2.9.9",
     "journal"         -> "3.0.18",
@@ -116,11 +117,11 @@ object libraries {
     "algebra"                -> (("org.typelevel", "algebra", v("algebra"))),
     "alleycats"              -> (("org.typelevel", "alleycats-core", v("alleycats"))),
     "base64"                 -> (("com.github.marklister", "base64", v("base64"))),
-    "classy-cats"            -> (("com.fortysevendeg", "classy-cats", v("case-classy"))),
-    "classy-config-typesafe" -> (("com.fortysevendeg", "classy-config-typesafe", v("case-classy"))),
-    "classy-config-shocon"   -> (("com.fortysevendeg", "classy-config-shocon", v("case-classy"))),
-    "classy-core"            -> (("com.fortysevendeg", "classy-core", v("case-classy"))),
-    "classy-generic"         -> (("com.fortysevendeg", "classy-generic", v("case-classy"))),
+    "classy-cats"            -> (("com.47deg", "classy-cats", v("case-classy"))),
+    "classy-config-typesafe" -> (("com.47deg", "classy-config-typesafe", v("case-classy"))),
+    "classy-config-shocon"   -> (("com.47deg", "classy-config-shocon", v("case-classy"))),
+    "classy-core"            -> (("com.47deg", "classy-core", v("case-classy"))),
+    "classy-generic"         -> (("com.47deg", "classy-generic", v("case-classy"))),
     "catalysts-checklite"    -> (("org.typelevel", "catalysts-checklite", v("catalysts"))),
     "catalysts-lawkit"       -> (("org.typelevel", "catalysts-lawkit", v("catalysts"))),
     "catalysts-macros"       -> (("org.typelevel", "catalysts-macros", v("catalysts"))),
@@ -161,6 +162,7 @@ object libraries {
     "fetch-monix"            -> (("com.47deg", "fetch-monix", v("fetch"))),
     "fetch-debug"            -> (("com.47deg", "fetch-debug", v("fetch"))),
     "finch-core"             -> (("com.github.finagle", "finch-core", v("finch"))),
+    "freestyle"              -> (("com.47deg", "freestyle", v("freestyle"))),
     "fs2-core"               -> (("co.fs2", "fs2-core", v("fs2"))),
     "fs2-io"                 -> (("co.fs2", "fs2-io", v("fs2"))),
     "fs2-cats"               -> (("co.fs2", "fs2-cats", v("fs2-cats"))),
@@ -204,7 +206,9 @@ object libraries {
     "roshttp"                -> (("fr.hmil", "roshttp", v("roshttp"))),
     "scalacheck"             -> (("org.scalacheck", "scalacheck", v("scalacheck"))),
     "scheckShapeless"        -> (("com.github.alexarchambault", "scalacheck-shapeless_1.13", v("scheckShapeless"))),
-    "scheckToolboxDatetime"  -> (("com.fortysevendeg", "scalacheck-toolbox-datetime", v("scheckToolboxDatetime"))),
+    "scheckToolboxDatetime"  -> (("com.47deg", "scalacheck-toolbox-datetime", v("scheckToolbox"))),
+    "scheckToolboxMagic"     -> (("com.47deg", "scalacheck-toolbox-magic", v("scheckToolbox"))),
+    "scheckToolboxComb"      -> (("com.47deg", "scalacheck-toolbox-combinators", v("scheckToolbox"))),
     "scalaj"                 -> (("org.scalaj", "scalaj-http", v("scalaj"))),
     "scalatest"              -> (("org.scalatest", "scalatest", v("scalatest"))),
     "scalaz-concurrent"      -> (("org.scalaz", "scalaz-concurrent", v("scalaz"))),
