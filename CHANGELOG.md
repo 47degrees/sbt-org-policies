@@ -1,5 +1,12 @@
 # Changelog
 
+## 05/02/2017 - Version 0.4.21
+
+Release changes:
+
+* Wait between each GitHub request ([#305](https://github.com/47deg/sbt-org-policies/pull/305))
+
+
 ## 05/02/2017 - Version 0.4.20
 
 Release changes:
