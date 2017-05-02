@@ -218,9 +218,9 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
       def createTreeData(file: File, filePath: String, array: Array[Byte]): Github4sResponse[TreeData] =
         if (blobConfig.acceptedExtensions.exists(s => file.getName.toLowerCase.endsWith(s)) &&
           array.length < blobConfig.maximumSize) {
-          createTreeDataSha(filePath, array)
-        } else {
           createTreeDataBlob(filePath, array)
+        } else {
+          createTreeDataSha(filePath, array)
         }
 
       def processFile(file: File): Github4sResponse[TreeData] =
