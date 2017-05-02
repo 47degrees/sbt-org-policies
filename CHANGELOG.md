@@ -1,5 +1,14 @@
 # Changelog
 
+## 05/02/2017 - Version 0.4.20
+
+Release changes:
+
+* Enables Coursier by default ([#303](https://github.com/47deg/sbt-org-policies/pull/303))
+* Refactor GithubOps and FileHelper ([#274](https://github.com/47deg/sbt-org-policies/pull/274))
+* Fixes commit images ([#304](https://github.com/47deg/sbt-org-policies/pull/304))
+
+
 ## 05/01/2017 - Version 0.4.19
 
 Release changes:
