@@ -208,7 +208,7 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
         )
 
       def createTreeDataSha(filePath: String, array: Array[Byte]): Github4sResponse[TreeData] =
-        EitherT(gh.gitData.createBlob(owner, repo, array.toBase64, Some("base64"))) map { refInfo =>
+        EitherT(ghWithRateLimit.gitData.createBlob(owner, repo, array.toBase64, Some("base64"))) map { refInfo =>
           refInfo.map(v => TreeDataSha(filePath, blobMode, blobType, v.sha))
         }
 
@@ -234,10 +234,10 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
     }
 
     def createTree(baseTreeSha: Option[String], treeData: List[TreeData]): Github4sResponse[TreeResult] =
-      EitherT(gh.gitData.createTree(owner, repo, baseTreeSha, treeData))
+      EitherT(ghWithRateLimit.gitData.createTree(owner, repo, baseTreeSha, treeData))
 
     def createCommit(treeSha: String, parentCommit: String): Github4sResponse[RefCommit] =
-      EitherT(gh.gitData.createCommit(owner, repo, message, treeSha, List(parentCommit)))
+      EitherT(ghWithRateLimit.gitData.createCommit(owner, repo, message, treeSha, List(parentCommit)))
 
     def parentCommitSha: Github4sResponse[String] =
       commitSha.map(sha => sha.pure[Github4sResponse]).getOrElse {
@@ -324,5 +324,12 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
 
   def updateHead(branch: String, commitSha: String): Github4sResponse[Ref] =
     EitherT(gh.gitData.updateReference(owner, repo, s"heads/$branch", commitSha))
+
+  def ghWithRateLimit: Github = {
+    // Due to GitHub abuse rate limits, we should wait 1 sec between each request
+    // https://developer.github.com/guides/best-practices-for-integrators/#dealing-with-abuse-rate-limits
+    Thread.sleep(1000)
+    gh
+  }
 
 }
