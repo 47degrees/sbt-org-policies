@@ -17,7 +17,7 @@ object ProjectPlugin extends AutoPlugin {
     lazy val pluginSettings: Seq[Def.Setting[_]] = Seq(
       sbtPlugin := true,
       resolvers ++= Seq(sonatypeRepo("snapshots"), sonatypeRepo("releases")),
-      addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "0.9.2" commonExcludes),
+      addSbtPlugin("com.typesafe.sbt"   % "sbt-git"                % "0.9.2" commonExcludes),
       addSbtPlugin("com.eed3si9n"       % "sbt-unidoc"             % "0.4.0"),
       addSbtPlugin("com.github.gseitz"  % "sbt-release"            % "1.0.4"),
       addSbtPlugin("org.xerial.sbt"     % "sbt-sonatype"           % "1.1"),
@@ -53,6 +53,7 @@ object ProjectPlugin extends AutoPlugin {
     )
 
     lazy val coreSettings = Seq(
+      resolvers += Resolver.typesafeIvyRepo("releases"),
       libraryDependencies ++= Seq(
         %%("github4s"),
         %%("cats"),

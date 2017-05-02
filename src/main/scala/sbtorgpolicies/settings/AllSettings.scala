@@ -51,7 +51,8 @@ trait AllSettings
    */
   lazy val sharedCommonSettings = Seq(
     resolvers ++= Seq(
-      Resolver.sonatypeRepo("releases")
+      Resolver.sonatypeRepo("releases"),
+      Resolver.typesafeIvyRepo("releases")
     ),
     updateOptions := updateOptions.value.withCachedResolution(true)
   )
