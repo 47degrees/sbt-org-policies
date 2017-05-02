@@ -53,6 +53,7 @@ object ProjectPlugin extends AutoPlugin {
     )
 
     lazy val coreSettings = Seq(
+      resolvers += Resolver.typesafeIvyRepo("releases"),
       libraryDependencies ++= Seq(
         %%("github4s"),
         %%("cats"),
