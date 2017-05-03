@@ -24,13 +24,13 @@ object libraries {
     "iota"          -> "0.0.2",
     "case-classy"   -> "0.4.0",
     "fetch"         -> "0.6.1",
-    "freestyle"     -> "0.1.0-SNAPSHOT",
+    "freestyle"     -> "0.1.0",
     "github4s"      -> "0.14.6",
     "scheckToolbox" -> "0.2.2"
   )
 
   protected val vOthers: Map[String, String] = Map[String, String](
-    "akka"            -> "2.5.0",
+    "akka"            -> "2.5.1",
     "akka-http"       -> "10.0.5",
     "algebra"         -> "0.7.0",
     "alleycats"       -> "0.1.9",
