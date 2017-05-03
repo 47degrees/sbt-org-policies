@@ -1,5 +1,12 @@
 # Changelog
 
+## 05/03/2017 - Version 0.4.22
+
+Release changes:
+
+* Bumps some library versions ([#308](https://github.com/47deg/sbt-org-policies/pull/308))
+
+
 ## 05/02/2017 - Version 0.4.21
 
 Release changes:
