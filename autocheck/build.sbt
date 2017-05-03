@@ -1,7 +1,7 @@
 import sbt.Keys._
 import sbtorgpolicies.OrgPoliciesKeys.orgGithubSetting
 import sbtorgpolicies.io.FileReader
-import sbtorgpolicies.libraries.{javaLibs, scalaLibs}
+import sbtorgpolicies.libraries._
 import sbtorgpolicies.model.GitHubSettings
 
 lazy val checkDependencies = taskKey[Unit]("Check the module dependencies")
@@ -21,7 +21,7 @@ lazy val `org-policies-auto-dep-check` = (project in file("."))
       organizationHomePage = url("http://47deg.com"),
       organizationEmail = "hello@47deg.com"
     ),
-    resolvers += Resolver.sonatypeRepo("snapshots"),
+    resolvers ++= Seq(Resolver.sonatypeRepo("snapshots"), Resolver.bintrayIvyRepo("sbt", "sbt-plugin-releases")),
     libraryDependencies ++=
       scalaLibs.mapValues(lib => lib._1  %% lib._2 % lib._3).values.toList ++
         javaLibs.mapValues(lib => lib._1 % lib._2  % lib._3).values.toList,
@@ -43,3 +43,4 @@ lazy val `org-policies-auto-dep-check` = (project in file("."))
         Def.task(streams.value.log.warn("Skipping auto-dependency check"))
     }.value
   ): _*)
+  .settings(allPlugins.mapValues(lib => addSbtPlugin(lib._1 % lib._2 % lib._3, "0.13", "2.10")).values.toList: _*)

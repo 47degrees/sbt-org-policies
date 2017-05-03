@@ -1,9 +1,12 @@
+import dependencies.DependenciesPlugin.autoImport.depUpdateDependencyIssues
 import sbt.Keys._
 import sbt.Resolver.sonatypeRepo
 import sbt.ScriptedPlugin._
 import sbt._
+import sbtorgpolicies.OrgPoliciesKeys.orgAfterCISuccessTaskListSetting
 import sbtorgpolicies.OrgPoliciesPlugin
 import sbtorgpolicies.OrgPoliciesPlugin.autoImport._
+import sbtorgpolicies.runnable.syntax._
 import sbtorgpolicies.templates.badges._
 
 object ProjectPlugin extends AutoPlugin {
@@ -92,6 +95,7 @@ object ProjectPlugin extends AutoPlugin {
       MavenCentralBadge.apply,
       LicenseBadge.apply,
       GitHubIssuesBadge.apply
-    )
+    ),
+    orgAfterCISuccessTaskListSetting ~= (_ filterNot(_ == depUpdateDependencyIssues.asRunnableItem))
   )
 }
