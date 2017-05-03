@@ -90,7 +90,31 @@ object libraries {
     "slick"           -> "3.2.0"
   )
 
-  val v: Map[String, String] = v47 ++ vOthers
+  val vPlugins47: Map[String, String] = Map[String, String](
+    "sbt-dependencies" -> "0.1.1",
+    "sbt-microsites"   -> "0.5.7"
+  )
+
+  val vPluginsOthers: Map[String, String] = Map[String, String](
+    "sbt-git"               -> "0.9.2",
+    "sbt-unidoc"            -> "0.4.0",
+    "sbt-release"           -> "1.0.4",
+    "sbt-sonatype"          -> "1.1",
+    "sbt-pgp"               -> "1.0.1",
+    "sbt-ghpages"           -> "0.6.0",
+    "sbt-site"              -> "1.2.0",
+    "tut-plugin"            -> "0.4.8",
+    "sbt-jmh"               -> "0.2.24",
+    "scalastyle-sbt-plugin" -> "0.8.0",
+    "sbt-scoverage"         -> "1.5.0",
+    "sbt-scalajs"           -> "0.6.16",
+    "sbt-header"            -> "1.8.0",
+    "sbt-buildinfo"         -> "0.7.0",
+    "sbt-scalafmt"          -> "0.6.8",
+    "sbt-coursier"          -> "1.0.0-RC1"
+  )
+
+  val v: Map[String, String] = v47 ++ vOthers ++ vPlugins47 ++ vPluginsOthers
 
   val langLibs: Map[String, Artifact] = Map(
     "paradise"      -> (("org.scalamacros", "paradise", v("paradise"))),
@@ -227,5 +251,31 @@ object libraries {
     "specs2-scalacheck"      -> (("org.specs2", "specs2-scalacheck", v("specs2")))
   )
 
+  val pluginLibs: Map[String, Artifact] = Map[String, Artifact](
+    "sbt-buildinfo"    -> (("com.eed3si9n", "sbt-buildinfo", v("sbt-buildinfo"))),
+    "sbt-dependencies" -> (("com.47deg", "sbt-dependencies", v("sbt-dependencies"))),
+    "sbt-coursier"     -> (("io.get-coursier", "sbt-coursier", v("sbt-coursier"))),
+    "sbt-ghpages"      -> (("com.typesafe.sbt", "sbt-ghpages", v("sbt-ghpages"))),
+    "sbt-git"          -> (("com.typesafe.sbt", "sbt-git", v("sbt-git"))),
+    "sbt-header"       -> (("de.heikoseeberger", "sbt-header", v("sbt-header"))),
+    "sbt-jmh"          -> (("pl.project13.scala", "sbt-jmh", v("sbt-jmh"))),
+    "sbt-microsites"   -> (("com.47deg", "sbt-microsites", v("sbt-microsites"))),
+    "sbt-pgp"          -> (("com.jsuereth", "sbt-pgp", v("sbt-pgp"))),
+    "sbt-release"      -> (("com.github.gseitz", "sbt-release", v("sbt-release"))),
+    "sbt-site"         -> (("com.typesafe.sbt", "sbt-site", v("sbt-site"))),
+    "sbt-scalafmt"     -> (("com.geirsson", "sbt-scalafmt", v("sbt-scalafmt"))),
+    "sbt-scalajs"      -> (("org.scala-js", "sbt-scalajs", v("sbt-scalajs"))),
+    "sbt-scoverage"    -> (("org.scoverage", "sbt-scoverage", v("sbt-scoverage"))),
+    "sbt-sonatype"     -> (("org.xerial.sbt", "sbt-sonatype", v("sbt-sonatype"))),
+    "sbt-unidoc"       -> (("com.eed3si9n", "sbt-unidoc", v("sbt-unidoc"))),
+    "tut-plugin"       -> (("org.tpolecat", "tut-plugin", v("tut-plugin")))
+  )
+
+  val pluginScalaLibs: Map[String, Artifact] = Map[String, Artifact](
+    "scalastyle-sbt-plugin" -> (("org.scalastyle", "scalastyle-sbt-plugin", v("scalastyle-sbt-plugin")))
+  )
+
   val libs: Map[String, Artifact] = langLibs ++ javaLibs ++ scalaLibs
+
+  val allPlugins: Map[String, Artifact] = pluginLibs ++ pluginScalaLibs
 }
