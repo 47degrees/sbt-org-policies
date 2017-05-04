@@ -31,7 +31,7 @@ object libraries {
 
   protected val vOthers: Map[String, String] = Map[String, String](
     "akka"            -> "2.5.1",
-    "akka-http"       -> "10.0.5",
+    "akka-http"       -> "10.0.6",
     "algebra"         -> "0.7.0",
     "alleycats"       -> "0.1.9",
     "aws-sdk"         -> "1.11.125",
@@ -59,7 +59,7 @@ object libraries {
     "log4s"           -> "1.3.4",
     "machinist"       -> "0.6.1",
     "macro-compat"    -> "1.1.1",
-    "monix"           -> "2.2.4",
+    "monix"           -> "2.3.0",
     "monocle"         -> "1.4.0",
     "mockito"         -> "2.7.22",
     "moultingyaml"    -> "0.4.0",
