@@ -25,9 +25,6 @@ import github4s.GithubResponses.{GHException, GHResponse, GHResult, UnexpectedEx
 import github4s.app.GitHub4s
 import github4s._
 import github4s.free.domain._
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito
-import org.mockito.Mockito._
 import org.scalacheck.Prop._
 import sbtorgpolicies.TestOps
 import sbtorgpolicies.arbitraries.GitHubArbitraries._
@@ -38,48 +35,52 @@ import scala.language.postfixOps
 
 class GitHubOpsTest extends TestOps {
 
-  val fileReaderMock: FileReader = mock[FileReader]
+  def newGitHubOps: (GitHubOps, FileReader, GHGitData, GHPullRequests, GHRepos, GHUsers) = {
 
-  val githubMock: Github             = mock[Github]
-  val ghGitData: GHGitData           = mock[GHGitData]
-  val ghPullRequests: GHPullRequests = mock[GHPullRequests]
-  val ghRepos: GHRepos               = mock[GHRepos]
-  val ghUsers: GHUsers               = mock[GHUsers]
+    val fileReaderMock: FileReader = stub[FileReader]
 
-  when(githubMock.gitData).thenReturn(ghGitData)
-  when(githubMock.pullRequests).thenReturn(ghPullRequests)
-  when(githubMock.repos).thenReturn(ghRepos)
-  when(githubMock.users).thenReturn(ghUsers)
+    val ghGitData: GHGitData           = stub[GHGitData]
+    val ghPullRequests: GHPullRequests = stub[GHPullRequests]
+    val ghRepos: GHRepos               = stub[GHRepos]
+    val ghUsers: GHUsers               = stub[GHUsers]
 
-  val githubOps = new GitHubOps(owner, repo, None) {
-    override val fileReader: FileReader = fileReaderMock
-    override val gh: Github             = githubMock
+    val githubMock: Github = new Github() {
+      override lazy val users: GHUsers               = ghUsers
+      override lazy val repos: GHRepos               = ghRepos
+      override lazy val gitData: GHGitData           = ghGitData
+      override lazy val pullRequests: GHPullRequests = ghPullRequests
+    }
+
+    val gitHubOps = new GitHubOps(owner, repo, None) {
+      override val fileReader: FileReader = fileReaderMock
+      override val gh: Github             = githubMock
+    }
+    (gitHubOps, fileReaderMock, ghGitData, ghPullRequests, ghRepos, ghUsers)
   }
 
   def toLeftResult[T](e: GHException): Either[GitHubException, T] =
     Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
 
-  def resetMocks(): Unit = Mockito.reset(ghGitData, ghPullRequests, ghRepos, ghUsers, fileReaderMock)
-
   test("GithubOps.fetchContributors works as expected") {
     val property = forAll(genSimpleAndFullUserLists) {
       case (list1: GHResponse[List[User]], list2: List[GHResponse[User]]) =>
-        resetMocks()
-
-        when(ghRepos.listContributors(any[String], any[String], any[Option[String]]))
-          .thenReturn(Free.pure[GitHub4s, GHResponse[List[User]]](list1))
+        val (gitHubOps, _, _, _, ghRepos, ghUsers) = newGitHubOps
+        (ghRepos.listContributors _)
+          .when(*, *, *)
+          .returns(Free.pure[GitHub4s, GHResponse[List[User]]](list1))
 
         list1 match {
           case Right(r) =>
             r.result.zip(list2) foreach {
               case (user1, response) =>
-                when(ghUsers.get(user1.login))
-                  .thenReturn(Free.pure[GitHub4s, GHResponse[User]](response))
+                (ghUsers.get _)
+                  .when(user1.login)
+                  .returns(Free.pure[GitHub4s, GHResponse[User]](response))
             }
           case Left(_) =>
         }
 
-        val result: Either[GitHubException, List[User]] = githubOps.fetchContributors
+        val result: Either[GitHubException, List[User]] = gitHubOps.fetchContributors
 
         (list1.left.toOption, list2.find(_.isLeft).flatMap(_.left.toOption)) match {
           case (Some(e), _) =>
@@ -98,21 +99,25 @@ class GitHubOpsTest extends TestOps {
   }
 
   test("GithubOps.commitFiles works as expected when all files are updated") {
+
     val property = forAll {
       (nelRefResponse: GHResponse[NonEmptyList[Ref]], refCommitResponse: GHResponse[RefCommit]) =>
-        resetMocks()
-
+        val (gitHubOps, fileReader, ghGitData, _, ghRepos, _) = newGitHubOps
         import sbtorgpolicies.io.syntax._
         filesAndContents foreach {
           case (s1, s2) =>
-            when(fileReaderMock.getFileContent(baseDir.getAbsolutePath.ensureFinalSlash + s1)).thenReturn(Right(s2))
+            (fileReader.getFileContent _)
+              .when(baseDir.getAbsolutePath.ensureFinalSlash + s1)
+              .returns(Right(s2))
         }
 
-        when(ghGitData.getReference(any[String], any[String], any[String]))
-          .thenReturn(Free.pure[GitHub4s, GHResponse[NonEmptyList[Ref]]](nelRefResponse))
+        (ghGitData.getReference _)
+          .when(*, *, *)
+          .returns(Free.pure[GitHub4s, GHResponse[NonEmptyList[Ref]]](nelRefResponse))
 
-        when(ghGitData.getCommit(any[String], any[String], any[String]))
-          .thenReturn(Free.pure[GitHub4s, GHResponse[RefCommit]](refCommitResponse))
+        (ghGitData.getCommit _)
+          .when(*, *, *)
+          .returns(Free.pure[GitHub4s, GHResponse[RefCommit]](refCommitResponse))
 
         val maybeParentCommit: Option[String] = nelRefResponse.toOption.map(_.result.head.`object`.sha)
 
@@ -127,12 +132,13 @@ class GitHubOpsTest extends TestOps {
           case (s1, content) =>
             val response: GHResponse[NonEmptyList[Content]] =
               GHResult(NonEmptyList(content, Nil), 200, Map.empty).asRight
-            when(ghRepos.getContents(owner, repo, s1, maybeParentCommit))
-              .thenReturn(Free.pure[GitHub4s, GHResponse[NonEmptyList[Content]]](response))
+            (ghRepos.getContents _)
+              .when(owner, repo, s1, maybeParentCommit)
+              .returns(Free.pure[GitHub4s, GHResponse[NonEmptyList[Content]]](response))
         }
 
         val result: Either[OrgPolicyException, Option[Ref]] =
-          githubOps.commitFiles(baseDir, branch, sampleMessage, filesAndContents.map(t => new File(baseDir, t._1)))
+          gitHubOps.commitFiles(baseDir, branch, sampleMessage, filesAndContents.map(t => new File(baseDir, t._1)))
 
         (nelRefResponse, refCommitResponse) match {
           case (Left(e), _) =>
@@ -159,41 +165,46 @@ class GitHubOpsTest extends TestOps {
           treeResultR: GHResponse[TreeResult],
           createCommitR: GHResponse[RefCommit],
           updateReferenceR: GHResponse[Ref]) =>
-        resetMocks()
-
+        val (gitHubOps, fileReader, ghGitData, _, ghRepos, _) = newGitHubOps
         import sbtorgpolicies.io.syntax._
         filesAndContents foreach {
           case (s1, s2) =>
-            when(fileReaderMock.getFileContent(baseDir.getAbsolutePath.ensureFinalSlash + s1)).thenReturn(Right(s2))
+            (fileReader.getFileContent _)
+              .when(baseDir.getAbsolutePath.ensureFinalSlash + s1)
+              .returns(Right(s2))
         }
 
-        when(ghGitData.getReference(any[String], any[String], any[String]))
-          .thenReturn(Free.pure[GitHub4s, GHResponse[NonEmptyList[Ref]]](nelRefR))
+        (ghGitData.getReference _)
+          .when(*, *, *)
+          .returns(Free.pure[GitHub4s, GHResponse[NonEmptyList[Ref]]](nelRefR))
 
-        when(ghGitData.getCommit(any[String], any[String], any[String]))
-          .thenReturn(Free.pure[GitHub4s, GHResponse[RefCommit]](refCommitR))
+        (ghGitData.getCommit _)
+          .when(*, *, *)
+          .returns(Free.pure[GitHub4s, GHResponse[RefCommit]](refCommitR))
 
         val maybeParentCommit: Option[String] = nelRefR.toOption.map(_.result.head.`object`.sha)
 
         filesAndContents foreach {
           case (s1, _) =>
-            when(ghRepos.getContents(owner, repo, s1, maybeParentCommit))
-              .thenReturn(
-                Free.pure[GitHub4s, GHResponse[NonEmptyList[Content]]](UnexpectedException("Not Found").asLeft))
+            (ghRepos.getContents _)
+              .when(owner, repo, s1, maybeParentCommit)
+              .returns(Free.pure[GitHub4s, GHResponse[NonEmptyList[Content]]](UnexpectedException("Not Found").asLeft))
         }
 
-        when(ghGitData.createTree(any[String], any[String], any[Option[String]], any[List[TreeData]]))
-          .thenReturn(Free.pure[GitHub4s, GHResponse[TreeResult]](treeResultR))
+        (ghGitData.createTree _)
+          .when(*, *, *, *)
+          .returns(Free.pure[GitHub4s, GHResponse[TreeResult]](treeResultR))
 
-        when(ghGitData
-          .createCommit(any[String], any[String], any[String], any[String], any[List[String]], any[Option[RefAuthor]]))
-          .thenReturn(Free.pure[GitHub4s, GHResponse[RefCommit]](createCommitR))
+        (ghGitData.createCommit _)
+          .when(*, *, *, *, *, *)
+          .returns(Free.pure[GitHub4s, GHResponse[RefCommit]](createCommitR))
 
-        when(ghGitData.updateReference(any[String], any[String], any[String], any[String], any[Option[Boolean]]))
-          .thenReturn(Free.pure[GitHub4s, GHResponse[Ref]](updateReferenceR))
+        (ghGitData.updateReference _)
+          .when(*, *, *, *, *)
+          .returns(Free.pure[GitHub4s, GHResponse[Ref]](updateReferenceR))
 
         val result: Either[OrgPolicyException, Option[Ref]] =
-          githubOps.commitFiles(baseDir, branch, sampleMessage, filesAndContents.map(t => new File(baseDir, t._1)))
+          gitHubOps.commitFiles(baseDir, branch, sampleMessage, filesAndContents.map(t => new File(baseDir, t._1)))
 
         (nelRefR, refCommitR, treeResultR, createCommitR, updateReferenceR) match {
           case (Left(e), _, _, _, _) =>
@@ -219,14 +230,14 @@ class GitHubOpsTest extends TestOps {
 
   test("GithubOps.commitFiles should return an error when the file reader returns an error") {
 
-    resetMocks()
+    val (gitHubOps, fileReader, _, _, _, _) = newGitHubOps
 
     val ioException: IOException = IOException("Test error")
 
-    when(fileReaderMock.getFileContent(any[String])).thenReturn(ioException.asLeft)
+    (fileReader.getFileContent _).when(*).returns(ioException.asLeft)
 
     val result: Either[OrgPolicyException, Option[Ref]] =
-      githubOps.commitFiles(baseDir, branch, sampleMessage, filesAndContents.map(t => new File(baseDir, t._1)))
+      gitHubOps.commitFiles(baseDir, branch, sampleMessage, filesAndContents.map(t => new File(baseDir, t._1)))
 
     result shouldBe ioException.asLeft
 
@@ -235,13 +246,15 @@ class GitHubOpsTest extends TestOps {
   test("GithubOps.commitFilesAndContents works as expected when all files are updated") {
     val property = forAll {
       (nelRefResponse: GHResponse[NonEmptyList[Ref]], refCommitResponse: GHResponse[RefCommit]) =>
-        resetMocks()
+        val (gitHubOps, _, ghGitData, _, ghRepos, _) = newGitHubOps
 
-        when(ghGitData.getReference(any[String], any[String], any[String]))
-          .thenReturn(Free.pure[GitHub4s, GHResponse[NonEmptyList[Ref]]](nelRefResponse))
+        (ghGitData.getReference _)
+          .when(*, *, *)
+          .returns(Free.pure[GitHub4s, GHResponse[NonEmptyList[Ref]]](nelRefResponse))
 
-        when(ghGitData.getCommit(any[String], any[String], any[String]))
-          .thenReturn(Free.pure[GitHub4s, GHResponse[RefCommit]](refCommitResponse))
+        (ghGitData.getCommit _)
+          .when(*, *, *)
+          .returns(Free.pure[GitHub4s, GHResponse[RefCommit]](refCommitResponse))
 
         val maybeParentCommit: Option[String] = nelRefResponse.toOption.map(_.result.head.`object`.sha)
 
@@ -256,12 +269,13 @@ class GitHubOpsTest extends TestOps {
           case (s1, content) =>
             val response: GHResponse[NonEmptyList[Content]] =
               GHResult(NonEmptyList(content, Nil), 200, Map.empty).asRight
-            when(ghRepos.getContents(owner, repo, s1, maybeParentCommit))
-              .thenReturn(Free.pure[GitHub4s, GHResponse[NonEmptyList[Content]]](response))
+            (ghRepos.getContents _)
+              .when(owner, repo, s1, maybeParentCommit)
+              .returns(Free.pure[GitHub4s, GHResponse[NonEmptyList[Content]]](response))
         }
 
         val result: Either[OrgPolicyException, Option[Ref]] =
-          githubOps.commitFilesAndContents(branch, sampleMessage, filesAndContents)
+          gitHubOps.commitFilesAndContents(branch, sampleMessage, filesAndContents)
 
         (nelRefResponse, refCommitResponse) match {
           case (Left(e), _) =>
@@ -287,35 +301,39 @@ class GitHubOpsTest extends TestOps {
           treeResultR: GHResponse[TreeResult],
           createCommitR: GHResponse[RefCommit],
           updateReferenceR: GHResponse[Ref]) =>
-        resetMocks()
+        val (gitHubOps, _, ghGitData, _, ghRepos, _) = newGitHubOps
 
-        when(ghGitData.getReference(any[String], any[String], any[String]))
-          .thenReturn(Free.pure[GitHub4s, GHResponse[NonEmptyList[Ref]]](nelRefR))
+        (ghGitData.getReference _)
+          .when(*, *, *)
+          .returns(Free.pure[GitHub4s, GHResponse[NonEmptyList[Ref]]](nelRefR))
 
-        when(ghGitData.getCommit(any[String], any[String], any[String]))
-          .thenReturn(Free.pure[GitHub4s, GHResponse[RefCommit]](refCommitR))
+        (ghGitData.getCommit _)
+          .when(*, *, *)
+          .returns(Free.pure[GitHub4s, GHResponse[RefCommit]](refCommitR))
 
         val maybeParentCommit: Option[String] = nelRefR.toOption.map(_.result.head.`object`.sha)
 
         filesAndContents foreach {
           case (s1, _) =>
-            when(ghRepos.getContents(owner, repo, s1, maybeParentCommit))
-              .thenReturn(
-                Free.pure[GitHub4s, GHResponse[NonEmptyList[Content]]](UnexpectedException("Not Found").asLeft))
+            (ghRepos.getContents _)
+              .when(owner, repo, s1, maybeParentCommit)
+              .returns(Free.pure[GitHub4s, GHResponse[NonEmptyList[Content]]](UnexpectedException("Not Found").asLeft))
         }
 
-        when(ghGitData.createTree(any[String], any[String], any[Option[String]], any[List[TreeData]]))
-          .thenReturn(Free.pure[GitHub4s, GHResponse[TreeResult]](treeResultR))
+        (ghGitData.createTree _)
+          .when(*, *, *, *)
+          .returns(Free.pure[GitHub4s, GHResponse[TreeResult]](treeResultR))
 
-        when(ghGitData
-          .createCommit(any[String], any[String], any[String], any[String], any[List[String]], any[Option[RefAuthor]]))
-          .thenReturn(Free.pure[GitHub4s, GHResponse[RefCommit]](createCommitR))
+        (ghGitData.createCommit _)
+          .when(*, *, *, *, *, *)
+          .returns(Free.pure[GitHub4s, GHResponse[RefCommit]](createCommitR))
 
-        when(ghGitData.updateReference(any[String], any[String], any[String], any[String], any[Option[Boolean]]))
-          .thenReturn(Free.pure[GitHub4s, GHResponse[Ref]](updateReferenceR))
+        (ghGitData.updateReference _)
+          .when(*, *, *, *, *)
+          .returns(Free.pure[GitHub4s, GHResponse[Ref]](updateReferenceR))
 
         val result: Either[OrgPolicyException, Option[Ref]] =
-          githubOps.commitFilesAndContents(branch, sampleMessage, filesAndContents)
+          gitHubOps.commitFilesAndContents(branch, sampleMessage, filesAndContents)
 
         (nelRefR, refCommitR, treeResultR, createCommitR, updateReferenceR) match {
           case (Left(e), _, _, _, _) =>
@@ -341,14 +359,13 @@ class GitHubOpsTest extends TestOps {
 
   test("GithubOps.fetchReference works as expected") {
     val property = forAll { refResponse: GHResponse[NonEmptyList[Ref]] =>
-      resetMocks()
+      val (gitHubOps, _, ghGitData, _, _, _) = newGitHubOps
 
-      when(ghGitData.getReference(any[String], any[String], any[String]))
-        .thenReturn(Free.pure[GitHub4s, GHResponse[NonEmptyList[Ref]]](refResponse))
+      (ghGitData.getReference _)
+        .when(owner, repo, ref)
+        .returns(Free.pure[GitHub4s, GHResponse[NonEmptyList[Ref]]](refResponse))
 
-      val result: Either[GitHubException, NonEmptyList[Ref]] = githubOps.fetchReference(ref)
-
-      verify(ghGitData).getReference(owner, repo, ref)
+      val result: Either[GitHubException, NonEmptyList[Ref]] = gitHubOps.fetchReference(ref)
 
       refResponse match {
         case Left(e) =>
@@ -356,6 +373,7 @@ class GitHubOpsTest extends TestOps {
         case Right(gHResult) =>
           result shouldBeEq Right(gHResult.result)
       }
+
     }
 
     check(property)
@@ -370,41 +388,45 @@ class GitHubOpsTest extends TestOps {
           nelRefR: GHResponse[NonEmptyList[Ref]],
           createCommitR: GHResponse[RefCommit],
           updateReferenceR: GHResponse[Ref]) =>
-        resetMocks()
+        val (gitHubOps, fileReader, ghGitData, _, _, _) = newGitHubOps
 
         val files: List[(File, String)] = filesAndContents.map(t => (new File(baseDir, t._1), t._2))
 
-        when(
-          fileReaderMock
-            .fetchDirsRecursively(any[List[File]], any[Function1[File, Boolean]].apply))
-          .thenReturn(files.map(_._1).asRight)
+        (fileReader.fetchDirsRecursively _)
+          .when(*, *)
+          .returns(files.map(_._1).asRight)
 
         files foreach {
           case (file, content) =>
-            when(fileReaderMock.getFileBytes(file)).thenReturn(content.getBytes.asRight)
+            (fileReader.getFileBytes _).when(file).returns(content.getBytes.asRight)
         }
 
-        when(ghGitData.getReference(any[String], any[String], any[String]))
-          .thenReturn(Free.pure[GitHub4s, GHResponse[NonEmptyList[Ref]]](nelRefR))
+        (ghGitData.getReference _)
+          .when(*, *, *)
+          .returns(Free.pure[GitHub4s, GHResponse[NonEmptyList[Ref]]](nelRefR))
 
-        when(ghGitData.getCommit(any[String], any[String], any[String]))
-          .thenReturn(Free.pure[GitHub4s, GHResponse[RefCommit]](refCommitR))
+        (ghGitData.getCommit _)
+          .when(*, *, *)
+          .returns(Free.pure[GitHub4s, GHResponse[RefCommit]](refCommitR))
 
-        when(ghGitData.createBlob(any[String], any[String], any[String], any[Option[String]]))
-          .thenReturn(Free.pure[GitHub4s, GHResponse[RefInfo]](refInfoR))
+        (ghGitData.createBlob _)
+          .when(*, *, *, *)
+          .returns(Free.pure[GitHub4s, GHResponse[RefInfo]](refInfoR))
 
-        when(ghGitData.createTree(any[String], any[String], any[Option[String]], any[List[TreeData]]))
-          .thenReturn(Free.pure[GitHub4s, GHResponse[TreeResult]](treeResultR))
+        (ghGitData.createTree _)
+          .when(*, *, *, *)
+          .returns(Free.pure[GitHub4s, GHResponse[TreeResult]](treeResultR))
 
-        when(ghGitData
-          .createCommit(any[String], any[String], any[String], any[String], any[List[String]], any[Option[RefAuthor]]))
-          .thenReturn(Free.pure[GitHub4s, GHResponse[RefCommit]](createCommitR))
+        (ghGitData.createCommit _)
+          .when(*, *, *, *, *, *)
+          .returns(Free.pure[GitHub4s, GHResponse[RefCommit]](createCommitR))
 
-        when(ghGitData.updateReference(any[String], any[String], any[String], any[String], any[Option[Boolean]]))
-          .thenReturn(Free.pure[GitHub4s, GHResponse[Ref]](updateReferenceR))
+        (ghGitData.updateReference _)
+          .when(*, *, *, *, *)
+          .returns(Free.pure[GitHub4s, GHResponse[Ref]](updateReferenceR))
 
         val result: Either[OrgPolicyException, Ref] =
-          githubOps.commitDir(branch, sampleMessage, baseDir)
+          gitHubOps.commitDir(branch, sampleMessage, baseDir)
 
         (nelRefR, refCommitR, refInfoR, treeResultR, createCommitR, updateReferenceR) match {
           case (Left(e), _, _, _, _, _) =>
@@ -432,17 +454,14 @@ class GitHubOpsTest extends TestOps {
 
   test("GithubOps.commitDir should return an error when the file reader returns an error") {
 
-    resetMocks()
+    val (gitHubOps, fileReader, _, _, _, _) = newGitHubOps
 
     val ioException: IOException = IOException("Test error")
 
-    when(
-      fileReaderMock
-        .fetchDirsRecursively(any[List[File]], any[Function1[File, Boolean]].apply))
-      .thenReturn(ioException.asLeft)
+    (fileReader.fetchDirsRecursively _).when(*, *).returns(ioException.asLeft)
 
     val result: Either[OrgPolicyException, Ref] =
-      githubOps.commitDir(branch, sampleMessage, baseDir)
+      gitHubOps.commitDir(branch, sampleMessage, baseDir)
 
     result.isLeft shouldBe true
 
@@ -455,39 +474,26 @@ class GitHubOpsTest extends TestOps {
           tagResponse: GHResponse[Tag],
           refResponse: GHResponse[Ref],
           releaseResponse: GHResponse[Release]) =>
-        resetMocks()
+        val (gitHubOps, _, ghGitData, _, ghRepos, _) = newGitHubOps
 
-        when(ghGitData.getReference(any[String], any[String], any[String]))
-          .thenReturn(Free.pure[GitHub4s, GHResponse[NonEmptyList[Ref]]](nelRefResponse))
+        (ghGitData.getReference _)
+          .when(*, *, *)
+          .returns(Free.pure[GitHub4s, GHResponse[NonEmptyList[Ref]]](nelRefResponse))
 
-        when(
-          ghGitData.createTag(
-            any[String],
-            any[String],
-            any[String],
-            any[String],
-            any[String],
-            any[String],
-            any[Option[RefAuthor]]))
-          .thenReturn(Free.pure[GitHub4s, GHResponse[Tag]](tagResponse))
+        (ghGitData.createTag _)
+          .when(*, *, *, *, *, *, *)
+          .returns(Free.pure[GitHub4s, GHResponse[Tag]](tagResponse))
 
-        when(ghGitData.createReference(any[String], any[String], any[String], any[String]))
-          .thenReturn(Free.pure[GitHub4s, GHResponse[Ref]](refResponse))
+        (ghGitData.createReference _)
+          .when(*, *, *, *)
+          .returns(Free.pure[GitHub4s, GHResponse[Ref]](refResponse))
 
-        when(
-          ghRepos.createRelease(
-            any[String],
-            any[String],
-            any[String],
-            any[String],
-            any[String],
-            any[Option[String]],
-            any[Option[Boolean]],
-            any[Option[Boolean]]))
-          .thenReturn(Free.pure[GitHub4s, GHResponse[Release]](releaseResponse))
+        (ghRepos.createRelease _)
+          .when(*, *, *, *, *, *, *, *)
+          .returns(Free.pure[GitHub4s, GHResponse[Release]](releaseResponse))
 
         val result: Either[GitHubException, Release] =
-          githubOps.createTagRelease(branch, tag, sampleMessage, releaseDescription)
+          gitHubOps.createTagRelease(branch, tag, sampleMessage, releaseDescription)
 
         (nelRefResponse, tagResponse, refResponse, releaseResponse) match {
           case (Left(e), _, _, _) =>
@@ -512,24 +518,17 @@ class GitHubOpsTest extends TestOps {
   test("GithubOps.latestPullRequests should return all merged pull requests if there isn't any commit") {
 
     val property = forAll { prResponse: GHResponse[List[PullRequest]] =>
-      resetMocks()
+      val (gitHubOps, _, _, ghPullRequests, ghRepos, _) = newGitHubOps
 
-      when(
-        ghRepos.listCommits(
-          any[String],
-          any[String],
-          any[Option[String]],
-          any[Option[String]],
-          any[Option[String]],
-          any[Option[String]],
-          any[Option[String]],
-          any[Option[Pagination]]))
-        .thenReturn(Free.pure[GitHub4s, GHResponse[List[Commit]]](Right(GHResult(Nil, 200, Map.empty))))
+      (ghRepos.listCommits _)
+        .when(*, *, *, *, *, *, *, *)
+        .returns(Free.pure[GitHub4s, GHResponse[List[Commit]]](Right(GHResult(Nil, 200, Map.empty))))
 
-      when(ghPullRequests.list(any[String], any[String], any[List[PRFilter]]))
-        .thenReturn(Free.pure[GitHub4s, GHResponse[List[PullRequest]]](prResponse))
+      (ghPullRequests.list _)
+        .when(*, *, *)
+        .returns(Free.pure[GitHub4s, GHResponse[List[PullRequest]]](prResponse))
 
-      val result: Either[GitHubException, List[PullRequest]] = githubOps.latestPullRequests(branch, "", "")
+      val result: Either[GitHubException, List[PullRequest]] = gitHubOps.latestPullRequests(branch, "", "")
 
       prResponse match {
         case Right(gHResult) =>
@@ -545,25 +544,18 @@ class GitHubOpsTest extends TestOps {
     "GithubOps.latestPullRequests should return all merged pull requests if there are commits but the message doesn't match") {
 
     val property = forAll { (prResponse: GHResponse[List[PullRequest]], commitsResponse: GHResponse[List[Commit]]) =>
-      resetMocks()
+      val (gitHubOps, _, _, ghPullRequests, ghRepos, _) = newGitHubOps
 
-      when(
-        ghRepos.listCommits(
-          any[String],
-          any[String],
-          any[Option[String]],
-          any[Option[String]],
-          any[Option[String]],
-          any[Option[String]],
-          any[Option[String]],
-          any[Option[Pagination]]))
-        .thenReturn(Free.pure[GitHub4s, GHResponse[List[Commit]]](commitsResponse))
+      (ghRepos.listCommits _)
+        .when(*, *, *, *, *, *, *, *)
+        .returns(Free.pure[GitHub4s, GHResponse[List[Commit]]](commitsResponse))
 
-      when(ghPullRequests.list(any[String], any[String], any[List[PRFilter]]))
-        .thenReturn(Free.pure[GitHub4s, GHResponse[List[PullRequest]]](prResponse))
+      (ghPullRequests.list _)
+        .when(*, *, *)
+        .returns(Free.pure[GitHub4s, GHResponse[List[PullRequest]]](prResponse))
 
       val result: Either[GitHubException, List[PullRequest]] =
-        githubOps.latestPullRequests(branch, "", nonExistingMessage)
+        gitHubOps.latestPullRequests(branch, "", nonExistingMessage)
 
       (commitsResponse, prResponse) match {
         case (Left(e), _) =>
@@ -582,7 +574,7 @@ class GitHubOpsTest extends TestOps {
 
     val property = forAll(genGHResPRListMergedFrom2015, ghResponseCommitListArbitrary.arbitrary) {
       (prResponse: GHResponse[List[PullRequest]], commitsResponse: GHResponse[List[Commit]]) =>
-        resetMocks()
+        val (gitHubOps, _, _, ghPullRequests, ghRepos, _) = newGitHubOps
 
         val commit = Commit(
           sha = "sha",
@@ -597,23 +589,16 @@ class GitHubOpsTest extends TestOps {
           ghResult.copy(result = commit :: ghResult.result)
         }
 
-        when(
-          ghRepos.listCommits(
-            any[String],
-            any[String],
-            any[Option[String]],
-            any[Option[String]],
-            any[Option[String]],
-            any[Option[String]],
-            any[Option[String]],
-            any[Option[Pagination]]))
-          .thenReturn(Free.pure[GitHub4s, GHResponse[List[Commit]]](newCommitsResponse))
+        (ghRepos.listCommits _)
+          .when(*, *, *, *, *, *, *, *)
+          .returns(Free.pure[GitHub4s, GHResponse[List[Commit]]](newCommitsResponse))
 
-        when(ghPullRequests.list(any[String], any[String], any[List[PRFilter]]))
-          .thenReturn(Free.pure[GitHub4s, GHResponse[List[PullRequest]]](prResponse))
+        (ghPullRequests.list _)
+          .when(*, *, *)
+          .returns(Free.pure[GitHub4s, GHResponse[List[PullRequest]]](prResponse))
 
         val result: Either[GitHubException, List[PullRequest]] =
-          githubOps.latestPullRequests(branch, "", nonExistingMessage)
+          gitHubOps.latestPullRequests(branch, "", nonExistingMessage)
 
         (commitsResponse, prResponse) match {
           case (Left(e), _) =>
@@ -631,16 +616,15 @@ class GitHubOpsTest extends TestOps {
 
   test("GithubOps.fetchHeadCommit works as expected") {
     val property = forAll { refResponse: GHResponse[NonEmptyList[Ref]] =>
-      resetMocks()
+      val (gitHubOps, _, ghGitData, _, _, _) = newGitHubOps
 
       import syntax._
 
-      when(ghGitData.getReference(any[String], any[String], any[String]))
-        .thenReturn(Free.pure[GitHub4s, GHResponse[NonEmptyList[Ref]]](refResponse))
+      (ghGitData.getReference _)
+        .when(owner, repo, ref)
+        .returns(Free.pure[GitHub4s, GHResponse[NonEmptyList[Ref]]](refResponse))
 
-      val result: Either[GitHubException, Ref] = githubOps.fetchHeadCommit(branch).execE
-
-      verify(ghGitData).getReference(owner, repo, ref)
+      val result: Either[GitHubException, Ref] = gitHubOps.fetchHeadCommit(branch).execE
 
       refResponse match {
         case Left(e) =>
