@@ -17,9 +17,6 @@
 package sbtorgpolicies.templates
 
 import cats.syntax.either._
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito
-import org.mockito.Mockito._
 import org.scalacheck.Prop._
 import sbtorgpolicies.TestOps
 import sbtorgpolicies.arbitraries.ExceptionArbitraries._
@@ -30,30 +27,29 @@ import sbtorgpolicies.templates.syntax._
 
 class TemplatesEngineTest extends TestOps {
 
-  val mockFileReader: FileReader = mock[FileReader]
-  val mockFileWriter: FileWriter = mock[FileWriter]
+  def newTemplatesEngine: (TemplatesEngine, FileReader, FileWriter) = {
 
-  val templatesEngine: TemplatesEngine = new TemplatesEngine {
+    val mockFileReader: FileReader = stub[FileReader]
+    val mockFileWriter: FileWriter = stub[FileWriter]
 
-    override val fileReader: FileReader = mockFileReader
+    val templatesEngine: TemplatesEngine = new TemplatesEngine {
 
-    override val fileWriter: FileWriter = mockFileWriter
+      override val fileReader: FileReader = mockFileReader
+
+      override val fileWriter: FileWriter = mockFileWriter
+    }
+
+    (templatesEngine, mockFileReader, mockFileWriter)
   }
+
+  val templatesEngine: TemplatesEngine = new TemplatesEngine
 
   test("TemplatesEngine.replaceFileContentsWith works as expected") {
 
     val property = forAll { (inputPath: String, content: String, replacements: Replacements) =>
-      Mockito.reset(mockFileReader)
-
-      when(
-        mockFileReader
-          .withFileContent(any[String], any[String => IOResult[String]]()))
-        .thenReturn(content.asRight)
-
-      val result = templatesEngine.replaceFileContentsWith(inputPath, replacements)
-
-      verify(mockFileReader).withFileContent(any[String], any[(String) => IOResult[String]]())
-
+      val (te, fileReader, _) = newTemplatesEngine
+      (fileReader.withFileContent[String] _).when(*, *).returns(content.asRight)
+      val result = te.replaceFileContentsWith(inputPath, replacements)
       result.isRight && result.right.get == content
     }
 
@@ -63,18 +59,9 @@ class TemplatesEngineTest extends TestOps {
   test("TemplatesEngine.replaceFileContentsWith fails when FileReader throws and Exception") {
 
     val property = forAll { (inputPath: String, exception: IOException, replacements: Replacements) =>
-      Mockito.reset(mockFileReader)
-
-      when(
-        mockFileReader
-          .withFileContent(any[String], any[String => IOResult[String]]()))
-        .thenReturn(exception.asLeft)
-
-      val result = templatesEngine.replaceFileContentsWith(inputPath, replacements)
-
-      verify(mockFileReader).withFileContent(any[String], any[(String) => IOResult[String]]())
-
-      result.isLeft
+      val (te, fileReader, _) = newTemplatesEngine
+      (fileReader.withFileContent[String] _).when(*, *).returns(exception.asLeft)
+      te.replaceFileContentsWith(inputPath, replacements).isLeft
     }
 
     check(property)
