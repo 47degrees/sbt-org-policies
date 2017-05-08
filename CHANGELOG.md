@@ -1,5 +1,13 @@
 # Changelog
 
+## 05/08/2017 - Version 0.4.23
+
+Release changes:
+
+* Replaces mockito with scalamock ([#314](https://github.com/47deg/sbt-org-policies/pull/314))
+* Adds freestyle dependencies ([#317](https://github.com/47deg/sbt-org-policies/pull/317))
+
+
 ## 05/03/2017 - Version 0.4.22
 
 Release changes:
