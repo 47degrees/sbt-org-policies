@@ -1,5 +1,12 @@
 # Changelog
 
+## 05/08/2017 - Version 0.4.24
+
+Release changes:
+
+* Upgrades libraries and adds cassandra driver ([#325](https://github.com/47deg/sbt-org-policies/pull/325))
+
+
 ## 05/08/2017 - Version 0.4.23
 
 Release changes:
