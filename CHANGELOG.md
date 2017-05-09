@@ -1,5 +1,12 @@
 # Changelog
 
+## 05/09/2017 - Version 0.4.25
+
+Release changes:
+
+* Upgrades Freestyle group id ([#327](https://github.com/47deg/sbt-org-policies/pull/327))
+
+
 ## 05/08/2017 - Version 0.4.24
 
 Release changes:
