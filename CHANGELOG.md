@@ -1,5 +1,13 @@
 # Changelog
 
+## 05/12/2017 - Version 0.4.26
+
+Release changes:
+
+* Bump circe to 0.8.0 ([#332](https://github.com/47deg/sbt-org-policies/pull/332))
+* Uses Coursier itself. Bumps some lib versions. ([#339](https://github.com/47deg/sbt-org-policies/pull/339))
+
+
 ## 05/09/2017 - Version 0.4.25
 
 Release changes:
