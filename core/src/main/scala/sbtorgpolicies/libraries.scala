@@ -21,7 +21,7 @@ object libraries {
   type Artifact = (String, String, String)
 
   val v47: Map[String, String] = Map[String, String](
-    "iota"          -> "0.0.2",
+    "iota"          -> "0.1.0",
     "case-classy"   -> "0.4.0",
     "fetch"         -> "0.6.1",
     "freestyle"     -> "0.1.1",
@@ -34,7 +34,7 @@ object libraries {
     "akka-http"        -> "10.0.6",
     "algebra"          -> "0.7.0",
     "alleycats"        -> "0.1.9",
-    "aws-sdk"          -> "1.11.126",
+    "aws-sdk"          -> "1.11.128",
     "base64"           -> "0.2.3",
     "cassandra-driver" -> "3.2.0",
     "catalysts"        -> "0.0.5",
@@ -42,7 +42,7 @@ object libraries {
     "cats"             -> "0.9.0",
     "circe"            -> "0.8.0",
     "config"           -> "1.3.1",
-    "coursier"         -> "1.0.0-RC2",
+    "coursier"         -> "1.0.0-RC3",
     "discipline"       -> "0.7.3",
     "doobie"           -> "0.4.1",
     "embedded-redis"   -> "0.6",
@@ -99,7 +99,7 @@ object libraries {
 
   val vPluginsOthers: Map[String, String] = Map[String, String](
     "sbt-buildinfo"         -> "0.7.0",
-    "sbt-coursier"          -> "1.0.0-RC2",
+    "sbt-coursier"          -> "1.0.0-RC3",
     "sbt-ghpages"           -> "0.6.0",
     "sbt-git"               -> "0.9.2",
     "sbt-header"            -> "1.8.0",
@@ -113,7 +113,7 @@ object libraries {
     "sbt-sonatype"          -> "1.1",
     "sbt-unidoc"            -> "0.4.0",
     "scalastyle-sbt-plugin" -> "0.8.0",
-    "tut-plugin"            -> "0.5.0"
+    "tut-plugin"            -> "0.5.1"
   )
 
   val v: Map[String, String] = v47 ++ vOthers ++ vPlugins47 ++ vPluginsOthers
