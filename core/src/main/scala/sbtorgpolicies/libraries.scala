@@ -40,7 +40,7 @@ object libraries {
     "catalysts"        -> "0.0.5",
     "catbird"          -> "0.14.0",
     "cats"             -> "0.9.0",
-    "circe"            -> "0.7.1",
+    "circe"            -> "0.8.0",
     "config"           -> "1.3.1",
     "coursier"         -> "1.0.0-RC2",
     "discipline"       -> "0.7.3",
