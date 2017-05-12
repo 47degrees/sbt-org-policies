@@ -1,5 +1,6 @@
 .idea/
-project/project/
+project/project/target
+project/project/project
 project/target/
 target/
 deploy_key
