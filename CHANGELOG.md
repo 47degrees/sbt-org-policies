@@ -1,5 +1,12 @@
 # Changelog
 
+## 05/18/2017 - Version 0.4.27
+
+Release changes:
+
+* Bumps libs and releases new patch version ([#340](https://github.com/47deg/sbt-org-policies/pull/340))
+
+
 ## 05/12/2017 - Version 0.4.26
 
 Release changes:
