@@ -34,7 +34,7 @@ object libraries {
     "akka-http"        -> "10.0.6",
     "algebra"          -> "0.7.0",
     "alleycats"        -> "0.1.9",
-    "aws-sdk"          -> "1.11.128",
+    "aws-sdk"          -> "1.11.131",
     "base64"           -> "0.2.3",
     "cassandra-driver" -> "3.2.0",
     "catalysts"        -> "0.0.5",
@@ -48,7 +48,7 @@ object libraries {
     "embedded-redis"   -> "0.6",
     "export-hook"      -> "1.2.0",
     "finch"            -> "0.14.1",
-    "fs2"              -> "0.9.5",
+    "fs2"              -> "0.9.6",
     "fs2-cats"         -> "0.3.0",
     "h2"               -> "1.4.195",
     "http4s"           -> "0.17.0-M2",
@@ -62,7 +62,7 @@ object libraries {
     "macro-compat"     -> "1.1.1",
     "monix"            -> "2.3.0",
     "monocle"          -> "1.4.0",
-    "mockito"          -> "2.7.22",
+    "mockito"          -> "2.8.9",
     "moultingyaml"     -> "0.4.0",
     "newrelic"         -> "3.38.0",
     "paradise"         -> "2.1.0",
@@ -113,7 +113,7 @@ object libraries {
     "sbt-sonatype"          -> "1.1",
     "sbt-unidoc"            -> "0.4.0",
     "scalastyle-sbt-plugin" -> "0.8.0",
-    "tut-plugin"            -> "0.5.1"
+    "tut-plugin"            -> "0.5.2"
   )
 
   val v: Map[String, String] = v47 ++ vOthers ++ vPlugins47 ++ vPluginsOthers
