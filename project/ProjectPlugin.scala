@@ -37,7 +37,7 @@ object ProjectPlugin extends AutoPlugin {
       addSbtPlugin("com.geirsson"       % "sbt-scalafmt"           % "0.6.8"),
       addSbtPlugin("io.get-coursier"    % "sbt-coursier"           % "1.0.0-RC3"),
       addSbtPlugin("com.47deg"          % "sbt-dependencies"       % "0.1.1"),
-      addSbtPlugin("com.47deg"          % "sbt-microsites"         % "0.5.7")
+      addSbtPlugin("com.47deg"          % "sbt-microsites"         % "0.5.7" exclude("org.tpolecat", "tut-plugin"))
     ) ++
       ScriptedPlugin.scriptedSettings ++ Seq(
       scriptedDependencies := (compile in Test) map { _ =>
