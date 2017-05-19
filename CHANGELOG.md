@@ -1,5 +1,12 @@
 # Changelog
 
+## 05/19/2017 - Version 0.5.0
+
+Release changes:
+
+* Releases sbt-org-policies 0.5.0 ([#343](https://github.com/47deg/sbt-org-policies/pull/343))
+
+
 ## 05/19/2017 - Version 0.4.28
 
 Release changes:
