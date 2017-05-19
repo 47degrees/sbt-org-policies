@@ -34,7 +34,7 @@ object libraries {
     "akka-http"        -> "10.0.6",
     "algebra"          -> "0.7.0",
     "alleycats"        -> "0.1.9",
-    "aws-sdk"          -> "1.11.131",
+    "aws-sdk"          -> "1.11.132",
     "base64"           -> "0.2.3",
     "cassandra-driver" -> "3.2.0",
     "catalysts"        -> "0.0.5",
