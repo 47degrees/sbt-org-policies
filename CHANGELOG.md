@@ -1,5 +1,12 @@
 # Changelog
 
+## 05/19/2017 - Version 0.4.28
+
+Release changes:
+
+* Fixes tut classpath Conflict ([#341](https://github.com/47deg/sbt-org-policies/pull/341))
+
+
 ## 05/18/2017 - Version 0.4.27
 
 Release changes:
