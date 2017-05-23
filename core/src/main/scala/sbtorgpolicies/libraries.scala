@@ -25,7 +25,7 @@ object libraries {
     "case-classy"   -> "0.4.0",
     "fetch"         -> "0.6.1",
     "freestyle"     -> "0.1.1",
-    "github4s"      -> "0.14.7",
+    "github4s"      -> "0.15.0",
     "scheckToolbox" -> "0.2.2"
   )
 
@@ -34,7 +34,7 @@ object libraries {
     "akka-http"        -> "10.0.6",
     "algebra"          -> "0.7.0",
     "alleycats"        -> "0.1.9",
-    "aws-sdk"          -> "1.11.132",
+    "aws-sdk"          -> "1.11.133",
     "base64"           -> "0.2.3",
     "cassandra-driver" -> "3.2.0",
     "catalysts"        -> "0.0.5",
@@ -64,10 +64,10 @@ object libraries {
     "monocle"          -> "1.4.0",
     "mockito"          -> "2.8.9",
     "moultingyaml"     -> "0.4.0",
-    "newrelic"         -> "3.38.0",
+    "newrelic"         -> "3.39.0",
     "paradise"         -> "2.1.0",
     "pcplod"           -> "1.2.0",
-    "play"             -> "2.6.0-M5",
+    "play"             -> "2.6.0-RC1",
     "pure-config"      -> "0.7.0",
     "rediscala"        -> "1.8.0",
     "refined"          -> "0.8.1",
