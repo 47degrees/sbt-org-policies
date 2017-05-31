@@ -1,5 +1,13 @@
 # Changelog
 
+## 05/31/2017 - Version 0.5.2
+
+Release changes:
+
+* Add cats-effect dependency ([#345](https://github.com/47deg/sbt-org-policies/pull/345))
+* Upgrades some libs ([#360](https://github.com/47deg/sbt-org-policies/pull/360))
+
+
 ## 05/23/2017 - Version 0.5.1
 
 Release changes:
