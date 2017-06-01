@@ -1,5 +1,12 @@
 # Changelog
 
+## 06/01/2017 - Version 0.5.3
+
+Release changes:
+
+* Bumps iota version ([#361](https://github.com/47deg/sbt-org-policies/pull/361))
+
+
 ## 05/31/2017 - Version 0.5.2
 
 Release changes:
