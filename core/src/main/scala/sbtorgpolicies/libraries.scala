@@ -21,7 +21,7 @@ object libraries {
   type Artifact = (String, String, String)
 
   val v47: Map[String, String] = Map[String, String](
-    "iota"          -> "0.1.0",
+    "iota"          -> "0.2.0",
     "case-classy"   -> "0.4.0",
     "fetch"         -> "0.6.1",
     "freestyle"     -> "0.1.1",
