@@ -1,5 +1,12 @@
 # Changelog
 
+## 06/07/2017 - Version 0.5.5
+
+Release changes:
+
+* Adds dependencies for Apache Kafka ([#368](https://github.com/47deg/sbt-org-policies/pull/368))
+
+
 ## 06/05/2017 - Version 0.5.4
 
 Release changes:
