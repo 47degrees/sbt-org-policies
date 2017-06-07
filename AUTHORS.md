@@ -15,6 +15,7 @@ These are the people that have contributed to the sbt-org-policies project:
 * Ben Fradet <[BenFradet](https://github.com/BenFradet)>
 * Diego Esteban Alonso Blas <[diesalbla](https://github.com/diesalbla)>
 * Fede Fernández <[fedefernandez](https://github.com/fedefernandez)>
+* Francisco Diaz <[franciscodr](https://github.com/franciscodr)>
 * Juan Pedro Moreno <[juanpedromoreno](https://github.com/juanpedromoreno)>
 * Peter Neyens <[peterneyens](https://github.com/peterneyens)>
 * Raúl Raja Martínez <[raulraja](https://github.com/raulraja)>
