@@ -1,5 +1,12 @@
 # Changelog
 
+## 06/08/2017 - Version 0.5.6
+
+Release changes:
+
+* Adds ScalaMeta Settings ([#371](https://github.com/47deg/sbt-org-policies/pull/371))
+
+
 ## 06/07/2017 - Version 0.5.5
 
 Release changes:
