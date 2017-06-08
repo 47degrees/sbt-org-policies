@@ -117,6 +117,7 @@ trait AllSettings
   )
 
   /** Using the supplied Versions map, adds the dependencies for scala macros.*/
+  @deprecated("Scala Macros dependencies have been deprecated in favour of the use of Scalameta ones.", "0.5.6")
   lazy val scalaMacroDependencies: Seq[Setting[_]] = {
     Seq(
       libraryDependencies += scalaOrganization.value % "scala-compiler" % scalaVersion.value % "provided",
@@ -135,6 +136,12 @@ trait AllSettings
       }
     )
   }
+
+  lazy val scalaMetaSettings = Seq(
+    addCompilerPlugin(%%("scalameta-paradise") cross CrossVersion.full),
+    libraryDependencies += %%("scalameta"),
+    scalacOptions += "-Xplugin-require:macroparadise"
+  )
 
   /**
    * Scala JS settings shared by many projects.
