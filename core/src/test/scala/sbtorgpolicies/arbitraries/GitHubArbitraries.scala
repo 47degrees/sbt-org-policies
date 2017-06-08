@@ -154,7 +154,7 @@ trait GitHubArbitraries {
       prerelease  <- Gen.oneOf(true, false)
       createdAt   <- genDateTimeString
       publishedAt <- genDateTimeString
-      author      <- genSimpleUser
+      author      <- Gen.option(genSimpleUser)
       url         <- genURL
       htmlUrl     <- genURL
       assetsUrl   <- genURL
