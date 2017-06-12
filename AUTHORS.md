@@ -10,6 +10,7 @@ The maintainers of the project are:
 
 These are the people that have contributed to the sbt-org-policies project:
 
+* Adrián Ramírez Fornell <[AdrianRaFo](https://github.com/AdrianRaFo)>
 * Ana Mª Marquez <[anamariamv](https://github.com/anamariamv)>
 * Andy Scott <[andyscott](https://github.com/andyscott)>
 * Ben Fradet <[BenFradet](https://github.com/BenFradet)>
