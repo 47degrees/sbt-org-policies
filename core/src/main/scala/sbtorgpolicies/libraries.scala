@@ -70,6 +70,7 @@ object libraries {
     "paradise"           -> "2.1.0",
     "pcplod"             -> "1.2.1",
     "play"               -> "2.6.0-RC2",
+    "postgresql"         -> "42.1.1",
     "pure-config"        -> "0.7.0",
     "rediscala"          -> "1.8.0",
     "refined"            -> "0.8.2",
@@ -93,8 +94,7 @@ object libraries {
     "slf4j"              -> "1.7.25",
     "slogging"           -> "0.5.2",
     "specs2"             -> "3.9.1",
-    "slick"              -> "3.2.0",
-    "postgresql"         -> "42.1.1"
+    "slick"              -> "3.2.0"
   )
 
   val vPlugins47: Map[String, String] = Map[String, String](
