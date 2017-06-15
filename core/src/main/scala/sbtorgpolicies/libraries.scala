@@ -281,6 +281,7 @@ object libraries {
     "shocon"                 -> (("eu.unicredit", "shocon", v("shocon"))),
     "simulacrum"             -> (("com.github.mpilquist", "simulacrum", v("simulacrum"))),
     "slick"                  -> (("com.typesafe.slick", "slick", v("slick"))),
+    "slick-codegen"          -> (("com.typesafe.slick", "slick-codegen", v("slick"))),
     "slogging"               -> (("biz.enef", "slogging", v("slogging"))),
     "specs2-core"            -> (("org.specs2", "specs2-core", v("specs2"))),
     "specs2-scalacheck"      -> (("org.specs2", "specs2-scalacheck", v("specs2")))
