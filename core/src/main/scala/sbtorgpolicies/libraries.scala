@@ -252,9 +252,10 @@ object libraries {
     "monocle-macro"          -> (("com.github.julien-truffaut", "monocle-macro", v("monocle"))),
     "monocle-state"          -> (("com.github.julien-truffaut", "monocle-state", v("monocle"))),
     "moultingyaml"           -> (("net.jcazevedo", "moultingyaml", v("moultingyaml"))),
+    "pcplod"                 -> (("org.ensime", "pcplod", v("pcplod"))),
     "play"                   -> (("com.typesafe.play", "play", v("play"))),
     "play-test"              -> (("com.typesafe.play", "play-test", v("play"))),
-    "pcplod"                 -> (("org.ensime", "pcplod", v("pcplod"))),
+    "postgresql"             -> (("org.postgresql" % "postgresql" % v("postgresql")),
     "pure-config"            -> (("com.github.melrief", "pureconfig", v("pure-config"))),
     "rediscala"              -> (("com.github.etaty", "rediscala", v("rediscala"))),
     "refined-scalacheck"     -> (("eu.timepit", "refined-scalacheck", v("refined"))),
@@ -311,10 +312,7 @@ object libraries {
   val pluginScalaLibs: Map[String, Artifact] = Map[String, Artifact](
     "scalastyle-sbt-plugin" -> (("org.scalastyle", "scalastyle-sbt-plugin", v("scalastyle-sbt-plugin")))
   )
-  
-  val drivers: Map[String, Artifact] = Map[String, Artifact](
-    "postgresql" -> (("org.postgresql" % "postgresql" % v("postgresql")))
-  
+    
   val libs: Map[String, Artifact] = langLibs ++ javaLibs ++ scalaLibs
 
   val allPlugins: Map[String, Artifact] = pluginLibs ++ pluginScalaLibs
