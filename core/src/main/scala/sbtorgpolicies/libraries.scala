@@ -312,7 +312,7 @@ object libraries {
   val pluginScalaLibs: Map[String, Artifact] = Map[String, Artifact](
     "scalastyle-sbt-plugin" -> (("org.scalastyle", "scalastyle-sbt-plugin", v("scalastyle-sbt-plugin")))
   )
-    
+
   val libs: Map[String, Artifact] = langLibs ++ javaLibs ++ scalaLibs
 
   val allPlugins: Map[String, Artifact] = pluginLibs ++ pluginScalaLibs
