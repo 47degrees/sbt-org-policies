@@ -93,7 +93,8 @@ object libraries {
     "slf4j"              -> "1.7.25",
     "slogging"           -> "0.5.2",
     "specs2"             -> "3.9.1",
-    "slick"              -> "3.2.0"
+    "slick"              -> "3.2.0",
+    "postgresql"         -> "42.1.1"
   )
 
   val vPlugins47: Map[String, String] = Map[String, String](
@@ -310,7 +311,10 @@ object libraries {
   val pluginScalaLibs: Map[String, Artifact] = Map[String, Artifact](
     "scalastyle-sbt-plugin" -> (("org.scalastyle", "scalastyle-sbt-plugin", v("scalastyle-sbt-plugin")))
   )
-
+  
+  val drivers: Map[String, Artifact] = Map[String, Artifact](
+    "postgresql" -> (("org.postgresql" % "postgresql" % v("postgresql")))
+  
   val libs: Map[String, Artifact] = langLibs ++ javaLibs ++ scalaLibs
 
   val allPlugins: Map[String, Artifact] = pluginLibs ++ pluginScalaLibs
