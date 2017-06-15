@@ -255,7 +255,7 @@ object libraries {
     "pcplod"                 -> (("org.ensime", "pcplod", v("pcplod"))),
     "play"                   -> (("com.typesafe.play", "play", v("play"))),
     "play-test"              -> (("com.typesafe.play", "play-test", v("play"))),
-    "postgresql"             -> (("org.postgresql" % "postgresql" % v("postgresql"))),
+    "postgresql"             -> (("org.postgresql", "postgresql", v("postgresql"))),
     "pure-config"            -> (("com.github.melrief", "pureconfig", v("pure-config"))),
     "rediscala"              -> (("com.github.etaty", "rediscala", v("rediscala"))),
     "refined-scalacheck"     -> (("eu.timepit", "refined-scalacheck", v("refined"))),
