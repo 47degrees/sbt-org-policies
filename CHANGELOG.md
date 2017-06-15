@@ -1,5 +1,12 @@
 # Changelog
 
+## 06/15/2017 - Version 0.5.9
+
+Release changes:
+
+* Add slick-codegen ([#389](https://github.com/47deg/sbt-org-policies/pull/389))
+
+
 ## 06/12/2017 - Version 0.5.8
 
 Release changes:
