@@ -35,7 +35,7 @@ object ProjectPlugin extends AutoPlugin {
       addSbtPlugin("de.heikoseeberger"  % "sbt-header"             % "1.8.0"),
       addSbtPlugin("com.eed3si9n"       % "sbt-buildinfo"          % "0.7.0"),
       addSbtPlugin("com.geirsson"       % "sbt-scalafmt"           % "0.6.8"),
-      addSbtPlugin("io.get-coursier"    % "sbt-coursier"           % "1.0.0-RC3"),
+      addSbtPlugin("io.get-coursier"    % "sbt-coursier"           % "1.0.0-RC5"),
       addSbtPlugin("com.47deg"          % "sbt-dependencies"       % "0.1.1"),
       addSbtPlugin("com.47deg"          % "sbt-microsites"         % "0.6.1" exclude("org.tpolecat", "tut-plugin"))
     ) ++
