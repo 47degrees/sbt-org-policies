@@ -1,5 +1,14 @@
 # Changelog
 
+## 06/30/2017 - Version 0.5.10
+
+Release changes:
+
+* Adds scala-parser-combinators lib and bumps some libs ([#392](https://github.com/47deg/sbt-org-policies/pull/392))
+* Add akka-testkit ([#393](https://github.com/47deg/sbt-org-policies/pull/393))
+* Adds scalameta contrib ([#409](https://github.com/47deg/sbt-org-policies/pull/409))
+
+
 ## 06/15/2017 - Version 0.5.9
 
 Release changes:
