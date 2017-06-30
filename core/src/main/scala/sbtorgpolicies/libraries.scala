@@ -277,6 +277,7 @@ object libraries {
     "scalactic"              -> (("org.scalactic", "scalactic", v("scalactic"))),
     "scalaj"                 -> (("org.scalaj", "scalaj-http", v("scalaj"))),
     "scalameta"              -> (("org.scalameta", "scalameta", v("scalameta"))),
+    "scalameta-contrib"      -> (("org.scalameta", "contrib", v("scalameta"))),
     "scalameta-paradise"     -> (("org.scalameta", "paradise", v("scalameta-paradise"))),
     "scalamockScalatest"     -> (("org.scalamock", "scalamock-scalatest-support", v("scalamock"))),
     "scalamockSpecs2"        -> (("org.scalamock", "scalamock-specs2-support", v("scalamock"))),
