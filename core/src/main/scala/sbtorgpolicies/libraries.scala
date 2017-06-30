@@ -148,6 +148,7 @@ object libraries {
     "kafka-streams"            -> (("org.apache.kafka", "kafka-streams", v("apache-kafka"))),
     "mockito-core"             -> (("org.mockito", "mockito-core", v("mockito"))),
     "newrelic"                 -> (("com.newrelic.agent.java", "newrelic-agent", v("newrelic"))),
+    "postgresql"               -> (("org.postgresql", "postgresql", v("postgresql"))),
     "slf4j-nop"                -> (("org.slf4j", "slf4j-nop", v("slf4j"))),
     "slf4j-simple"             -> (("org.slf4j", "slf4j-simple", v("slf4j")))
   )
@@ -156,6 +157,7 @@ object libraries {
     "akka-actor"             -> (("com.typesafe.akka", "akka-actor", v("akka"))),
     "akka-http"              -> (("com.typesafe.akka", "akka-http", v("akka-http"))),
     "akka-http-testkit"      -> (("com.typesafe.akka", "akka-http-testkit", v("akka-http"))),
+    "akka-testkit"           -> (("com.typesafe.akka", "akka-testkit", v("akka"))),
     "algebra-laws"           -> (("org.typelevel", "algebra-laws", v("algebra"))),
     "algebra"                -> (("org.typelevel", "algebra", v("algebra"))),
     "alleycats"              -> (("org.typelevel", "alleycats-core", v("alleycats"))),
@@ -260,7 +262,6 @@ object libraries {
     "pcplod"                 -> (("org.ensime", "pcplod", v("pcplod"))),
     "play"                   -> (("com.typesafe.play", "play", v("play"))),
     "play-test"              -> (("com.typesafe.play", "play-test", v("play"))),
-    "postgresql"             -> (("org.postgresql", "postgresql", v("postgresql"))),
     "pure-config"            -> (("com.github.melrief", "pureconfig", v("pure-config"))),
     "rediscala"              -> (("com.github.etaty", "rediscala", v("rediscala"))),
     "refined-scalacheck"     -> (("eu.timepit", "refined-scalacheck", v("refined"))),
