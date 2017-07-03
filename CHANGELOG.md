@@ -1,5 +1,12 @@
 # Changelog
 
+## 07/03/2017 - Version 0.5.11
+
+Release changes:
+
+* Upgrades Freestyle and other lib versions ([#411](https://github.com/47deg/sbt-org-policies/pull/411))
+
+
 ## 06/30/2017 - Version 0.5.10
 
 Release changes:
