@@ -1,5 +1,13 @@
 # Changelog
 
+## 07/26/2017 - Version 0.5.12
+
+Release changes:
+
+* bump sbt-scalajs version ([#414](https://github.com/47deg/sbt-org-policies/pull/414))
+* Upgrades Library Versions ([#436](https://github.com/47deg/sbt-org-policies/pull/436))
+
+
 ## 07/03/2017 - Version 0.5.11
 
 Release changes:
