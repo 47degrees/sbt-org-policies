@@ -31,7 +31,7 @@ object ProjectPlugin extends AutoPlugin {
       addSbtPlugin("pl.project13.scala" % "sbt-jmh"                % "0.2.24"),
       addSbtPlugin("org.scalastyle"     %% "scalastyle-sbt-plugin" % "0.8.0"),
       addSbtPlugin("org.scoverage"      % "sbt-scoverage"          % "1.5.0"),
-      addSbtPlugin("org.scala-js"       % "sbt-scalajs"            % "0.6.16"),
+      addSbtPlugin("org.scala-js"       % "sbt-scalajs"            % "0.6.18"),
       addSbtPlugin("de.heikoseeberger"  % "sbt-header"             % "1.8.0"),
       addSbtPlugin("com.eed3si9n"       % "sbt-buildinfo"          % "0.7.0"),
       addSbtPlugin("com.geirsson"       % "sbt-scalafmt"           % "0.6.8"),

@@ -112,7 +112,7 @@ object libraries {
     "sbt-jmh"               -> "0.2.25",
     "sbt-release"           -> "1.0.5",
     "sbt-scalafmt"          -> "0.6.8",
-    "sbt-scalajs"           -> "0.6.16",
+    "sbt-scalajs"           -> "0.6.18",
     "sbt-scoverage"         -> "1.5.0",
     "sbt-site"              -> "1.2.0",
     "sbt-sonatype"          -> "1.1",
