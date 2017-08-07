@@ -44,7 +44,7 @@ object libraries {
     "cats-effect"              -> "0.3",
     "circe"                    -> "0.8.0",
     "config"                   -> "1.3.1",
-    "coursier"                 -> "1.0.0-RC8",
+    "coursier"                 -> "1.0.0-RC9",
     "discipline"               -> "0.8",
     "doobie"                   -> "0.4.1",
     "embedded-redis"           -> "0.6",
