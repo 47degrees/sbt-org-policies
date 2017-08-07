@@ -14,6 +14,7 @@ These are the people that have contributed to the sbt-org-policies project:
 * Ana Mª Marquez <[anamariamv](https://github.com/anamariamv)>
 * Ben Fradet <[BenFradet](https://github.com/BenFradet)>
 * Diego Esteban Alonso Blas <[diesalbla](https://github.com/diesalbla)>
+* Domingo Valera <[dominv](https://github.com/dominv)>
 * Fede Fernández <[fedefernandez](https://github.com/fedefernandez)>
 * Francisco Diaz <[franciscodr](https://github.com/franciscodr)>
 * Juan Pedro Moreno <[juanpedromoreno](https://github.com/juanpedromoreno)>
