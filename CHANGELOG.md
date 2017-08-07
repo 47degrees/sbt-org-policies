@@ -1,5 +1,12 @@
 # Changelog
 
+## 08/07/2017 - Version 0.5.13
+
+Release changes:
+
+* Upgrading coursier version ([#437](https://github.com/47deg/sbt-org-policies/pull/437))
+
+
 ## 07/26/2017 - Version 0.5.12
 
 Release changes:
