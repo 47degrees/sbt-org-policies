@@ -10,8 +10,8 @@ lazy val `org-policies-auto-dep-check` = (project in file("."))
   .settings(name := "org-policies-auto-dep-check")
   .settings(noPublishSettings: _*)
   .settings(Seq(
-    scalaVersion := "2.11.8",
-    crossScalaVersions := Seq("2.11.8"),
+    scalaVersion := "2.12.3",
+    crossScalaVersions := Seq("2.12.3"),
     scalaOrganization := "org.scala-lang",
     orgGithubSetting := GitHubSettings(
       organization = "47deg",
@@ -44,4 +44,4 @@ lazy val `org-policies-auto-dep-check` = (project in file("."))
         Def.task(streams.value.log.warn("Skipping auto-dependency check"))
     }.value
   ): _*)
-  .settings(allPlugins.mapValues(lib => addSbtPlugin(lib._1 % lib._2 % lib._3, "0.13", "2.10")).values.toList: _*)
+  .settings(allPlugins.mapValues(lib => addSbtPlugin(lib._1 % lib._2 % lib._3, "0.13", "2.12")).values.toList: _*)

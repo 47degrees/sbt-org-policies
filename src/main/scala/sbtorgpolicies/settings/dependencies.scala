@@ -34,10 +34,10 @@ trait dependencies {
   }
 
   def %(artifactId: String): ModuleID =
-    getLib(artifactId).toModuleId.cross(CrossVersion.Disabled)
+    getLib(artifactId).toModuleId.withCrossVersion(sbt.librarymanagement.Disabled())
 
   def %(artifactId: String, version: String): ModuleID =
-    getLib(artifactId, Some(version)).toModuleId.cross(CrossVersion.Disabled)
+    getLib(artifactId, Some(version)).toModuleId.withCrossVersion(sbt.librarymanagement.Disabled())
 
   def %%(artifactId: String): ModuleID =
     getLib(artifactId).toModuleId

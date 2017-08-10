@@ -16,67 +16,67 @@
 
 package sbtorgpolicies.settings
 
-import org.scalafmt.bootstrap.ScalafmtBootstrap
-import sbt.Keys._
-import sbt._
-import sbt.inc.Analysis
-import sbtorgpolicies.OrgPoliciesKeys._
+//import org.scalafmt.bootstrap.ScalafmtBootstrap
+//import sbt.Keys._
+//import sbt._
+//import sbt.inc.Analysis
+//import sbtorgpolicies.OrgPoliciesKeys._
 
 /**
  * https://gist.github.com/olafurpg/e045ef9d8a4273bae3e2ccf610636d66#file-automatescalafmtplugin-scala
  */
 trait scalafmt {
 
-  def orgAutomateScalafmtFor(configurations: Configuration*): Seq[Setting[_]] =
-    configurations.flatMap { c =>
-      inConfig(c)(
-        Seq(
-          orgScalafmtInc := {
-            orgScalafmtIncDef.value
-            (): Unit
-          },
-          sourceDirectories.in(orgScalafmtInc) := Seq(scalaSource.value),
-          compileInputs.in(compile) := (compileInputs.in(compile) dependsOn orgScalafmtInc).value
-        )
-      )
-    }
-
-  val orgScalafmtIncDef: Def.Initialize[Task[Set[File]]] = Def.task {
-    val cache   = streams.value.cacheDirectory / "scalafmt"
-    val include = includeFilter.in(orgScalafmtInc).value
-    val exclude = excludeFilter.in(orgScalafmtInc).value
-    val sources =
-      sourceDirectories
-        .in(orgScalafmtInc)
-        .value
-        .descendantsExcept(include, exclude)
-        .get
-        .toSet
-
-    def format(handler: Set[File] => Unit, msg: String) = {
-      def update(handler: Set[File] => Unit, msg: String)(in: ChangeReport[File], out: ChangeReport[File]) = {
-        val label = Reference.display(thisProjectRef.value)
-        val files = in.modified -- in.removed
-        Analysis
-          .counted("Scala source", "", "s", files.size)
-          .foreach(count => streams.value.log.info(s"$msg $count in $label ..."))
-        handler(files)
-        files
-      }
-
-      FileFunction.cached(cache)(FilesInfo.hash, FilesInfo.exists)(update(handler, msg))(
-        sources
-      )
-    }
-
-    def formattingHandler(files: Set[File]) =
-      if (files.nonEmpty) {
-        val filesArg = files.map(_.getAbsolutePath).mkString(",")
-        ScalafmtBootstrap.main(List("--quiet", "-i", "-f", filesArg))
-      }
-
-    format(formattingHandler, "Formatting")
-    format(_ => (), "Reformatted") // Recalculate the cache
-  }
+//  def orgAutomateScalafmtFor(configurations: Configuration*): Seq[Setting[_]] =
+//    configurations.flatMap { c =>
+//      inConfig(c)(
+//        Seq(
+//          orgScalafmtInc := {
+//            orgScalafmtIncDef.value
+//            (): Unit
+//          },
+//          sourceDirectories.in(orgScalafmtInc) := Seq(scalaSource.value),
+//          compileInputs.in(compile) := (compileInputs.in(compile) dependsOn orgScalafmtInc).value
+//        )
+//      )
+//    }
+//
+//  val orgScalafmtIncDef: Def.Initialize[Task[Set[File]]] = Def.task {
+//    val cache   = streams.value.cacheDirectory / "scalafmt"
+//    val include = includeFilter.in(orgScalafmtInc).value
+//    val exclude = excludeFilter.in(orgScalafmtInc).value
+//    val sources =
+//      sourceDirectories
+//        .in(orgScalafmtInc)
+//        .value
+//        .descendantsExcept(include, exclude)
+//        .get
+//        .toSet
+//
+//    def format(handler: Set[File] => Unit, msg: String) = {
+//      def update(handler: Set[File] => Unit, msg: String)(in: ChangeReport[File], out: ChangeReport[File]) = {
+//        val label = Reference.display(thisProjectRef.value)
+//        val files = in.modified -- in.removed
+//        Analysis
+//          .counted("Scala source", "", "s", files.size)
+//          .foreach(count => streams.value.log.info(s"$msg $count in $label ..."))
+//        handler(files)
+//        files
+//      }
+//
+//      FileFunction.cached(cache)(FilesInfo.hash, FilesInfo.exists)(update(handler, msg))(
+//        sources
+//      )
+//    }
+//
+//    def formattingHandler(files: Set[File]) =
+//      if (files.nonEmpty) {
+//        val filesArg = files.map(_.getAbsolutePath).mkString(",")
+//        ScalafmtBootstrap.main(List("--quiet", "-i", "-f", filesArg))
+//      }
+//
+//    format(formattingHandler, "Formatting")
+//    format(_ => (), "Reformatted") // Recalculate the cache
+//  }
 
 }

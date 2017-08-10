@@ -32,7 +32,7 @@ trait bash {
     Seq(
       orgPublishReleaseTask := Def.task {
         val scalaV = scalaVersion.value
-        s"sbt ++$scalaV $orgPublishReleaseCommandKey".!
+        scala.sys.process.Process(s"sbt ++$scalaV $orgPublishReleaseCommandKey")
         (): Unit
       }.value
     )
@@ -154,7 +154,7 @@ trait bash {
             reapply(Seq[Setting[_]](setSetting.setting := setSetting.value), currentState)
 
           case RunnableItemConfigScope(RunnableProcess(process), _, _, _) =>
-            Command.process(process, currentState)
+            process :: currentState
         }
       }
     } else st

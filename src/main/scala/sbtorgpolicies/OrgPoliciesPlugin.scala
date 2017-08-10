@@ -16,7 +16,7 @@
 
 package sbtorgpolicies
 
-import org.scalafmt.sbt.ScalafmtPlugin
+//import de.heikoseeberger.sbtheader.AutomateHeaderPlugin
 import sbt._
 import sbtorgpolicies.settings.DefaultSettings
 
@@ -24,7 +24,7 @@ object OrgPoliciesPlugin extends AutoPlugin {
 
   object autoImport extends OrgPoliciesKeys with DefaultSettings
 
-  override def requires: Plugins = plugins.JvmPlugin && ScalafmtPlugin
+  override def requires: Plugins = plugins.JvmPlugin // && AutomateHeaderPlugin
 
   override def trigger: PluginTrigger = allRequirements
 

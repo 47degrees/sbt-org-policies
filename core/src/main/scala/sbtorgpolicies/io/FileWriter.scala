@@ -26,7 +26,8 @@ import cats.instances.either._
 import cats.instances.list._
 import cats.syntax.either._
 import cats.syntax.traverse._
-import sbt.{file, File, IO, URL}
+import sbt.io._
+import sbt.io.syntax._
 import sbtorgpolicies.exceptions._
 import sbtorgpolicies.io.syntax._
 

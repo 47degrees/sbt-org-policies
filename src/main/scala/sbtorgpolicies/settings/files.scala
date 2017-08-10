@@ -54,6 +54,7 @@ trait files {
       orgUpdateDocFiles := Def.task {
         onlyRootUnitTask(baseDirectory.value, (baseDirectory in LocalRootProject).value, streams.value.log) {
 
+          val taskStreams: TaskStreams = streams.value
           val baseDir: File       = (baseDirectory in LocalRootProject).value
           val isSnapshot: Boolean = version.value.endsWith("-SNAPSHOT")
 
@@ -63,8 +64,11 @@ trait files {
             targetDir = orgTargetDirectorySetting.value,
             isSnapshot = isSnapshot,
             fileTypes = orgEnforcedFilesSetting.value,
-            log = streams.value.log
+            log = taskStreams.log
           )
+
+          val replacements: Map[String, String] = orgUpdateDocFilesReplacementsSetting.value
+          val updateDocFiles: List[File] = orgUpdateDocFilesSetting.value
 
           val modifiedDocFiles: List[File] = if (!isSnapshot) {
             val replaceTextEngine      = new ReplaceTextEngine
@@ -79,11 +83,11 @@ trait files {
             val replaced: List[ProcessedFile] = replaceTextEngine.replaceBlocks(
               startBlockRegex,
               endBlockRegex,
-              orgUpdateDocFilesReplacementsSetting.value,
-              orgUpdateDocFilesSetting.value,
+              replacements,
+              updateDocFiles,
               isFileSupported) match {
               case Left(e) =>
-                streams.value.log.error(s"Error updating policy files")
+                taskStreams.log.error(s"Error updating policy files")
                 e.printStackTrace()
                 Nil
               case Right(l) => l
@@ -91,35 +95,39 @@ trait files {
 
             val errorFiles = replaced.filter(_.status.failure).map(_.file.getAbsolutePath)
             if (errorFiles.nonEmpty) {
-              streams.value.log.warn(printList("The following files where processed with errors:", errorFiles))
+              taskStreams.log.warn(printList("The following files where processed with errors:", errorFiles))
             }
 
             replaced.filter(f => f.status.success && f.status.modified).map(_.file)
           } else Nil
 
           val allFiles: List[File] = (policyFiles ++ modifiedDocFiles).map(_.getAbsolutePath).distinct.map(file)
+          val updateDocFilesCommitSetting: Boolean = orgUpdateDocFilesCommitSetting.value
+          val commitMessage: String = orgCommitMessageSetting.value
+          val commitBranch: String = orgCommitBranchSetting.value
+          val ghOps: GitHubOps = orgGithubOpsSetting.value
 
           if (allFiles.nonEmpty) {
-            if (orgUpdateDocFilesCommitSetting.value) {
-              streams.value.log.info(printList("Committing files", allFiles.map(_.getAbsolutePath)))
-              val ghOps: GitHubOps = orgGithubOpsSetting.value
+            if (updateDocFilesCommitSetting) {
+              taskStreams.log.info(printList("Committing files", allFiles.map(_.getAbsolutePath)))
+
               ghOps.commitFiles(
                 baseDir = baseDir,
-                branch = orgCommitBranchSetting.value,
-                message = s"${orgCommitMessageSetting.value} [ci skip]",
+                branch = commitBranch,
+                message = s"$commitMessage [ci skip]",
                 files = allFiles
               ) match {
                 case Right(Some(_)) =>
-                  streams.value.log.info("Files committed successfully")
+                  taskStreams.log.info("Files committed successfully")
                 case Right(None) =>
-                  streams.value.log.info("No changes detected in docs and policy files. Skipping commit")
+                  taskStreams.log.info("No changes detected in docs and policy files. Skipping commit")
                 case Left(e) =>
-                  streams.value.log.error(s"Error committing files")
+                  taskStreams.log.error(s"Error committing files")
                   e.printStackTrace()
               }
-            } else streams.value.log.info("orgUpdateDocFilesCommitSetting set to `false`. Skipping commit")
+            } else taskStreams.log.info("orgUpdateDocFilesCommitSetting set to `false`. Skipping commit")
           } else {
-            streams.value.log.info("No files to be committed")
+            taskStreams.log.info("No files to be committed")
           }
         }
       }.value

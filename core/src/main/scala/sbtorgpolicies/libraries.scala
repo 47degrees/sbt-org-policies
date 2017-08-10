@@ -44,7 +44,7 @@ object libraries {
     "cats-effect"              -> "0.3",
     "circe"                    -> "0.8.0",
     "config"                   -> "1.3.1",
-    "coursier"                 -> "1.0.0-RC9",
+    "coursier"                 -> "1.0.0-RC10",
     "discipline"               -> "0.8",
     "doobie"                   -> "0.4.1",
     "embedded-redis"           -> "0.6",
@@ -76,7 +76,7 @@ object libraries {
     "refined"                  -> "0.8.2",
     "roshttp"                  -> "2.0.2",
     "scala-parser-combinators" -> "1.0.6",
-    "scala-reflect"            -> "2.11.8",
+    "scala-reflect"            -> "2.11.11",
     "scalacheck"               -> "1.13.5",
     "scheckShapeless"          -> "1.1.6",
     "scalactic"                -> "3.0.3",
@@ -105,20 +105,20 @@ object libraries {
 
   val vPluginsOthers: Map[String, String] = Map[String, String](
     "sbt-buildinfo"         -> "0.7.0",
-    "sbt-ghpages"           -> "0.6.0",
-    "sbt-git"               -> "0.9.2",
+    "sbt-ghpages"           -> "0.6.1",
+    "sbt-git"               -> "0.9.3",
     "sbt-header"            -> "1.8.0",
-    "sbt-pgp"               -> "1.0.1",
-    "sbt-jmh"               -> "0.2.25",
-    "sbt-release"           -> "1.0.5",
+    "sbt-pgp"               -> "1.1.0-M1",
+    "sbt-jmh"               -> "0.2.27",
+    "sbt-release"           -> "1.0.6",
     "sbt-scalafmt"          -> "0.6.8",
-    "sbt-scalajs"           -> "0.6.18",
+    "sbt-scalajs"           -> "0.6.19",
     "sbt-scoverage"         -> "1.5.0",
-    "sbt-site"              -> "1.2.0",
-    "sbt-sonatype"          -> "1.1",
-    "sbt-unidoc"            -> "0.4.0",
-    "scalastyle-sbt-plugin" -> "0.8.0",
-    "tut-plugin"            -> "0.5.2"
+    "sbt-site"              -> "1.2.1",
+    "sbt-sonatype"          -> "2.0",
+    "sbt-unidoc"            -> "0.4.1",
+    "scalastyle-sbt-plugin" -> "0.9.0",
+    "tut-plugin"            -> "0.6.0"
   )
 
   val v: Map[String, String] = v47 ++ vOthers ++ vPlugins47 ++ vPluginsOthers

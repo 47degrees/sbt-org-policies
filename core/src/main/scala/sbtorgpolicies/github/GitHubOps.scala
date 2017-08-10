@@ -25,7 +25,7 @@ import com.github.marklister.base64.Base64._
 import github4s.Github
 import github4s.GithubResponses._
 import github4s.free.domain._
-import sbt.IO
+import sbt.io.IO
 import sbtorgpolicies.exceptions.{GitHubException, IOException, OrgPolicyException}
 import sbtorgpolicies.github.config._
 import sbtorgpolicies.github.instances._
