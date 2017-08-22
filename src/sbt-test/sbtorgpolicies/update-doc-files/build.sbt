@@ -24,17 +24,15 @@ lazy val testCheckSettings  = TaskKey[Unit]("testCheckSettings")
 lazy val testCheckSettings2 = TaskKey[Unit]("testCheckSettings2")
 
 testCheckSettings := Def.task {
-  if (checkFiles(version.value, docsFiles)) {
-    streams.value.log.info("Test succeeded.")
-  } else {
-    sys.error("Error validating docs files")
+  checkFiles(version.value, docsFiles) match {
+    case true  => streams.value.log.info("Test succeeded.")
+    case false => sys.error("Error validating docs files")
   }
 }.value
 
 testCheckSettings2 := Def.task {
-  if (checkFiles(version.value, otherDocsFiles)) {
-    streams.value.log.info("Test succeeded.")
-  } else {
-    sys.error("Error validating other docs files")
+  checkFiles(version.value, otherDocsFiles) match {
+    case true  => streams.value.log.info("Test succeeded.")
+    case false => sys.error("Error validating other docs files")
   }
 }.value

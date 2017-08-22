@@ -1,4 +1,4 @@
-import sbtorgpolicies.model._
+import sbtorgpolicies.model.{GitHubSettings, ApacheLicense}
 
 version := "1.0"
 

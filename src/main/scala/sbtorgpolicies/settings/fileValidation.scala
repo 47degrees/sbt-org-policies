@@ -63,9 +63,7 @@ trait fileValidation extends ValidationFunctions {
     fileValidation.validateFile(validation.validationRule.inputPath, validation.validationRule.validationList: _*) match {
       case Valid(_) => log.info(s"File ${validation.validationRule.inputPath} was validated successfully")
       case Invalid(errors) =>
-        errorHandler(
-          s"Some errors where found while validating ${validation.validationRule.inputPath}:",
-          errors.toList)
+        errorHandler(s"Some errors where found while validating ${validation.validationRule.inputPath}:", errors.toList)
     }
 
   }

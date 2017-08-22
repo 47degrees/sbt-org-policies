@@ -4,6 +4,8 @@ import sbtorgpolicies.io.FileReader
 import sbtorgpolicies.libraries._
 import sbtorgpolicies.model.GitHubSettings
 
+resolvers += Resolver.sonatypeRepo("snapshots")
+
 lazy val checkDependencies = taskKey[Unit]("Check the module dependencies")
 
 lazy val `org-policies-auto-dep-check` = (project in file("."))
@@ -23,25 +25,35 @@ lazy val `org-policies-auto-dep-check` = (project in file("."))
     ),
     resolvers ++= Seq(Resolver.sonatypeRepo("snapshots"), Resolver.bintrayIvyRepo("sbt", "sbt-plugin-releases")),
     libraryDependencies ++=
-      scalaLibs.mapValues(lib => lib._1  %% lib._2 % lib._3).values.toList ++
-        javaLibs.mapValues(lib => lib._1 % lib._2  % lib._3).values.toList,
+      scalaLibs
+        .filter(_._1 != "scalameta-paradise")
+        .mapValues(lib => lib._1 %% lib._2 % lib._3)
+        .values
+        .toList ++
+        javaLibs.mapValues(lib => lib._1 % lib._2 % lib._3).values.toList,
     checkDependencies := Def.taskDyn {
       val fr             = new FileReader
       val versionSbtFile = baseDirectory.value.getParentFile / "version.sbt"
       val VersionRegex   = """.*"(.*-SNAPSHOT)".*""".r
 
-      val currentPluginVersion = fr.getFileContent(versionSbtFile.getAbsolutePath) match {
-        case Right(VersionRegex(v)) => Some(v)
-        case _                      => None
-      }
+      val currentPluginVersion =
+        fr.getFileContent(versionSbtFile.getAbsolutePath) match {
+          case Right(VersionRegex(v)) => Some(v)
+          case _                      => None
+        }
 
       val isTravisMaster = getEnvVarOrElse("TRAVIS_BRANCH") == "master" &&
         getEnvVarOrElse("TRAVIS_PULL_REQUEST") == "false"
 
       if (isTravisMaster && currentPluginVersion.isDefined)
-        Def.task(depUpdateDependencyIssues.value)
+        // Def.task(depUpdateDependencyIssues.value)
+        Def.task()
       else
         Def.task(streams.value.log.warn("Skipping auto-dependency check"))
     }.value
   ): _*)
-  .settings(allPlugins.mapValues(lib => addSbtPlugin(lib._1 % lib._2 % lib._3, "0.13", "2.12")).values.toList: _*)
+  .settings(
+    allPlugins
+      .mapValues(lib => addSbtPlugin(lib._1 % lib._2 % lib._3))
+      .values
+      .toList: _*)

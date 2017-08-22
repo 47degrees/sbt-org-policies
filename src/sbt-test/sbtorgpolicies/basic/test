@@ -22,34 +22,40 @@ $ exists .travis.yml
 
 > orgValidateFiles
 
-> testCheckSettings
+> set scalaVersion:=sbtorgpolicies.model.scalac.`2.11`
 
-> set scalaVersion:=sbtorgpolicies.model.scalac.`2.12`
-
-> set crossScalaVersions:=Seq(sbtorgpolicies.model.scalac.`2.11`)
+> set crossScalaVersions:=Seq(sbtorgpolicies.model.scalac.`2.12`)
 
 > testCheckSettings
 
 > set crossScalaVersions:=Seq(sbtorgpolicies.model.scalac.`2.11`,sbtorgpolicies.model.scalac.`2.12`)
 
-> orgCheckSettings
+> testCheckSettings
 
 > set crossScalaVersions:=Seq("2.10.6",sbtorgpolicies.model.scalac.`2.11`,sbtorgpolicies.model.scalac.`2.12`)
 
-> orgCheckSettings
+> testCheckSettings
 
 > set scoverage.ScoverageKeys.coverageMinimum:=50
 
 > testCheckSettings
 
+> set scalaVersion:=sbtorgpolicies.model.scalac.`2.12`
+
 > set scoverage.ScoverageKeys.coverageMinimum:=80
 
 > orgCheckSettings
 
-> set de.heikoseeberger.sbtheader.HeaderKey.headers:=Map.empty
+> set de.heikoseeberger.sbtheader.HeaderPlugin.autoImport.headerMappings:=Map.empty
 
 > testCheckSettings
 
-> set de.heikoseeberger.sbtheader.HeaderKey.headers:=Map("scala" -> de.heikoseeberger.sbtheader.license.Apache2_0("2017", "47 Degrees, LLC. <http://www.47deg.com>"))
+> set de.heikoseeberger.sbtheader.HeaderPlugin.autoImport.headerMappings:=Map(de.heikoseeberger.sbtheader.HeaderPlugin.autoImport.HeaderFileType.scala -> de.heikoseeberger.sbtheader.HeaderPlugin.autoImport.HeaderCommentStyle.CStyleBlockComment, de.heikoseeberger.sbtheader.HeaderPlugin.autoImport.HeaderFileType.java  -> de.heikoseeberger.sbtheader.HeaderPlugin.autoImport.HeaderCommentStyle.CStyleBlockComment)
+
+> set de.heikoseeberger.sbtheader.HeaderPlugin.autoImport.headerLicense:=None
+
+> testCheckSettings
+
+> set de.heikoseeberger.sbtheader.HeaderPlugin.autoImport.headerLicense:=Some(de.heikoseeberger.sbtheader.HeaderPlugin.autoImport.HeaderLicense.ALv2(replaceableYear(startYear.value), "47 Degrees, LLC. <http://www.47deg.com>"))
 
 > orgCheckSettings

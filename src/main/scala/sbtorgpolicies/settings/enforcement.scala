@@ -21,10 +21,8 @@ import sbt._
 import sbtorgpolicies.exceptions.ValidationException
 import sbtorgpolicies.model._
 import sbtorgpolicies.OrgPoliciesKeys._
-//import de.heikoseeberger.sbtheader.HeaderKey
-//import scoverage.ScoverageKeys
-
-import scala.util.matching.Regex
+import de.heikoseeberger.sbtheader
+import scoverage.ScoverageKeys
 
 trait enforcement {
 
@@ -32,10 +30,9 @@ trait enforcement {
     orgCheckSettings := Def
       .sequential(
         checkScalaVersion,
-        checkCrossScalaVersion
-//        ,
-//        checkScoverageSettings,
-//        checkFileHeaderSettings
+        checkCrossScalaVersion,
+        checkScoverageSettings,
+        checkFileHeaderSettings
       )
       .value
   )
@@ -58,25 +55,31 @@ trait enforcement {
     }
   }
 
-//  private[this] def checkScoverageSettings = Def.task {
-//
-//    val coverageFailOnMinimumValue = ScoverageKeys.coverageFailOnMinimum.value
-//    val coverageMinimumValue       = ScoverageKeys.coverageMinimum.value
-//
-//    if (!coverageFailOnMinimumValue)
-//      throw ValidationException(
-//        s"coverageFailOnMinimum is $coverageFailOnMinimumValue, however, it should be enabled.")
-//
-//    if (coverageMinimumValue < scoverageMinimum)
-//      throw ValidationException(
-//        s"coverageMinimumValue is $coverageMinimumValue. It should be at least $scoverageMinimum%")
-//  }
-//
-//  private[this] def checkFileHeaderSettings = Def.task {
-//    val headersValue: Map[String, (Regex, String)] = HeaderKey.headers.value
-//    if (headersValue.size <= 0) {
-//      throw ValidationException(s"HeaderKey.headers is empty and it's a mandatory setting")
-//    }
-//  }
+  private[this] def checkScoverageSettings = Def.task {
+
+    val coverageFailOnMinimumValue = ScoverageKeys.coverageFailOnMinimum.value
+    val coverageMinimumValue       = ScoverageKeys.coverageMinimum.value
+
+    if (!coverageFailOnMinimumValue)
+      throw ValidationException(s"coverageFailOnMinimum is $coverageFailOnMinimumValue, however, it should be enabled.")
+
+    if (coverageMinimumValue < scoverageMinimum)
+      throw ValidationException(
+        s"coverageMinimumValue is $coverageMinimumValue. It should be at least $scoverageMinimum%")
+  }
+
+  private[this] def checkFileHeaderSettings = Def.task {
+    val headerMappings: Map[sbtheader.FileType, sbtheader.CommentStyle] =
+      sbtheader.HeaderPlugin.autoImport.headerMappings.value
+    val headerLicense: Option[sbtheader.License] =
+      sbtheader.HeaderPlugin.autoImport.headerLicense.value
+
+    if (headerMappings.size <= 0) {
+      throw ValidationException("headerMappings is empty and it's a mandatory setting")
+    }
+    if (headerLicense.isEmpty) {
+      throw ValidationException("headerLicense is empty and it's a mandatory setting")
+    }
+  }
 
 }

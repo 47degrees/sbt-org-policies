@@ -55,8 +55,8 @@ trait files {
         onlyRootUnitTask(baseDirectory.value, (baseDirectory in LocalRootProject).value, streams.value.log) {
 
           val taskStreams: TaskStreams = streams.value
-          val baseDir: File       = (baseDirectory in LocalRootProject).value
-          val isSnapshot: Boolean = version.value.endsWith("-SNAPSHOT")
+          val baseDir: File            = (baseDirectory in LocalRootProject).value
+          val isSnapshot: Boolean      = version.value.endsWith("-SNAPSHOT")
 
           val policyFiles: List[File] = createPolicyFiles(
             baseDir = baseDir,
@@ -68,7 +68,7 @@ trait files {
           )
 
           val replacements: Map[String, String] = orgUpdateDocFilesReplacementsSetting.value
-          val updateDocFiles: List[File] = orgUpdateDocFilesSetting.value
+          val updateDocFiles: List[File]        = orgUpdateDocFilesSetting.value
 
           val modifiedDocFiles: List[File] = if (!isSnapshot) {
             val replaceTextEngine      = new ReplaceTextEngine
@@ -101,11 +101,11 @@ trait files {
             replaced.filter(f => f.status.success && f.status.modified).map(_.file)
           } else Nil
 
-          val allFiles: List[File] = (policyFiles ++ modifiedDocFiles).map(_.getAbsolutePath).distinct.map(file)
+          val allFiles: List[File]                 = (policyFiles ++ modifiedDocFiles).map(_.getAbsolutePath).distinct.map(file)
           val updateDocFilesCommitSetting: Boolean = orgUpdateDocFilesCommitSetting.value
-          val commitMessage: String = orgCommitMessageSetting.value
-          val commitBranch: String = orgCommitBranchSetting.value
-          val ghOps: GitHubOps = orgGithubOpsSetting.value
+          val commitMessage: String                = orgCommitMessageSetting.value
+          val commitBranch: String                 = orgCommitBranchSetting.value
+          val ghOps: GitHubOps                     = orgGithubOpsSetting.value
 
           if (allFiles.nonEmpty) {
             if (updateDocFilesCommitSetting) {

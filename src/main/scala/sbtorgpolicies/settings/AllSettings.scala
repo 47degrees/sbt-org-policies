@@ -21,7 +21,7 @@ import com.typesafe.sbt.pgp.PgpKeys._
 //import dependencies.DependenciesPlugin
 //import dependencies.DependenciesPlugin.autoImport._
 //import microsites.MicrositeKeys._
-//import scoverage.ScoverageKeys
+import scoverage.ScoverageKeys
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 import sbt.Keys._
 import sbt._
@@ -32,18 +32,19 @@ import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 import sbtrelease.ReleasePlugin.autoImport._
 import sbtunidoc.BaseUnidocPlugin.autoImport._
 import sbtunidoc.ScalaUnidocPlugin.autoImport._
-import com.lucidchart.sbt.scalafmt.ScalafmtCorePlugin.autoImport._
+// import com.lucidchart.sbt.scalafmt.ScalafmtCorePlugin.autoImport._
 
 trait AllSettings
     extends dependencies
-    //with scalafmt
+    with scalafmt
     with files
     with fileValidation
     with enforcement
     with bash
     with release
     with common
-    with utils {
+    with utils
+    with AllSettingsSpecific {
 
   /**
    * Settings common to all projects.
@@ -182,36 +183,20 @@ trait AllSettings
     pomExtra := <developers> { (orgMaintainersSetting.value ++ orgContributorsSetting.value).map(_.pomExtra) } </developers>
   )
 
-  /**
-   * It allows alternative Scala organization, however, scala-lang is still used
-   * during transitive ivy resolution and should be added.
-   */
-  lazy val scalaDependencyOverrides = Seq(
-    dependencyOverrides ++= Seq(
-      "org.scala-lang"        % "scala-compiler" % scalaVersion.value,
-      "org.scala-lang"        % "scala-library"  % scalaVersion.value,
-      "org.scala-lang"        % "scala-reflect"  % scalaVersion.value,
-      "org.scala-lang"        % "scalap"         % scalaVersion.value,
-      scalaOrganization.value % "scala-compiler" % scalaVersion.value,
-      scalaOrganization.value % "scala-library"  % scalaVersion.value,
-      scalaOrganization.value % "scala-reflect"  % scalaVersion.value,
-      scalaOrganization.value % "scalap"         % scalaVersion.value
-    )
+  /** Common coverage settings, with minimum coverage defaulting to 80.*/
+  def sharedScoverageSettings(min: Double = scoverageMinimum) = Seq(
+    ScoverageKeys.coverageMinimum := min,
+    ScoverageKeys.coverageFailOnMinimum := true,
+    ScoverageKeys.coverageHighlighting := scalaBinaryVersion.value != "2.10"
   )
 
-//  /** Common coverage settings, with minimum coverage defaulting to 80.*/
-//  def sharedScoverageSettings(min: Double = scoverageMinimum) = Seq(
-//    ScoverageKeys.coverageMinimum := min,
-//    ScoverageKeys.coverageFailOnMinimum := true,
-//    ScoverageKeys.coverageHighlighting := scalaBinaryVersion.value != "2.10"
-//  )
-
-//  lazy val scalafmtSettings: Seq[Setting[_]] =
-//    List(
-//      includeFilter.in(orgScalafmtInc) := "*.scala",
-//      excludeFilter.in(orgScalafmtInc) := ".scalafmt.conf"
-//    ) ++ orgAutomateScalafmtFor(Compile, Test)
-  lazy val scalafmtSettings: Seq[Setting[_]] = List(scalafmtOnCompile := true)
+  lazy val scalafmtSettings: Seq[Setting[_]] =
+    List(
+      includeFilter.in(orgScalafmtInc) := "*.scala",
+      excludeFilter.in(orgScalafmtInc) := ".scalafmt.conf"
+      // scalafmtVersion in ThisBuild := "1.0.0-RC3",
+      // scalafmtOnCompile := true
+    ) ++ orgAutomateScalafmtFor(Compile, Test)
 
   /** Common unidoc settings, adding the "-Ymacro-no-expand" scalac option.*/
   lazy val unidocCommonSettings = Seq(

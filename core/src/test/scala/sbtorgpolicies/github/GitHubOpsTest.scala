@@ -100,57 +100,56 @@ class GitHubOpsTest extends TestOps {
 
   test("GithubOps.commitFiles works as expected when all files are updated") {
 
-    val property = forAll {
-      (nelRefResponse: GHResponse[NonEmptyList[Ref]], refCommitResponse: GHResponse[RefCommit]) =>
-        val (gitHubOps, fileReader, ghGitData, _, ghRepos, _) = newGitHubOps
-        import sbtorgpolicies.io.syntax._
-        filesAndContents foreach {
-          case (s1, s2) =>
-            (fileReader.getFileContent _)
-              .when(baseDir.getAbsolutePath.ensureFinalSlash + s1)
-              .returns(Right(s2))
-        }
+    val property = forAll { (nelRefResponse: GHResponse[NonEmptyList[Ref]], refCommitResponse: GHResponse[RefCommit]) =>
+      val (gitHubOps, fileReader, ghGitData, _, ghRepos, _) = newGitHubOps
+      import sbtorgpolicies.io.syntax._
+      filesAndContents foreach {
+        case (s1, s2) =>
+          (fileReader.getFileContent _)
+            .when(baseDir.getAbsolutePath.ensureFinalSlash + s1)
+            .returns(Right(s2))
+      }
 
-        (ghGitData.getReference _)
-          .when(*, *, *)
-          .returns(Free.pure[GitHub4s, GHResponse[NonEmptyList[Ref]]](nelRefResponse))
+      (ghGitData.getReference _)
+        .when(*, *, *)
+        .returns(Free.pure[GitHub4s, GHResponse[NonEmptyList[Ref]]](nelRefResponse))
 
-        (ghGitData.getCommit _)
-          .when(*, *, *)
-          .returns(Free.pure[GitHub4s, GHResponse[RefCommit]](refCommitResponse))
+      (ghGitData.getCommit _)
+        .when(*, *, *)
+        .returns(Free.pure[GitHub4s, GHResponse[RefCommit]](refCommitResponse))
 
-        val maybeParentCommit: Option[String] = nelRefResponse.toOption.map(_.result.head.`object`.sha)
+      val maybeParentCommit: Option[String] = nelRefResponse.toOption.map(_.result.head.`object`.sha)
 
-        val contents = filesAndContents.map {
-          case (s1, s2) =>
-            val content =
-              Content("file", Some("base64"), None, None, 5432, s1, s1, Some(s2), s"sha-$s1", "", "", "", None)
-            (s1, content)
-        }
+      val contents = filesAndContents.map {
+        case (s1, s2) =>
+          val content =
+            Content("file", Some("base64"), None, None, 5432, s1, s1, Some(s2), s"sha-$s1", "", "", "", None)
+          (s1, content)
+      }
 
-        contents foreach {
-          case (s1, content) =>
-            val response: GHResponse[NonEmptyList[Content]] =
-              GHResult(NonEmptyList(content, Nil), 200, Map.empty).asRight
-            (ghRepos.getContents _)
-              .when(owner, repo, s1, maybeParentCommit)
-              .returns(Free.pure[GitHub4s, GHResponse[NonEmptyList[Content]]](response))
-        }
+      contents foreach {
+        case (s1, content) =>
+          val response: GHResponse[NonEmptyList[Content]] =
+            GHResult(NonEmptyList(content, Nil), 200, Map.empty).asRight
+          (ghRepos.getContents _)
+            .when(owner, repo, s1, maybeParentCommit)
+            .returns(Free.pure[GitHub4s, GHResponse[NonEmptyList[Content]]](response))
+      }
 
-        val result: Either[OrgPolicyException, Option[Ref]] =
-          gitHubOps.commitFiles(baseDir, branch, sampleMessage, filesAndContents.map(t => new File(baseDir, t._1)))
+      val result: Either[OrgPolicyException, Option[Ref]] =
+        gitHubOps.commitFiles(baseDir, branch, sampleMessage, filesAndContents.map(t => new File(baseDir, t._1)))
 
-        (nelRefResponse, refCommitResponse) match {
-          case (Left(e), _) =>
-            result shouldBeEq toLeftResult(e)
-          case (Right(gHResult), _) if !gHResult.result.exists(_.ref == s"refs/heads/$branch") =>
-            val e = UnexpectedException(s"Branch $branch not found")
-            result shouldBeEq toLeftResult(e)
-          case (_, Left(e)) =>
-            result shouldBeEq toLeftResult(e)
-          case _ =>
-            result shouldBeEq Right(None)
-        }
+      (nelRefResponse, refCommitResponse) match {
+        case (Left(e), _) =>
+          result shouldBeEq toLeftResult(e)
+        case (Right(gHResult), _) if !gHResult.result.exists(_.ref == s"refs/heads/$branch") =>
+          val e = UnexpectedException(s"Branch $branch not found")
+          result shouldBeEq toLeftResult(e)
+        case (_, Left(e)) =>
+          result shouldBeEq toLeftResult(e)
+        case _ =>
+          result shouldBeEq Right(None)
+      }
 
     }
 
@@ -244,50 +243,49 @@ class GitHubOpsTest extends TestOps {
   }
 
   test("GithubOps.commitFilesAndContents works as expected when all files are updated") {
-    val property = forAll {
-      (nelRefResponse: GHResponse[NonEmptyList[Ref]], refCommitResponse: GHResponse[RefCommit]) =>
-        val (gitHubOps, _, ghGitData, _, ghRepos, _) = newGitHubOps
+    val property = forAll { (nelRefResponse: GHResponse[NonEmptyList[Ref]], refCommitResponse: GHResponse[RefCommit]) =>
+      val (gitHubOps, _, ghGitData, _, ghRepos, _) = newGitHubOps
 
-        (ghGitData.getReference _)
-          .when(*, *, *)
-          .returns(Free.pure[GitHub4s, GHResponse[NonEmptyList[Ref]]](nelRefResponse))
+      (ghGitData.getReference _)
+        .when(*, *, *)
+        .returns(Free.pure[GitHub4s, GHResponse[NonEmptyList[Ref]]](nelRefResponse))
 
-        (ghGitData.getCommit _)
-          .when(*, *, *)
-          .returns(Free.pure[GitHub4s, GHResponse[RefCommit]](refCommitResponse))
+      (ghGitData.getCommit _)
+        .when(*, *, *)
+        .returns(Free.pure[GitHub4s, GHResponse[RefCommit]](refCommitResponse))
 
-        val maybeParentCommit: Option[String] = nelRefResponse.toOption.map(_.result.head.`object`.sha)
+      val maybeParentCommit: Option[String] = nelRefResponse.toOption.map(_.result.head.`object`.sha)
 
-        val contents = filesAndContents.map {
-          case (s1, s2) =>
-            val content =
-              Content("file", Some("base64"), None, None, 5432, s1, s1, Some(s2), s"sha-$s1", "", "", "", None)
-            (s1, content)
-        }
+      val contents = filesAndContents.map {
+        case (s1, s2) =>
+          val content =
+            Content("file", Some("base64"), None, None, 5432, s1, s1, Some(s2), s"sha-$s1", "", "", "", None)
+          (s1, content)
+      }
 
-        contents foreach {
-          case (s1, content) =>
-            val response: GHResponse[NonEmptyList[Content]] =
-              GHResult(NonEmptyList(content, Nil), 200, Map.empty).asRight
-            (ghRepos.getContents _)
-              .when(owner, repo, s1, maybeParentCommit)
-              .returns(Free.pure[GitHub4s, GHResponse[NonEmptyList[Content]]](response))
-        }
+      contents foreach {
+        case (s1, content) =>
+          val response: GHResponse[NonEmptyList[Content]] =
+            GHResult(NonEmptyList(content, Nil), 200, Map.empty).asRight
+          (ghRepos.getContents _)
+            .when(owner, repo, s1, maybeParentCommit)
+            .returns(Free.pure[GitHub4s, GHResponse[NonEmptyList[Content]]](response))
+      }
 
-        val result: Either[OrgPolicyException, Option[Ref]] =
-          gitHubOps.commitFilesAndContents(branch, sampleMessage, filesAndContents)
+      val result: Either[OrgPolicyException, Option[Ref]] =
+        gitHubOps.commitFilesAndContents(branch, sampleMessage, filesAndContents)
 
-        (nelRefResponse, refCommitResponse) match {
-          case (Left(e), _) =>
-            result shouldBeEq toLeftResult(e)
-          case (Right(gHResult), _) if !gHResult.result.exists(_.ref == s"refs/heads/$branch") =>
-            val e = UnexpectedException(s"Branch $branch not found")
-            result shouldBeEq toLeftResult(e)
-          case (_, Left(e)) =>
-            result shouldBeEq toLeftResult(e)
-          case _ =>
-            result shouldBeEq Right(None)
-        }
+      (nelRefResponse, refCommitResponse) match {
+        case (Left(e), _) =>
+          result shouldBeEq toLeftResult(e)
+        case (Right(gHResult), _) if !gHResult.result.exists(_.ref == s"refs/heads/$branch") =>
+          val e = UnexpectedException(s"Branch $branch not found")
+          result shouldBeEq toLeftResult(e)
+        case (_, Left(e)) =>
+          result shouldBeEq toLeftResult(e)
+        case _ =>
+          result shouldBeEq Right(None)
+      }
     }
 
     check(property)
@@ -569,8 +567,7 @@ class GitHubOpsTest extends TestOps {
     check(property)
   }
 
-  test(
-    "GithubOps.latestPullRequests should return all merged pull requests with date greater than the selected commit") {
+  test("GithubOps.latestPullRequests should return all merged pull requests with date greater than the selected commit") {
 
     val property = forAll(genGHResPRListMergedFrom2015, ghResponseCommitListArbitrary.arbitrary) {
       (prResponse: GHResponse[List[PullRequest]], commitsResponse: GHResponse[List[Commit]]) =>

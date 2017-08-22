@@ -20,7 +20,6 @@ import sbt._
 import sbtorgpolicies.github.GitHubOps
 import sbtorgpolicies.model._
 import sbtorgpolicies.runnable._
-import sbtorgpolicies.rules.Validation
 import sbtorgpolicies.templates.FileType
 import sbtorgpolicies.templates.badges.BadgeBuilder
 

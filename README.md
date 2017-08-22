@@ -14,7 +14,7 @@
 Add the following line to `project/plugins.sbt`:
 
 ```scala
-addSbtPlugin("com.47deg" %% "sbt-org-policies" % "0.5.13")
+addSbtPlugin("com.47deg" % "sbt-org-policies" % "0.5.13")
 ```
 
 [comment]: # (End Replace)

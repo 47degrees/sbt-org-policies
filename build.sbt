@@ -9,11 +9,9 @@ lazy val `sbt-org-policies` = (project in file("."))
 lazy val `org-policies-core` = (project in file("core"))
   .settings(moduleName := "org-policies-core")
   .settings(coreSettings: _*)
-//  .settings(libraryDependencies ~= { _.filterNot(_.name == "scripted-plugin") })
 
 addCommandAlias("publishLocalAll", ";org-policies-core/publishLocal;sbt-org-policies/publishLocal")
 
-val gpgFolder = Option(System.getenv().get("PGP_FOLDER")) getOrElse "."
 pgpPassphrase := Some(Option(System.getenv().get("PGP_PASSPHRASE")).getOrElse("").toCharArray)
-pgpPublicRing := file(s"$gpgFolder/pubring.gpg")
-pgpSecretRing := file(s"$gpgFolder/secring.gpg")
+// pgpPublicRing := file(s"$gpgFolder/pubring.gpg")
+// pgpSecretRing := file(s"$gpgFolder/secring.gpg")

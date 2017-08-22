@@ -18,8 +18,7 @@ package sbtorgpolicies
 
 import net.jcazevedo.moultingyaml._
 import sbt.Append.Value
-import sbt.io._
-import sbt.io.syntax._
+import sbt.{url, URL}
 import sbtorgpolicies.runnable.RunnableItemConfigScope
 import sbtorgpolicies.runnable.syntax._
 
@@ -125,6 +124,13 @@ object model {
         { name.fold(xml.NodeSeq.Empty)(x => <name>{x}</name>) }
         <url>http://github.com/{ id }</url>
       </developer>
+  }
+
+  object sbt {
+    val `0.13`: String = "0.13.16"
+    val `1.0`: String  = "1.0.1"
+
+    val crossSbtVersions: List[String] = List(`0.13`, `1.0`)
   }
 
   object scalac {
