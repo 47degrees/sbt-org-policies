@@ -1,5 +1,12 @@
 # Changelog
 
+## 08/28/2017 - Version 0.5.14
+
+Release changes:
+
+* Bump tut-plugin. Release 0.5.14 ([#455](https://github.com/47deg/sbt-org-policies/pull/455))
+
+
 ## 08/07/2017 - Version 0.5.13
 
 Release changes:
