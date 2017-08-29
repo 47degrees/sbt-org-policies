@@ -118,7 +118,7 @@ object libraries {
     "sbt-sonatype"          -> "1.1",
     "sbt-unidoc"            -> "0.4.0",
     "scalastyle-sbt-plugin" -> "0.8.0",
-    "tut-plugin"            -> "0.5.3"
+    "tut-plugin"            -> "0.5.4"
   )
 
   val v: Map[String, String] = v47 ++ vOthers ++ vPlugins47 ++ vPluginsOthers

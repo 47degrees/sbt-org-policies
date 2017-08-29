@@ -27,7 +27,7 @@ object ProjectPlugin extends AutoPlugin {
       addSbtPlugin("com.jsuereth"       % "sbt-pgp"                % "1.0.1"),
       addSbtPlugin("com.typesafe.sbt"   % "sbt-ghpages"            % "0.6.0"),
       addSbtPlugin("com.typesafe.sbt"   % "sbt-site"               % "1.2.0"),
-      addSbtPlugin("org.tpolecat"       % "tut-plugin"             % "0.5.3"),
+      addSbtPlugin("org.tpolecat"       % "tut-plugin"             % "0.5.4"),
       addSbtPlugin("pl.project13.scala" % "sbt-jmh"                % "0.2.24"),
       addSbtPlugin("org.scalastyle"     %% "scalastyle-sbt-plugin" % "0.8.0"),
       addSbtPlugin("org.scoverage"      % "sbt-scoverage"          % "1.5.0"),
