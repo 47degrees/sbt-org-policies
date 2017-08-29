@@ -1,7 +1,7 @@
 
 [comment]: # (Start Badges)
 
-[![Build Status](https://travis-ci.org/47deg/sbt-org-policies.svg?branch=master)](https://travis-ci.org/47deg/sbt-org-policies) [![Maven Central](https://img.shields.io/badge/maven%20central-0.5.14-green.svg)](https://repo1.maven.org/maven2/com/47deg/sbt-org-policies_2.10_0.13) [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/47deg/sbt-org-policies/master/LICENSE) [![GitHub Issues](https://img.shields.io/github/issues/47deg/sbt-org-policies.svg)](https://github.com/47deg/sbt-org-policies/issues)
+[![Build Status](https://travis-ci.org/47deg/sbt-org-policies.svg?branch=master)](https://travis-ci.org/47deg/sbt-org-policies) [![Maven Central](https://img.shields.io/badge/maven%20central-0.5.15-green.svg)](https://repo1.maven.org/maven2/com/47deg/sbt-org-policies_2.10_0.13) [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/47deg/sbt-org-policies/master/LICENSE) [![GitHub Issues](https://img.shields.io/github/issues/47deg/sbt-org-policies.svg)](https://github.com/47deg/sbt-org-policies/issues)
 
 [comment]: # (End Badges)
 # sbt-org-policies
@@ -14,7 +14,7 @@
 Add the following line to `project/plugins.sbt`:
 
 ```scala
-addSbtPlugin("com.47deg" % "sbt-org-policies" % "0.5.14")
+addSbtPlugin("com.47deg" % "sbt-org-policies" % "0.5.15")
 ```
 
 [comment]: # (End Replace)
