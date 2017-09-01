@@ -14,22 +14,15 @@
  * limitations under the License.
  */
 
-package sbtorgpolicies
+package sbtorgpolicies.settings
 
-import de.heikoseeberger.sbtheader.HeaderPlugin
-import org.scalafmt.sbt.ScalafmtPlugin
 import sbt._
-import sbtorgpolicies.settings.DefaultSettings
 
-object OrgPoliciesPlugin extends AutoPlugin {
+trait dependenciesSpecific { self: dependencies =>
 
-  object autoImport extends OrgPoliciesKeys with DefaultSettings
+  def %(artifactId: String): ModuleID =
+    getLib(artifactId).toModuleId.cross(CrossVersion.Disabled)
 
-  override def requires: Plugins = plugins.JvmPlugin && ScalafmtPlugin && HeaderPlugin
-
-  override def trigger: PluginTrigger = allRequirements
-
-  override def projectSettings: Seq[Def.Setting[_]] = autoImport.orgDefaultSettings
-
-  override def globalSettings: Seq[Def.Setting[_]] = autoImport.pgpSettings
+  def %(artifactId: String, version: String): ModuleID =
+    getLib(artifactId, Some(version)).toModuleId.cross(CrossVersion.Disabled)
 }

@@ -18,6 +18,8 @@ package sbtorgpolicies
 
 import net.jcazevedo.moultingyaml._
 import sbt.Append.Value
+// import sbt.io._
+// import sbt.io.syntax._
 import sbt.{url, URL}
 import sbtorgpolicies.runnable.RunnableItemConfigScope
 import sbtorgpolicies.runnable.syntax._

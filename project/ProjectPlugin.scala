@@ -43,7 +43,16 @@ object ProjectPlugin extends AutoPlugin {
       organization := "com.47deg",
       organizationName := "47 Degrees",
       organizationHomepage := Some(url("http://47deg.com")),
-      crossScalaVersions := Seq(scalac.`2.12`)
+      crossScalaVersions := Seq(scalac.`2.12`),
+      resolvers += Resolver.url("dwijnand-sbt-plugins", url("https://dl.bintray.com/dwijnand/sbt-plugins/"))(
+        Resolver.ivyStylePatterns),
+      libraryDependencies += {
+        Defaults.sbtPluginExtra(
+          "com.dwijnand" % "sbt-compat" % "1.0.0",
+          (sbtBinaryVersion in pluginCrossBuild).value,
+          (scalaBinaryVersion in update).value
+        )
+      }
     )
 
     lazy val pluginSettings: Seq[Def.Setting[_]] = commonSettings ++ Seq(

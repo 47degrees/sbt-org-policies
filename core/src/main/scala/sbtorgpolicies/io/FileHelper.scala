@@ -23,6 +23,8 @@ import cats.syntax.either._
 import cats.syntax.foldable._
 import cats.syntax.traverse._
 import cats.syntax.traverseFilter._
+// import sbt.io._
+// import sbt.io.syntax._
 import sbt.{File, URL}
 import sbtorgpolicies.exceptions.IOException
 import sbtorgpolicies.io.syntax._

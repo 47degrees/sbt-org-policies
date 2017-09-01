@@ -19,8 +19,9 @@ package sbtorgpolicies.io
 import java.io.File
 
 import cats.syntax.either._
-import sbt.io._
-import sbt.io.syntax._
+// import sbt.io._
+// import sbt.io.syntax._
+import sbt.{file, IO}
 import sbtorgpolicies.exceptions._
 import sbtorgpolicies.io.syntax._
 
