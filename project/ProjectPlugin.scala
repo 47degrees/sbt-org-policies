@@ -3,16 +3,16 @@ import sbt.Keys._
 import sbt.Resolver.sonatypeRepo
 import sbt.ScriptedPlugin.autoImport._
 import sbt.{Def, _}
-import sbtorgpolicies.OrgPoliciesKeys.orgAfterCISuccessTaskListSetting
-import sbtorgpolicies.OrgPoliciesPlugin
-import sbtorgpolicies.OrgPoliciesPlugin.autoImport._
-import sbtorgpolicies.runnable.syntax._
-import sbtorgpolicies.templates.badges._
-import sbtorgpolicies.model.scalac
+// import sbtorgpolicies.OrgPoliciesKeys.orgAfterCISuccessTaskListSetting
+// import sbtorgpolicies.OrgPoliciesPlugin
+// import sbtorgpolicies.OrgPoliciesPlugin.autoImport._
+// import sbtorgpolicies.runnable.syntax._
+// import sbtorgpolicies.templates.badges._
+// import sbtorgpolicies.model.scalac
 
 object ProjectPlugin extends AutoPlugin {
 
-  override def requires: Plugins = OrgPoliciesPlugin
+  // override def requires: Plugins = OrgPoliciesPlugin
 
   override def trigger: PluginTrigger = allRequirements
 
