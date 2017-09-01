@@ -219,6 +219,22 @@ trait AllSettings
     scalacOptions in (Test, console) := { scalacOptions in (Compile, console) }.value
   )
 
+  /**
+   * Add a "pretty shell prompt". Do not use this settings if you are in Emacs sbt-mode:
+   * https://github.com/ensime/emacs-sbt-mode , since it's incompatible.
+   */
+  lazy val shellPromptSettings = Seq(
+    shellPrompt := { s: State =>
+      val c     = scala.Console
+      val blue  = c.RESET + c.BLUE + c.BOLD
+      val white = c.RESET + c.BOLD
+
+      val projectName = Project.extract(s).currentProject.id
+
+      s"$blue$projectName$white>${c.RESET}"
+    }
+  )
+
 //  /**
 //   * Sets the default properties for the sbt-dependencies plugin
 //   *

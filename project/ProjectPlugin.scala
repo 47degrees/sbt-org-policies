@@ -16,7 +16,7 @@ object ProjectPlugin extends AutoPlugin {
 
   override def trigger: PluginTrigger = allRequirements
 
-  object sbt {
+  object sbtV {
     val `0.13`: String = "0.13.16"
     val `1.0`: String  = "1.0.1"
 
@@ -57,7 +57,7 @@ object ProjectPlugin extends AutoPlugin {
 
     lazy val pluginSettings: Seq[Def.Setting[_]] = commonSettings ++ Seq(
       sbtPlugin := true,
-      crossSbtVersions := Seq(sbt.`0.13`, sbt.`1.0`),
+      crossSbtVersions := Seq(sbtV.`0.13`, sbtV.`1.0`),
       resolvers ++= Seq(sonatypeRepo("snapshots"), sonatypeRepo("releases")),
       addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "0.9.3" commonExcludes),
       addSbtPlugin("com.eed3si9n"       % "sbt-unidoc"    % "0.4.1"),
@@ -80,7 +80,7 @@ object ProjectPlugin extends AutoPlugin {
         val scalaBinaryVersionValue = (scalaBinaryVersion in update).value
 
         sbtVersionValue match {
-          case sbt.`0.13` =>
+          case sbtV.`0.13` =>
             Seq(
               Defaults.sbtPluginExtra(
                 "org.tpolecat" % "tut-plugin" % "0.5.3",
@@ -91,7 +91,7 @@ object ProjectPlugin extends AutoPlugin {
                 sbtBinaryVersionValue,
                 scalaBinaryVersionValue)
             )
-          case sbt.`1.0` =>
+          case sbtV.`1.0` =>
             Seq(
               Defaults.sbtPluginExtra(
                 "org.tpolecat" % "tut-plugin" % "0.6.0",
@@ -125,8 +125,8 @@ object ProjectPlugin extends AutoPlugin {
       crossScalaVersions := Seq(scalac.`2.10`, scalac.`2.12`),
       scalaVersion := {
         (sbtVersion in pluginCrossBuild).value match {
-          case sbt.`0.13` => scalac.`2.10`
-          case sbt.`1.0`  => scalac.`2.12`
+          case sbtV.`0.13` => scalac.`2.10`
+          case sbtV.`1.0`  => scalac.`2.12`
         }
       },
       libraryDependencies ++= Seq(

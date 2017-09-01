@@ -128,7 +128,7 @@ object model {
       </developer>
   }
 
-  object sbt {
+  object sbtV {
     val `0.13`: String = "0.13.16"
     val `1.0`: String  = "1.0.1"
 
