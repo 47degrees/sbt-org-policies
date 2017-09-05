@@ -32,7 +32,6 @@ import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 import sbtrelease.ReleasePlugin.autoImport._
 import sbtunidoc.BaseUnidocPlugin.autoImport._
 import sbtunidoc.ScalaUnidocPlugin.autoImport._
-// import com.lucidchart.sbt.scalafmt.ScalafmtCorePlugin.autoImport._
 
 trait AllSettings
     extends dependencies
@@ -194,8 +193,6 @@ trait AllSettings
     List(
       includeFilter.in(orgScalafmtInc) := "*.scala",
       excludeFilter.in(orgScalafmtInc) := ".scalafmt.conf"
-      // scalafmtVersion in ThisBuild := "1.0.0-RC3",
-      // scalafmtOnCompile := true
     ) ++ orgAutomateScalafmtFor(Compile, Test)
 
   /** Common unidoc settings, adding the "-Ymacro-no-expand" scalac option.*/

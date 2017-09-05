@@ -60,17 +60,18 @@ object ProjectPlugin extends AutoPlugin {
       crossSbtVersions := Seq(sbtV.`0.13`, sbtV.`1.0`),
       resolvers ++= Seq(sonatypeRepo("snapshots"), sonatypeRepo("releases")),
       addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "0.9.3" commonExcludes),
-      addSbtPlugin("com.eed3si9n"       % "sbt-unidoc"    % "0.4.1"),
-      addSbtPlugin("com.github.gseitz"  % "sbt-release"   % "1.0.6"),
-      addSbtPlugin("org.xerial.sbt"     % "sbt-sonatype"  % "2.0"),
-      addSbtPlugin("com.jsuereth"       % "sbt-pgp"       % "1.1.0-M1"),
-      addSbtPlugin("com.typesafe.sbt"   % "sbt-ghpages"   % "0.6.2"),
-      addSbtPlugin("com.typesafe.sbt"   % "sbt-site"      % "1.3.0"),
-      addSbtPlugin("pl.project13.scala" % "sbt-jmh"       % "0.2.27"),
-      addSbtPlugin("org.scoverage"      % "sbt-scoverage" % "1.5.1"),
-      addSbtPlugin("org.scala-js"       % "sbt-scalajs"   % "0.6.19"),
-      addSbtPlugin("de.heikoseeberger"  % "sbt-header"    % "3.0.1"),
-      addSbtPlugin("com.eed3si9n"       % "sbt-buildinfo" % "0.7.0"),
+      addSbtPlugin("com.eed3si9n"       % "sbt-unidoc"             % "0.4.1"),
+      addSbtPlugin("com.github.gseitz"  % "sbt-release"            % "1.0.6"),
+      addSbtPlugin("org.xerial.sbt"     % "sbt-sonatype"           % "2.0"),
+      addSbtPlugin("com.jsuereth"       % "sbt-pgp"                % "1.1.0-M1"),
+      addSbtPlugin("com.typesafe.sbt"   % "sbt-ghpages"            % "0.6.2"),
+      addSbtPlugin("com.typesafe.sbt"   % "sbt-site"               % "1.3.0"),
+      addSbtPlugin("pl.project13.scala" % "sbt-jmh"                % "0.2.27"),
+      addSbtPlugin("org.scalastyle"     %% "scalastyle-sbt-plugin" % "1.0.0"),
+      addSbtPlugin("org.scoverage"      % "sbt-scoverage"          % "1.5.1"),
+      addSbtPlugin("org.scala-js"       % "sbt-scalajs"            % "0.6.19"),
+      addSbtPlugin("de.heikoseeberger"  % "sbt-header"             % "3.0.1"),
+      addSbtPlugin("com.eed3si9n"       % "sbt-buildinfo"          % "0.7.0"),
       // addSbtPlugin("com.lucidchart"     % "sbt-scalafmt"  % "1.10"),
       // addSbtPlugin("com.geirsson"       % "sbt-scalafmt"  % "1.2.0"),
       libraryDependencies ++= {
@@ -147,10 +148,9 @@ object ProjectPlugin extends AutoPlugin {
 //        %%("scheckToolboxDatetime") % Test,
       ),
       libraryDependencies ++= {
-
         lazy val sbtVersionValue = (sbtVersion in pluginCrossBuild).value
 
-        scalaVersion.value match {
+        (scalaVersion in update).value match {
           case scalac.`2.10` =>
             Seq(
               "org.scala-sbt" % "scripted-plugin" % sbtVersionValue
