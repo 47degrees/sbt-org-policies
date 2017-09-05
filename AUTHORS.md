@@ -21,4 +21,5 @@ These are the people that have contributed to the sbt-org-policies project:
 * Pepe García <[pepegar](https://github.com/pepegar)>
 * Peter Neyens <[peterneyens](https://github.com/peterneyens)>
 * Raúl Raja Martínez <[raulraja](https://github.com/raulraja)>
+* Suhas Gaddam <[suhasgaddam](https://github.com/suhasgaddam)>
 * andy scott <[andyscott](https://github.com/andyscott)>
