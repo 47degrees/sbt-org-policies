@@ -105,7 +105,7 @@ object ProjectPlugin extends AutoPlugin {
             )
         }
       }
-//      addSbtPlugin("io.get-coursier"          % "sbt-coursier"           % "1.0.0-RC10"),
+//      addSbtPlugin("io.get-coursier"          % "sbt-coursier"           % "1.0.0-RC11"),
 //      addCustomSBTPlugin("com.47deg"          % "sbt-dependencies"       % "0.1.1", sbt210 = true),
 //      addCustomSBTPlugin("com.47deg"          % "sbt-microsites"         % "0.6.1", sbt210 = true)
     ) ++ Seq(
