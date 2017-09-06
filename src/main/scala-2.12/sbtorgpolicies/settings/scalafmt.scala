@@ -78,7 +78,7 @@ trait scalafmt {
     def formattingHandler(files: Set[File]) =
       if (files.nonEmpty) {
         val filesArg = files.map(_.getAbsolutePath).mkString(",")
-        // ScalafmtBootstrap.main(List("--quiet", "-i", "-f", filesArg))
+        org.scalafmt.cli.Cli.main(Array("--quiet", "--non-interactive", "--files", filesArg))
       }
 
     format(formattingHandler, "Formatting")
