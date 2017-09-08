@@ -17,20 +17,25 @@
 package sbtorgpolicies.settings
 
 import de.heikoseeberger.sbtheader.AutomateHeaderPlugin
-import de.heikoseeberger.sbtheader.HeaderKey.headers
-import de.heikoseeberger.sbtheader.license.Apache2_0
-import dependencies.DependenciesPlugin.autoImport._
+import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport.{
+  headerLicense,
+  headerMappings,
+  HeaderCommentStyle,
+  HeaderFileType,
+  HeaderLicense
+}
+//import dependencies.DependenciesPlugin.autoImport._
+import scoverage.ScoverageKeys
+import scoverage.ScoverageKeys.coverageEnabled
+import sbtorgpolicies.runnable.SetSetting
 import sbt.Keys._
 import sbt._
 import sbtorgpolicies.OrgPoliciesKeys._
 import sbtorgpolicies.github.GitHubOps
 import sbtorgpolicies.model._
-import sbtorgpolicies.runnable.SetSetting
 import sbtorgpolicies.runnable.syntax._
 import sbtorgpolicies.templates._
 import sbtorgpolicies.templates.badges._
-import scoverage.ScoverageKeys
-import scoverage.ScoverageKeys.coverageEnabled
 
 trait DefaultSettings extends AllSettings {
 
@@ -51,9 +56,9 @@ trait DefaultSettings extends AllSettings {
       orgEnforcementSettingsTasks ++
       orgBashTasks ++
       orgCommonTasks ++
-      sbtDependenciesSettings ++
-      sbtMicrositesSettings ++
-      AutomateHeaderPlugin.automateFor(Compile, Test)
+//      sbtDependenciesSettings ++
+//      sbtMicrositesSettings ++
+      AutomateHeaderPlugin.autoImport.automateHeaderSettings(Compile, Test)
 
   lazy val orgCommonDefaultSettings = Seq(
     orgProjectName := name.value,
@@ -71,9 +76,12 @@ trait DefaultSettings extends AllSettings {
       orgGithubSetting.value.project,
       getEnvVar(orgGithubTokenSetting.value)),
     orgLicenseSetting := ApacheLicense,
-    headers := Map(
-      "scala" -> Apache2_0(replaceableYear(startYear.value), "47 Degrees, LLC. <http://www.47deg.com>")
+    headerMappings := Map(
+      HeaderFileType.scala -> HeaderCommentStyle.CStyleBlockComment,
+      HeaderFileType.java  -> HeaderCommentStyle.CStyleBlockComment
     ),
+    headerLicense := Some(
+      HeaderLicense.ALv2(replaceableYear(startYear.value), "47 Degrees, LLC. <http://www.47deg.com>")),
     orgMaintainersSetting := List(Dev("47degdev", Some("47 Degrees (twitter: @47deg)"), Some("hello@47deg.com"))),
     orgContributorsSetting := Nil,
     orgCommitBranchSetting := "master",
@@ -123,7 +131,7 @@ trait DefaultSettings extends AllSettings {
     },
     orgAfterCISuccessTaskListSetting := List(
       orgUpdateDocFiles.asRunnableItem,
-      depUpdateDependencyIssues.asRunnableItem,
+//      depUpdateDependencyIssues.asRunnableItem,
       orgPublishReleaseTask.asRunnableItem(allModules = true, aggregated = false, crossScalaVersions = true)
     ) ++ guard(((baseDirectory in LocalRootProject).value / "docs").exists() && !version.value.endsWith("-SNAPSHOT"))(
       defaultPublishMicrosite),

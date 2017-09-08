@@ -2,7 +2,7 @@ scalaVersion := sbtorgpolicies.model.scalac.`2.11`
 
 name := "sbt-org-policies-test"
 
-import sbtorgpolicies.model._
+import sbtorgpolicies.model.Dev
 
 orgMaintainersSetting := List(
   Dev("47deg", Some("47 Degrees"))

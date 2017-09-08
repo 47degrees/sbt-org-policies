@@ -21,6 +21,8 @@ import java.nio.file.Path
 import java.nio.file.Paths.get
 
 import cats.syntax.either._
+// import sbt.io._
+// import sbt.io.syntax._
 import sbt.{file, File}
 import sbtorgpolicies.exceptions.IOException
 

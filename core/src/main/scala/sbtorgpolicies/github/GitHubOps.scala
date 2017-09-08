@@ -25,6 +25,7 @@ import com.github.marklister.base64.Base64._
 import github4s.Github
 import github4s.GithubResponses._
 import github4s.free.domain._
+// import sbt.io.IO
 import sbt.IO
 import sbtorgpolicies.exceptions.{GitHubException, IOException, OrgPolicyException}
 import sbtorgpolicies.github.config._
@@ -281,7 +282,10 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
     op.execE
   }
 
-  def latestPullRequests(branch: String, inPath: String, message: String): Either[GitHubException, List[PullRequest]] = {
+  def latestPullRequests(
+      branch: String,
+      inPath: String,
+      message: String): Either[GitHubException, List[PullRequest]] = {
 
     def fetchLastCommit: Github4sResponse[Option[Commit]] = {
 

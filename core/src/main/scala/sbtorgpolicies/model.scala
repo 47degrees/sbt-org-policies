@@ -18,7 +18,9 @@ package sbtorgpolicies
 
 import net.jcazevedo.moultingyaml._
 import sbt.Append.Value
-import sbt.{url, Append, URL}
+// import sbt.io._
+// import sbt.io.syntax._
+import sbt.{url, URL}
 import sbtorgpolicies.runnable.RunnableItemConfigScope
 import sbtorgpolicies.runnable.syntax._
 
@@ -46,7 +48,7 @@ object model {
 
   }
 
-  implicit val settingAppender: Append.Value[Seq[(String, java.net.URL)], License] =
+  implicit val settingAppender: Value[Seq[(String, java.net.URL)], License] =
     new Value[Seq[(String, URL)], License] {
       override def appendValue(a: Seq[(String, URL)], b: License): Seq[(String, URL)] = a :+ b.tupled
     }
@@ -126,11 +128,19 @@ object model {
       </developer>
   }
 
+  object sbtV {
+    val `0.13`: String = "0.13.16"
+    val `1.0`: String  = "1.0.1"
+
+    val crossSbtVersions: List[String] = List(`0.13`, `1.0`)
+  }
+
   object scalac {
 
     val `2.10`: String = "2.10.6"
     val `2.11`: String = "2.11.11"
-    val `2.12`: String = "2.12.2"
+    val `2.12`: String = "2.12.3"
+    val `2.13`: String = "2.13.0-M1"
 
     val latestScalaVersion: String = `2.12`
 

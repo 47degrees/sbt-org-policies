@@ -50,9 +50,7 @@ trait GitHubArbitraries {
   } toList
 
   def genGHResponse[T](gen: Gen[T]): Gen[GHResponse[T]] =
-    Gen.oneOf(
-      genGHException.map(_.asLeft[GHResult[T]]),
-      gen.map(v => GHResult(v, 200, Map.empty).asRight[GHException]))
+    Gen.oneOf(genGHException.map(_.asLeft[GHResult[T]]), gen.map(v => GHResult(v, 200, Map.empty).asRight[GHException]))
 
   val genGHException: Gen[GHException] = {
     val message = "Generated Exception"

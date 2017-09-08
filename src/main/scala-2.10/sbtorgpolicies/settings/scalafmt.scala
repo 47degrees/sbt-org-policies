@@ -42,10 +42,10 @@ trait scalafmt {
     }
 
   val orgScalafmtIncDef: Def.Initialize[Task[Set[File]]] = Def.task {
-    val cache   = streams.value.cacheDirectory / "scalafmt"
-    val include = includeFilter.in(orgScalafmtInc).value
-    val exclude = excludeFilter.in(orgScalafmtInc).value
-    val sources =
+    val cache: File         = streams.value.cacheDirectory / "scalafmt"
+    val include: FileFilter = includeFilter.in(orgScalafmtInc).value
+    val exclude: FileFilter = excludeFilter.in(orgScalafmtInc).value
+    val sources: Set[File] =
       sourceDirectories
         .in(orgScalafmtInc)
         .value
@@ -53,13 +53,18 @@ trait scalafmt {
         .get
         .toSet
 
-    def format(handler: Set[File] => Unit, msg: String) = {
-      def update(handler: Set[File] => Unit, msg: String)(in: ChangeReport[File], out: ChangeReport[File]) = {
-        val label = Reference.display(thisProjectRef.value)
-        val files = in.modified -- in.removed
+    def format(handler: Set[File] => Unit, msg: String): Set[File] = {
+      def update(handler: Set[File] => Unit, msg: String)(
+          in: ChangeReport[File],
+          out: ChangeReport[File]): Set[File] = {
+        val label: String    = Reference.display(thisProjectRef.value)
+        val files: Set[File] = in.modified -- in.removed
+
+        lazy val log: Logger = streams.value.log
+
         Analysis
           .counted("Scala source", "", "s", files.size)
-          .foreach(count => streams.value.log.info(s"$msg $count in $label ..."))
+          .foreach(count => log.info(s"$msg $count in $label ..."))
         handler(files)
         files
       }

@@ -12,6 +12,6 @@ lazy val `org-policies-core` = (project in file("core"))
 
 addCommandAlias("publishLocalAll", ";org-policies-core/publishLocal;sbt-org-policies/publishLocal")
 
-pgpPassphrase := Some(getEnvVar("PGP_PASSPHRASE").getOrElse("").toCharArray)
-pgpPublicRing := file(s"$gpgFolder/pubring.gpg")
-pgpSecretRing := file(s"$gpgFolder/secring.gpg")
+pgpPassphrase := Some(Option(System.getenv().get("PGP_PASSPHRASE")).getOrElse("").toCharArray)
+// pgpPublicRing := file(s"$gpgFolder/pubring.gpg")
+// pgpSecretRing := file(s"$gpgFolder/secring.gpg")

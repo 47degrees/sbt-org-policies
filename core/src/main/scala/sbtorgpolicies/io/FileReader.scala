@@ -19,6 +19,8 @@ package sbtorgpolicies.io
 import java.io.File
 
 import cats.syntax.either._
+// import sbt.io._
+// import sbt.io.syntax._
 import sbt.{file, IO}
 import sbtorgpolicies.exceptions._
 import sbtorgpolicies.io.syntax._
@@ -91,9 +93,7 @@ class FileReader {
       }
       .leftMap(e => IOException(s"Error fetching files recursively", Some(e)))
 
-  def fetchDirsRecursively(
-      in: List[File],
-      isDirSupported: (File) => Boolean = defaultValidDirs): IOResult[List[File]] =
+  def fetchDirsRecursively(in: List[File], isDirSupported: (File) => Boolean = defaultValidDirs): IOResult[List[File]] =
     Either
       .catchNonFatal {
         @tailrec

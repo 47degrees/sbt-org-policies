@@ -54,7 +54,7 @@ trait release {
     val extracted = Project.extract(st)
 
     val releaseV = extracted.get(version)
-    val nextFunc = extracted.get(releaseNextVersion)
+    val nextFunc = extracted.runTask(releaseNextVersion, st)._2
 
     val nextV = nextFunc(releaseV)
 

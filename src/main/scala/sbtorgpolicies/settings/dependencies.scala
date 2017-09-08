@@ -24,7 +24,7 @@ import sbtorgpolicies.libraries._
 
 import scala.language.postfixOps
 
-trait dependencies {
+trait dependencies extends ScalaSettings {
 
   case class Dep(organization: String, name: String, revision: String) {
 
@@ -32,12 +32,6 @@ trait dependencies {
 
     def toJsModuleId: ModuleID = (organization % name % revision).cross(ScalaJSCrossVersion.binary)
   }
-
-  def %(artifactId: String): ModuleID =
-    getLib(artifactId).toModuleId.cross(CrossVersion.Disabled)
-
-  def %(artifactId: String, version: String): ModuleID =
-    getLib(artifactId, Some(version)).toModuleId.cross(CrossVersion.Disabled)
 
   def %%(artifactId: String): ModuleID =
     getLib(artifactId).toModuleId
@@ -60,7 +54,7 @@ trait dependencies {
 
   }
 
-  private[this] def getLib(lib: String, maybeVersion: Option[String] = None): Dep = {
+  protected[this] def getLib(lib: String, maybeVersion: Option[String] = None): Dep = {
     val artifact: (String, String, String) = libs(lib)
     val dep                                = Dep(artifact._1, artifact._2, artifact._3)
     maybeVersion.foldLeft(dep)((module, revision) => module.copy(revision = revision))

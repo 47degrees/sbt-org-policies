@@ -18,9 +18,10 @@ package sbtorgpolicies.settings
 
 import com.typesafe.sbt.pgp.PgpKeys
 import com.typesafe.sbt.pgp.PgpKeys._
-import dependencies.DependenciesPlugin
-import dependencies.DependenciesPlugin.autoImport._
-import microsites.MicrositeKeys._
+//import dependencies.DependenciesPlugin
+//import dependencies.DependenciesPlugin.autoImport._
+//import microsites.MicrositeKeys._
+import scoverage.ScoverageKeys
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 import sbt.Keys._
 import sbt._
@@ -31,7 +32,6 @@ import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 import sbtrelease.ReleasePlugin.autoImport._
 import sbtunidoc.BaseUnidocPlugin.autoImport._
 import sbtunidoc.ScalaUnidocPlugin.autoImport._
-import scoverage.ScoverageKeys
 
 trait AllSettings
     extends dependencies
@@ -42,7 +42,8 @@ trait AllSettings
     with bash
     with release
     with common
-    with utils {
+    with utils
+    with ScalaSettings {
 
   /**
    * Settings common to all projects.
@@ -84,7 +85,7 @@ trait AllSettings
       publishArtifacts,
       setNextVersion,
       orgCommitNextVersion,
-      ReleaseStep(action = Command.process("sonatypeReleaseAll", _)),
+      ReleaseStep(action = "sonatypeReleaseAll" :: _),
       orgPostRelease
     )
   )
@@ -115,27 +116,6 @@ trait AllSettings
     publishLocal := ((): Unit),
     publishArtifact := false
   )
-
-  /** Using the supplied Versions map, adds the dependencies for scala macros.*/
-  @deprecated("Scala Macros dependencies have been deprecated in favour of the use of Scalameta ones.", "0.5.6")
-  lazy val scalaMacroDependencies: Seq[Setting[_]] = {
-    Seq(
-      libraryDependencies += scalaOrganization.value % "scala-compiler" % scalaVersion.value % "provided",
-      libraryDependencies += scalaOrganization.value % "scala-reflect"  % scalaVersion.value % "provided",
-      libraryDependencies += compilerPlugin(%%("paradise") cross CrossVersion.patch),
-      libraryDependencies ++= {
-        CrossVersion.partialVersion(scalaVersion.value) match {
-          // if scala 2.11+ is used, quasiquotes are merged into scala-reflect
-          case Some((2, scalaMajor)) if scalaMajor >= 11 => Seq()
-          // in Scala 2.10, quasiquotes are provided by macro paradise
-          case Some((2, 10)) =>
-            Seq(
-              %%("quasiquotes") cross CrossVersion.binary
-            )
-        }
-      }
-    )
-  }
 
   lazy val scalaMetaSettings = Seq(
     addCompilerPlugin(%%("scalameta-paradise") cross CrossVersion.full),
@@ -202,23 +182,6 @@ trait AllSettings
     pomExtra := <developers> { (orgMaintainersSetting.value ++ orgContributorsSetting.value).map(_.pomExtra) } </developers>
   )
 
-  /**
-   * It allows alternative Scala organization, however, scala-lang is still used
-   * during transitive ivy resolution and should be added.
-   */
-  lazy val scalaDependencyOverrides = Seq(
-    dependencyOverrides ++= Set(
-      "org.scala-lang"        % "scala-compiler" % scalaVersion.value,
-      "org.scala-lang"        % "scala-library"  % scalaVersion.value,
-      "org.scala-lang"        % "scala-reflect"  % scalaVersion.value,
-      "org.scala-lang"        % "scalap"         % scalaVersion.value,
-      scalaOrganization.value % "scala-compiler" % scalaVersion.value,
-      scalaOrganization.value % "scala-library"  % scalaVersion.value,
-      scalaOrganization.value % "scala-reflect"  % scalaVersion.value,
-      scalaOrganization.value % "scalap"         % scalaVersion.value
-    )
-  )
-
   /** Common coverage settings, with minimum coverage defaulting to 80.*/
   def sharedScoverageSettings(min: Double = scoverageMinimum) = Seq(
     ScoverageKeys.coverageMinimum := min,
@@ -269,25 +232,25 @@ trait AllSettings
     }
   )
 
-  /**
-   * Sets the default properties for the sbt-dependencies plugin
-   *
-   * Uses the github settings to set the GitHub owner and repo
-   */
-  val sbtDependenciesSettings: Seq[Setting[_]] =
-    DependenciesPlugin.defaultSettings ++ Seq(
-      depGithubOwnerSetting := orgGithubSetting.value.organization,
-      depGithubRepoSetting := orgGithubSetting.value.project,
-      depGithubTokenSetting := getEnvVar(orgGithubTokenSetting.value)
-    )
-
-  /**
-   * Sets the default properties for the sbt-microsites plugin.
-   *
-   */
-  val sbtMicrositesSettings: Seq[Setting[_]] =
-    Seq(
-      micrositeGithubToken := getEnvVar(orgGithubTokenSetting.value),
-      micrositePushSiteWith := GitHub4s
-    )
+//  /**
+//   * Sets the default properties for the sbt-dependencies plugin
+//   *
+//   * Uses the github settings to set the GitHub owner and repo
+//   */
+//  val sbtDependenciesSettings: Seq[Setting[_]] =
+//    DependenciesPlugin.defaultSettings ++ Seq(
+//      depGithubOwnerSetting := orgGithubSetting.value.organization,
+//      depGithubRepoSetting := orgGithubSetting.value.project,
+//      depGithubTokenSetting := getEnvVar(orgGithubTokenSetting.value)
+//    )
+//
+//  /**
+//   * Sets the default properties for the sbt-microsites plugin.
+//   *
+//   */
+//  val sbtMicrositesSettings: Seq[Setting[_]] =
+//    Seq(
+//      micrositeGithubToken := getEnvVar(orgGithubTokenSetting.value),
+//      micrositePushSiteWith := GitHub4s
+//    )
 }
