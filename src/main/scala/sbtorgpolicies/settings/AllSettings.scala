@@ -43,7 +43,7 @@ trait AllSettings
     with release
     with common
     with utils
-    with AllSettingsSpecific {
+    with ScalaSettings {
 
   /**
    * Settings common to all projects.

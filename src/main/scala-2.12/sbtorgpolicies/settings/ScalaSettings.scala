@@ -19,7 +19,13 @@ package sbtorgpolicies.settings
 import sbt.Keys._
 import sbt._
 
-trait AllSettingsSpecific extends dependencies {
+trait ScalaSettings { self: dependencies =>
+
+  def %(artifactId: String): ModuleID =
+    getLib(artifactId).toModuleId.withCrossVersion(sbt.librarymanagement.Disabled())
+
+  def %(artifactId: String, version: String): ModuleID =
+    getLib(artifactId, Some(version)).toModuleId.withCrossVersion(sbt.librarymanagement.Disabled())
 
   /**
    * It allows alternative Scala organization, however, scala-lang is still used

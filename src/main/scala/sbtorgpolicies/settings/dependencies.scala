@@ -24,7 +24,7 @@ import sbtorgpolicies.libraries._
 
 import scala.language.postfixOps
 
-trait dependencies extends dependenciesSpecific {
+trait dependencies extends ScalaSettings {
 
   case class Dep(organization: String, name: String, revision: String) {
 

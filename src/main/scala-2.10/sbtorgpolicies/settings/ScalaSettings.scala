@@ -16,13 +16,31 @@
 
 package sbtorgpolicies.settings
 
+import sbt.Keys._
 import sbt._
 
-trait dependenciesSpecific { self: dependencies =>
+trait ScalaSettings { self: dependencies =>
 
   def %(artifactId: String): ModuleID =
     getLib(artifactId).toModuleId.cross(CrossVersion.Disabled)
 
   def %(artifactId: String, version: String): ModuleID =
     getLib(artifactId, Some(version)).toModuleId.cross(CrossVersion.Disabled)
+
+  /**
+   * It allows alternative Scala organization, however, scala-lang is still used
+   * during transitive ivy resolution and should be added.
+   */
+  lazy val scalaDependencyOverrides = Seq(
+    dependencyOverrides ++= Set(
+      "org.scala-lang"        % "scala-compiler" % scalaVersion.value,
+      "org.scala-lang"        % "scala-library"  % scalaVersion.value,
+      "org.scala-lang"        % "scala-reflect"  % scalaVersion.value,
+      "org.scala-lang"        % "scalap"         % scalaVersion.value,
+      scalaOrganization.value % "scala-compiler" % scalaVersion.value,
+      scalaOrganization.value % "scala-library"  % scalaVersion.value,
+      scalaOrganization.value % "scala-reflect"  % scalaVersion.value,
+      scalaOrganization.value % "scalap"         % scalaVersion.value
+    )
+  )
 }

@@ -80,30 +80,21 @@ object ProjectPlugin extends AutoPlugin {
 
         val scalaBinaryVersionValue = (scalaBinaryVersion in update).value
 
-        sbtVersionValue match {
-          case sbtV.`0.13` =>
-            Seq(
-              Defaults.sbtPluginExtra(
-                "org.tpolecat" % "tut-plugin" % "0.5.3",
-                sbtBinaryVersionValue,
-                scalaBinaryVersionValue),
-              Defaults.sbtPluginExtra(
-                "com.geirsson" % "sbt-scalafmt" % "0.6.8",
-                sbtBinaryVersionValue,
-                scalaBinaryVersionValue)
-            )
-          case sbtV.`1.0` =>
-            Seq(
-              Defaults.sbtPluginExtra(
-                "org.tpolecat" % "tut-plugin" % "0.6.0",
-                sbtBinaryVersionValue,
-                scalaBinaryVersionValue),
-              Defaults.sbtPluginExtra(
-                "com.geirsson" % "sbt-scalafmt" % "1.2.0",
-                sbtBinaryVersionValue,
-                scalaBinaryVersionValue)
-            )
+        val (tutPluginVersion, sbtScalafmtVersion) = sbtVersionValue match {
+          case sbtV.`0.13` => ("0.5.3", "0.6.8")
+          case sbtV.`1.0`  => ("0.6.0", "1.2.0")
         }
+
+        Seq(
+          Defaults.sbtPluginExtra(
+            "org.tpolecat" % "tut-plugin" % tutPluginVersion,
+            sbtBinaryVersionValue,
+            scalaBinaryVersionValue),
+          Defaults.sbtPluginExtra(
+            "com.geirsson" % "sbt-scalafmt" % sbtScalafmtVersion,
+            sbtBinaryVersionValue,
+            scalaBinaryVersionValue)
+        )
       }
 //      addSbtPlugin("io.get-coursier"          % "sbt-coursier"           % "1.0.0-RC11"),
 //      addCustomSBTPlugin("com.47deg"          % "sbt-dependencies"       % "0.1.1", sbt210 = true),
