@@ -3,16 +3,16 @@ import sbt.Keys._
 import sbt.Resolver.sonatypeRepo
 import sbt.ScriptedPlugin.autoImport._
 import sbt.{Def, _}
-// import sbtorgpolicies.OrgPoliciesKeys.orgAfterCISuccessTaskListSetting
-// import sbtorgpolicies.OrgPoliciesPlugin
-// import sbtorgpolicies.OrgPoliciesPlugin.autoImport._
-// import sbtorgpolicies.runnable.syntax._
-// import sbtorgpolicies.templates.badges._
-// import sbtorgpolicies.model.scalac
+import sbtorgpolicies.OrgPoliciesKeys.orgAfterCISuccessTaskListSetting
+import sbtorgpolicies.OrgPoliciesPlugin
+import sbtorgpolicies.OrgPoliciesPlugin.autoImport._
+import sbtorgpolicies.runnable.syntax._
+import sbtorgpolicies.templates.badges._
+import sbtorgpolicies.model.scalac
 
 object ProjectPlugin extends AutoPlugin {
 
-  // override def requires: Plugins = OrgPoliciesPlugin
+  override def requires: Plugins = OrgPoliciesPlugin
 
   override def trigger: PluginTrigger = allRequirements
 
@@ -189,14 +189,13 @@ object ProjectPlugin extends AutoPlugin {
   private[this] val artifactSettings = Seq(
     scalaVersion := scalac.`2.12`,
     scalaOrganization := "org.scala-lang",
-    startYear := Some(2017)
-//    ,
-//    orgBadgeListSetting := List(
-//      TravisBadge.apply,
-//      MavenCentralBadge.apply,
-//      LicenseBadge.apply,
-//      GitHubIssuesBadge.apply
-//    ),
+    startYear := Some(2017),
+    orgBadgeListSetting := List(
+      TravisBadge.apply,
+      MavenCentralBadge.apply,
+      LicenseBadge.apply,
+      GitHubIssuesBadge.apply
+    ) //,
 //    orgAfterCISuccessTaskListSetting ~= (_ filterNot(_ == depUpdateDependencyIssues.asRunnableItem))
   )
 }
