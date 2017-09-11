@@ -1,5 +1,14 @@
 # Changelog
 
+## 09/11/2017 - Version 0.6.0
+
+Release changes:
+
+* Cross compile to SBT {0.13.16, 1.0.1} ([#510](https://github.com/47deg/sbt-org-policies/pull/510))
+* CI 0.6.0 snapshot ([#512](https://github.com/47deg/sbt-org-policies/pull/512))
+* Release 0.6.0 ([#513](https://github.com/47deg/sbt-org-policies/pull/513))
+
+
 ## 08/29/2017 - Version 0.5.15
 
 Release changes:
