@@ -3,16 +3,16 @@ import sbt.Keys._
 import sbt.Resolver.sonatypeRepo
 import sbt.ScriptedPlugin.autoImport._
 import sbt.{Def, _}
-// import sbtorgpolicies.OrgPoliciesKeys.orgAfterCISuccessTaskListSetting
-// import sbtorgpolicies.OrgPoliciesPlugin
-// import sbtorgpolicies.OrgPoliciesPlugin.autoImport._
-// import sbtorgpolicies.runnable.syntax._
-// import sbtorgpolicies.templates.badges._
-// import sbtorgpolicies.model.scalac
+import sbtorgpolicies.OrgPoliciesKeys.orgAfterCISuccessTaskListSetting
+import sbtorgpolicies.OrgPoliciesPlugin
+import sbtorgpolicies.OrgPoliciesPlugin.autoImport._
+import sbtorgpolicies.runnable.syntax._
+import sbtorgpolicies.templates.badges._
+import sbtorgpolicies.model.scalac
 
 object ProjectPlugin extends AutoPlugin {
 
-  // override def requires: Plugins = OrgPoliciesPlugin
+  override def requires: Plugins = OrgPoliciesPlugin
 
   override def trigger: PluginTrigger = allRequirements
 
@@ -63,7 +63,7 @@ object ProjectPlugin extends AutoPlugin {
       addSbtPlugin("com.eed3si9n"       % "sbt-unidoc"             % "0.4.1"),
       addSbtPlugin("com.github.gseitz"  % "sbt-release"            % "1.0.6"),
       addSbtPlugin("org.xerial.sbt"     % "sbt-sonatype"           % "2.0"),
-      addSbtPlugin("com.jsuereth"       % "sbt-pgp"                % "1.1.0-M1"),
+      addSbtPlugin("com.jsuereth"       % "sbt-pgp"                % "1.1.0"),
       addSbtPlugin("com.typesafe.sbt"   % "sbt-ghpages"            % "0.6.2"),
       addSbtPlugin("com.typesafe.sbt"   % "sbt-site"               % "1.3.0"),
       addSbtPlugin("pl.project13.scala" % "sbt-jmh"                % "0.2.27"),
@@ -189,14 +189,13 @@ object ProjectPlugin extends AutoPlugin {
   private[this] val artifactSettings = Seq(
     scalaVersion := scalac.`2.12`,
     scalaOrganization := "org.scala-lang",
-    startYear := Some(2017)
-//    ,
-//    orgBadgeListSetting := List(
-//      TravisBadge.apply,
-//      MavenCentralBadge.apply,
-//      LicenseBadge.apply,
-//      GitHubIssuesBadge.apply
-//    ),
+    startYear := Some(2017),
+    orgBadgeListSetting := List(
+      TravisBadge.apply,
+      MavenCentralBadge.apply,
+      LicenseBadge.apply,
+      GitHubIssuesBadge.apply
+    ) //,
 //    orgAfterCISuccessTaskListSetting ~= (_ filterNot(_ == depUpdateDependencyIssues.asRunnableItem))
   )
 }
