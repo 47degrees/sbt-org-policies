@@ -1,5 +1,14 @@
 # Changelog
 
+## 09/11/2017 - Version 0.6.2
+
+Release changes:
+
+* Release 0.6.2 ([#515](https://github.com/47deg/sbt-org-policies/pull/515))
+* Only run "^ test" for sbt plugin ([#516](https://github.com/47deg/sbt-org-policies/pull/516))
+* Release 0.6.2 ([#517](https://github.com/47deg/sbt-org-policies/pull/517))
+
+
 ## 09/11/2017 - Version 0.6.1
 
 Release changes:
