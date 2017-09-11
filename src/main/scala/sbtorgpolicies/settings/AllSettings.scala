@@ -79,7 +79,7 @@ trait AllSettings
       checkSnapshotDependencies,
       orgInquireVersions,
       if (sbtPlugin.value) releaseStepCommandAndRemaining("^ clean") else runClean,
-      if (sbtPlugin.value) releaseStepCommandAndRemaining("^ test; ^ scripted") else runTest,
+      if (sbtPlugin.value) releaseStepCommandAndRemaining("^ test") else runTest,
       orgTagRelease,
       orgUpdateChangeLog,
       if (sbtPlugin.value) releaseStepCommandAndRemaining("^ publishSigned") else publishArtifacts,
