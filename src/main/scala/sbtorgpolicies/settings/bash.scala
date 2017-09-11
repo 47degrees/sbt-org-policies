@@ -63,7 +63,7 @@ trait bash {
 
         val ref = extracted.get(thisProjectRef)
 
-        extracted.runAggregated[Unit](publishSigned in Global in ref, st)
+        extracted.runAggregated[Unit](publish in Global in ref, st)
       case (false, true) =>
         st.log.info("Release Version detected, starting the release process...")
 

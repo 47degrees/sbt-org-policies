@@ -108,7 +108,7 @@ object libraries {
     "sbt-ghpages"           -> "0.6.2",
     "sbt-git"               -> "0.9.3",
     "sbt-header"            -> "3.0.1",
-    "sbt-pgp"               -> "1.1.0-M1",
+    "sbt-pgp"               -> "1.1.0",
     "sbt-jmh"               -> "0.2.27",
     "sbt-release"           -> "1.0.6",
     "sbt-scalafmt"          -> "0.6.8",

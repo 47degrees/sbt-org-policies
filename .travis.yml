@@ -30,7 +30,13 @@ script:
     fi
 
 after_success:
-  - sbt ^^$SBT_VERSION orgAfterCISuccess
+  - if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then
+      if grep -q "SNAPSHOT" version.sbt; then
+        sbt ^^$SBT_VERSION publish;
+      else
+        sbt ^^$SBT_VERSION release;
+      fi
+    fi
   - sbt ^^$SBT_VERSION publishLocal
   - cd autocheck && sbt ^^$SBT_VERSION -Dplugin.version=$(cat ../version.sbt | sed 's/.*"\(.*\)".*/\1/') checkDependencies
 
