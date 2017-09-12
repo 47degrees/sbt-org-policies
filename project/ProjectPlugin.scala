@@ -9,6 +9,7 @@ import sbtorgpolicies.OrgPoliciesPlugin.autoImport._
 import sbtorgpolicies.runnable.syntax._
 import sbtorgpolicies.templates.badges._
 import sbtorgpolicies.model.scalac
+import sbtbuildinfo.BuildInfoPlugin.autoImport._
 
 object ProjectPlugin extends AutoPlugin {
 
@@ -182,6 +183,10 @@ object ProjectPlugin extends AutoPlugin {
       if (sbt210) addSbtPlugin(module exclude210Suffixes, "0.13", "2.10")
       else addSbtPlugin(module)
 
+    lazy val buildInfoSettings: Seq[Def.Setting[_]] = Seq(
+      buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
+      buildInfoPackage := "sbtorgpolicies"
+    )
   }
 
   override def projectSettings: Seq[Def.Setting[_]] = artifactSettings //++ shellPromptSettings

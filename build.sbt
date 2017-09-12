@@ -9,6 +9,8 @@ lazy val `sbt-org-policies` = (project in file("."))
 lazy val `org-policies-core` = (project in file("core"))
   .settings(moduleName := "org-policies-core")
   .settings(coreSettings: _*)
+  .enablePlugins(BuildInfoPlugin)
+  .settings(buildInfoSettings: _*)
 
 addCommandAlias("publishLocalAll", ";org-policies-core/publishLocal;sbt-org-policies/publishLocal")
 
