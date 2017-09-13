@@ -73,6 +73,7 @@ object ProjectPlugin extends AutoPlugin {
       addSbtPlugin("org.scala-js"       % "sbt-scalajs"            % "0.6.19"),
       addSbtPlugin("de.heikoseeberger"  % "sbt-header"             % "3.0.1"),
       addSbtPlugin("com.eed3si9n"       % "sbt-buildinfo"          % "0.7.0"),
+      addSbtPlugin("com.47deg"          % "sbt-dependencies"       % "0.2.0"),
       // addSbtPlugin("com.lucidchart"     % "sbt-scalafmt"  % "1.10"),
       // addSbtPlugin("com.geirsson"       % "sbt-scalafmt"  % "1.2.0"),
       libraryDependencies ++= {
@@ -98,7 +99,6 @@ object ProjectPlugin extends AutoPlugin {
         )
       }
 //      addSbtPlugin("io.get-coursier"          % "sbt-coursier"           % "1.0.0-RC11"),
-//      addCustomSBTPlugin("com.47deg"          % "sbt-dependencies"       % "0.1.1", sbt210 = true),
 //      addCustomSBTPlugin("com.47deg"          % "sbt-microsites"         % "0.6.1", sbt210 = true)
     ) ++ Seq(
       scriptedLaunchOpts := {

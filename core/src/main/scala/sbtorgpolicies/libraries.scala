@@ -100,7 +100,7 @@ object libraries {
   )
 
   val vPlugins47: Map[String, String] = Map[String, String](
-    "sbt-dependencies" -> "0.1.1",
+    "sbt-dependencies" -> "0.2.0",
     "sbt-microsites"   -> "0.5.7"
   )
 
@@ -299,8 +299,8 @@ object libraries {
   )
 
   val pluginLibs: Map[String, Artifact] = Map[String, Artifact](
-    "sbt-buildinfo" -> (("com.eed3si9n", "sbt-buildinfo", v("sbt-buildinfo"))),
-    // "sbt-dependencies" -> (("com.47deg", "sbt-dependencies", v("sbt-dependencies"))),
+    "sbt-buildinfo"    -> (("com.eed3si9n", "sbt-buildinfo", v("sbt-buildinfo"))),
+    "sbt-dependencies" -> (("com.47deg", "sbt-dependencies", v("sbt-dependencies"))),
     // "sbt-coursier"     -> (("io.get-coursier", "sbt-coursier", v("coursier"))),
     "sbt-ghpages" -> (("com.typesafe.sbt", "sbt-ghpages", v("sbt-ghpages"))),
     "sbt-git"     -> (("com.typesafe.sbt", "sbt-git", v("sbt-git"))),
