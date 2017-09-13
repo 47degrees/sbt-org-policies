@@ -189,7 +189,7 @@ object ProjectPlugin extends AutoPlugin {
     )
   }
 
-  override def projectSettings: Seq[Def.Setting[_]] = artifactSettings //++ shellPromptSettings
+  override def projectSettings: Seq[Def.Setting[_]] = artifactSettings ++ shellPromptSettings
 
   private[this] val artifactSettings = Seq(
     scalaVersion := scalac.`2.12`,
