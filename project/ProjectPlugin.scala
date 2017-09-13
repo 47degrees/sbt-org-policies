@@ -123,21 +123,14 @@ object ProjectPlugin extends AutoPlugin {
         }
       },
       libraryDependencies ++= Seq(
-        "com.47deg"             %% "github4s"                    % "0.15.0",
-        "org.typelevel"         %% "cats-core"                   % "0.9.0",
-        "com.github.marklister" %% "base64"                      % "0.2.3",
-        "net.jcazevedo"         %% "moultingyaml"                % "0.4.0",
-        "org.scalatest"         %% "scalatest"                   % "3.0.3" % Test,
-        "org.scalacheck"        %% "scalacheck"                  % "1.13.4" % Test,
-        "com.47deg"             %% "scalacheck-toolbox-datetime" % "0.2.2" % Test,
-        "org.scalamock"         %% "scalamock-scalatest-support" % "3.5.0" % Test
-//        %%("github4s"),
-//        %%("cats"),
-//        %%("base64"),
-//        %%("moultingyaml"),
-//        %%("scalatest")             % Test,
-//        %%("scalacheck")            % Test,
-//        %%("scheckToolboxDatetime") % Test,
+        %%("github4s"),
+        %%("cats-core"),
+        %%("base64"),
+        %%("moultingyaml"),
+        %%("scalatest")             % Test,
+        %%("scalacheck")            % Test,
+        %%("scheckToolboxDatetime") % Test,
+        %%("scalamockScalatest")    % Test,
       ),
       libraryDependencies ++= {
         lazy val sbtVersionValue = (sbtVersion in pluginCrossBuild).value
