@@ -46,8 +46,7 @@ lazy val `org-policies-auto-dep-check` = (project in file("."))
         getEnvVarOrElse("TRAVIS_PULL_REQUEST") == "false"
 
       if (isTravisMaster && currentPluginVersion.isDefined)
-        // Def.task(depUpdateDependencyIssues.value)
-        Def.task()
+        Def.task(depUpdateDependencyIssues.value)
       else
         Def.task(streams.value.log.warn("Skipping auto-dependency check"))
     }.value

@@ -8,7 +8,7 @@ import sbtorgpolicies.OrgPoliciesPlugin
 import sbtorgpolicies.OrgPoliciesPlugin.autoImport._
 import sbtorgpolicies.runnable.syntax._
 import sbtorgpolicies.templates.badges._
-import sbtorgpolicies.model.scalac
+import sbtorgpolicies.model.{sbtV, scalac}
 import sbtbuildinfo.BuildInfoPlugin.autoImport._
 
 object ProjectPlugin extends AutoPlugin {
@@ -16,26 +16,6 @@ object ProjectPlugin extends AutoPlugin {
   override def requires: Plugins = OrgPoliciesPlugin
 
   override def trigger: PluginTrigger = allRequirements
-
-  object sbtV {
-    val `0.13`: String = "0.13.16"
-    val `1.0`: String  = "1.0.1"
-
-    val crossSbtVersions: List[String] = List(`0.13`, `1.0`)
-  }
-
-  object scalac {
-
-    val `2.10`: String = "2.10.6"
-    val `2.11`: String = "2.11.11"
-    val `2.12`: String = "2.12.3"
-    val `2.13`: String = "2.13.0-M1"
-
-    val latestScalaVersion: String = `2.12`
-
-    val crossScalaVersions: List[String] = List(`2.11`, `2.12`)
-
-  }
 
   object autoImport {
 
