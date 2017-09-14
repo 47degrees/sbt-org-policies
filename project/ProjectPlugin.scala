@@ -1,4 +1,4 @@
-//import dependencies.DependenciesPlugin.autoImport.depUpdateDependencyIssues
+import dependencies.DependenciesPlugin.autoImport.depUpdateDependencyIssues
 import sbt.Keys._
 import sbt.Resolver.sonatypeRepo
 import sbt.ScriptedPlugin.autoImport._
@@ -9,6 +9,7 @@ import sbtorgpolicies.OrgPoliciesPlugin.autoImport._
 import sbtorgpolicies.runnable.syntax._
 import sbtorgpolicies.templates.badges._
 import sbtorgpolicies.model.scalac
+import sbtbuildinfo.BuildInfoPlugin.autoImport._
 
 object ProjectPlugin extends AutoPlugin {
 
@@ -72,6 +73,7 @@ object ProjectPlugin extends AutoPlugin {
       addSbtPlugin("org.scala-js"       % "sbt-scalajs"            % "0.6.19"),
       addSbtPlugin("de.heikoseeberger"  % "sbt-header"             % "3.0.1"),
       addSbtPlugin("com.eed3si9n"       % "sbt-buildinfo"          % "0.7.0"),
+      addSbtPlugin("com.47deg"          % "sbt-dependencies"       % "0.2.0"),
       // addSbtPlugin("com.lucidchart"     % "sbt-scalafmt"  % "1.10"),
       // addSbtPlugin("com.geirsson"       % "sbt-scalafmt"  % "1.2.0"),
       libraryDependencies ++= {
@@ -97,7 +99,6 @@ object ProjectPlugin extends AutoPlugin {
         )
       }
 //      addSbtPlugin("io.get-coursier"          % "sbt-coursier"           % "1.0.0-RC11"),
-//      addCustomSBTPlugin("com.47deg"          % "sbt-dependencies"       % "0.1.1", sbt210 = true),
 //      addCustomSBTPlugin("com.47deg"          % "sbt-microsites"         % "0.6.1", sbt210 = true)
     ) ++ Seq(
       scriptedLaunchOpts := {
@@ -122,21 +123,14 @@ object ProjectPlugin extends AutoPlugin {
         }
       },
       libraryDependencies ++= Seq(
-        "com.47deg"             %% "github4s"                    % "0.15.0",
-        "org.typelevel"         %% "cats-core"                   % "0.9.0",
-        "com.github.marklister" %% "base64"                      % "0.2.3",
-        "net.jcazevedo"         %% "moultingyaml"                % "0.4.0",
-        "org.scalatest"         %% "scalatest"                   % "3.0.3" % Test,
-        "org.scalacheck"        %% "scalacheck"                  % "1.13.4" % Test,
-        "com.47deg"             %% "scalacheck-toolbox-datetime" % "0.2.2" % Test,
-        "org.scalamock"         %% "scalamock-scalatest-support" % "3.5.0" % Test
-//        %%("github4s"),
-//        %%("cats"),
-//        %%("base64"),
-//        %%("moultingyaml"),
-//        %%("scalatest")             % Test,
-//        %%("scalacheck")            % Test,
-//        %%("scheckToolboxDatetime") % Test,
+        %%("github4s"),
+        %%("cats-core"),
+        %%("base64"),
+        %%("moultingyaml"),
+        %%("scalatest")             % Test,
+        %%("scalacheck")            % Test,
+        %%("scheckToolboxDatetime") % Test,
+        %%("scalamockScalatest")    % Test,
       ),
       libraryDependencies ++= {
         lazy val sbtVersionValue = (sbtVersion in pluginCrossBuild).value
@@ -146,11 +140,12 @@ object ProjectPlugin extends AutoPlugin {
             Seq(
               "org.scala-sbt" % "scripted-plugin" % sbtVersionValue
             )
-          case _ =>
+          case scalac.`2.12` =>
             Seq(
               "org.scala-lang.modules" %% "scala-xml"       % "1.0.6",
               "org.scala-sbt"          %% "scripted-plugin" % sbtVersionValue
             )
+          case _ => Nil
         }
       }
     )
@@ -182,9 +177,13 @@ object ProjectPlugin extends AutoPlugin {
       if (sbt210) addSbtPlugin(module exclude210Suffixes, "0.13", "2.10")
       else addSbtPlugin(module)
 
+    lazy val buildInfoSettings: Seq[Def.Setting[_]] = Seq(
+      buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
+      buildInfoPackage := "sbtorgpolicies"
+    )
   }
 
-  override def projectSettings: Seq[Def.Setting[_]] = artifactSettings //++ shellPromptSettings
+  override def projectSettings: Seq[Def.Setting[_]] = artifactSettings ++ shellPromptSettings
 
   private[this] val artifactSettings = Seq(
     scalaVersion := scalac.`2.12`,
@@ -195,7 +194,7 @@ object ProjectPlugin extends AutoPlugin {
       MavenCentralBadge.apply,
       LicenseBadge.apply,
       GitHubIssuesBadge.apply
-    ) //,
-//    orgAfterCISuccessTaskListSetting ~= (_ filterNot(_ == depUpdateDependencyIssues.asRunnableItem))
+    ),
+    orgAfterCISuccessTaskListSetting ~= (_ filterNot (_ == depUpdateDependencyIssues.asRunnableItem))
   )
 }

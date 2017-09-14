@@ -56,7 +56,7 @@ trait DefaultSettings extends AllSettings {
       orgEnforcementSettingsTasks ++
       orgBashTasks ++
       orgCommonTasks ++
-//      sbtDependenciesSettings ++
+      sbtDependenciesSettings ++
 //      sbtMicrositesSettings ++
       AutomateHeaderPlugin.autoImport.automateHeaderSettings(Compile, Test)
 

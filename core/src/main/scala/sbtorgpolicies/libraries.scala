@@ -26,6 +26,7 @@ object libraries {
     "fetch"         -> "0.6.2",
     "freestyle"     -> "0.3.1",
     "github4s"      -> "0.15.0",
+    "org-policies"  -> sbtorgpolicies.BuildInfo.version,
     "scheckToolbox" -> "0.2.2"
   )
 
@@ -99,7 +100,7 @@ object libraries {
   )
 
   val vPlugins47: Map[String, String] = Map[String, String](
-    "sbt-dependencies" -> "0.1.1",
+    "sbt-dependencies" -> "0.2.0",
     "sbt-microsites"   -> "0.5.7"
   )
 
@@ -259,6 +260,7 @@ object libraries {
     "monocle-macro"          -> (("com.github.julien-truffaut", "monocle-macro", v("monocle"))),
     "monocle-state"          -> (("com.github.julien-truffaut", "monocle-state", v("monocle"))),
     "moultingyaml"           -> (("net.jcazevedo", "moultingyaml", v("moultingyaml"))),
+    "org-policies-core"      -> (("com.47deg", "org-policies-core", v("org-policies"))),
     "pcplod"                 -> (("org.ensime", "pcplod", v("pcplod"))),
     "play"                   -> (("com.typesafe.play", "play", v("play"))),
     "play-test"              -> (("com.typesafe.play", "play-test", v("play"))),
@@ -297,23 +299,24 @@ object libraries {
   )
 
   val pluginLibs: Map[String, Artifact] = Map[String, Artifact](
-    "sbt-buildinfo" -> (("com.eed3si9n", "sbt-buildinfo", v("sbt-buildinfo"))),
-    // "sbt-dependencies" -> (("com.47deg", "sbt-dependencies", v("sbt-dependencies"))),
+    "sbt-buildinfo"    -> (("com.eed3si9n", "sbt-buildinfo", v("sbt-buildinfo"))),
+    "sbt-dependencies" -> (("com.47deg", "sbt-dependencies", v("sbt-dependencies"))),
     // "sbt-coursier"     -> (("io.get-coursier", "sbt-coursier", v("coursier"))),
     "sbt-ghpages" -> (("com.typesafe.sbt", "sbt-ghpages", v("sbt-ghpages"))),
     "sbt-git"     -> (("com.typesafe.sbt", "sbt-git", v("sbt-git"))),
     "sbt-header"  -> (("de.heikoseeberger", "sbt-header", v("sbt-header"))),
     "sbt-jmh"     -> (("pl.project13.scala", "sbt-jmh", v("sbt-jmh"))),
     // "sbt-microsites"   -> (("com.47deg", "sbt-microsites", v("sbt-microsites"))),
-    "sbt-pgp"       -> (("com.jsuereth", "sbt-pgp", v("sbt-pgp"))),
-    "sbt-release"   -> (("com.github.gseitz", "sbt-release", v("sbt-release"))),
-    "sbt-site"      -> (("com.typesafe.sbt", "sbt-site", v("sbt-site"))),
-    "sbt-scalafmt"  -> (("com.geirsson", "sbt-scalafmt", v("sbt-scalafmt"))),
-    "sbt-scalajs"   -> (("org.scala-js", "sbt-scalajs", v("sbt-scalajs"))),
-    "sbt-scoverage" -> (("org.scoverage", "sbt-scoverage", v("sbt-scoverage"))),
-    "sbt-sonatype"  -> (("org.xerial.sbt", "sbt-sonatype", v("sbt-sonatype"))),
-    "sbt-unidoc"    -> (("com.eed3si9n", "sbt-unidoc", v("sbt-unidoc"))),
-    "tut-plugin"    -> (("org.tpolecat", "tut-plugin", v("tut-plugin")))
+    "sbt-org-policies" -> (("com.47deg", "sbt-org-policies", v("org-policies"))),
+    "sbt-pgp"          -> (("com.jsuereth", "sbt-pgp", v("sbt-pgp"))),
+    "sbt-release"      -> (("com.github.gseitz", "sbt-release", v("sbt-release"))),
+    "sbt-site"         -> (("com.typesafe.sbt", "sbt-site", v("sbt-site"))),
+    "sbt-scalafmt"     -> (("com.geirsson", "sbt-scalafmt", v("sbt-scalafmt"))),
+    "sbt-scalajs"      -> (("org.scala-js", "sbt-scalajs", v("sbt-scalajs"))),
+    "sbt-scoverage"    -> (("org.scoverage", "sbt-scoverage", v("sbt-scoverage"))),
+    "sbt-sonatype"     -> (("org.xerial.sbt", "sbt-sonatype", v("sbt-sonatype"))),
+    "sbt-unidoc"       -> (("com.eed3si9n", "sbt-unidoc", v("sbt-unidoc"))),
+    "tut-plugin"       -> (("org.tpolecat", "tut-plugin", v("tut-plugin")))
   )
 
   val pluginScalaLibs: Map[String, Artifact] = Map[String, Artifact](
