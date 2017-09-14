@@ -140,11 +140,12 @@ object ProjectPlugin extends AutoPlugin {
             Seq(
               "org.scala-sbt" % "scripted-plugin" % sbtVersionValue
             )
-          case _ =>
+          case scalac.`2.12` =>
             Seq(
               "org.scala-lang.modules" %% "scala-xml"       % "1.0.6",
               "org.scala-sbt"          %% "scripted-plugin" % sbtVersionValue
             )
+          case _ => Nil
         }
       }
     )
