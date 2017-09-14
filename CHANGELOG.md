@@ -1,5 +1,13 @@
 # Changelog
 
+## 09/14/2017 - Version 0.6.3
+
+Release changes:
+
+* Update 0.6.3 snapshot ([#518](https://github.com/47deg/sbt-org-policies/pull/518))
+* Release 0.6.3 ([#519](https://github.com/47deg/sbt-org-policies/pull/519))
+
+
 ## 09/11/2017 - Version 0.6.2
 
 Release changes:
