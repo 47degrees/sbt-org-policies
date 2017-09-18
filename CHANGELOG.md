@@ -1,5 +1,12 @@
 # Changelog
 
+## 09/18/2017 - Version 0.6.4
+
+Release changes:
+
+* Replaces scripted dependency ([#583](https://github.com/47deg/sbt-org-policies/pull/583))
+
+
 ## 09/14/2017 - Version 0.6.3
 
 Release changes:
