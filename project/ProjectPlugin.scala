@@ -1,15 +1,14 @@
 import dependencies.DependenciesPlugin.autoImport.depUpdateDependencyIssues
 import sbt.Keys._
 import sbt.Resolver.sonatypeRepo
+import sbt._
 import sbt.ScriptedPlugin.autoImport._
-import sbt.{Def, _}
 import sbtorgpolicies.OrgPoliciesKeys.orgAfterCISuccessTaskListSetting
 import sbtorgpolicies.OrgPoliciesPlugin
 import sbtorgpolicies.OrgPoliciesPlugin.autoImport._
 import sbtorgpolicies.runnable.syntax._
 import sbtorgpolicies.templates.badges._
 import sbtorgpolicies.model.{sbtV, scalac}
-import sbtbuildinfo.BuildInfoPlugin.autoImport._
 
 object ProjectPlugin extends AutoPlugin {
 
@@ -40,7 +39,7 @@ object ProjectPlugin extends AutoPlugin {
       sbtPlugin := true,
       crossSbtVersions := Seq(sbtV.`0.13`, sbtV.`1.0`),
       resolvers ++= Seq(sonatypeRepo("snapshots"), sonatypeRepo("releases")),
-      addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "0.9.3" commonExcludes),
+      addSbtPlugin("com.typesafe.sbt"   % "sbt-git"                % "0.9.3"),
       addSbtPlugin("com.eed3si9n"       % "sbt-unidoc"             % "0.4.1"),
       addSbtPlugin("com.github.gseitz"  % "sbt-release"            % "1.0.6"),
       addSbtPlugin("org.xerial.sbt"     % "sbt-sonatype"           % "2.0"),
@@ -52,19 +51,17 @@ object ProjectPlugin extends AutoPlugin {
       addSbtPlugin("org.scoverage"      % "sbt-scoverage"          % "1.5.1"),
       addSbtPlugin("org.scala-js"       % "sbt-scalajs"            % "0.6.19"),
       addSbtPlugin("de.heikoseeberger"  % "sbt-header"             % "3.0.1"),
-      addSbtPlugin("com.eed3si9n"       % "sbt-buildinfo"          % "0.7.0"),
       addSbtPlugin("com.47deg"          % "sbt-dependencies"       % "0.2.0"),
       // addSbtPlugin("com.lucidchart"     % "sbt-scalafmt"  % "1.10"),
       // addSbtPlugin("com.geirsson"       % "sbt-scalafmt"  % "1.2.0"),
       libraryDependencies ++= {
-        val sbtVersionValue       = (sbtVersion in pluginCrossBuild).value
         val sbtBinaryVersionValue = (sbtBinaryVersion in pluginCrossBuild).value
 
         val scalaBinaryVersionValue = (scalaBinaryVersion in update).value
 
-        val (tutPluginVersion, sbtScalafmtVersion) = sbtVersionValue match {
-          case sbtV.`0.13` => ("0.5.3", "0.6.8")
-          case sbtV.`1.0`  => ("0.6.0", "1.2.0")
+        val (tutPluginVersion, sbtScalafmtVersion) = sbtBinaryVersionValue match {
+          case "0.13" => ("0.5.3", "0.6.8")
+          case "1.0"  => ("0.6.0", "1.2.0")
         }
 
         Seq(
@@ -77,10 +74,7 @@ object ProjectPlugin extends AutoPlugin {
             sbtBinaryVersionValue,
             scalaBinaryVersionValue)
         )
-      }
-//      addSbtPlugin("io.get-coursier"          % "sbt-coursier"           % "1.0.0-RC11"),
-//      addCustomSBTPlugin("com.47deg"          % "sbt-microsites"         % "0.6.1", sbt210 = true)
-    ) ++ Seq(
+      },
       scriptedLaunchOpts := {
         scriptedLaunchOpts.value ++
           Seq(
@@ -91,15 +85,17 @@ object ProjectPlugin extends AutoPlugin {
             "-Dscala.version=" + scalaVersion.value
           )
       }
+//      addSbtPlugin("io.get-coursier"          % "sbt-coursier"           % "1.0.0-RC11"),
+//      addCustomSBTPlugin("com.47deg"          % "sbt-microsites"         % "0.6.1", sbt210 = true)
     )
 
     lazy val coreSettings: Seq[Def.Setting[_]] = commonSettings ++ Seq(
       resolvers += Resolver.typesafeIvyRepo("releases"),
       crossScalaVersions := Seq(scalac.`2.10`, scalac.`2.12`),
       scalaVersion := {
-        (sbtVersion in pluginCrossBuild).value match {
-          case sbtV.`0.13` => scalac.`2.10`
-          case sbtV.`1.0`  => scalac.`2.12`
+        (sbtBinaryVersion in pluginCrossBuild).value match {
+          case "0.13" => scalac.`2.10`
+          case "1.0"  => scalac.`2.12`
         }
       },
       libraryDependencies ++= Seq(
@@ -118,49 +114,18 @@ object ProjectPlugin extends AutoPlugin {
         (scalaVersion in update).value match {
           case scalac.`2.10` =>
             Seq(
-              "org.scala-sbt" % "scripted-plugin" % sbtVersionValue
+              "org.scala-sbt" % "sbt" % sbtVersionValue % "provided"
             )
           case scalac.`2.12` =>
             Seq(
-              "org.scala-lang.modules" %% "scala-xml"       % "1.0.6",
-              "org.scala-sbt"          %% "scripted-plugin" % sbtVersionValue
+              "org.scala-lang.modules" %% "scala-xml" % "1.0.6",
+              "org.scala-sbt"          % "sbt"        % sbtVersionValue % "provided"
             )
           case _ => Nil
         }
       }
     )
 
-    implicit class ModuleExcludes(module: ModuleID) {
-
-      def commonExcludes: ModuleID =
-        module
-          .exclude("javax.jms", "jms")
-          .exclude("com.sun.jdmk", "jmxtools")
-          .exclude("com.sun.jmx", "jmxri")
-
-      def exclude210Suffixes: ModuleID =
-        module
-          .excludeAll(ExclusionRule(organization = "org.scala-sbt"))
-          .excludeAll(ExclusionRule(organization = "com.github.mpilquist"))
-          .excludeAll(ExclusionRule(organization = "org.typelevel"))
-          .excludeAll(ExclusionRule(organization = "io.circe"))
-          .excludeAll(ExclusionRule(organization = "com.chuusai"))
-          .excludeAll(ExclusionRule(organization = "com.lihaoyi"))
-          .excludeAll(ExclusionRule(organization = "com.github.nscala-time"))
-          .excludeAll(ExclusionRule(organization = "net.jcazevedo"))
-          .excludeAll(ExclusionRule(organization = "com.github.marklister"))
-          .excludeAll(ExclusionRule(organization = "org.scalaj"))
-          .exclude("com.47deg", "github4s")
-    }
-
-    private[this] def addPlugin(module: ModuleID, sbt210: Boolean = false) =
-      if (sbt210) addSbtPlugin(module exclude210Suffixes, "0.13", "2.10")
-      else addSbtPlugin(module)
-
-    lazy val buildInfoSettings: Seq[Def.Setting[_]] = Seq(
-      buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
-      buildInfoPackage := "sbtorgpolicies"
-    )
   }
 
   override def projectSettings: Seq[Def.Setting[_]] = artifactSettings ++ shellPromptSettings

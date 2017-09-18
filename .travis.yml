@@ -25,9 +25,7 @@ before_install:
 
 script:
   - sbt ^^$SBT_VERSION clean compile test
-  - if [ "$TRAVIS_BRANCH" = "master" ]; then
-      sbt ^^$SBT_VERSION scripted;
-    fi
+  - sbt ^^$SBT_VERSION scripted
 
 after_success:
   - if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then
