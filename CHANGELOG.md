@@ -1,5 +1,12 @@
 # Changelog
 
+## 09/18/2017 - Version 0.7.0
+
+Release changes:
+
+* General Library Upgrade ([#632](https://github.com/47deg/sbt-org-policies/pull/632))
+
+
 ## 09/18/2017 - Version 0.6.4
 
 Release changes:
