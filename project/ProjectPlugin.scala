@@ -49,7 +49,7 @@ object ProjectPlugin extends AutoPlugin {
       addSbtPlugin("pl.project13.scala" % "sbt-jmh"                % "0.2.27"),
       addSbtPlugin("org.scalastyle"     %% "scalastyle-sbt-plugin" % "1.0.0"),
       addSbtPlugin("org.scoverage"      % "sbt-scoverage"          % "1.5.1"),
-      addSbtPlugin("org.scala-js"       % "sbt-scalajs"            % "0.6.19"),
+      addSbtPlugin("org.scala-js"       % "sbt-scalajs"            % "0.6.20"),
       addSbtPlugin("de.heikoseeberger"  % "sbt-header"             % "3.0.1"),
       addSbtPlugin("com.47deg"          % "sbt-dependencies"       % "0.2.0"),
       // addSbtPlugin("com.lucidchart"     % "sbt-scalafmt"  % "1.10"),
@@ -61,7 +61,7 @@ object ProjectPlugin extends AutoPlugin {
 
         val (tutPluginVersion, sbtScalafmtVersion) = sbtBinaryVersionValue match {
           case "0.13" => ("0.5.3", "0.6.8")
-          case "1.0"  => ("0.6.0", "1.2.0")
+          case "1.0"  => ("0.6.1", "1.2.0")
         }
 
         Seq(
@@ -84,9 +84,9 @@ object ProjectPlugin extends AutoPlugin {
             "-Dplugin.version=" + version.value,
             "-Dscala.version=" + scalaVersion.value
           )
-      }
-//      addSbtPlugin("io.get-coursier"          % "sbt-coursier"           % "1.0.0-RC11"),
-//      addCustomSBTPlugin("com.47deg"          % "sbt-microsites"         % "0.6.1", sbt210 = true)
+      },
+      addSbtPlugin("io.get-coursier" % "sbt-coursier"   % "1.0.0-RC11"),
+      addSbtPlugin("com.47deg"       % "sbt-microsites" % "0.7.0")
     )
 
     lazy val coreSettings: Seq[Def.Setting[_]] = commonSettings ++ Seq(
