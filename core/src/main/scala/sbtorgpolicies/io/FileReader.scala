@@ -19,9 +19,6 @@ package sbtorgpolicies.io
 import java.io.File
 
 import cats.syntax.either._
-// import sbt.io._
-// import sbt.io.syntax._
-import sbt.{file, IO}
 import sbtorgpolicies.exceptions._
 import sbtorgpolicies.io.syntax._
 
@@ -31,14 +28,14 @@ class FileReader {
 
   def exists(path: String): Boolean =
     Either
-      .catchNonFatal(file(path).exists()) getOrElse false
+      .catchNonFatal(IO.file(path).exists()) getOrElse false
 
   def withFileContent[T](filePath: String, f: String => IOResult[T]): IOResult[T] =
     getFileContent(filePath) flatMap f
 
   def getFileContent(filePath: String): IOResult[String] =
     Either
-      .catchNonFatal(IO.readLines(file(filePath)).mkString("\n"))
+      .catchNonFatal(IO.readLines(IO.file(filePath)).mkString("\n"))
       .leftMap(e => IOException(s"Error loading $filePath content", Some(e)))
 
   def getFileBytes(file: File): IOResult[Array[Byte]] =

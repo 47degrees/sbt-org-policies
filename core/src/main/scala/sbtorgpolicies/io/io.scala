@@ -16,16 +16,16 @@
 
 package sbtorgpolicies
 
-import java.io.File
+import java.io._
+import java.net.URL
+import java.nio.charset.Charset
 import java.nio.file.Path
 import java.nio.file.Paths.get
 
 import cats.syntax.either._
-// import sbt.io._
-// import sbt.io.syntax._
-import sbt.{file, File}
 import sbtorgpolicies.exceptions.IOException
 
+import scala.io.Source
 import scala.language.implicitConversions
 
 package object io {
@@ -53,7 +53,7 @@ package object io {
 
       def toPath: Path = get(filename)
 
-      def toFile: File = file(filename.fixPath)
+      def toFile: File = new File(filename.fixPath)
 
       def fixPath: String = filename.replaceAll("/", File.separator)
 
@@ -62,5 +62,47 @@ package object io {
           (if (filename.endsWith(File.separator)) ""
            else File.separator)
     }
+  }
+
+  object IO {
+
+    def file(path: String): File = new File(path)
+
+    def url(address: String): URL = new URL(address)
+
+    def readLines(file: File): Iterator[String] =
+      Source.fromFile(file).getLines()
+
+    def readBytes(file: File): Array[Byte] = {
+      val is: InputStream    = new FileInputStream(file)
+      val array: Array[Byte] = Stream.continually(is.read).takeWhile(_ != -1).map(_.toByte).toArray
+      is.close()
+      array
+    }
+
+    def write(file: File, content: String, charset: Charset = Charset.forName("UTF-8")): Unit = {
+      val writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false), charset))
+      writer.write(content)
+    }
+
+    def relativize(base: File, file: File): Option[String] = {
+
+      def ensureEndingSlash: Option[String] = {
+        val path = base.getAbsolutePath
+        path.lastOption.map {
+          case c if c == File.separatorChar => path
+          case _                            => path + File.separatorChar
+        }
+      }
+
+      val baseFileString = if (base.isDirectory) ensureEndingSlash else None
+      val pathString     = file.getAbsolutePath
+      baseFileString flatMap {
+        case baseString if pathString.startsWith(baseString) =>
+          Some(pathString.substring(baseString.length))
+        case _ => None
+      }
+    }
+
   }
 }

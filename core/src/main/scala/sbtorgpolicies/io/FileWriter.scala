@@ -17,6 +17,7 @@
 package sbtorgpolicies.io
 
 import java.io.{File, FileOutputStream}
+import java.net.URL
 import java.nio.file.Files.{copy => fcopy}
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption.REPLACE_EXISTING
@@ -26,9 +27,6 @@ import cats.instances.either._
 import cats.instances.list._
 import cats.syntax.either._
 import cats.syntax.traverse._
-// import sbt.io._
-// import sbt.io.syntax._
-import sbt.{file, File, IO, URL}
 import sbtorgpolicies.exceptions._
 import sbtorgpolicies.io.syntax._
 
@@ -38,7 +36,7 @@ class FileWriter {
 
   def writeContentToFile(content: String, output: String): IOResult[Unit] = {
 
-    def writeFile: Either[Throwable, Unit] = Either.catchNonFatal(IO.write(file(output), content))
+    def writeFile: Either[Throwable, Unit] = Either.catchNonFatal(IO.write(IO.file(output), content))
 
     (for {
       result <- createFile(output)
@@ -103,7 +101,7 @@ class FileWriter {
 
         val buffer = new Array[Byte](1024)
         Stream.continually(zipIn.getNextEntry).takeWhile(_ != null).foreach { entry =>
-          val newFile = new File(output + File.separator + entry.getName)
+          val newFile = IO.file(output + File.separator + entry.getName)
 
           (
             entry.isDirectory,
