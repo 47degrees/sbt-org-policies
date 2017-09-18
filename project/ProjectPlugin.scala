@@ -1,7 +1,8 @@
 import dependencies.DependenciesPlugin.autoImport.depUpdateDependencyIssues
 import sbt.Keys._
 import sbt.Resolver.sonatypeRepo
-import sbt.{Def, _}
+import sbt._
+import sbt.ScriptedPlugin.autoImport._
 import sbtorgpolicies.OrgPoliciesKeys.orgAfterCISuccessTaskListSetting
 import sbtorgpolicies.OrgPoliciesPlugin
 import sbtorgpolicies.OrgPoliciesPlugin.autoImport._
@@ -73,6 +74,16 @@ object ProjectPlugin extends AutoPlugin {
             sbtBinaryVersionValue,
             scalaBinaryVersionValue)
         )
+      },
+      scriptedLaunchOpts := {
+        scriptedLaunchOpts.value ++
+          Seq(
+            "-Xmx2048M",
+            "-XX:ReservedCodeCacheSize=256m",
+            "-XX:+UseConcMarkSweepGC",
+            "-Dplugin.version=" + version.value,
+            "-Dscala.version=" + scalaVersion.value
+          )
       }
 //      addSbtPlugin("io.get-coursier"          % "sbt-coursier"           % "1.0.0-RC11"),
 //      addCustomSBTPlugin("com.47deg"          % "sbt-microsites"         % "0.6.1", sbt210 = true)
