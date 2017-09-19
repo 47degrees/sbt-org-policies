@@ -83,7 +83,7 @@ object libraries {
     "scalactic"                -> "3.0.4",
     "scalaj"                   -> "2.3.0",
     "scalameta"                -> "2.0.0",
-    "scalameta-paradise"       -> "3.0.0-M9",
+    "scalameta-paradise"       -> "3.0.0-M10",
     "scalamock"                -> "3.6.0",
     "scalatags"                -> "0.6.7",
     "scalatest"                -> "3.0.4",
@@ -118,6 +118,7 @@ object libraries {
     "sbt-site"              -> "1.3.0",
     "sbt-sonatype"          -> "2.0",
     "sbt-unidoc"            -> "0.4.1",
+    "sbt-wartremover"       -> "2.2.0",
     "scalastyle-sbt-plugin" -> "1.0.0",
     "tut-plugin"            -> "0.6.1"
   )
@@ -316,6 +317,7 @@ object libraries {
     "sbt-scoverage"    -> (("org.scoverage", "sbt-scoverage", v("sbt-scoverage"))),
     "sbt-sonatype"     -> (("org.xerial.sbt", "sbt-sonatype", v("sbt-sonatype"))),
     "sbt-unidoc"       -> (("com.eed3si9n", "sbt-unidoc", v("sbt-unidoc"))),
+    "sbt-wartremover"  -> (("org.wartremover", "sbt-wartremover", v("sbt-wartremover"))),
     "tut-plugin"       -> (("org.tpolecat", "tut-plugin", v("tut-plugin")))
   )
 
