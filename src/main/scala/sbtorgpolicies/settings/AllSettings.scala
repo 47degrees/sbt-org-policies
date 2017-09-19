@@ -119,8 +119,9 @@ trait AllSettings
 
   lazy val scalaMetaSettings = Seq(
     addCompilerPlugin(%%("scalameta-paradise") cross CrossVersion.full),
-    libraryDependencies += %%("scalameta"),
-    scalacOptions += "-Xplugin-require:macroparadise"
+    libraryDependencies += %%("scalameta", "1.8.0"),
+    scalacOptions += "-Xplugin-require:macroparadise",
+    scalacOptions in (Compile, console) ~= (_ filterNot (_ contains "paradise")) // macroparadise plugin doesn't work in repl yet.
   )
 
   /**
@@ -131,7 +132,6 @@ trait AllSettings
   lazy val sharedJsSettings = Seq(
     scalaJSStage in Global := FastOptStage,
     parallelExecution := false,
-    requiresDOM := false,
     jsEnv := new org.scalajs.jsenv.nodejs.NodeJSEnv(),
     // batch mode decreases the amount of memory needed to compile scala.js code
     scalaJSOptimizerOptions := scalaJSOptimizerOptions.value.withBatchMode(getEnvVar("TRAVIS").isDefined)

@@ -55,7 +55,7 @@ object libraries {
     "fs2-cats"                 -> "0.4.0",
     "h2"                       -> "1.4.196",
     "http4s"                   -> "0.18.0-M1",
-    "joda-convert"             -> "1.8.3",
+    "joda-convert"             -> "1.9",
     "joda-time"                -> "2.9.9",
     "journal"                  -> "3.0.18",
     "jwt-scala"                -> "0.14.0",
@@ -100,7 +100,7 @@ object libraries {
   )
 
   val vPlugins47: Map[String, String] = Map[String, String](
-    "sbt-dependencies" -> "0.2.0",
+    "sbt-dependencies" -> "0.3.1",
     "sbt-microsites"   -> "0.7.0"
   )
 

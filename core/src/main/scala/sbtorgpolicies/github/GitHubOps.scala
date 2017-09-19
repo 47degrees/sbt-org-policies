@@ -19,7 +19,6 @@ package sbtorgpolicies.github
 import java.io.File
 
 import cats.data.{EitherT, NonEmptyList}
-import cats.free.Free
 import cats.implicits._
 import com.github.marklister.base64.Base64._
 import github4s.Github
