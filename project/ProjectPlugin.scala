@@ -85,8 +85,7 @@ object ProjectPlugin extends AutoPlugin {
             "-Dscala.version=" + scalaVersion.value
           )
       },
-      addSbtPlugin("io.get-coursier" % "sbt-coursier"   % "1.0.0-RC11"),
-      addSbtPlugin("com.47deg"       % "sbt-microsites" % "0.7.0")
+      addSbtPlugin("com.47deg" % "sbt-microsites" % "0.7.0")
     )
 
     lazy val coreSettings: Seq[Def.Setting[_]] = commonSettings ++ Seq(
