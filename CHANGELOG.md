@@ -1,5 +1,12 @@
 # Changelog
 
+## 09/20/2017 - Version 0.7.3
+
+Release changes:
+
+* Bump circe to 0.9.0-M1 ([#639](https://github.com/47deg/sbt-org-policies/pull/639))
+
+
 ## 09/19/2017 - Version 0.7.2
 
 Release changes:
