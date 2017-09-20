@@ -43,7 +43,7 @@ object libraries {
     "catbird"                  -> "0.18.0",
     "cats"                     -> "0.9.0",
     "cats-effect"              -> "0.4",
-    "circe"                    -> "0.8.0",
+    "circe"                    -> "0.9.0-M1",
     "config"                   -> "1.3.1",
     "coursier"                 -> "1.0.0-RC11",
     "discipline"               -> "0.8",
