@@ -1,5 +1,12 @@
 # Changelog
 
+## 09/21/2017 - Version 0.7.4
+
+Release changes:
+
+* Bump cats to 1.0.0-MF ([#643](https://github.com/47deg/sbt-org-policies/pull/643))
+
+
 ## 09/20/2017 - Version 0.7.3
 
 Release changes:
