@@ -26,16 +26,7 @@ import sbtorgpolicies.runnable._
 import sbtorgpolicies.utils._
 import sbtrelease.ReleaseStateTransformations.reapply
 
-trait bash {
-
-  val orgBashTasks =
-    Seq(
-      orgPublishReleaseTask := Def.task {
-        val scalaV = scalaVersion.value
-        scala.sys.process.Process(s"sbt ++$scalaV $orgPublishReleaseCommandKey")
-        (): Unit
-      }.value
-    )
+trait bash extends bashCompat {
 
   val orgPublishReleaseCommand: Command = Command(orgPublishReleaseCommandKey)(_ => OptNotSpace) { (inputState, _) =>
     val st: State = deferredFetchContributorsState(inputState)
