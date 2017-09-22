@@ -1,5 +1,13 @@
 # Changelog
 
+## 09/22/2017 - Version 0.7.5
+
+Release changes:
+
+* Fix release Command/Task #637 ([#645](https://github.com/47deg/sbt-org-policies/pull/645))
+* Release 0.7.5 ([#648](https://github.com/47deg/sbt-org-policies/pull/648))
+
+
 ## 09/21/2017 - Version 0.7.4
 
 Release changes:
