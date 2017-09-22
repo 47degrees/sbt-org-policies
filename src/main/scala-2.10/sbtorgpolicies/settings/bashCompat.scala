@@ -19,7 +19,7 @@ package sbtorgpolicies.settings
 import sbt._
 import sbt.Keys._
 
-import sbtorgpolicies.OrgPoliciesKeys.{orgPublishReleaseTask, orgPublishReleaseCommandKey}
+import sbtorgpolicies.OrgPoliciesKeys.{orgPublishReleaseCommandKey, orgPublishReleaseTask}
 
 trait bashCompat {
   val orgBashTasks =

@@ -22,7 +22,8 @@ import cats.syntax.cartesian._
 import cats.syntax.either._
 import cats.syntax.foldable._
 import cats.syntax.traverse._
-import cats.syntax.traverseFilter._
+import cats.mtl.syntax.empty._
+import cats.mtl.instances.empty._
 // import sbt.io._
 // import sbt.io.syntax._
 import sbt.{File, URL}
@@ -62,8 +63,8 @@ class FileHelper {
     def outputPath(f: FileType): String =
       projectDir.getAbsolutePath.ensureFinalSlash + f.outputPath
 
-    def checkFiles(): IOResult[Unit] =
-      fileList.traverseU_ { f =>
+    def checkFiles(fileList: List[FileType]): IOResult[Unit] =
+      fileList.traverse_[IOResult, Unit] { f =>
         if (!fileReader.exists(templatePath(f)))
           IOException(s"File not found: ${f.templatePath}").asLeft
         else ().asRight
@@ -107,7 +108,7 @@ class FileHelper {
     def processFiles(fileTypes: List[FileType]): IOResult[List[FileType]] =
       fileTypes.traverseFilter(processFile)
 
-    checkFiles *> processFiles(fileList)
+    checkFiles(fileList) *> processFiles(fileList)
   }
 
 }

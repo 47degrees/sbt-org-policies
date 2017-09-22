@@ -20,6 +20,8 @@ import java.io.File
 
 import cats.data.{EitherT, NonEmptyList}
 import cats.implicits._
+import cats.mtl.instances.empty.listTraverseEmpty
+import cats.mtl.syntax.empty._
 import com.github.marklister.base64.Base64._
 import github4s.Github
 import github4s.GithubResponses._
@@ -299,7 +301,7 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
 
       def orderAndFilter(list: List[PullRequest]): List[PullRequest] = {
         val date = maybeDate.getOrElse("")
-        list.mapFilter(pr => pr.merged_at.filter(_ > date).as(pr)).reverse
+        list.mapFilter(pr => pr.merged_at.filter(_ > date).as(pr))(listTraverseEmpty.functorEmpty).reverse
       }
 
       val filters = List(PRFilterClosed, PRFilterBase(branch), PRFilterSortUpdated, PRFilterOrderDesc)

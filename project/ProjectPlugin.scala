@@ -97,10 +97,13 @@ object ProjectPlugin extends AutoPlugin {
         }
       },
       libraryDependencies ++= Seq(
-        %%("github4s", "0.15.0"),
-        %%("cats-core", "0.9.0"),
+        %%("github4s", "0.16.0"),
+        %%("cats-core"),
+        %%("cats-free"),
+        "org.typelevel" %% "cats-mtl-core" % "0.0.2",
         %%("base64"),
         %%("moultingyaml"),
+        %%("cats-laws")             % Test,
         %%("scalatest")             % Test,
         %%("scalacheck")            % Test,
         %%("scheckToolboxDatetime") % Test,
