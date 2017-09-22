@@ -27,6 +27,12 @@ trait ScalaSettings { self: dependencies =>
   def %(artifactId: String, version: String): ModuleID =
     getLib(artifactId, Some(version)).toModuleId.cross(CrossVersion.Disabled)
 
+  def %(artifactId: String, isSbtPlugin: Boolean): ModuleID =
+    getLib(artifactId, isSbtPlugin = isSbtPlugin).toModuleId.cross(CrossVersion.Disabled)
+
+  def %(artifactId: String, version: String, isSbtPlugin: Boolean): ModuleID =
+    getLib(artifactId, Some(version), isSbtPlugin).toModuleId.cross(CrossVersion.Disabled)
+
   /**
    * It allows alternative Scala organization, however, scala-lang is still used
    * during transitive ivy resolution and should be added.
