@@ -39,6 +39,12 @@ trait dependencies extends ScalaSettings {
   def %%(artifactId: String, version: String): ModuleID =
     getLib(artifactId, Some(version)).toModuleId
 
+  def %%(artifactId: String, isSbtPlugin: Boolean): ModuleID =
+    getLib(artifactId, isSbtPlugin = isSbtPlugin).toModuleId
+
+  def %%(artifactId: String, version: String, isSbtPlugin: Boolean): ModuleID =
+    getLib(artifactId, Some(version), isSbtPlugin).toModuleId
+
   def %%%(artifactId: String): ModuleID =
     getLib(artifactId).toJsModuleId
 
@@ -54,8 +60,8 @@ trait dependencies extends ScalaSettings {
 
   }
 
-  protected[this] def getLib(lib: String, maybeVersion: Option[String] = None): Dep = {
-    val artifact: (String, String, String) = libs(lib)
+  protected[this] def getLib(lib: String, maybeVersion: Option[String] = None, isSbtPlugin: Boolean = false): Dep = {
+    val artifact: (String, String, String) = (if (isSbtPlugin) allPlugins else libs)(lib)
     val dep                                = Dep(artifact._1, artifact._2, artifact._3)
     maybeVersion.foldLeft(dep)((module, revision) => module.copy(revision = revision))
   }
