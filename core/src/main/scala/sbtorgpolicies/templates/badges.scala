@@ -115,9 +115,20 @@ object badges {
   case class ScalaJSBadge(info: BadgeInformation) extends Badge(info) {
 
     override def badgeIcon: Option[BadgeIcon] = info.scalaJSV map { sjsV =>
+      val sjsVSplit = raw"^(\d+)\.(\d+)\.(\d+)(.*)+".r
+
+      val badgeVersion = sjsV match {
+        case sjsVSplit(major, minor, patch, other) if ((major == "0") && (minor == "6")) =>
+          patch match {
+            case "17" | "18" | "19" | "20" => s"$major.$minor.17"
+            case _                         => sjsV
+          }
+        case _ => sjsV
+      }
+
       BadgeIcon(
         title = "Scala.js",
-        icon = s"http://scala-js.org/assets/badges/scalajs-$sjsV.svg",
+        icon = s"http://scala-js.org/assets/badges/scalajs-$badgeVersion.svg",
         url = "http://scala-js.org"
       )
     }
