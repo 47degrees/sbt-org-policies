@@ -25,18 +25,18 @@ object libraries {
     "case-classy"   -> "0.4.0",
     "fetch"         -> "0.6.3",
     "freestyle"     -> "0.3.1",
-    "github4s"      -> "0.15.0",
+    "github4s"      -> "0.16.0",
     "org-policies"  -> sbtorgpolicies.BuildInfo.version,
     "scheckToolbox" -> "0.2.2"
   )
 
   protected val vOthers: Map[String, String] = Map[String, String](
-    "akka"                     -> "2.5.4",
+    "akka"                     -> "2.5.6",
     "akka-http"                -> "10.0.10",
     "algebra"                  -> "0.7.0",
     "alleycats"                -> "0.2.0",
     "apache-kafka"             -> "0.11.0.1",
-    "aws-sdk"                  -> "1.11.197",
+    "aws-sdk"                  -> "1.11.205",
     "base64"                   -> "0.2.3",
     "cassandra-driver"         -> "3.3.0",
     "catalysts"                -> "0.0.5",
@@ -45,7 +45,7 @@ object libraries {
     "cats-effect"              -> "0.4",
     "circe"                    -> "0.9.0-M1",
     "config"                   -> "1.3.1",
-    "coursier"                 -> "1.0.0-RC11",
+    "coursier"                 -> "1.0.0-RC12",
     "discipline"               -> "0.8",
     "doobie"                   -> "0.4.4",
     "embedded-redis"           -> "0.6",
@@ -55,7 +55,7 @@ object libraries {
     "fs2-cats"                 -> "0.4.0",
     "h2"                       -> "1.4.196",
     "http4s"                   -> "0.18.0-M1",
-    "joda-convert"             -> "1.9",
+    "joda-convert"             -> "1.9.2",
     "joda-time"                -> "2.9.9",
     "journal"                  -> "3.0.18",
     "jwt-scala"                -> "0.14.0",
@@ -67,7 +67,7 @@ object libraries {
     "monocle"                  -> "1.4.0",
     "mockito"                  -> "2.10.0",
     "moultingyaml"             -> "0.4.0",
-    "newrelic"                 -> "3.42.0",
+    "newrelic"                 -> "3.43.0",
     "paradise"                 -> "2.1.0",
     "pcplod"                   -> "1.2.1",
     "play"                     -> "2.6.5",
@@ -82,7 +82,7 @@ object libraries {
     "scheckShapeless"          -> "1.1.7",
     "scalactic"                -> "3.0.4",
     "scalaj"                   -> "2.3.0",
-    "scalameta"                -> "2.0.0",
+    "scalameta"                -> "2.0.1",
     "scalameta-paradise"       -> "3.0.0-M10",
     "scalamock"                -> "3.6.0",
     "scalatags"                -> "0.6.7",
@@ -100,8 +100,8 @@ object libraries {
   )
 
   val vPlugins47: Map[String, String] = Map[String, String](
-    "sbt-dependencies" -> "0.3.1",
-    "sbt-microsites"   -> "0.7.0"
+    "sbt-dependencies" -> "0.3.4",
+    "sbt-microsites"   -> "0.7.2"
   )
 
   val vPluginsOthers: Map[String, String] = Map[String, String](
@@ -115,7 +115,7 @@ object libraries {
     "sbt-scalafmt"          -> "0.6.8",
     "sbt-scalajs"           -> "0.6.20",
     "sbt-scoverage"         -> "1.5.1",
-    "sbt-site"              -> "1.3.0",
+    "sbt-site"              -> "1.3.1",
     "sbt-sonatype"          -> "2.0",
     "sbt-unidoc"            -> "0.4.1",
     "sbt-wartremover"       -> "2.2.0",
