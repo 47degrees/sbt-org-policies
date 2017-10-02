@@ -1,5 +1,13 @@
 # Changelog
 
+## 10/02/2017 - Version 0.7.6
+
+Release changes:
+
+* Add sbt plugin ModuleID lookup for `%` and `%%` ([#650](https://github.com/47deg/sbt-org-policies/pull/650))
+* Upgrades sbt-microsites plugin and others ([#658](https://github.com/47deg/sbt-org-policies/pull/658))
+
+
 ## 09/22/2017 - Version 0.7.5
 
 Release changes:
