@@ -45,7 +45,7 @@ object ProjectPlugin extends AutoPlugin {
       addSbtPlugin("org.xerial.sbt"     % "sbt-sonatype"           % "2.0"),
       addSbtPlugin("com.jsuereth"       % "sbt-pgp"                % "1.1.0"),
       addSbtPlugin("com.typesafe.sbt"   % "sbt-ghpages"            % "0.6.2"),
-      addSbtPlugin("com.typesafe.sbt"   % "sbt-site"               % "1.3.0"),
+      addSbtPlugin("com.typesafe.sbt"   % "sbt-site"               % "1.3.1"),
       addSbtPlugin("pl.project13.scala" % "sbt-jmh"                % "0.2.27"),
       addSbtPlugin("org.scalastyle"     %% "scalastyle-sbt-plugin" % "1.0.0"),
       addSbtPlugin("org.scoverage"      % "sbt-scoverage"          % "1.5.1"),
@@ -60,7 +60,7 @@ object ProjectPlugin extends AutoPlugin {
         val scalaBinaryVersionValue = (scalaBinaryVersion in update).value
 
         val (tutPluginVersion, sbtScalafmtVersion) = sbtBinaryVersionValue match {
-          case "0.13" => ("0.5.3", "0.6.8")
+          case "0.13" => ("0.5.5", "0.6.8")
           case "1.0"  => ("0.6.1", "1.2.0")
         }
 
@@ -85,7 +85,7 @@ object ProjectPlugin extends AutoPlugin {
             "-Dscala.version=" + scalaVersion.value
           )
       },
-      addSbtPlugin("com.47deg" % "sbt-microsites" % "0.7.0")
+      addSbtPlugin("com.47deg" % "sbt-microsites" % "0.7.2")
     )
 
     lazy val coreSettings: Seq[Def.Setting[_]] = commonSettings ++ Seq(
