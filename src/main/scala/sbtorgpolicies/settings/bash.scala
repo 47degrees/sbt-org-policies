@@ -16,7 +16,7 @@
 
 package sbtorgpolicies.settings
 
-import com.typesafe.sbt.pgp.PgpKeys._
+// import com.typesafe.sbt.pgp.PgpKeys._
 import sbt.Keys._
 import sbt._
 import sbt.complete.DefaultParsers.OptNotSpace

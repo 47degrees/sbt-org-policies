@@ -16,8 +16,8 @@
 
 package sbtorgpolicies.settings
 
-import com.typesafe.sbt.pgp.PgpKeys
-import com.typesafe.sbt.pgp.PgpKeys._
+// import com.typesafe.sbt.pgp.PgpKeys
+// import com.typesafe.sbt.pgp.PgpKeys._
 // import dependencies.DependenciesPlugin
 // import dependencies.DependenciesPlugin.autoImport._
 // import microsites.MicrositeKeys._
@@ -101,15 +101,15 @@ trait AllSettings
 
   lazy val gpgFolder: String = getEnvVar("PGP_FOLDER") getOrElse "."
 
-  /**
-   * Common PGP settings, needed to sign the artifacts when publishing them.
-   */
-  lazy val pgpSettings = Seq(
-    pgpPassphrase := Some(getEnvVar("PGP_PASSPHRASE").getOrElse("").toCharArray),
-    gpgCommand := gpgFolder,
-    pgpPublicRing := file(s"$gpgFolder/pubring.gpg"),
-    pgpSecretRing := file(s"$gpgFolder/secring.gpg")
-  )
+  // /**
+  //  * Common PGP settings, needed to sign the artifacts when publishing them.
+  //  */
+  // lazy val pgpSettings = Seq(
+  //   pgpPassphrase := Some(getEnvVar("PGP_PASSPHRASE").getOrElse("").toCharArray),
+  //   gpgCommand := gpgFolder,
+  //   pgpPublicRing := file(s"$gpgFolder/pubring.gpg"),
+  //   pgpSecretRing := file(s"$gpgFolder/secring.gpg")
+  // )
 
   /** Settings to make the module not published*/
   lazy val noPublishSettings = Seq(
@@ -168,7 +168,7 @@ trait AllSettings
     scmInfo := Some(ScmInfo(url(orgGithubSetting.value.home), "scm:git:" + orgGithubSetting.value.repo)),
     apiURL := Some(url(orgGithubSetting.value.api)),
     releaseCrossBuild := true,
-    releasePublishArtifactsAction := PgpKeys.publishSigned.value,
+    // releasePublishArtifactsAction := PgpKeys.publishSigned.value,
     publishMavenStyle := true,
     publishArtifact in Test := false,
     pomIncludeRepository := Function.const(false),

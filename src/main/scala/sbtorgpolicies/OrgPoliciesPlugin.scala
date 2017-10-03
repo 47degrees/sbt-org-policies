@@ -31,5 +31,5 @@ object OrgPoliciesPlugin extends AutoPlugin {
 
   override def projectSettings: Seq[Def.Setting[_]] = autoImport.orgDefaultSettings
 
-  override def globalSettings: Seq[Def.Setting[_]] = autoImport.pgpSettings
+  // override def globalSettings: Seq[Def.Setting[_]] = autoImport.pgpSettings
 }
