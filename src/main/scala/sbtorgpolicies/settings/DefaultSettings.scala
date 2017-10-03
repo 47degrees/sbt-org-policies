@@ -24,7 +24,7 @@ import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport.{
   HeaderFileType,
   HeaderLicense
 }
-import dependencies.DependenciesPlugin.autoImport._
+// import dependencies.DependenciesPlugin.autoImport._
 import scoverage.ScoverageKeys
 import scoverage.ScoverageKeys.coverageEnabled
 import sbtorgpolicies.runnable.SetSetting
@@ -56,8 +56,8 @@ trait DefaultSettings extends AllSettings {
       orgEnforcementSettingsTasks ++
       orgBashTasks ++
       orgCommonTasks ++
-      sbtDependenciesSettings ++
-      sbtMicrositesSettings ++
+      // sbtDependenciesSettings ++
+      // sbtMicrositesSettings ++
       AutomateHeaderPlugin.autoImport.automateHeaderSettings(Compile, Test)
 
   lazy val orgCommonDefaultSettings = Seq(
@@ -131,7 +131,7 @@ trait DefaultSettings extends AllSettings {
     },
     orgAfterCISuccessTaskListSetting := List(
       orgUpdateDocFiles.asRunnableItem,
-      depUpdateDependencyIssues.asRunnableItem,
+      // depUpdateDependencyIssues.asRunnableItem,
       orgPublishReleaseTask.asRunnableItem(allModules = true, aggregated = false, crossScalaVersions = true)
     ) ++ guard(((baseDirectory in LocalRootProject).value / "docs").exists() && !version.value.endsWith("-SNAPSHOT"))(
       defaultPublishMicrosite),

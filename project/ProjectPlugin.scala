@@ -1,20 +1,40 @@
-import dependencies.DependenciesPlugin.autoImport.depUpdateDependencyIssues
+// import dependencies.DependenciesPlugin.autoImport.depUpdateDependencyIssues
 import sbt.Keys._
 import sbt.Resolver.sonatypeRepo
 import sbt._
 import sbt.ScriptedPlugin.autoImport._
-import sbtorgpolicies.OrgPoliciesKeys.orgAfterCISuccessTaskListSetting
-import sbtorgpolicies.OrgPoliciesPlugin
-import sbtorgpolicies.OrgPoliciesPlugin.autoImport._
-import sbtorgpolicies.runnable.syntax._
-import sbtorgpolicies.templates.badges._
-import sbtorgpolicies.model.{sbtV, scalac}
+// import sbtorgpolicies.OrgPoliciesKeys.orgAfterCISuccessTaskListSetting
+// import sbtorgpolicies.OrgPoliciesPlugin
+// import sbtorgpolicies.OrgPoliciesPlugin.autoImport._
+// import sbtorgpolicies.runnable.syntax._
+// import sbtorgpolicies.templates.badges._
+// import sbtorgpolicies.model.{sbtV, scalac}
 
 object ProjectPlugin extends AutoPlugin {
 
-  override def requires: Plugins = OrgPoliciesPlugin
+  // override def requires: Plugins = OrgPoliciesPlugin
 
   override def trigger: PluginTrigger = allRequirements
+
+  object sbtV {
+    val `0.13`: String = "0.13.16"
+    val `1.0`: String  = "1.0.1"
+
+    val crossSbtVersions: List[String] = List(`0.13`, `1.0`)
+  }
+
+  object scalac {
+
+    val `2.10`: String = "2.10.6"
+    val `2.11`: String = "2.11.11"
+    val `2.12`: String = "2.12.3"
+    val `2.13`: String = "2.13.0-M1"
+
+    val latestScalaVersion: String = `2.12`
+
+    val crossScalaVersions: List[String] = List(`2.11`, `2.12`)
+
+  }
 
   object autoImport {
 
@@ -51,7 +71,7 @@ object ProjectPlugin extends AutoPlugin {
       addSbtPlugin("org.scoverage"      % "sbt-scoverage"          % "1.5.1"),
       addSbtPlugin("org.scala-js"       % "sbt-scalajs"            % "0.6.20"),
       addSbtPlugin("de.heikoseeberger"  % "sbt-header"             % "3.0.1"),
-      addSbtPlugin("com.47deg"          % "sbt-dependencies"       % "0.3.3"),
+      addSbtPlugin("com.47deg"          % "sbt-dependencies"       % "0.3.4"),
       addSbtPlugin("com.47deg"          % "sbt-microsites"         % "0.7.3"),
       libraryDependencies ++= {
         val sbtBinaryVersionValue = (sbtBinaryVersion in pluginCrossBuild).value
@@ -96,17 +116,17 @@ object ProjectPlugin extends AutoPlugin {
         }
       },
       libraryDependencies ++= Seq(
-        %%("github4s", "0.16.0"),
-        %%("cats-core"),
-        %%("cats-free"),
-        "org.typelevel" %% "cats-mtl-core" % "0.0.2",
-        %%("base64"),
-        %%("moultingyaml"),
-        %%("cats-laws")             % Test,
-        %%("scalatest")             % Test,
-        %%("scalacheck")            % Test,
-        %%("scheckToolboxDatetime") % Test,
-        %%("scalamockScalatest")    % Test,
+        "com.47deg"             %% "github4s"                    % "0.16.0",
+        "org.typelevel"         %% "cats-core"                   % "1.0.0-MF",
+        "org.typelevel"         %% "cats-free"                   % "1.0.0-MF",
+        "org.typelevel"         %% "cats-mtl-core"               % "0.0.2",
+        "com.github.marklister" %% "base64"                      % "0.2.3",
+        "net.jcazevedo"         %% "moultingyaml"                % "0.4.0",
+        "org.typelevel"         %% "cats-laws"                   % "1.0.0-MF" % Test,
+        "org.scalatest"         %% "scalatest"                   % "3.0.4" % Test,
+        "org.scalacheck"        %% "scalacheck"                  % "1.13.5" % Test,
+        "com.47deg"             %% "scalacheck-toolbox-datetime" % "0.2.2" % Test,
+        "org.scalamock"         %% "scalamock-scalatest-support" % "3.6.0" % Test
       ),
       libraryDependencies ++= {
         lazy val sbtVersionValue = (sbtVersion in pluginCrossBuild).value
@@ -128,18 +148,18 @@ object ProjectPlugin extends AutoPlugin {
 
   }
 
-  override def projectSettings: Seq[Def.Setting[_]] = artifactSettings ++ shellPromptSettings
+  override def projectSettings: Seq[Def.Setting[_]] = artifactSettings // ++ shellPromptSettings
 
   private[this] val artifactSettings = Seq(
     scalaVersion := scalac.`2.12`,
     scalaOrganization := "org.scala-lang",
-    startYear := Some(2017),
-    orgBadgeListSetting := List(
-      TravisBadge.apply,
-      MavenCentralBadge.apply,
-      LicenseBadge.apply,
-      GitHubIssuesBadge.apply
-    ),
-    orgAfterCISuccessTaskListSetting ~= (_ filterNot (_ == depUpdateDependencyIssues.asRunnableItem))
+    startYear := Some(2017)
+    // orgBadgeListSetting := List(
+    //   TravisBadge.apply,
+    //   MavenCentralBadge.apply,
+    //   LicenseBadge.apply,
+    //   GitHubIssuesBadge.apply
+    // )//,
+    // orgAfterCISuccessTaskListSetting ~= (_ filterNot (_ == depUpdateDependencyIssues.asRunnableItem))
   )
 }
