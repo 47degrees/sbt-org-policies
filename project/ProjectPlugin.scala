@@ -63,7 +63,7 @@ object ProjectPlugin extends AutoPlugin {
       addSbtPlugin("com.eed3si9n"       % "sbt-unidoc"             % "0.4.1"),
       addSbtPlugin("com.github.gseitz"  % "sbt-release"            % "1.0.6"),
       addSbtPlugin("org.xerial.sbt"     % "sbt-sonatype"           % "2.0"),
-      addSbtPlugin("com.jsuereth"       % "sbt-pgp"                % "1.1.0"),
+      addSbtPlugin("com.jsuereth"       % "sbt-pgp"                % "1.1.0" exclude ("org.spire-math","jawn-parser")),
       addSbtPlugin("com.typesafe.sbt"   % "sbt-ghpages"            % "0.6.2"),
       addSbtPlugin("com.typesafe.sbt"   % "sbt-site"               % "1.3.1"),
       addSbtPlugin("pl.project13.scala" % "sbt-jmh"                % "0.2.27"),
