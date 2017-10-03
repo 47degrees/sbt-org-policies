@@ -116,7 +116,7 @@ object ProjectPlugin extends AutoPlugin {
         }
       },
       libraryDependencies ++= Seq(
-        "com.47deg"             %% "github4s"                    % "0.16.0",
+        "com.47deg"             %% "github4s"                    % "0.16.0" exclude ("com.github.mpilquist", "simulacrum_2.10") exclude ("com.github.mpilquist", "simulacrum_2.12"),
         "org.typelevel"         %% "cats-core"                   % "1.0.0-MF",
         "org.typelevel"         %% "cats-free"                   % "1.0.0-MF",
         "org.typelevel"         %% "cats-mtl-core"               % "0.0.2",
