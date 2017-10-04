@@ -1,5 +1,12 @@
 # Changelog
 
+## 10/04/2017 - Version 0.7.7
+
+Release changes:
+
+* Adds grpc to the library Catalogue ([#659](https://github.com/47deg/sbt-org-policies/pull/659))
+
+
 ## 10/02/2017 - Version 0.7.6
 
 Release changes:
