@@ -1,5 +1,12 @@
 # Changelog
 
+## 10/04/2017 - Version 0.7.8
+
+Release changes:
+
+* Fixes iota organization ([#654](https://github.com/47deg/sbt-org-policies/pull/654))
+
+
 ## 10/04/2017 - Version 0.7.7
 
 Release changes:
