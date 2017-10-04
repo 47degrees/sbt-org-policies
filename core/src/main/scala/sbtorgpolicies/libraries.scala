@@ -21,7 +21,7 @@ object libraries {
   type Artifact = (String, String, String)
 
   val v47: Map[String, String] = Map[String, String](
-    "iota"          -> "0.2.0",
+    "iota"          -> "0.3.1",
     "case-classy"   -> "0.4.0",
     "fetch"         -> "0.6.3",
     "freestyle"     -> "0.3.1",
@@ -43,6 +43,7 @@ object libraries {
     "catbird"                  -> "0.18.0",
     "cats"                     -> "1.0.0-MF",
     "cats-effect"              -> "0.4",
+    "cats-mtl"                 -> "0.0.2",
     "circe"                    -> "0.9.0-M1",
     "config"                   -> "1.3.1",
     "coursier"                 -> "1.0.0-RC12",
@@ -186,6 +187,8 @@ object libraries {
     "cats-kernel"            -> (("org.typelevel", "cats-kernel", v("cats"))),
     "cats-laws"              -> (("org.typelevel", "cats-laws", v("cats"))),
     "cats-macros"            -> (("org.typelevel", "cats-macros", v("cats"))),
+    "cats-mtl-core"          -> (("org.typelevel", "cats-mtl-core", v("cats-mtl"))),
+    "cats-testkit"           -> (("org.typelevel", "cats-testkit", v("cats"))),
     "circe-core"             -> (("io.circe", "circe-core", v("circe"))),
     "circe-generic"          -> (("io.circe", "circe-generic", v("circe"))),
     "circe-parser"           -> (("io.circe", "circe-parser", v("circe"))),
@@ -249,7 +252,8 @@ object libraries {
     "http4s-circe"           -> (("org.http4s", "http4s-circe", v("http4s"))),
     "http4s-core"            -> (("org.http4s", "http4s-core", v("http4s"))),
     "http4s-dsl"             -> (("org.http4s", "http4s-dsl", v("http4s"))),
-    "iota-core"              -> (("com.47deg", "iota-core", v("iota"))),
+    "iota-core"              -> (("io.frees", "iota-core", v("iota"))),
+    "iotaz-core"             -> (("io.frees", "iotaz-core", v("iota"))),
     "journal-core"           -> (("io.verizon.journal", "core", v("journal"))),
     "jwt-core"               -> (("com.pauldijou", "jwt-core", v("jwt-scala"))),
     "jwt-play-json"          -> (("com.pauldijou", "jwt-play-json", v("jwt-scala"))),

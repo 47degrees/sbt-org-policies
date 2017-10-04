@@ -52,8 +52,7 @@ object ProjectPlugin extends AutoPlugin {
       addSbtPlugin("org.scala-js"       % "sbt-scalajs"            % "0.6.20"),
       addSbtPlugin("de.heikoseeberger"  % "sbt-header"             % "3.0.1"),
       addSbtPlugin("com.47deg"          % "sbt-dependencies"       % "0.3.1"),
-      // addSbtPlugin("com.lucidchart"     % "sbt-scalafmt"  % "1.10"),
-      // addSbtPlugin("com.geirsson"       % "sbt-scalafmt"  % "1.2.0"),
+      addSbtPlugin("com.47deg"          % "sbt-microsites"         % "0.7.3"),
       libraryDependencies ++= {
         val sbtBinaryVersionValue = (sbtBinaryVersion in pluginCrossBuild).value
 
@@ -98,8 +97,8 @@ object ProjectPlugin extends AutoPlugin {
         }
       },
       libraryDependencies ++= Seq(
-        %%("github4s"),
-        %%("cats-core"),
+        %%("github4s", "0.15.0"),
+        %%("cats-core", "0.9.0"),
         %%("base64"),
         %%("moultingyaml"),
         %%("scalatest")             % Test,
