@@ -43,6 +43,7 @@ object libraries {
     "catbird"                  -> "0.18.0",
     "cats"                     -> "1.0.0-MF",
     "cats-effect"              -> "0.4",
+    "cats-mtl"                 -> "0.0.2",
     "circe"                    -> "0.9.0-M1",
     "config"                   -> "1.3.1",
     "coursier"                 -> "1.0.0-RC12",
@@ -100,8 +101,8 @@ object libraries {
   )
 
   val vPlugins47: Map[String, String] = Map[String, String](
-    "sbt-dependencies" -> "0.3.1",
-    "sbt-microsites"   -> "0.7.0"
+    "sbt-dependencies" -> "0.3.4",
+    "sbt-microsites"   -> "0.7.3"
   )
 
   val vPluginsOthers: Map[String, String] = Map[String, String](
@@ -185,6 +186,8 @@ object libraries {
     "cats-kernel"            -> (("org.typelevel", "cats-kernel", v("cats"))),
     "cats-laws"              -> (("org.typelevel", "cats-laws", v("cats"))),
     "cats-macros"            -> (("org.typelevel", "cats-macros", v("cats"))),
+    "cats-mtl-core"          -> (("org.typelevel", "cats-mtl-core", v("cats-mtl"))),
+    "cats-testkit"           -> (("org.typelevel", "cats-testkit", v("cats"))),
     "circe-core"             -> (("io.circe", "circe-core", v("circe"))),
     "circe-generic"          -> (("io.circe", "circe-generic", v("circe"))),
     "circe-parser"           -> (("io.circe", "circe-parser", v("circe"))),
