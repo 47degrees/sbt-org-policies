@@ -83,7 +83,8 @@ object ProjectPlugin extends AutoPlugin {
             "-Dplugin.version=" + version.value,
             "-Dscala.version=" + scalaVersion.value
           )
-      }
+      },
+      addSbtPlugin("com.47deg" % "sbt-microsites" % "0.7.3")
     )
 
     lazy val coreSettings: Seq[Def.Setting[_]] = commonSettings ++ Seq(
