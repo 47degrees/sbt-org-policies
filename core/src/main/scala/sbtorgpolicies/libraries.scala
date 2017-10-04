@@ -31,18 +31,19 @@ object libraries {
   )
 
   protected val vOthers: Map[String, String] = Map[String, String](
-    "akka"                     -> "2.5.5",
+    "akka"                     -> "2.5.6",
     "akka-http"                -> "10.0.10",
     "algebra"                  -> "0.7.0",
     "alleycats"                -> "0.2.0",
     "apache-kafka"             -> "0.11.0.1",
-    "aws-sdk"                  -> "1.11.204",
+    "aws-sdk"                  -> "1.11.207",
     "base64"                   -> "0.2.3",
     "cassandra-driver"         -> "3.3.0",
     "catalysts"                -> "0.0.5",
     "catbird"                  -> "0.18.0",
     "cats"                     -> "1.0.0-MF",
     "cats-effect"              -> "0.4",
+    "cats-mtl"                 -> "0.0.2",
     "circe"                    -> "0.9.0-M1",
     "config"                   -> "1.3.1",
     "coursier"                 -> "1.0.0-RC12",
@@ -53,14 +54,15 @@ object libraries {
     "finch"                    -> "0.15.1",
     "fs2"                      -> "0.9.7",
     "fs2-cats"                 -> "0.4.0",
+    "grpc"                     -> "1.6.1",
     "h2"                       -> "1.4.196",
-    "http4s"                   -> "0.18.0-M1",
+    "http4s"                   -> "0.18.0-M2",
     "joda-convert"             -> "1.9.2",
     "joda-time"                -> "2.9.9",
     "journal"                  -> "3.0.18",
     "jwt-scala"                -> "0.14.0",
     "kind-projector"           -> "0.9.4",
-    "log4s"                    -> "1.3.6",
+    "log4s"                    -> "1.4.0",
     "machinist"                -> "0.6.2",
     "macro-compat"             -> "1.1.1",
     "monix"                    -> "2.3.0",
@@ -95,13 +97,13 @@ object libraries {
     "simulacrum"               -> "0.11.0",
     "slf4j"                    -> "1.7.25",
     "slick"                    -> "3.2.1",
-    "slogging"                 -> "0.5.3",
-    "specs2"                   -> "3.9.5"
+    "slogging"                 -> "0.6.0",
+    "specs2"                   -> "4.0.0"
   )
 
   val vPlugins47: Map[String, String] = Map[String, String](
-    "sbt-dependencies" -> "0.3.1",
-    "sbt-microsites"   -> "0.7.0"
+    "sbt-dependencies" -> "0.3.4",
+    "sbt-microsites"   -> "0.7.3"
   )
 
   val vPluginsOthers: Map[String, String] = Map[String, String](
@@ -185,6 +187,8 @@ object libraries {
     "cats-kernel"            -> (("org.typelevel", "cats-kernel", v("cats"))),
     "cats-laws"              -> (("org.typelevel", "cats-laws", v("cats"))),
     "cats-macros"            -> (("org.typelevel", "cats-macros", v("cats"))),
+    "cats-mtl-core"          -> (("org.typelevel", "cats-mtl-core", v("cats-mtl"))),
+    "cats-testkit"           -> (("org.typelevel", "cats-testkit", v("cats"))),
     "circe-core"             -> (("io.circe", "circe-core", v("circe"))),
     "circe-generic"          -> (("io.circe", "circe-generic", v("circe"))),
     "circe-parser"           -> (("io.circe", "circe-parser", v("circe"))),
@@ -233,6 +237,16 @@ object libraries {
     "fs2-io"                 -> (("co.fs2", "fs2-io", v("fs2"))),
     "fs2-cats"               -> (("co.fs2", "fs2-cats", v("fs2-cats"))),
     "github4s"               -> (("com.47deg", "github4s", v("github4s"))),
+    "grpc-all"               -> (("io.grpc", "grpc-all", v("grpc"))),
+    "grpc-auth"              -> (("io.grpc", "grpc-auth", v("grpc"))),
+    "grpc-context"           -> (("io.grpc", "grpc-context", v("grpc"))),
+    "grpc-core"              -> (("io.grpc", "grpc-core", v("grpc"))),
+    "grpc-netty"             -> (("io.grpc", "grpc-netty", v("grpc"))),
+    "grpc-protobuf"          -> (("io.grpc", "grpc-protobuf", v("grpc"))),
+    "grpc-okhttp"            -> (("io.grpc", "grpc-okhttp", v("grpc"))),
+    "grpc-services"          -> (("io.grpc", "grpc-services", v("grpc"))),
+    "grpc-stub"              -> (("io.grpc", "grpc-stub", v("grpc"))),
+    "grpc-testing"           -> (("io.grpc", "grpc-testing", v("grpc"))),
     "http4s-blaze-client"    -> (("org.http4s", "http4s-blaze-client", v("http4s"))),
     "http4s-blaze-server"    -> (("org.http4s", "http4s-blaze-server", v("http4s"))),
     "http4s-circe"           -> (("org.http4s", "http4s-circe", v("http4s"))),

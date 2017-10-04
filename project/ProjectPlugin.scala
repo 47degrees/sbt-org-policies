@@ -52,15 +52,14 @@ object ProjectPlugin extends AutoPlugin {
       addSbtPlugin("org.scala-js"       % "sbt-scalajs"            % "0.6.20"),
       addSbtPlugin("de.heikoseeberger"  % "sbt-header"             % "3.0.1"),
       addSbtPlugin("com.47deg"          % "sbt-dependencies"       % "0.3.1"),
-      // addSbtPlugin("com.lucidchart"     % "sbt-scalafmt"  % "1.10"),
-      // addSbtPlugin("com.geirsson"       % "sbt-scalafmt"  % "1.2.0"),
+      addSbtPlugin("com.47deg"          % "sbt-microsites"         % "0.7.3"),
       libraryDependencies ++= {
         val sbtBinaryVersionValue = (sbtBinaryVersion in pluginCrossBuild).value
 
         val scalaBinaryVersionValue = (scalaBinaryVersion in update).value
 
         val (tutPluginVersion, sbtScalafmtVersion) = sbtBinaryVersionValue match {
-          case "0.13" => ("0.5.3", "0.6.8")
+          case "0.13" => ("0.5.5", "0.6.8")
           case "1.0"  => ("0.6.1", "1.2.0")
         }
 
@@ -84,8 +83,7 @@ object ProjectPlugin extends AutoPlugin {
             "-Dplugin.version=" + version.value,
             "-Dscala.version=" + scalaVersion.value
           )
-      },
-      addSbtPlugin("com.47deg" % "sbt-microsites" % "0.7.0")
+      }
     )
 
     lazy val coreSettings: Seq[Def.Setting[_]] = commonSettings ++ Seq(
@@ -98,8 +96,8 @@ object ProjectPlugin extends AutoPlugin {
         }
       },
       libraryDependencies ++= Seq(
-        %%("github4s"),
-        %%("cats-core"),
+        %%("github4s", "0.15.0"),
+        %%("cats-core", "0.9.0"),
         %%("base64"),
         %%("moultingyaml"),
         %%("scalatest")             % Test,
