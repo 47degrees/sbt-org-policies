@@ -21,7 +21,7 @@ object libraries {
   type Artifact = (String, String, String)
 
   val v47: Map[String, String] = Map[String, String](
-    "iota"          -> "0.3.0",
+    "iota"          -> "0.3.1",
     "case-classy"   -> "0.4.0",
     "fetch"         -> "0.6.3",
     "freestyle"     -> "0.3.1",
@@ -253,6 +253,7 @@ object libraries {
     "http4s-core"            -> (("org.http4s", "http4s-core", v("http4s"))),
     "http4s-dsl"             -> (("org.http4s", "http4s-dsl", v("http4s"))),
     "iota-core"              -> (("io.frees", "iota-core", v("iota"))),
+    "iotaz-core"             -> (("io.frees", "iotaz-core", v("iota"))),
     "journal-core"           -> (("io.verizon.journal", "core", v("journal"))),
     "jwt-core"               -> (("com.pauldijou", "jwt-core", v("jwt-scala"))),
     "jwt-play-json"          -> (("com.pauldijou", "jwt-play-json", v("jwt-scala"))),
