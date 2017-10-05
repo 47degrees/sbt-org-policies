@@ -1,5 +1,12 @@
 # Changelog
 
+## 10/05/2017 - Version 0.7.9
+
+Release changes:
+
+* Adds pbdirect Lib ([#665](https://github.com/47deg/sbt-org-policies/pull/665))
+
+
 ## 10/04/2017 - Version 0.7.8
 
 Release changes:
