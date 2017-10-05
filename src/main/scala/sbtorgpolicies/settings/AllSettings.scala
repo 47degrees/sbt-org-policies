@@ -53,7 +53,8 @@ trait AllSettings
   lazy val sharedCommonSettings = Seq(
     resolvers ++= Seq(
       Resolver.sonatypeRepo("releases"),
-      Resolver.typesafeIvyRepo("releases")
+      Resolver.typesafeIvyRepo("releases"),
+      Resolver.bintrayRepo("beyondthelines", "maven")
     ),
     updateOptions := updateOptions.value.withCachedResolution(true)
   )
