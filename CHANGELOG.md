@@ -1,5 +1,12 @@
 # Changelog
 
+## 10/10/2017 - Version 0.7.13-SNAPSHOT
+
+Release changes:
+
+* Releasing 0.7.13-SNAPSHOT
+
+
 ## 10/10/2017 - Version 0.7.12
 
 Release changes:
