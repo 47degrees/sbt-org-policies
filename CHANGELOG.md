@@ -1,12 +1,5 @@
 # Changelog
 
-## 10/10/2017 - Version 0.7.12
-
-Release changes:
-
-* Update freestyle artifact names ([#672](https://github.com/47deg/sbt-org-policies/pull/672))
-
-
 ## 10/10/2017 - Version 0.7.11
 
 Release changes:
