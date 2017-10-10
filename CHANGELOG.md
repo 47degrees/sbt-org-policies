@@ -1,5 +1,13 @@
 # Changelog
 
+## 10/10/2017 - Version 0.7.11
+
+Release changes:
+
+* Add scalajs badge/version logic and test ([#657](https://github.com/47deg/sbt-org-policies/pull/657))
+* Bump dependencies ([#667](https://github.com/47deg/sbt-org-policies/pull/667))
+
+
 ## 10/10/2017 - Version 0.7.10
 
 Release changes:
