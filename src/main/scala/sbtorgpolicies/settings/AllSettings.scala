@@ -253,8 +253,8 @@ trait AllSettings
     )
 
   /**
-    * Alias helper for the publishMicrosite task when docs module is located in the "docs" sbt module.
-    */
+   * Alias helper for the publishMicrosite task when docs module is located in the "docs" sbt module.
+   */
   lazy val defaultPublishMicrosite: RunnableItemConfigScope[Unit] = ";project docs;publishMicrosite".asRunnableItem
 
   /**
