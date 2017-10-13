@@ -20,6 +20,8 @@ import com.typesafe.sbt.pgp.PgpKeys
 import com.typesafe.sbt.pgp.PgpKeys._
 import dependencies.DependenciesPlugin
 import dependencies.DependenciesPlugin.autoImport._
+import sbtorgpolicies.runnable.RunnableItemConfigScope
+import sbtorgpolicies.runnable.syntax._
 import microsites.MicrositeKeys._
 import scoverage.ScoverageKeys
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
@@ -156,6 +158,11 @@ trait AllSettings
     scalacOptions ++= scalacAllOptions
   )
 
+  implicit val settingAppender: sbt.Append.Value[Seq[(String, java.net.URL)], License] =
+    new sbt.Append.Value[Seq[(String, URL)], License] {
+      override def appendValue(a: Seq[(String, URL)], b: License): Seq[(String, URL)] = a :+ b.tupled
+    }
+
   /**
    * Publish settings common to all projects.
    *
@@ -244,6 +251,11 @@ trait AllSettings
       depGithubRepoSetting := orgGithubSetting.value.project,
       depGithubTokenSetting := getEnvVar(orgGithubTokenSetting.value)
     )
+
+  /**
+   * Alias helper for the publishMicrosite task when docs module is located in the "docs" sbt module.
+   */
+  lazy val defaultPublishMicrosite: RunnableItemConfigScope[Unit] = ";project docs;publishMicrosite".asRunnableItem
 
   /**
    * Sets the default properties for the sbt-microsites plugin.

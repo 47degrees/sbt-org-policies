@@ -24,14 +24,12 @@ import com.github.marklister.base64.Base64._
 import github4s.Github
 import github4s.GithubResponses._
 import github4s.free.domain._
-// import sbt.io.IO
-import sbt.IO
 import sbtorgpolicies.exceptions.{GitHubException, IOException, OrgPolicyException}
 import sbtorgpolicies.github.config._
 import sbtorgpolicies.github.instances._
 import sbtorgpolicies.github.syntax._
 import sbtorgpolicies.io.syntax._
-import sbtorgpolicies.io.{FileReader, IOResult}
+import sbtorgpolicies.io.{FileReader, IO, IOResult}
 
 class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
 

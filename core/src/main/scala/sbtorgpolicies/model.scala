@@ -16,13 +16,10 @@
 
 package sbtorgpolicies
 
+import java.net.URL
+
 import net.jcazevedo.moultingyaml._
-import sbt.Append.Value
-// import sbt.io._
-// import sbt.io.syntax._
-import sbt.{url, URL}
-import sbtorgpolicies.runnable.RunnableItemConfigScope
-import sbtorgpolicies.runnable.syntax._
+import sbtorgpolicies.io.IO
 
 object model {
 
@@ -32,10 +29,10 @@ object model {
   }
 
   /** Apache 2.0 License.*/
-  case object ApacheLicense extends License("Apache License", url("http://www.apache.org/licenses/LICENSE-2.0.txt"))
+  case object ApacheLicense extends License("Apache License", IO.url("http://www.apache.org/licenses/LICENSE-2.0.txt"))
 
   /** MIT License.*/
-  case object MITLicense extends License("MIT", url("http://opensource.org/licenses/MIT"))
+  case object MITLicense extends License("MIT", IO.url("http://opensource.org/licenses/MIT"))
 
   /** Custom License. */
   class CustomLicense(name: String, url: URL) extends License(name, url)
@@ -47,11 +44,6 @@ object model {
     def apply(other: License): CustomLicense = new CustomLicense(other.name, other.url)
 
   }
-
-  implicit val settingAppender: Value[Seq[(String, java.net.URL)], License] =
-    new Value[Seq[(String, URL)], License] {
-      override def appendValue(a: Seq[(String, URL)], b: License): Seq[(String, URL)] = a :+ b.tupled
-    }
 
   lazy val scoverageMinimum = 80d
 
@@ -90,11 +82,6 @@ object model {
   /** Combines all scalac options.*/
   lazy val scalacAllOptions: Seq[String] = scalacCommonOptions ++ scalacLanguageOptions ++ scalacStrictOptions
 
-  /**
-   * Alias helper for the publishMicrosite task when docs module is located in the "docs" sbt module.
-   */
-  lazy val defaultPublishMicrosite: RunnableItemConfigScope[Unit] = ";project docs;publishMicrosite".asRunnableItem
-
   /** Github settings and related settings usually found in a Github README.*/
   case class GitHubSettings(
       organization: String,
@@ -104,7 +91,7 @@ object model {
       organizationHomePage: URL,
       organizationEmail: String) {
     def home: String         = s"https://github.com/$organization/$project"
-    def homePage: URL        = url(s"https://$organization.github.io/$project/")
+    def homePage: URL        = IO.url(s"https://$organization.github.io/$project/")
     def repo: String         = s"git@github.com:$organization/$project.git"
     def api: String          = s"https://$organization.github.io/$project/api/"
     def organisation: String = s"com.github.$organization"

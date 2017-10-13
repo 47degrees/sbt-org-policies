@@ -40,12 +40,20 @@ class ReplaceTextEngine {
       in: List[File],
       isFileSupported: (File) => Boolean): IOResult[List[ProcessedFile]] =
     fileReader.fetchFilesRecursively(in, isFileSupported) map { files =>
-      files.map(replaceBlocksInFile(startBlockRegex, endBlockRegex, replacements, _))
+      files.map(replaceBlocksInFile(Some(startBlockRegex), Some(endBlockRegex), replacements, _))
+    }
+
+  final def replaceTexts(
+      replacements: Map[String, String],
+      in: List[File],
+      isFileSupported: (File) => Boolean): IOResult[List[ProcessedFile]] =
+    fileReader.fetchFilesRecursively(in, isFileSupported) map { files =>
+      files.map(replaceBlocksInFile(None, None, replacements, _))
     }
 
   private[this] def replaceBlocksInFile(
-      startBlockRegex: Regex,
-      endBlockRegex: Regex,
+      startBlockRegex: Option[Regex],
+      endBlockRegex: Option[Regex],
       replacements: Map[String, String],
       in: File): ProcessedFile = {
 
@@ -66,23 +74,37 @@ class ReplaceTextEngine {
   @tailrec
   private[this] final def replaceContent(
       unprocessed: String,
-      startBlockRegex: Regex,
-      endBlockRegex: Regex,
+      startBlockRegex: Option[Regex],
+      endBlockRegex: Option[Regex],
       replacements: Map[String, String],
       replaced: String = ""): String = {
 
-    def tryToReplace: Option[(String, Int)] =
-      (startBlockRegex.findFirstMatchIn(unprocessed), endBlockRegex.findFirstMatchIn(unprocessed)) match {
+    case class TextBlock(startEnd: Int, text: String, endStart: Int, endEnd: Int)
+
+    def textBetween(startR: Regex, endR: Regex): Option[TextBlock] =
+      (startR.findFirstMatchIn(unprocessed), endR.findFirstMatchIn(unprocessed)) match {
         case (Some(startMatch), Some(endMatch)) if startMatch.end < endMatch.start =>
-          val textToBeReplaced = unprocessed.subStr(startMatch.end, endMatch.start)
-          val replaced = replacements.foldLeft(textToBeReplaced) {
-            case (text, (target, replacement)) => text.replaceAll(target, replacement)
-          }
-          val newContent = unprocessed.subStr(0, startMatch.end) + replaced + unprocessed.subStr(
-            endMatch.start,
-            endMatch.end)
-          Some((newContent, endMatch.end))
+          Some(
+            TextBlock(startMatch.end, unprocessed.subStr(startMatch.end, endMatch.start), endMatch.start, endMatch.end))
         case _ => None
+      }
+
+    def textToReplace: Option[TextBlock] =
+      (unprocessed.trim.nonEmpty, startBlockRegex, endBlockRegex) match {
+        case (true, Some(startR), Some(endR)) => textBetween(startR, endR)
+        case (true, None, None)               => Some(TextBlock(0, unprocessed, unprocessed.length, unprocessed.length))
+        case _                                => None
+      }
+
+    def tryToReplace: Option[(String, Int)] =
+      textToReplace.map { textBlock =>
+        val replaced = replacements.foldLeft(textBlock.text) {
+          case (text, (target, replacement)) => text.replaceAll(target, replacement)
+        }
+        val newContent = unprocessed.subStr(0, textBlock.startEnd) + replaced + unprocessed.subStr(
+          textBlock.endStart,
+          textBlock.endEnd)
+        (newContent, textBlock.endEnd)
       }
 
     tryToReplace match {

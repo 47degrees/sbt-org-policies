@@ -16,6 +16,9 @@
 
 package sbtorgpolicies.io
 
+import java.io.File
+import java.net.URL
+
 import cats.instances.either._
 import cats.instances.list._
 import cats.syntax.cartesian._
@@ -23,9 +26,6 @@ import cats.syntax.either._
 import cats.syntax.foldable._
 import cats.syntax.traverse._
 import cats.syntax.traverseFilter._
-// import sbt.io._
-// import sbt.io.syntax._
-import sbt.{File, URL}
 import sbtorgpolicies.exceptions.IOException
 import sbtorgpolicies.io.syntax._
 import sbtorgpolicies.templates._
