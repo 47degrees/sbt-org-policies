@@ -1,5 +1,12 @@
 # Changelog
 
+## 10/13/2017 - Version 0.7.12
+
+Release changes:
+
+* Revert bad CI commits ([#674](https://github.com/47deg/sbt-org-policies/pull/674))
+
+
 ## 10/10/2017 - Version 0.7.11
 
 Release changes:
