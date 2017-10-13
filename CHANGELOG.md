@@ -1,5 +1,12 @@
 # Changelog
 
+## 10/13/2017 - Version 0.7.13
+
+Release changes:
+
+* Adds new libs to the catalogue ([#680](https://github.com/47deg/sbt-org-policies/pull/680))
+
+
 ## 10/13/2017 - Version 0.7.12
 
 Release changes:
