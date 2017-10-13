@@ -1,5 +1,13 @@
 # Changelog
 
+## 10/13/2017 - Version 0.8.0
+
+Release changes:
+
+* Removes SBT dependency from core module ([#633](https://github.com/47deg/sbt-org-policies/pull/633))
+* Releases 0.8.0 version ([#682](https://github.com/47deg/sbt-org-policies/pull/682))
+
+
 ## 10/13/2017 - Version 0.7.13
 
 Release changes:
