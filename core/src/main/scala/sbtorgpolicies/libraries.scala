@@ -50,12 +50,12 @@ object libraries {
     "doobie"                   -> "0.5.0-M8",
     "embedded-redis"           -> "0.6",
     "export-hook"              -> "1.2.0",
-    "finch"                    -> "0.16.0-RC1",
-    "fs2"                      -> "0.10.0-M6",
+    "finch"                    -> "0.16.0-M3",
+    "fs2"                      -> "0.10.0-M7",
     "fs2-cats"                 -> "0.4.0",
     "grpc"                     -> "1.6.1",
     "guava"                    -> "22.0",
-    "hammock"                  -> "0.6.3",
+    "hammock"                  -> "0.6.4",
     "h2"                       -> "1.4.196",
     "http4s"                   -> "0.18.0-M4",
     "joda-convert"             -> "1.9.2",
@@ -69,7 +69,7 @@ object libraries {
     "mainecoon"                -> "0.4.0",
     "monix"                    -> "3.0.0-M1",
     "monocle"                  -> "1.4.0",
-    "mockito"                  -> "2.10.0",
+    "mockito"                  -> "2.11.0",
     "moultingyaml"             -> "0.4.0",
     "newrelic"                 -> "3.43.0",
     "paradise"                 -> "2.1.0",
@@ -92,21 +92,23 @@ object libraries {
     "scalamock"                -> "3.6.0",
     "scalatags"                -> "0.6.7",
     "scalatest"                -> "3.0.4",
-    "scalaz"                   -> "7.2.15",
+    "scalaz"                   -> "7.2.16",
     "scalazspecs2"             -> "0.5.0",
     "scanamo"                  -> "0.9.5",
     "shapeless"                -> "2.3.2",
-    "shocon"                   -> "0.1.10",
+    "shocon"                   -> "0.2.0",
     "simulacrum"               -> "0.11.0",
     "slf4j"                    -> "1.7.25",
     "slick"                    -> "3.2.1",
     "slogging"                 -> "0.6.0",
-    "specs2"                   -> "4.0.0"
+    "sourcecode"               -> "0.1.4",
+    "specs2"                   -> "4.0.1",
+    "twitter-server"           -> "1.32.0"
   )
 
   val vPlugins47: Map[String, String] = Map[String, String](
     "sbt-dependencies" -> "0.3.4",
-    "sbt-microsites"   -> "0.7.3"
+    "sbt-microsites"   -> "0.7.4"
   )
 
   val vPluginsOthers: Map[String, String] = Map[String, String](
@@ -209,6 +211,7 @@ object libraries {
     "fetch-monix"            -> (("com.47deg", "fetch-monix", v("fetch"))),
     "fetch-debug"            -> (("com.47deg", "fetch-debug", v("fetch"))),
     "finch-core"             -> (("com.github.finagle", "finch-core", v("finch"))),
+    "finch-circe"            -> (("com.github.finagle", "finch-circe", v("finch"))),
     "frees-core"             -> (("io.frees", "frees-core", v("freestyle"))),
     "frees-async"            -> (("io.frees", "frees-async", v("freestyle"))),
     "frees-async-fs2"        -> (("io.frees", "frees-async-fs2", v("freestyle"))),
@@ -311,8 +314,10 @@ object libraries {
     "slick"                  -> (("com.typesafe.slick", "slick", v("slick"))),
     "slick-codegen"          -> (("com.typesafe.slick", "slick-codegen", v("slick"))),
     "slogging"               -> (("biz.enef", "slogging", v("slogging"))),
+    "sourcecode"             -> (("com.lihaoyi", "sourcecode", v("sourcecode"))),
     "specs2-core"            -> (("org.specs2", "specs2-core", v("specs2"))),
-    "specs2-scalacheck"      -> (("org.specs2", "specs2-scalacheck", v("specs2")))
+    "specs2-scalacheck"      -> (("org.specs2", "specs2-scalacheck", v("specs2"))),
+    "twitter-server"         -> (("com.twitter", "twitter-server", v("twitter-server")))
   )
 
   val pluginLibs: Map[String, Artifact] = Map[String, Artifact](
