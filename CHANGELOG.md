@@ -1,5 +1,12 @@
 # Changelog
 
+## 10/17/2017 - Version 0.8.2
+
+Release changes:
+
+* Adds frees-async-guava ([#688](https://github.com/47deg/sbt-org-policies/pull/688))
+
+
 ## 10/16/2017 - Version 0.8.1
 
 Release changes:
