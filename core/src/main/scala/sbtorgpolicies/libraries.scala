@@ -25,6 +25,7 @@ object libraries {
     "case-classy"   -> "0.4.0",
     "fetch"         -> "0.7.0",
     "freestyle"     -> "0.4.0",
+    "frees-rpc"     -> "0.1.0",
     "github4s"      -> "0.16.0",
     "org-policies"  -> sbtorgpolicies.BuildInfo.version,
     "scheckToolbox" -> "0.2.2"
@@ -229,6 +230,7 @@ object libraries {
     "frees-http-play"        -> (("io.frees", "frees-http-play", v("freestyle"))),
     "frees-logging"          -> (("io.frees", "frees-logging", v("freestyle"))),
     "frees-monix"            -> (("io.frees", "frees-monix", v("freestyle"))),
+    "frees-rpc"              -> (("io.frees", "frees-rpc", v("frees-rpc"))),
     "frees-slick"            -> (("io.frees", "frees-slick", v("freestyle"))),
     "frees-tagless"          -> (("io.frees", "frees-tagless", v("freestyle"))),
     "frees-twitter-util"     -> (("io.frees", "frees-twitter-util", v("freestyle"))),
