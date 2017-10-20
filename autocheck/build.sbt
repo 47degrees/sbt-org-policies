@@ -12,8 +12,8 @@ lazy val `org-policies-auto-dep-check` = (project in file("."))
   .settings(name := "org-policies-auto-dep-check")
   .settings(noPublishSettings: _*)
   .settings(Seq(
-    scalaVersion := "2.12.3",
-    crossScalaVersions := Seq("2.12.3"),
+    scalaVersion := "2.12.4",
+    crossScalaVersions := Seq("2.12.4"),
     scalaOrganization := "org.scala-lang",
     orgGithubSetting := GitHubSettings(
       organization = "47deg",
