@@ -1,5 +1,12 @@
 # Changelog
 
+## 10/20/2017 - Version 0.8.3
+
+Release changes:
+
+* sbt-compat is not exposed by the plugin ([#690](https://github.com/47deg/sbt-org-policies/pull/690))
+
+
 ## 10/17/2017 - Version 0.8.2
 
 Release changes:
