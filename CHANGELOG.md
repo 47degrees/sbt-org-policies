@@ -1,5 +1,12 @@
 # Changelog
 
+## 10/23/2017 - Version 0.8.5
+
+Release changes:
+
+* Update pbdirect to 0.0.5 ([#694](https://github.com/47deg/sbt-org-policies/pull/694))
+
+
 ## 10/22/2017 - Version 0.8.4
 
 Release changes:
