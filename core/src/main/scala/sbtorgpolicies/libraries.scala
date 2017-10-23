@@ -74,7 +74,7 @@ object libraries {
     "moultingyaml"             -> "0.4.0",
     "newrelic"                 -> "3.43.0",
     "paradise"                 -> "2.1.0",
-    "pbdirect"                 -> "0.0.4",
+    "pbdirect"                 -> "0.0.5",
     "pcplod"                   -> "1.2.1",
     "play"                     -> "2.6.6",
     "postgresql"               -> "42.1.4",
