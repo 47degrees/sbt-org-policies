@@ -1,5 +1,12 @@
 # Changelog
 
+## 10/24/2017 - Version 0.8.6
+
+Release changes:
+
+* Upgrades to Freestyle 0.4.1 ([#695](https://github.com/47deg/sbt-org-policies/pull/695))
+
+
 ## 10/23/2017 - Version 0.8.5
 
 Release changes:
