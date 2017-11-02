@@ -1,5 +1,12 @@
 # Changelog
 
+## 11/02/2017 - Version 0.8.7
+
+Release changes:
+
+* Bumps to cats 1.0.0-RC1 ([#696](https://github.com/47deg/sbt-org-policies/pull/696))
+
+
 ## 10/24/2017 - Version 0.8.6
 
 Release changes:
