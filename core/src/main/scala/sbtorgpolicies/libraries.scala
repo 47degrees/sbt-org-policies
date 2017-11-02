@@ -25,10 +25,10 @@ object libraries {
     "case-classy"   -> "0.4.0",
     "fetch"         -> "0.7.0",
     "freestyle"     -> "0.4.1",
-    "frees-rpc"     -> "0.1.0",
+    "frees-rpc"     -> "0.1.2",
     "github4s"      -> "0.16.0",
     "org-policies"  -> sbtorgpolicies.BuildInfo.version,
-    "scheckToolbox" -> "0.2.2"
+    "scheckToolbox" -> "0.2.3"
   )
 
   protected val vOthers: Map[String, String] = Map[String, String](
@@ -36,24 +36,24 @@ object libraries {
     "akka-http"                -> "10.0.10",
     "algebra"                  -> "0.7.0",
     "alleycats"                -> "0.2.0",
-    "apache-kafka"             -> "0.11.0.1",
+    "apache-kafka"             -> "1.0.0",
     "base64"                   -> "0.2.3",
     "cassandra-driver"         -> "3.3.0",
     "catalysts"                -> "0.0.5",
-    "catbird"                  -> "0.18.0",
-    "cats"                     -> "1.0.0-MF",
-    "cats-effect"              -> "0.4",
+    "catbird"                  -> "0.20.0",
+    "cats"                     -> "1.0.0-RC1",
+    "cats-effect"              -> "0.5",
     "cats-mtl"                 -> "0.0.2",
-    "circe"                    -> "0.9.0-M1",
+    "circe"                    -> "0.9.0-M2",
     "config"                   -> "1.3.2",
-    "coursier"                 -> "1.0.0-RC12",
+    "coursier"                 -> "1.0.0-RC13",
     "discipline"               -> "0.8",
-    "doobie"                   -> "0.5.0-M8",
+    "doobie"                   -> "0.5.0-M9",
     "embedded-redis"           -> "0.6",
     "export-hook"              -> "1.2.0",
     "finch"                    -> "0.16.0-M3",
-    "fs2"                      -> "0.10.0-M7",
-    "fs2-cats"                 -> "0.4.0",
+    "fs2"                      -> "0.10.0-M8",
+    "fs2-cats"                 -> "0.5.0",
     "grpc"                     -> "1.6.1",
     "guava"                    -> "22.0",
     "hammock"                  -> "0.7.0",
@@ -62,7 +62,7 @@ object libraries {
     "joda-convert"             -> "1.9.2",
     "joda-time"                -> "2.9.9",
     "journal"                  -> "3.0.18",
-    "jwt-scala"                -> "0.14.0",
+    "jwt-scala"                -> "0.14.1",
     "kind-projector"           -> "0.9.4",
     "log4s"                    -> "1.4.0",
     "machinist"                -> "0.6.2",
@@ -76,7 +76,7 @@ object libraries {
     "paradise"                 -> "2.1.0",
     "pbdirect"                 -> "0.0.5",
     "pcplod"                   -> "1.2.1",
-    "play"                     -> "2.6.6",
+    "play"                     -> "2.6.7",
     "postgresql"               -> "42.1.4",
     "pure-config"              -> "0.7.0",
     "rediscala"                -> "1.8.0",
@@ -104,7 +104,7 @@ object libraries {
     "slogging"                 -> "0.6.0",
     "sourcecode"               -> "0.1.4",
     "specs2"                   -> "4.0.1",
-    "twitter-server"           -> "1.32.0"
+    "twitter-server"           -> "17.10.0"
   )
 
   val vPlugins47: Map[String, String] = Map[String, String](
