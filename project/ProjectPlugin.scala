@@ -51,7 +51,7 @@ object ProjectPlugin extends AutoPlugin {
 
         val (tutPluginVersion, sbtScalafmtVersion) = sbtBinaryVersionValue match {
           case "0.13" => ("0.5.5", "0.6.8")
-          case "1.0"  => ("0.6.1", "1.2.0")
+          case "1.0"  => ("0.6.2", "1.2.0")
         }
 
         Seq(

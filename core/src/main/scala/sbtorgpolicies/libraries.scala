@@ -25,7 +25,7 @@ object libraries {
     "case-classy"   -> "0.4.0",
     "fetch"         -> "0.7.0",
     "freestyle"     -> "0.4.1",
-    "frees-rpc"     -> "0.1.2",
+    "frees-rpc"     -> "0.2.0",
     "github4s"      -> "0.16.0",
     "org-policies"  -> sbtorgpolicies.BuildInfo.version,
     "scheckToolbox" -> "0.2.3"
@@ -58,7 +58,7 @@ object libraries {
     "guava"                    -> "22.0",
     "hammock"                  -> "0.7.0",
     "h2"                       -> "1.4.196",
-    "http4s"                   -> "0.18.0-M4",
+    "http4s"                   -> "0.18.0-M5",
     "joda-convert"             -> "1.9.2",
     "joda-time"                -> "2.9.9",
     "journal"                  -> "3.0.18",
@@ -121,14 +121,14 @@ object libraries {
     "sbt-jmh"               -> "0.2.27",
     "sbt-release"           -> "1.0.6",
     "sbt-scalafmt"          -> "0.6.8",
-    "sbt-scalajs"           -> "0.6.20",
+    "sbt-scalajs"           -> "0.6.21",
     "sbt-scoverage"         -> "1.5.1",
     "sbt-site"              -> "1.3.1",
     "sbt-sonatype"          -> "2.0",
     "sbt-unidoc"            -> "0.4.1",
     "sbt-wartremover"       -> "2.2.0",
     "scalastyle-sbt-plugin" -> "1.0.0",
-    "tut-plugin"            -> "0.6.1"
+    "tut-plugin"            -> "0.6.2"
   )
 
   val v: Map[String, String] = v47 ++ vOthers ++ vPlugins47 ++ vPluginsOthers
