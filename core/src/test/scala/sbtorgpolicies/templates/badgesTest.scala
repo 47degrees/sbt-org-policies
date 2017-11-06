@@ -35,6 +35,8 @@ class badgesTest extends TestOps with badgeArbitraries {
               version match {
                 case "0.6.17" | "0.6.18" | "0.6.19" | "0.6.20" =>
                   "0.6.17"
+                case "0.6.21" =>
+                  "1.0.0-M1"
                 case _ =>
                   version
               }
