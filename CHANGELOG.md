@@ -1,5 +1,12 @@
 # Changelog
 
+## 11/06/2017 - Version 0.8.9
+
+Release changes:
+
+* Updates tut ([#706](https://github.com/47deg/sbt-org-policies/pull/706))
+
+
 ## 11/06/2017 - Version 0.8.8
 
 Release changes:
