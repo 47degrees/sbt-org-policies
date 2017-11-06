@@ -1,5 +1,12 @@
 # Changelog
 
+## 11/06/2017 - Version 0.8.10
+
+Release changes:
+
+* Updates missed tut 0.5.6 for Scala 0.13.x ([#707](https://github.com/47deg/sbt-org-policies/pull/707))
+
+
 ## 11/06/2017 - Version 0.8.9
 
 Release changes:
