@@ -130,9 +130,9 @@ trait DefaultSettings extends AllSettings {
       getEnvVarOrElse("TRAVIS_PULL_REQUEST") == "false"
     },
     orgAfterCISuccessTaskListSetting := List(
-      orgUpdateDocFiles.asRunnableItem,
       depUpdateDependencyIssues.asRunnableItem,
-      orgPublishReleaseTask.asRunnableItem(allModules = true, aggregated = false, crossScalaVersions = true)
+      orgPublishReleaseTask.asRunnableItem(allModules = true, aggregated = false, crossScalaVersions = true),
+      orgUpdateDocFiles.asRunnableItem
     ) ++ guard(((baseDirectory in LocalRootProject).value / "docs").exists() && !version.value.endsWith("-SNAPSHOT"))(
       defaultPublishMicrosite),
     orgScriptTaskListSetting := List(

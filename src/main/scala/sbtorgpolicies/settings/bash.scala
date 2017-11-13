@@ -32,17 +32,19 @@ trait bash extends bashCompat {
     val st: State = deferredFetchContributorsState(inputState)
     val extracted = Project.extract(st)
 
-    val buildV    = extracted.get(version in ThisBuild)
-    val scalaV    = extracted.get(scalaVersion)
-    val crossV    = extracted.get(crossScalaVersions)
-    val orgBranch = extracted.get(orgCommitBranchSetting)
+    val buildV       = extracted.get(version in ThisBuild)
+    val scalaV       = extracted.get(scalaVersion)
+    val scalaBinaryV = extracted.get(scalaBinaryVersion)
+    val crossV       = extracted.get(crossScalaVersions)
+    val orgBranch    = extracted.get(orgCommitBranchSetting)
 
-    val isLastScalaV = crossV.lastOption.exists(_ == scalaV)
+    val isLastScalaV = isLastScalaBinaryVersion(scalaBinaryV, crossV)
     val isSnapshotV  = buildV.endsWith("-SNAPSHOT")
 
     st.log.info(s"""orgPublishRelease Command Initiated
                               |Build Version = $buildV
                               |Scala Version = $scalaV
+                              |Scala Binary Version = $scalaBinaryV
                               |crossScalaVersions = $crossV
                               |isSnapshotV = $isSnapshotV
                               |isLastScalaV = $isLastScalaV
@@ -94,6 +96,19 @@ trait bash extends bashCompat {
     }
   }
 
+  private[this] def isLastScalaBinaryVersion(scalaBinaryV: String, crossV: Seq[String]): Boolean = {
+
+    val MajorMinorPatchR = "(\\d+\\.\\d+)\\.\\d+".r
+
+    def majorMinorV(v: String): Option[String] = v match {
+      case MajorMinorPatchR(majorMinorV) => Some(majorMinorV)
+      case _                             => None
+    }
+
+    crossV.lastOption.flatMap(majorMinorV).exists(_ == scalaBinaryV)
+
+  }
+
   private[this] def runTaskListCommand(
       commandName: String,
       runnableItemListSettingKey: SettingKey[List[RunnableItemConfigScope[_]]],
@@ -102,12 +117,12 @@ trait bash extends bashCompat {
 
     val extracted = Project.extract(st)
 
-    val scalaV  = extracted.get(scalaVersion)
-    val crossV  = extracted.get(crossScalaVersions)
-    val baseDir = extracted.get(baseDirectory)
-    val rootDir = extracted.get(baseDirectory in LocalRootProject)
+    val scalaBinaryV = extracted.get(scalaBinaryVersion)
+    val crossV       = extracted.get(crossScalaVersions)
+    val baseDir      = extracted.get(baseDirectory)
+    val rootDir      = extracted.get(baseDirectory in LocalRootProject)
 
-    val isLastScalaV = crossV.lastOption.exists(_ == scalaV)
+    val isLastScalaV = isLastScalaBinaryVersion(scalaBinaryV, crossV)
     val isRootModule = baseDir.getAbsolutePath == rootDir.getAbsolutePath
 
     val runnableItemList: List[RunnableItemConfigScope[_]] = extracted.get(runnableItemListSettingKey)
@@ -178,7 +193,7 @@ trait bash extends bashCompat {
       isRootModule: Boolean,
       runnableItemList: List[RunnableItemConfigScope[_]],
       filteredRunnableItemList: List[RunnableItemConfigScope[_]],
-      st: State) = {
+      st: State): Unit = {
 
     val nonRunnableItems: Set[RunnableItemConfigScope[_]] = runnableItemList.toSet -- filteredRunnableItemList.toSet
 
