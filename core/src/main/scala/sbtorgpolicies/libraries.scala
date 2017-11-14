@@ -51,7 +51,7 @@ object libraries {
     "doobie"                   -> "0.5.0-M9",
     "embedded-redis"           -> "0.6",
     "export-hook"              -> "1.2.0",
-    "finch"                    -> "0.16.0-RC1",
+    "finch"                    -> "0.16.0-M3",
     "fs2"                      -> "0.10.0-M8",
     "fs2-cats"                 -> "0.5.0",
     "grpc"                     -> "1.6.1",
