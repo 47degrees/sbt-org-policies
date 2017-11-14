@@ -35,3 +35,5 @@ class YamlOps {
     } yield yamlValues
 
 }
+
+object YamlOps extends YamlOps

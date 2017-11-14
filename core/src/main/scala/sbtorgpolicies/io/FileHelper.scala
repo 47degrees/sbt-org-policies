@@ -29,12 +29,10 @@ import cats.syntax.traverseFilter._
 import sbtorgpolicies.exceptions.IOException
 import sbtorgpolicies.io.syntax._
 import sbtorgpolicies.templates._
+import FileReader._
+import FileWriter._
 
 class FileHelper {
-
-  val fileReader: FileReader = new FileReader
-
-  val fileWriter: FileWriter = new FileWriter
 
   val templatesEngine: TemplatesEngine = new TemplatesEngine
 
@@ -49,8 +47,8 @@ class FileHelper {
 
     for {
       pluginUrl <- getPluginUrl
-      _         <- fileWriter.copyJARResourcesTo(pluginUrl, templatesOutput, "templates")
-      _         <- fileWriter.copyFilesRecursively(userTemplatesDir.getAbsolutePath, s"${templatesOutput}templates")
+      _         <- copyJARResourcesTo(pluginUrl, templatesOutput, "templates")
+      _         <- copyFilesRecursively(userTemplatesDir.getAbsolutePath, s"${templatesOutput}templates")
     } yield ()
   }
 
@@ -64,16 +62,16 @@ class FileHelper {
 
     def checkFiles(): IOResult[Unit] =
       fileList.traverseU_ { f =>
-        if (!fileReader.exists(templatePath(f)))
+        if (!exists(templatePath(f)))
           IOException(s"File not found: ${f.templatePath}").asLeft
         else ().asRight
       }
 
     def prepareFileContent(file: FileType): IOResult[Option[String]] =
-      if (!fileReader.exists(file.outputPath) || file.overWritable) {
+      if (!exists(file.outputPath) || file.overWritable) {
         templatesEngine.replaceFileContentsWith(templatePath(file), file.replacements) map (Option(_))
       } else if (file.fileSections.nonEmpty) {
-        fileReader.getFileContent(file.outputPath) map (Option(_))
+        getFileContent(file.outputPath) map (Option(_))
       } else Right(None)
 
     def replaceSection(fileContent: String, fileSection: FileSection): IOResult[String] =
@@ -94,7 +92,7 @@ class FileHelper {
 
     def writeToFileIfWritable(maybeContent: Option[String], fileType: FileType): IOResult[Option[FileType]] =
       maybeContent map { c =>
-        fileWriter.writeContentToFile(c, outputPath(fileType)) map (_ => Option(fileType))
+        writeContentToFile(c, outputPath(fileType)) map (_ => Option(fileType))
       } getOrElse None.asRight
 
     def processFile(fileType: FileType): IOResult[Option[FileType]] =

@@ -27,8 +27,6 @@ import scala.util.matching.Regex
 
 trait ValidationFunctions {
 
-  val yamlOps = new YamlOps
-
   def requiredStrings(list: List[String]): ValidationFunction = {
 
     def validateList(content: String, list: List[String])(
@@ -77,7 +75,7 @@ trait ValidationFunctions {
 
     def validateCrossScalaVersions(content: String): ValidationResult = {
 
-      val travisCrossScalaVersion: List[String] = yamlOps.getFields(content, "scala").toList.sorted
+      val travisCrossScalaVersion: List[String] = YamlOps.getFields(content, "scala").toList.sorted
       if (travisCrossScalaVersion == crossScalaVersions.sorted) ().valid
       else
         ValidationException(
@@ -86,7 +84,7 @@ trait ValidationFunctions {
     }
 
     def validateTasks(content: String, section: String, expectedTasks: Seq[String]): ValidationResult = {
-      val tasksInTravisFile: List[String] = yamlOps.getFields(content, section).toList
+      val tasksInTravisFile: List[String] = YamlOps.getFields(content, section).toList
 
       if (expectedTasks.forall(expectedTsk => tasksInTravisFile.exists(_.contains(expectedTsk))))
         ().valid

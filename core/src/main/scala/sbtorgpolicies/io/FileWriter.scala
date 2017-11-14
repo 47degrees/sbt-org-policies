@@ -125,3 +125,5 @@ class FileWriter {
       }
       .leftMap(e => IOException(s"Error copying resources from $jarUrl to directory $output", Some(e)))
 }
+
+object FileWriter extends FileWriter

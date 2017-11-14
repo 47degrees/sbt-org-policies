@@ -32,12 +32,7 @@ class TemplatesEngineTest extends TestOps {
     val mockFileReader: FileReader = stub[FileReader]
     val mockFileWriter: FileWriter = stub[FileWriter]
 
-    val templatesEngine: TemplatesEngine = new TemplatesEngine {
-
-      override val fileReader: FileReader = mockFileReader
-
-      override val fileWriter: FileWriter = mockFileWriter
-    }
+    val templatesEngine: TemplatesEngine = new TemplatesEngine(mockFileReader, mockFileWriter)
 
     (templatesEngine, mockFileReader, mockFileWriter)
   }

@@ -115,3 +115,5 @@ class FileReader {
       }
       .leftMap(e => IOException(s"Error fetching files recursively", Some(e)))
 }
+
+object FileReader extends FileReader

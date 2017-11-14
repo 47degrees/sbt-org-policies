@@ -23,9 +23,7 @@ import cats.syntax.validated._
 import sbtorgpolicies.exceptions.ValidationException
 import sbtorgpolicies.io.FileReader
 
-class FileValidation {
-
-  val fileReader: FileReader = new FileReader
+class FileValidation(fileReader: FileReader = FileReader) {
 
   def validateFile(inputPath: String, validations: ValidationFunction*): ValidationResult =
     fileReader.getFileContent(inputPath) match {

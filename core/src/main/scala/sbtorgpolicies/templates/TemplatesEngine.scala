@@ -23,11 +23,7 @@ import sbtorgpolicies.templates.utils._
 
 import scala.util.matching.Regex
 
-class TemplatesEngine {
-
-  val fileReader: FileReader = new FileReader
-
-  val fileWriter: FileWriter = new FileWriter
+class TemplatesEngine(fileReader: FileReader = FileReader, fileWriter: FileWriter = FileWriter) {
 
   def replaceFileContentsWith(inputPath: String, replacements: Replacements): IOResult[String] =
     fileReader.withFileContent(inputPath, replaceWith(_, replacements))
