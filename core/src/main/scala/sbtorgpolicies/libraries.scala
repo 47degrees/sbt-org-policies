@@ -21,14 +21,15 @@ object libraries {
   type Artifact = (String, String, String)
 
   val v47: Map[String, String] = Map[String, String](
-    "iota"          -> "0.3.1",
-    "case-classy"   -> "0.4.0",
-    "fetch"         -> "0.7.0",
-    "freestyle"     -> "0.4.1",
-    "frees-rpc"     -> "0.2.0",
-    "github4s"      -> "0.16.0",
-    "org-policies"  -> sbtorgpolicies.BuildInfo.version,
-    "scheckToolbox" -> "0.2.3"
+    "iota"            -> "0.3.1",
+    "case-classy"     -> "0.4.0",
+    "fetch"           -> "0.7.0",
+    "freestyle"       -> "0.4.1",
+    "frees-rpc"       -> "0.2.0",
+    "frees-cassandra" -> "0.4.0",
+    "github4s"        -> "0.16.0",
+    "org-policies"    -> sbtorgpolicies.BuildInfo.version,
+    "scheckToolbox"   -> "0.2.3"
   )
 
   protected val vOthers: Map[String, String] = Map[String, String](
@@ -231,6 +232,7 @@ object libraries {
     "frees-monix"             -> (("io.frees", "frees-monix", v("freestyle"))),
     "frees-play"              -> (("io.frees", "frees-play", v("freestyle"))),
     "frees-rpc"               -> (("io.frees", "frees-rpc", v("frees-rpc"))),
+    "frees-cassandra"         -> (("io.frees", "frees-cassandra", v("frees-cassandra"))),
     "frees-rpc-common"        -> (("io.frees", "frees-rpc-common", v("frees-rpc"))),
     "frees-slick"             -> (("io.frees", "frees-slick", v("freestyle"))),
     "frees-tagless"           -> (("io.frees", "frees-tagless", v("freestyle"))),
