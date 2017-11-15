@@ -40,9 +40,9 @@ trait bash extends bashCompat {
     val scalaV     = extracted.get(scalaVersion)
     val crossBuild = extracted.get(crossScalaVersions).toList
     val orgBranch  = extracted.get(orgCommitBranchSetting)
-    val baseDir    = extracted.get(baseDirectory in LocalRootProject)
+    val rootDir    = extracted.get(baseDirectory in LocalRootProject)
 
-    val crossV       = readCrossScalaFromYaml(baseDir, crossBuild, st.log)
+    val crossV       = readCrossScalaFromYaml(rootDir, crossBuild, st.log)
     val isLastScalaV = isLastScalaVersion(scalaV, crossV, st.log)
     val isSnapshotV  = buildV.endsWith("-SNAPSHOT")
 
@@ -115,7 +115,7 @@ trait bash extends bashCompat {
     }
   }
 
-  private[this] def readCrossScalaFromYaml(baseDir: File, defaultCrossV: List[String], logger: Logger): List[String] = {
+  private[this] def readCrossScalaFromYaml(rootDir: File, defaultCrossV: List[String], logger: Logger): List[String] = {
 
     import FileReader._
     import YamlOps._
@@ -136,7 +136,7 @@ trait bash extends bashCompat {
       yamlVersions
     }
 
-    getFileContent((baseDir / travisFilePath).getAbsolutePath) flatMap { content =>
+    getFileContent((rootDir / travisFilePath).getAbsolutePath) flatMap { content =>
       getFields(content, "scala").mapToString map (_.sorted) map verifyVersionsConsistency
     } valueOr { e =>
       logger.warn(s"Can't read crossScalaVersion from yaml file $travisFilePath")
@@ -157,7 +157,7 @@ trait bash extends bashCompat {
     val baseDir = extracted.get(baseDirectory)
     val rootDir = extracted.get(baseDirectory in LocalRootProject)
 
-    val crossV       = readCrossScalaFromYaml(baseDir, extracted.get(crossScalaVersions).toList, st.log)
+    val crossV       = readCrossScalaFromYaml(rootDir, extracted.get(crossScalaVersions).toList, st.log)
     val isLastScalaV = isLastScalaVersion(scalaV, crossV, st.log)
     val isRootModule = baseDir.getAbsolutePath == rootDir.getAbsolutePath
 
