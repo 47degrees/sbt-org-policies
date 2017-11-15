@@ -232,7 +232,7 @@ object libraries {
     "frees-monix"             -> (("io.frees", "frees-monix", v("freestyle"))),
     "frees-play"              -> (("io.frees", "frees-play", v("freestyle"))),
     "frees-rpc"               -> (("io.frees", "frees-rpc", v("frees-rpc"))),
-    "frees-cassandra"         -> (("io.frees", "frees-cassandra", v("frees-cassandra"))),
+    "frees-cassandra"         -> (("io.frees", "frees-cassandra-core", v("frees-cassandra"))),
     "frees-rpc-common"        -> (("io.frees", "frees-rpc-common", v("frees-rpc"))),
     "frees-slick"             -> (("io.frees", "frees-slick", v("freestyle"))),
     "frees-tagless"           -> (("io.frees", "frees-tagless", v("freestyle"))),
