@@ -1,5 +1,12 @@
 # Changelog
 
+## 11/15/2017 - Version 0.8.11
+
+Release changes:
+
+* Read the Scala cross versions from travis file for checking the isLastScalaVersion ([#709](https://github.com/47deg/sbt-org-policies/pull/709))
+
+
 ## 11/06/2017 - Version 0.8.10
 
 Release changes:
