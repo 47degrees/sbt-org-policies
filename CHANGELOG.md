@@ -1,5 +1,12 @@
 # Changelog
 
+## 11/15/2017 - Version 0.8.12
+
+Release changes:
+
+* Fixes a compatibility issue with FileReader and FileWriter ([#758](https://github.com/47deg/sbt-org-policies/pull/758))
+
+
 ## 11/15/2017 - Version 0.8.11
 
 Release changes:
