@@ -24,7 +24,7 @@ import sbtorgpolicies.io.syntax._
 
 import scala.annotation.tailrec
 
-trait FileReader {
+class FileReader {
 
   def exists(path: String): Boolean =
     Either
