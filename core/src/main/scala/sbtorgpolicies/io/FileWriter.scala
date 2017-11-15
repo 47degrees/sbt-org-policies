@@ -30,7 +30,7 @@ import cats.syntax.traverse._
 import sbtorgpolicies.exceptions._
 import sbtorgpolicies.io.syntax._
 
-trait FileWriter {
+class FileWriter {
 
   def writeContentToFile(content: String, output: String): IOResult[Unit] = {
 

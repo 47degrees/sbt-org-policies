@@ -21,7 +21,7 @@ import net.jcazevedo.moultingyaml._
 import sbtorgpolicies.exceptions.YamlException
 import sbtorgpolicies.rules.syntax._
 
-trait YamlOps {
+class YamlOps {
 
   def parseContent(str: String): YamlResult[YamlObject] =
     Either
