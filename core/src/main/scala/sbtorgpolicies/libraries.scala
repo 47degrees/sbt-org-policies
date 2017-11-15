@@ -72,7 +72,7 @@ object libraries {
     "monocle"                  -> "1.4.0",
     "mockito"                  -> "2.11.0",
     "moultingyaml"             -> "0.4.0",
-    "newrelic"                 -> "3.43.0",
+    "newrelic"                 -> "3.44.0",
     "paradise"                 -> "2.1.0",
     "pbdirect"                 -> "0.0.6",
     "pcplod"                   -> "1.2.1",

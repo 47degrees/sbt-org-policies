@@ -16,13 +16,17 @@
 
 package sbtorgpolicies.settings
 
-import com.typesafe.sbt.pgp.PgpKeys._
+import cats.syntax.either._
 import sbt.Keys._
 import sbt._
 import sbt.complete.DefaultParsers.OptNotSpace
 import sbtorgpolicies.OrgPoliciesKeys._
+import sbtorgpolicies.io.FileReader
 import sbtorgpolicies.model.Dev
+import sbtorgpolicies.rules.YamlOps
+import sbtorgpolicies.rules.syntax._
 import sbtorgpolicies.runnable._
+import sbtorgpolicies.templates._
 import sbtorgpolicies.utils._
 import sbtrelease.ReleaseStateTransformations.reapply
 
@@ -32,12 +36,14 @@ trait bash extends bashCompat {
     val st: State = deferredFetchContributorsState(inputState)
     val extracted = Project.extract(st)
 
-    val buildV    = extracted.get(version in ThisBuild)
-    val scalaV    = extracted.get(scalaVersion)
-    val crossV    = extracted.get(crossScalaVersions)
-    val orgBranch = extracted.get(orgCommitBranchSetting)
+    val buildV     = extracted.get(version in ThisBuild)
+    val scalaV     = extracted.get(scalaVersion)
+    val crossBuild = extracted.get(crossScalaVersions).toList
+    val orgBranch  = extracted.get(orgCommitBranchSetting)
+    val rootDir    = extracted.get(baseDirectory in LocalRootProject)
 
-    val isLastScalaV = crossV.lastOption.exists(_ == scalaV)
+    val crossV       = readCrossScalaFromYaml(rootDir, crossBuild, st.log)
+    val isLastScalaV = isLastScalaVersion(scalaV, crossV, st.log)
     val isSnapshotV  = buildV.endsWith("-SNAPSHOT")
 
     st.log.info(s"""orgPublishRelease Command Initiated
@@ -55,6 +61,7 @@ trait bash extends bashCompat {
         val ref = extracted.get(thisProjectRef)
 
         extracted.runAggregated[Unit](publish in Global in ref, st)
+        st
       case (false, true) =>
         st.log.info("Release Version detected, starting the release process...")
 
@@ -94,6 +101,50 @@ trait bash extends bashCompat {
     }
   }
 
+  private[this] def isLastScalaVersion(scalaV: String, crossV: List[String], logger: Logger): Boolean = {
+    crossV.sorted.lastOption match {
+      case None =>
+        logger.warn("crossScalaVersions is empty")
+        false
+      case Some(v) if v < scalaV =>
+        logger.warn(
+          s"Current Scala version ($scalaV) is greater than the major Scala version supported in crossScalaVersions ($crossV)")
+        false
+      case Some(v) if v == scalaV => true
+      case Some(v)                => false
+    }
+  }
+
+  private[this] def readCrossScalaFromYaml(rootDir: File, defaultCrossV: List[String], logger: Logger): List[String] = {
+
+    import FileReader._
+    import YamlOps._
+
+    def verifyVersionsConsistency(yamlVersions: List[String]): List[String] = {
+      val notInConfig = yamlVersions.filterNot(defaultCrossV.contains)
+      val notInYaml   = defaultCrossV.filterNot(yamlVersions.contains)
+
+      if (notInConfig.nonEmpty) {
+        logger.warn(
+          s"The Scala versions $notInConfig are defined in $travisFilePath but not in your project configuration")
+      }
+
+      if (notInYaml.nonEmpty) {
+        logger.warn(
+          s"The Scala versions $notInYaml are defined in your project configuration but not in $travisFilePath")
+      }
+      yamlVersions
+    }
+
+    getFileContent((rootDir / travisFilePath).getAbsolutePath) flatMap { content =>
+      getFields(content, "scala").mapToString map (_.sorted) map verifyVersionsConsistency
+    } valueOr { e =>
+      logger.warn(s"Can't read crossScalaVersion from yaml file $travisFilePath")
+      logger.trace(e)
+      defaultCrossV
+    }
+  }
+
   private[this] def runTaskListCommand(
       commandName: String,
       runnableItemListSettingKey: SettingKey[List[RunnableItemConfigScope[_]]],
@@ -103,11 +154,11 @@ trait bash extends bashCompat {
     val extracted = Project.extract(st)
 
     val scalaV  = extracted.get(scalaVersion)
-    val crossV  = extracted.get(crossScalaVersions)
     val baseDir = extracted.get(baseDirectory)
     val rootDir = extracted.get(baseDirectory in LocalRootProject)
 
-    val isLastScalaV = crossV.lastOption.exists(_ == scalaV)
+    val crossV       = readCrossScalaFromYaml(rootDir, extracted.get(crossScalaVersions).toList, st.log)
+    val isLastScalaV = isLastScalaVersion(scalaV, crossV, st.log)
     val isRootModule = baseDir.getAbsolutePath == rootDir.getAbsolutePath
 
     val runnableItemList: List[RunnableItemConfigScope[_]] = extracted.get(runnableItemListSettingKey)
@@ -178,7 +229,7 @@ trait bash extends bashCompat {
       isRootModule: Boolean,
       runnableItemList: List[RunnableItemConfigScope[_]],
       filteredRunnableItemList: List[RunnableItemConfigScope[_]],
-      st: State) = {
+      st: State): Unit = {
 
     val nonRunnableItems: Set[RunnableItemConfigScope[_]] = runnableItemList.toSet -- filteredRunnableItemList.toSet
 

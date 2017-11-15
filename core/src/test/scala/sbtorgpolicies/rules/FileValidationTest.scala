@@ -33,10 +33,7 @@ class FileValidationTest extends TestOps with OneInstancePerTest {
 
   val mockFileReader: FileReader = mock[FileReader]
 
-  val fileValidation: FileValidation = new FileValidation {
-
-    override val fileReader: FileReader = mockFileReader
-  }
+  val fileValidation: FileValidation = new FileValidation(mockFileReader)
 
   test("FileValidation.validateFile works as expected") {
 

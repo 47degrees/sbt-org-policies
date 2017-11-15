@@ -51,9 +51,8 @@ class GitHubOpsTest extends TestOps {
       override lazy val pullRequests: GHPullRequests = ghPullRequests
     }
 
-    val gitHubOps = new GitHubOps(owner, repo, None) {
-      override val fileReader: FileReader = fileReaderMock
-      override val gh: Github             = githubMock
+    val gitHubOps = new GitHubOps(owner, repo, None, fileReaderMock) {
+      override val gh: Github = githubMock
     }
     (gitHubOps, fileReaderMock, ghGitData, ghPullRequests, ghRepos, ghUsers)
   }

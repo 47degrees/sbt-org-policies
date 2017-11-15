@@ -31,11 +31,9 @@ import sbtorgpolicies.github.syntax._
 import sbtorgpolicies.io.syntax._
 import sbtorgpolicies.io.{FileReader, IO, IOResult}
 
-class GitHubOps(owner: String, repo: String, accessToken: Option[String]) {
+class GitHubOps(owner: String, repo: String, accessToken: Option[String], fileReader: FileReader = FileReader) {
 
-  val fileReader: FileReader = new FileReader
-
-  val gh = Github(accessToken)
+  val gh: Github = Github(accessToken)
 
   def fetchContributors: Either[GitHubException, List[User]] = {
 

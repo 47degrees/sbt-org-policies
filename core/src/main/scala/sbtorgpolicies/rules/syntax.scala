@@ -44,10 +44,10 @@ object syntax {
 
   final class YamlResultOps(result: YamlResult[Seq[YamlValue]]) {
 
-    def toList: List[String] = result match {
-      case Right(yamlValues) => yamlValues.flatMap(_.convertTo[List[String]]).toList
-      case _                 => Nil
-    }
+    def toList: List[String] = mapToString.getOrElse(Nil)
+
+    def mapToString: YamlResult[List[String]] =
+      result.map(_.flatMap(_.convertTo[List[String]]).toList)
 
   }
 

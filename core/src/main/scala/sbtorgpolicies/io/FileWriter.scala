@@ -30,9 +30,7 @@ import cats.syntax.traverse._
 import sbtorgpolicies.exceptions._
 import sbtorgpolicies.io.syntax._
 
-class FileWriter {
-
-  val fileReader: FileReader = new FileReader
+trait FileWriter {
 
   def writeContentToFile(content: String, output: String): IOResult[Unit] = {
 
@@ -87,7 +85,7 @@ class FileWriter {
       (files map copySingleFile).sequenceU
 
     for {
-      files <- fileReader.fetchFilesRecursivelyFromPath(sourcePath)
+      files <- FileReader.fetchFilesRecursivelyFromPath(sourcePath)
       paths <- copyMultipleFiles(files)
     } yield paths
   }
@@ -125,3 +123,5 @@ class FileWriter {
       }
       .leftMap(e => IOException(s"Error copying resources from $jarUrl to directory $output", Some(e)))
 }
+
+object FileWriter extends FileWriter

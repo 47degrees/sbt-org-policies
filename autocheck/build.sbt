@@ -1,6 +1,6 @@
 import sbt.Keys._
 import sbtorgpolicies.OrgPoliciesKeys.orgGithubSetting
-import sbtorgpolicies.io.FileReader
+import sbtorgpolicies.io.FileReader._
 import sbtorgpolicies.libraries._
 import sbtorgpolicies.model.GitHubSettings
 
@@ -32,12 +32,11 @@ lazy val `org-policies-auto-dep-check` = (project in file("."))
         .toList ++
         javaLibs.mapValues(lib => lib._1 % lib._2 % lib._3).values.toList,
     checkDependencies := Def.taskDyn {
-      val fr             = new FileReader
       val versionSbtFile = baseDirectory.value.getParentFile / "version.sbt"
       val VersionRegex   = """.*"(.*-SNAPSHOT)".*""".r
 
       val currentPluginVersion =
-        fr.getFileContent(versionSbtFile.getAbsolutePath) match {
+        getFileContent(versionSbtFile.getAbsolutePath) match {
           case Right(VersionRegex(v)) => Some(v)
           case _                      => None
         }

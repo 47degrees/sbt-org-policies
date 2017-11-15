@@ -29,9 +29,8 @@ class ReplaceTextEngine {
 
   import ReplaceTextEngine._
   import textSyntax._
-
-  val fileReader: FileReader = new FileReader
-  val fileWriter: FileWriter = new FileWriter
+  import FileReader._
+  import FileWriter._
 
   final def replaceBlocks(
       startBlockRegex: Regex,
@@ -39,7 +38,7 @@ class ReplaceTextEngine {
       replacements: Map[String, String],
       in: List[File],
       isFileSupported: (File) => Boolean): IOResult[List[ProcessedFile]] =
-    fileReader.fetchFilesRecursively(in, isFileSupported) map { files =>
+    fetchFilesRecursively(in, isFileSupported) map { files =>
       files.map(replaceBlocksInFile(Some(startBlockRegex), Some(endBlockRegex), replacements, _))
     }
 
@@ -47,7 +46,7 @@ class ReplaceTextEngine {
       replacements: Map[String, String],
       in: List[File],
       isFileSupported: (File) => Boolean): IOResult[List[ProcessedFile]] =
-    fileReader.fetchFilesRecursively(in, isFileSupported) map { files =>
+    fetchFilesRecursively(in, isFileSupported) map { files =>
       files.map(replaceBlocksInFile(None, None, replacements, _))
     }
 
@@ -58,10 +57,10 @@ class ReplaceTextEngine {
       in: File): ProcessedFile = {
 
     val result: IOResult[Boolean] = for {
-      content <- fileReader.getFileContent(in.getAbsolutePath)
+      content <- getFileContent(in.getAbsolutePath)
       replaced = replaceContent(content, startBlockRegex, endBlockRegex, replacements)
       modified <- if (replaced != content) {
-        fileWriter.writeContentToFile(replaced, in.getAbsolutePath).map(_ => true)
+        writeContentToFile(replaced, in.getAbsolutePath).map(_ => true)
       } else Right(false)
     } yield modified
 

@@ -24,7 +24,7 @@ import sbtorgpolicies.io.syntax._
 
 import scala.annotation.tailrec
 
-class FileReader {
+trait FileReader {
 
   def exists(path: String): Boolean =
     Either
@@ -115,3 +115,5 @@ class FileReader {
       }
       .leftMap(e => IOException(s"Error fetching files recursively", Some(e)))
 }
+
+object FileReader extends FileReader
