@@ -16,6 +16,8 @@
 
 package sbtorgpolicies.arbitraries
 
+import cats.data.Validated.{Invalid, Valid}
+import cats.data.{NonEmptyList, ValidatedNel}
 import org.scalacheck.{Arbitrary, Gen}
 import sbtorgpolicies.exceptions.{IOException, ValidationException}
 
@@ -36,6 +38,20 @@ trait ExceptionArbitraries {
       maybeException <- Gen.option(new RuntimeException(exceptionMessage))
     } yield ValidationException(msg, maybeException)
   }
+
+  implicit def nonEmptyListArbitrary[A](implicit AA: Arbitrary[A]): Arbitrary[NonEmptyList[A]] = Arbitrary {
+    for {
+      head <- AA.arbitrary
+      tail <- Gen.listOf(AA.arbitrary)
+    } yield NonEmptyList(head, tail)
+  }
+
+  def validGen[A](implicit AA: Arbitrary[A]): Gen[Valid[A]] = AA.arbitrary.map(Valid(_))
+
+  def invalidGen[A](implicit AA: Arbitrary[A]): Gen[Invalid[A]] = AA.arbitrary.map(Invalid(_))
+
+  implicit def validatedNelArbitrary[A, B](implicit AA: Arbitrary[A], BA: Arbitrary[B]): Arbitrary[ValidatedNel[A, B]] =
+    Arbitrary(Gen.oneOf(invalidGen[NonEmptyList[A]], invalidGen[NonEmptyList[A]]))
 
 }
 

@@ -82,7 +82,7 @@ class FileWriter {
     }
 
     def copyMultipleFiles(files: List[File]): IOResult[List[Path]] =
-      (files map copySingleFile).sequenceU
+      (files map copySingleFile).sequence[IOResult, Path]
 
     for {
       files <- FileReader.fetchFilesRecursivelyFromPath(sourcePath)

@@ -74,8 +74,7 @@ object ProjectPlugin extends AutoPlugin {
             "-Dplugin.version=" + version.value,
             "-Dscala.version=" + scalaVersion.value
           )
-      },
-      addSbtPlugin("com.47deg" % "sbt-microsites" % "0.7.3")
+      }
     )
 
     lazy val coreSettings: Seq[Def.Setting[_]] = commonSettings ++ Seq(
@@ -88,8 +87,8 @@ object ProjectPlugin extends AutoPlugin {
         }
       },
       libraryDependencies ++= Seq(
-        %%("github4s", "0.15.0"),
-        %%("cats-core", "0.9.0"),
+        %%("github4s", "0.17.0"),
+        %%("cats-core"),
         %%("base64"),
         %%("moultingyaml"),
         %%("scalatest")             % Test,

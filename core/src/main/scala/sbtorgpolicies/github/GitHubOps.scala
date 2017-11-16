@@ -295,7 +295,7 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String], fileRe
 
       def orderAndFilter(list: List[PullRequest]): List[PullRequest] = {
         val date = maybeDate.getOrElse("")
-        list.mapFilter(pr => pr.merged_at.filter(_ > date).as(pr)).reverse
+        list.flatMap(pr => pr.merged_at.filter(_ > date).as(pr)).reverse
       }
 
       val filters = List(PRFilterClosed, PRFilterBase(branch), PRFilterSortUpdated, PRFilterOrderDesc)
