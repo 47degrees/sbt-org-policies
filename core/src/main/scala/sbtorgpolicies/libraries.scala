@@ -24,10 +24,10 @@ object libraries {
     "iota"            -> "0.3.1",
     "case-classy"     -> "0.4.0",
     "fetch"           -> "0.7.0",
-    "freestyle"       -> "0.4.1",
+    "freestyle"       -> "0.4.2",
     "frees-rpc"       -> "0.2.0",
     "frees-cassandra" -> "0.4.0",
-    "github4s"        -> "0.16.0",
+    "github4s"        -> "0.17.0",
     "org-policies"    -> sbtorgpolicies.BuildInfo.version,
     "scheckToolbox"   -> "0.2.3"
   )
@@ -38,13 +38,13 @@ object libraries {
     "algebra"                  -> "0.7.0",
     "alleycats"                -> "0.2.0",
     "apache-kafka"             -> "1.0.0",
-    "base64"                   -> "0.2.3",
-    "cassandra-driver"         -> "3.3.0",
+    "base64"                   -> "0.2.4",
+    "cassandra-driver"         -> "3.3.1",
     "catalysts"                -> "0.0.5",
     "catbird"                  -> "0.20.0",
     "cats"                     -> "1.0.0-RC1",
     "cats-effect"              -> "0.5",
-    "cats-mtl"                 -> "0.0.2",
+    "cats-mtl"                 -> "0.1.0",
     "circe"                    -> "0.9.0-M2",
     "config"                   -> "1.3.2",
     "coursier"                 -> "1.0.0-RC13",
@@ -62,18 +62,18 @@ object libraries {
     "http4s"                   -> "0.18.0-M5",
     "joda-convert"             -> "1.9.2",
     "joda-time"                -> "2.9.9",
-    "journal"                  -> "3.0.18",
+    "journal"                  -> "3.0.19",
     "jwt-scala"                -> "0.14.1",
     "kind-projector"           -> "0.9.4",
     "log4s"                    -> "1.4.0",
     "machinist"                -> "0.6.2",
     "macro-compat"             -> "1.1.1",
-    "mainecoon"                -> "0.4.0",
+    "mainecoon"                -> "0.5.0",
     "monix"                    -> "3.0.0-M1",
     "monocle"                  -> "1.4.0",
-    "mockito"                  -> "2.11.0",
+    "mockito"                  -> "2.12.0",
     "moultingyaml"             -> "0.4.0",
-    "newrelic"                 -> "3.44.0",
+    "newrelic"                 -> "3.44.1",
     "paradise"                 -> "2.1.0",
     "pbdirect"                 -> "0.0.6",
     "pcplod"                   -> "1.2.1",
@@ -89,7 +89,7 @@ object libraries {
     "scheckShapeless"          -> "1.1.7",
     "scalactic"                -> "3.0.4",
     "scalaj"                   -> "2.3.0",
-    "scalameta"                -> "2.0.1",
+    "scalameta"                -> "2.1.2",
     "scalameta-paradise"       -> "3.0.0-M10",
     "scalamock"                -> "3.6.0",
     "scalatags"                -> "0.6.7",
@@ -109,8 +109,8 @@ object libraries {
   )
 
   val vPlugins47: Map[String, String] = Map[String, String](
-    "sbt-dependencies" -> "0.3.4",
-    "sbt-microsites"   -> "0.7.4"
+    "sbt-dependencies" -> "0.3.6",
+    "sbt-microsites"   -> "0.7.7"
   )
 
   val vPluginsOthers: Map[String, String] = Map[String, String](

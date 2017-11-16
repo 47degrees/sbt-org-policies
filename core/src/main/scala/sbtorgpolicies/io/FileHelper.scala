@@ -21,11 +21,9 @@ import java.net.URL
 
 import cats.instances.either._
 import cats.instances.list._
-import cats.syntax.cartesian._
 import cats.syntax.either._
 import cats.syntax.foldable._
 import cats.syntax.traverse._
-import cats.syntax.traverseFilter._
 import sbtorgpolicies.exceptions.IOException
 import sbtorgpolicies.io.syntax._
 import sbtorgpolicies.templates._
@@ -61,7 +59,7 @@ class FileHelper {
       projectDir.getAbsolutePath.ensureFinalSlash + f.outputPath
 
     def checkFiles(): IOResult[Unit] =
-      fileList.traverseU_ { f =>
+      fileList.traverse_[IOResult, Unit] { f =>
         if (!exists(templatePath(f)))
           IOException(s"File not found: ${f.templatePath}").asLeft
         else ().asRight
@@ -103,9 +101,9 @@ class FileHelper {
       } yield maybeFileType
 
     def processFiles(fileTypes: List[FileType]): IOResult[List[FileType]] =
-      fileTypes.traverseFilter(processFile)
+      fileTypes.traverse(processFile).map(_.flatten)
 
-    checkFiles *> processFiles(fileList)
+    checkFiles().flatMap(_ => processFiles(fileList))
   }
 
 }

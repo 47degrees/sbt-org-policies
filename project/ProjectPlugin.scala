@@ -42,8 +42,8 @@ object ProjectPlugin extends AutoPlugin {
       addSbtPlugin("org.scoverage"      % "sbt-scoverage"          % "1.5.1"),
       addSbtPlugin("org.scala-js"       % "sbt-scalajs"            % "0.6.20"),
       addSbtPlugin("de.heikoseeberger"  % "sbt-header"             % "3.0.1"),
-      addSbtPlugin("com.47deg"          % "sbt-dependencies"       % "0.3.1"),
-      addSbtPlugin("com.47deg"          % "sbt-microsites"         % "0.7.3"),
+      addSbtPlugin("com.47deg"          %% "sbt-dependencies"      % "0.3.3"),
+      addSbtPlugin("com.47deg"          %% "sbt-microsites"        % "0.7.7"),
       libraryDependencies ++= {
         val sbtBinaryVersionValue = (sbtBinaryVersion in pluginCrossBuild).value
 
@@ -74,8 +74,7 @@ object ProjectPlugin extends AutoPlugin {
             "-Dplugin.version=" + version.value,
             "-Dscala.version=" + scalaVersion.value
           )
-      },
-      addSbtPlugin("com.47deg" % "sbt-microsites" % "0.7.3")
+      }
     )
 
     lazy val coreSettings: Seq[Def.Setting[_]] = commonSettings ++ Seq(
@@ -88,8 +87,8 @@ object ProjectPlugin extends AutoPlugin {
         }
       },
       libraryDependencies ++= Seq(
-        %%("github4s", "0.15.0"),
-        %%("cats-core", "0.9.0"),
+        %%("github4s", "0.17.0"),
+        %%("cats-core", "1.0.0-RC1"),
         %%("base64"),
         %%("moultingyaml"),
         %%("scalatest")             % Test,
