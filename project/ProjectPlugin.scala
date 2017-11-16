@@ -42,6 +42,8 @@ object ProjectPlugin extends AutoPlugin {
       addSbtPlugin("org.scoverage"      % "sbt-scoverage"          % "1.5.1"),
       addSbtPlugin("org.scala-js"       % "sbt-scalajs"            % "0.6.20"),
       addSbtPlugin("de.heikoseeberger"  % "sbt-header"             % "3.0.1"),
+      addSbtPlugin("com.47deg"          %% "sbt-dependencies"      % "0.3.3"),
+      addSbtPlugin("com.47deg"          %% "sbt-microsites"        % "0.7.7"),
       libraryDependencies ++= {
         val sbtBinaryVersionValue = (sbtBinaryVersion in pluginCrossBuild).value
 
@@ -73,15 +75,7 @@ object ProjectPlugin extends AutoPlugin {
             "-Dscala.version=" + scalaVersion.value
           )
       }
-    ) ++ {
-      val (depsV, microsV) = (sbtBinaryVersion in pluginCrossBuild).value match {
-        case "0.13" => ("0.3.1", "0.7.3")
-        case "1.0"  => ("0.3.7", "0.7.7")
-      }
-      Seq(
-        addSbtPlugin("com.47deg" % "sbt-dependencies" % depsV),
-        addSbtPlugin("com.47deg" % "sbt-microsites"   % microsV))
-    }
+    )
 
     lazy val coreSettings: Seq[Def.Setting[_]] = commonSettings ++ Seq(
       resolvers += Resolver.typesafeIvyRepo("releases"),
@@ -93,19 +87,15 @@ object ProjectPlugin extends AutoPlugin {
         }
       },
       libraryDependencies ++= Seq(
+        %%("github4s", "0.17.0"),
+        %%("cats-core", "1.0.0-RC1"),
         %%("base64"),
         %%("moultingyaml"),
         %%("scalatest")             % Test,
         %%("scalacheck")            % Test,
         %%("scheckToolboxDatetime") % Test,
         %%("scalamockScalatest")    % Test,
-      ) ++ {
-        val (catsV, github4sV) = (sbtBinaryVersion in pluginCrossBuild).value match {
-          case "0.13" => ("0.9.0", "0.15.0")
-          case "1.0"  => ("1.0.0-RC1", "0.17.0")
-        }
-        Seq(%%("github4s", github4sV), %%("cats-core", catsV))
-      },
+      ),
       libraryDependencies ++= {
         lazy val sbtVersionValue = (sbtVersion in pluginCrossBuild).value
 
