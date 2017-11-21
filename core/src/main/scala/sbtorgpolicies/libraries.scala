@@ -21,11 +21,11 @@ object libraries {
   type Artifact = (String, String, String)
 
   val v47: Map[String, String] = Map[String, String](
-    "iota"            -> "0.3.1",
+    "iota"            -> "0.3.2",
     "case-classy"     -> "0.4.0",
-    "fetch"           -> "0.7.0",
-    "freestyle"       -> "0.4.2",
-    "frees-rpc"       -> "0.2.0",
+    "fetch"           -> "0.7.1",
+    "freestyle"       -> "0.4.3",
+    "frees-rpc"       -> "0.3.2",
     "frees-cassandra" -> "0.4.0",
     "github4s"        -> "0.17.0",
     "org-policies"    -> sbtorgpolicies.BuildInfo.version,
@@ -33,15 +33,15 @@ object libraries {
   )
 
   protected val vOthers: Map[String, String] = Map[String, String](
-    "akka"                     -> "2.5.6",
+    "akka"                     -> "2.5.7",
     "akka-http"                -> "10.0.10",
     "algebra"                  -> "0.7.0",
     "alleycats"                -> "0.2.0",
     "apache-kafka"             -> "1.0.0",
     "base64"                   -> "0.2.4",
-    "cassandra-driver"         -> "3.3.1",
+    "cassandra-driver"         -> "3.3.2",
     "catalysts"                -> "0.0.5",
-    "catbird"                  -> "0.20.0",
+    "catbird"                  -> "0.21.0",
     "cats"                     -> "1.0.0-RC1",
     "cats-effect"              -> "0.5",
     "cats-mtl"                 -> "0.1.0",
@@ -69,7 +69,7 @@ object libraries {
     "machinist"                -> "0.6.2",
     "macro-compat"             -> "1.1.1",
     "mainecoon"                -> "0.5.0",
-    "monix"                    -> "3.0.0-M1",
+    "monix"                    -> "3.0.0-M2",
     "monocle"                  -> "1.4.0",
     "mockito"                  -> "2.12.0",
     "moultingyaml"             -> "0.4.0",
@@ -105,7 +105,7 @@ object libraries {
     "slogging"                 -> "0.6.0",
     "sourcecode"               -> "0.1.4",
     "specs2"                   -> "4.0.1",
-    "twitter-server"           -> "17.10.0"
+    "twitter-server"           -> "17.11.0"
   )
 
   val vPlugins47: Map[String, String] = Map[String, String](
