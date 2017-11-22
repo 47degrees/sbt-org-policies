@@ -21,11 +21,11 @@ object libraries {
   type Artifact = (String, String, String)
 
   val v47: Map[String, String] = Map[String, String](
-    "iota"            -> "0.3.2",
+    "iota"            -> "0.3.3",
     "case-classy"     -> "0.4.0",
     "fetch"           -> "0.7.1",
-    "freestyle"       -> "0.4.3",
-    "frees-rpc"       -> "0.3.2",
+    "freestyle"       -> "0.4.4",
+    "frees-rpc"       -> "0.3.3",
     "frees-cassandra" -> "0.4.0",
     "github4s"        -> "0.17.0",
     "org-policies"    -> sbtorgpolicies.BuildInfo.version,
