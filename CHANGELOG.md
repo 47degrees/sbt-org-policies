@@ -1,5 +1,12 @@
 # Changelog
 
+## 11/22/2017 - Version 0.8.16
+
+Release changes:
+
+* Adds frees-kafka deps ([#795](https://github.com/47deg/sbt-org-policies/pull/795))
+
+
 ## 11/21/2017 - Version 0.8.15
 
 Release changes:
