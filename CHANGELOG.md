@@ -1,5 +1,12 @@
 # Changelog
 
+## 11/30/2017 - Version 0.8.18
+
+Release changes:
+
+* Bumps up sbt-microsites to 0.7.11 ([#799](https://github.com/47deg/sbt-org-policies/pull/799))
+
+
 ## 11/30/2017 - Version 0.8.17
 
 Release changes:
