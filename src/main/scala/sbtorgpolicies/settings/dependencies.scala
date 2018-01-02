@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 47 Degrees, LLC. <http://www.47deg.com>
+ * Copyright 2017-2018 47 Degrees, LLC. <http://www.47deg.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,6 @@ import org.scalajs.sbtplugin.cross.CrossProject
 import sbt.Keys.libraryDependencies
 import sbt._
 import sbtorgpolicies.libraries._
-
-import scala.language.postfixOps
 
 trait dependencies extends ScalaSettings {
 

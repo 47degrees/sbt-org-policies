@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 47 Degrees, LLC. <http://www.47deg.com>
+ * Copyright 2017-2018 47 Degrees, LLC. <http://www.47deg.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import sbtorgpolicies.exceptions.{GitHubException, IOException, OrgPolicyExcepti
 import sbtorgpolicies.github.config._
 import sbtorgpolicies.github.instances._
 import sbtorgpolicies.github.syntax._
-import sbtorgpolicies.io.syntax._
 import sbtorgpolicies.io.{FileReader, IO, IOResult}
 
 class GitHubOps(owner: String, repo: String, accessToken: Option[String], fileReader: FileReader = FileReader) {
