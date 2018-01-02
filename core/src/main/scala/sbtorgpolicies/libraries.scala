@@ -42,7 +42,7 @@ object libraries {
     "cassandra-driver"         -> "3.3.2",
     "catalysts"                -> "0.0.5",
     "catbird"                  -> "0.21.0",
-    "cats"                     -> "1.0.0",
+    "cats"                     -> "1.0.1",
     "cats-effect"              -> "0.5",
     "cats-mtl"                 -> "0.2.1",
     "circe"                    -> "0.9.0",
