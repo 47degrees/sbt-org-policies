@@ -28,6 +28,7 @@ import sbtorgpolicies.exceptions.{GitHubException, IOException, OrgPolicyExcepti
 import sbtorgpolicies.github.config._
 import sbtorgpolicies.github.instances._
 import sbtorgpolicies.github.syntax._
+import sbtorgpolicies.io.syntax._
 import sbtorgpolicies.io.{FileReader, IO, IOResult}
 
 class GitHubOps(owner: String, repo: String, accessToken: Option[String], fileReader: FileReader = FileReader) {

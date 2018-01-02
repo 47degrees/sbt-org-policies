@@ -31,6 +31,8 @@ import sbtorgpolicies.arbitraries.GitHubArbitraries._
 import sbtorgpolicies.exceptions.{GitHubException, IOException, OrgPolicyException}
 import sbtorgpolicies.io.FileReader
 
+import scala.language.postfixOps
+
 class GitHubOpsTest extends TestOps {
 
   def newGitHubOps: (GitHubOps, FileReader, GHGitData, GHPullRequests, GHRepos, GHUsers) = {
