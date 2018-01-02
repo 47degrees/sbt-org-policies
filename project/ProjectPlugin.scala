@@ -43,7 +43,7 @@ object ProjectPlugin extends AutoPlugin {
       addSbtPlugin("org.scala-js"       % "sbt-scalajs"            % "0.6.20"),
       addSbtPlugin("de.heikoseeberger"  % "sbt-header"             % "3.0.1"),
       addSbtPlugin("com.47deg"          %% "sbt-dependencies"      % "0.3.9"),
-      addSbtPlugin("com.47deg"          %% "sbt-microsites"        % "0.7.11"),
+      addSbtPlugin("com.47deg"          %% "sbt-microsites"        % "0.7.13"),
       libraryDependencies ++= {
         val sbtBinaryVersionValue = (sbtBinaryVersion in pluginCrossBuild).value
 
@@ -94,7 +94,7 @@ object ProjectPlugin extends AutoPlugin {
         %%("scalatest")             % Test,
         %%("scalacheck")            % Test,
         %%("scheckToolboxDatetime") % Test,
-        %%("scalamockScalatest")    % Test,
+        %%("scalamockScalatest")    % Test
       ),
       libraryDependencies ++= {
         lazy val sbtVersionValue = (sbtVersion in pluginCrossBuild).value

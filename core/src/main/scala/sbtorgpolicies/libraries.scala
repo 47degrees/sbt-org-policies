@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 47 Degrees, LLC. <http://www.47deg.com>
+ * Copyright 2017-2018 47 Degrees, LLC. <http://www.47deg.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,17 +24,17 @@ object libraries {
     "iota"            -> "0.3.3",
     "case-classy"     -> "0.4.0",
     "fetch"           -> "0.7.1",
-    "freestyle"       -> "0.4.5",
-    "frees-rpc"       -> "0.3.4",
-    "frees-cassandra" -> "0.4.0",
+    "freestyle"       -> "0.5.0",
+    "frees-rpc"       -> "0.6.0",
+    "frees-cassandra" -> "0.1.0",
     "github4s"        -> "0.17.0",
     "org-policies"    -> sbtorgpolicies.BuildInfo.version,
     "scheckToolbox"   -> "0.2.3"
   )
 
   protected val vOthers: Map[String, String] = Map[String, String](
-    "akka"                     -> "2.5.7",
-    "akka-http"                -> "10.0.10",
+    "akka"                     -> "2.5.8",
+    "akka-http"                -> "10.0.11",
     "algebra"                  -> "0.7.0",
     "alleycats"                -> "0.2.0",
     "apache-kafka"             -> "1.0.0",
@@ -42,10 +42,10 @@ object libraries {
     "cassandra-driver"         -> "3.3.2",
     "catalysts"                -> "0.0.5",
     "catbird"                  -> "0.21.0",
-    "cats"                     -> "1.0.0-RC1",
+    "cats"                     -> "1.0.1",
     "cats-effect"              -> "0.5",
-    "cats-mtl"                 -> "0.1.0",
-    "circe"                    -> "0.9.0-M2",
+    "cats-mtl"                 -> "0.2.1",
+    "circe"                    -> "0.9.0",
     "config"                   -> "1.3.2",
     "coursier"                 -> "1.0.0-RC13",
     "discipline"               -> "0.8",
@@ -53,7 +53,7 @@ object libraries {
     "embedded-kafka"           -> "1.0.0",
     "embedded-redis"           -> "0.6",
     "export-hook"              -> "1.2.0",
-    "finch"                    -> "0.16.0-M5",
+    "finch"                    -> "0.16.0-M6",
     "fs2"                      -> "0.10.0-M8",
     "fs2-cats"                 -> "0.5.0",
     "grpc"                     -> "1.6.1",
@@ -79,7 +79,7 @@ object libraries {
     "paradise"                 -> "2.1.0",
     "pbdirect"                 -> "0.0.6",
     "pcplod"                   -> "1.2.1",
-    "play"                     -> "2.6.7",
+    "play"                     -> "2.6.10",
     "postgresql"               -> "42.1.4",
     "pure-config"              -> "0.7.0",
     "rediscala"                -> "1.8.0",
@@ -112,7 +112,7 @@ object libraries {
 
   val vPlugins47: Map[String, String] = Map[String, String](
     "sbt-dependencies" -> "0.3.8",
-    "sbt-microsites"   -> "0.7.11"
+    "sbt-microsites"   -> "0.7.13"
   )
 
   val vPluginsOthers: Map[String, String] = Map[String, String](
