@@ -16,6 +16,7 @@
 
 package sbtorgpolicies.settings
 
+import cats.syntax.either._
 import sbt.Keys._
 import sbt._
 import sbtorgpolicies.OrgPoliciesKeys._
