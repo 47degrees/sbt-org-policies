@@ -16,6 +16,7 @@
 
 package sbtorgpolicies.io
 
+import cats.syntax.either._
 import java.io.File
 
 import sbtorgpolicies.exceptions.IOException
