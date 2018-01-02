@@ -96,7 +96,6 @@ object ProjectPlugin extends AutoPlugin {
         %%("scheckToolboxDatetime") % Test,
         %%("scalamockScalatest")    % Test
       ),
-      scalacOptions += "-Ypartial-unification",
       libraryDependencies ++= {
         lazy val sbtVersionValue = (sbtVersion in pluginCrossBuild).value
 
