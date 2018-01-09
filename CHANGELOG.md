@@ -1,5 +1,12 @@
 # Changelog
 
+## 01/09/2018 - Version 0.8.21
+
+Release changes:
+
+* Update library Versions ([#909](https://github.com/47deg/sbt-org-policies/pull/909))
+
+
 ## 01/03/2018 - Version 0.8.20
 
 Release changes:
