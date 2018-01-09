@@ -38,6 +38,7 @@ object libraries {
     "algebra"                  -> "0.7.0",
     "alleycats"                -> "1.0.1",
     "apache-kafka"             -> "1.0.0",
+    "avro4s"                   -> "1.8.0",
     "base64"                   -> "0.2.4",
     "cassandra-driver"         -> "3.3.2",
     "catalysts"                -> "0.0.5",
@@ -129,7 +130,7 @@ object libraries {
     "sbt-site"              -> "1.3.1",
     "sbt-sonatype"          -> "2.0",
     "sbt-unidoc"            -> "0.4.1",
-    "sbt-wartremover"       -> "2.2.0",
+    "sbt-wartremover"       -> "2.2.1",
     "scalastyle-sbt-plugin" -> "1.0.0",
     "tut-plugin"            -> "0.6.2"
   )
@@ -176,6 +177,7 @@ object libraries {
     "algebra-laws"                     -> (("org.typelevel", "algebra-laws", v("algebra"))),
     "algebra"                          -> (("org.typelevel", "algebra", v("algebra"))),
     "alleycats"                        -> (("org.typelevel", "alleycats-core", v("alleycats"))),
+    "avro4s"                           -> (("com.sksamuel.avro4s", "avro4s-core", v("avro4s"))),
     "base64"                           -> (("com.github.marklister", "base64", v("base64"))),
     "classy-cats"                      -> (("com.47deg", "classy-cats", v("case-classy"))),
     "classy-config-typesafe"           -> (("com.47deg", "classy-config-typesafe", v("case-classy"))),
