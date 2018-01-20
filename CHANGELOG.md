@@ -1,5 +1,12 @@
 # Changelog
 
+## 01/20/2018 - Version 0.8.22
+
+Release changes:
+
+* Bump circe to 0.9.1 ([#911](https://github.com/47deg/sbt-org-policies/pull/911))
+
+
 ## 01/09/2018 - Version 0.8.21
 
 Release changes:
