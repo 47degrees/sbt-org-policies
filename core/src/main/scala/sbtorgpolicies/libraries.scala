@@ -46,7 +46,7 @@ object libraries {
     "cats"                     -> "1.0.1",
     "cats-effect"              -> "0.8",
     "cats-mtl"                 -> "0.2.2",
-    "circe"                    -> "0.9.0",
+    "circe"                    -> "0.9.1",
     "config"                   -> "1.3.2",
     "coursier"                 -> "1.0.0",
     "discipline"               -> "0.8",
