@@ -1,5 +1,12 @@
 # Changelog
 
+## 01/25/2018 - Version 0.8.23
+
+Release changes:
+
+* Updates plugin build and its libraries catalog ([#958](https://github.com/47deg/sbt-org-policies/pull/958))
+
+
 ## 01/20/2018 - Version 0.8.22
 
 Release changes:
