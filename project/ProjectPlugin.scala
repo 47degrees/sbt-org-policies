@@ -43,7 +43,7 @@ object ProjectPlugin extends AutoPlugin {
       addSbtPlugin("org.scala-js"       % "sbt-scalajs"            % "0.6.20"),
       addSbtPlugin("de.heikoseeberger"  % "sbt-header"             % "3.0.1"),
       addSbtPlugin("com.47deg"          %% "sbt-dependencies"      % "0.3.9"),
-      addSbtPlugin("com.47deg"          %% "sbt-microsites"        % "0.7.13"),
+      addSbtPlugin("com.47deg"          %% "sbt-microsites"        % "0.7.15"),
       libraryDependencies ++= {
         val sbtBinaryVersionValue = (sbtBinaryVersion in pluginCrossBuild).value
 
