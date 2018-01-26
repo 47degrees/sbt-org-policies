@@ -114,7 +114,7 @@ object libraries {
 
   val vPlugins47: Map[String, String] = Map[String, String](
     "sbt-dependencies" -> "0.3.8",
-    "sbt-microsites"   -> "0.7.13"
+    "sbt-microsites"   -> "0.7.15"
   )
 
   val vPluginsOthers: Map[String, String] = Map[String, String](
