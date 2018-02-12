@@ -1,5 +1,12 @@
 # Changelog
 
+## 02/12/2018 - Version 0.8.26
+
+Release changes:
+
+* Bumps up libraries ([#963](https://github.com/47deg/sbt-org-policies/pull/963))
+
+
 ## 02/01/2018 - Version 0.8.25
 
 Release changes:
