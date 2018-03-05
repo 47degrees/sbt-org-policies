@@ -67,7 +67,7 @@ object libraries {
     "journal"                  -> "3.0.19",
     "jwt-scala"                -> "0.15.0",
     "kind-projector"           -> "0.9.6",
-    "log4s"                    -> "1.4.0",
+    "log4s"                    -> "1.5.0",
     "logback"                  -> "1.2.3",
     "machinist"                -> "0.6.4",
     "macro-compat"             -> "1.1.1",
