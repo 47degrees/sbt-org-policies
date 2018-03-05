@@ -1,5 +1,14 @@
 # Changelog
 
+## 03/05/2018 - Version 0.8.27
+
+Release changes:
+
+* Upgrades to Sbt 1.1.1 ([#966](https://github.com/47deg/sbt-org-policies/pull/966))
+* Releases 0.8.27 ([#1006](https://github.com/47deg/sbt-org-policies/pull/1006))
+* Fixes Releasing issue by using the latest sbt-release version explicitly ([#1007](https://github.com/47deg/sbt-org-policies/pull/1007))
+
+
 ## 02/12/2018 - Version 0.8.26
 
 Release changes:
