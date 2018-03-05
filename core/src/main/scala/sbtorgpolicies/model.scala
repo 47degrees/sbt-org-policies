@@ -116,8 +116,8 @@ object model {
   }
 
   object sbtV {
-    val `0.13`: String = "0.13.16"
-    val `1.0`: String  = "1.0.3"
+    val `0.13`: String = "0.13.17"
+    val `1.0`: String  = "1.1.1"
 
     val crossSbtVersions: List[String] = List(`0.13`, `1.0`)
   }
