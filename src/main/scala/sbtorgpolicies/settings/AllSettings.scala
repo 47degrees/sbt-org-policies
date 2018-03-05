@@ -122,7 +122,7 @@ trait AllSettings
 
   lazy val scalaMetaSettings = Seq(
     addCompilerPlugin(%%("scalameta-paradise") cross CrossVersion.full),
-    libraryDependencies += %%("scalameta", "1.8.0"),
+    libraryDependencies += %%("scalameta"),
     scalacOptions += "-Xplugin-require:macroparadise",
     scalacOptions in (Compile, console) ~= (_ filterNot (_ contains "paradise")) // macroparadise plugin doesn't work in repl yet.
   )
