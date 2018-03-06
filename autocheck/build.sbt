@@ -26,7 +26,8 @@ lazy val `org-policies-auto-dep-check` = (project in file("."))
     resolvers ++= Seq(Resolver.sonatypeRepo("snapshots"), Resolver.bintrayIvyRepo("sbt", "sbt-plugin-releases")),
     libraryDependencies ++=
       scalaLibs
-        .filter(_._1 != "scalameta-paradise")
+        //TODO: remove monix exclusion once they release 3.0 or sbt-dependency-updates figures out how to ignore dev snapshots
+        .filterNot { case(depName, _) => depName.startsWith("scalameta") || depName.startsWith("monix") }
         .mapValues(lib => lib._1 %% lib._2 % lib._3)
         .values
         .toList ++
