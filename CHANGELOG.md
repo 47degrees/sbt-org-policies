@@ -1,5 +1,14 @@
 # Changelog
 
+## 03/06/2018 - Version 0.8.28
+
+Release changes:
+
+* Revert Scalameta version in master version list to 1.8.0, and exclude from dependency updates ([#1008](https://github.com/47deg/sbt-org-policies/pull/1008))
+*  Exclude scalameta from project's own dependency checker ([#1022](https://github.com/47deg/sbt-org-policies/pull/1022))
+* Releases 0.8.28 ([#1023](https://github.com/47deg/sbt-org-policies/pull/1023))
+
+
 ## 03/05/2018 - Version 0.8.27
 
 Release changes:
