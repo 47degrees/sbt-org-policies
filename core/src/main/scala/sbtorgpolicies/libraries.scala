@@ -93,7 +93,7 @@ object libraries {
     "scheckShapeless"          -> "1.1.8",
     "scalactic"                -> "3.0.5",
     "scalaj"                   -> "2.3.0",
-    "scalameta"                -> "3.4.0",
+    "scalameta"                -> "1.8.0", // we keep scalameta at 1.8.0 until we eventually get rid of it
     "scalameta-paradise"       -> "3.0.0-M11",
     "scalamock"                -> "3.6.0",
     "scalatags"                -> "0.6.7",

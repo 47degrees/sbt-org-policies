@@ -16,6 +16,7 @@
 
 package sbtorgpolicies.settings
 
+import com.timushev.sbt.updates.UpdatesPlugin.autoImport._
 import com.typesafe.sbt.pgp.PgpKeys
 import com.typesafe.sbt.pgp.PgpKeys._
 import dependencies.DependenciesPlugin
@@ -123,6 +124,7 @@ trait AllSettings
   lazy val scalaMetaSettings = Seq(
     addCompilerPlugin(%%("scalameta-paradise") cross CrossVersion.full),
     libraryDependencies += %%("scalameta"),
+    dependencyUpdatesFilter -= moduleFilter(name = "scalameta"), // we keep scalameta at 1.8.0 until we eventually get rid of it
     scalacOptions += "-Xplugin-require:macroparadise",
     scalacOptions in (Compile, console) ~= (_ filterNot (_ contains "paradise")) // macroparadise plugin doesn't work in repl yet.
   )
