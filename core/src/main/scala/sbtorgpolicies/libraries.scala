@@ -89,7 +89,7 @@ object libraries {
     "roshttp"                  -> "2.1.0",
     "scala-parser-combinators" -> "1.0.6",
     "scala-reflect"            -> "2.11.11",
-    "scalacheck"               -> "1.14",
+    "scalacheck"               -> "1.14.0",
     "scheckShapeless"          -> "1.1.8",
     "scalactic"                -> "3.0.5",
     "scalaj"                   -> "2.4.0",
