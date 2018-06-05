@@ -1,5 +1,12 @@
 # Changelog
 
+## 06/05/2018 - Version 0.9.1
+
+Release changes:
+
+* update dependency versions ([#1030](https://github.com/47deg/sbt-org-policies/pull/1030))
+
+
 ## 06/05/2018 - Version 0.9.0
 
 Release changes:
