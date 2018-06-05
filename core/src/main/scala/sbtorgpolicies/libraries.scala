@@ -45,7 +45,7 @@ object libraries {
     "catbird"                  -> "18.5.0",
     "cats"                     -> "1.1.0",
     "cats-effect"              -> "0.10.1",
-    "cats-mtl"                 -> "0.2.3",
+    "cats-mtl"                 -> "0.3.0",
     "circe"                    -> "0.9.3",
     "config"                   -> "1.3.3",
     "coursier"                 -> "1.0.3",
