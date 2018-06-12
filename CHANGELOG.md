@@ -1,5 +1,12 @@
 # Changelog
 
+## 06/12/2018 - Version 0.9.2
+
+Release changes:
+
+* Update Scala versions ([#1032](https://github.com/47deg/sbt-org-policies/pull/1032))
+
+
 ## 06/05/2018 - Version 0.9.1
 
 Release changes:
