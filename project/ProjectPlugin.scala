@@ -92,7 +92,7 @@ object ProjectPlugin extends AutoPlugin {
         %%("base64"),
         %%("moultingyaml"),
         %%("scalatest")             % Test,
-        %%("scalacheck")            % Test,
+        %%("scalacheck", "1.13.4")  % Test,
         %%("scheckToolboxDatetime") % Test,
         %%("scalamockScalatest")    % Test
       ),
