@@ -33,7 +33,7 @@ class badgesTest extends TestOps with badgeArbitraries {
           case Some(version) =>
             result.map(_.contains {
               version match {
-                case "0.6.17" | "0.6.18" | "0.6.19" | "0.6.20" =>
+                case "0.6.17" | "0.6.18" | "0.6.19" | "0.6.20" | "0.6.21" | "0.6.22" | "0.6.23" | "0.6.24" =>
                   "0.6.17"
                 case _ =>
                   version
