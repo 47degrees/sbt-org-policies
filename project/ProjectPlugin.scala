@@ -30,20 +30,20 @@ object ProjectPlugin extends AutoPlugin {
       sbtPlugin := true,
       crossSbtVersions := Seq(sbtV.`0.13`, sbtV.`1.0`),
       resolvers ++= Seq(sonatypeRepo("snapshots"), sonatypeRepo("releases")),
-      addSbtPlugin("com.typesafe.sbt"   % "sbt-git"                % "0.9.3"),
-      addSbtPlugin("com.eed3si9n"       % "sbt-unidoc"             % "0.4.1"),
-      addSbtPlugin("com.github.gseitz"  % "sbt-release"            % "1.0.7"),
+      addSbtPlugin("com.typesafe.sbt"   % "sbt-git"                % "1.0.0"),
+      addSbtPlugin("com.eed3si9n"       % "sbt-unidoc"             % "0.4.2"),
+      addSbtPlugin("com.github.gseitz"  % "sbt-release"            % "1.0.9"),
       addSbtPlugin("org.xerial.sbt"     % "sbt-sonatype"           % "2.3"),
-      addSbtPlugin("com.jsuereth"       % "sbt-pgp"                % "1.1.1"),
+      addSbtPlugin("com.jsuereth"       % "sbt-pgp"                % "1.1.2"),
       addSbtPlugin("com.typesafe.sbt"   % "sbt-ghpages"            % "0.6.2"),
       addSbtPlugin("com.typesafe.sbt"   % "sbt-site"               % "1.3.2"),
       addSbtPlugin("pl.project13.scala" % "sbt-jmh"                % "0.3.3"),
       addSbtPlugin("org.scalastyle"     %% "scalastyle-sbt-plugin" % "1.0.0"),
       addSbtPlugin("org.scoverage"      % "sbt-scoverage"          % "1.6.0-M3"),
-      addSbtPlugin("org.scala-js"       % "sbt-scalajs"            % "0.6.22"),
+      addSbtPlugin("org.scala-js"       % "sbt-scalajs"            % "0.6.24"),
       addSbtPlugin("de.heikoseeberger"  % "sbt-header"             % "3.0.1"),
       addSbtPlugin("com.47deg"          %% "sbt-dependencies"      % "0.3.9"),
-      addSbtPlugin("com.47deg"          %% "sbt-microsites"        % "0.7.16"),
+      addSbtPlugin("com.47deg"          %% "sbt-microsites"        % "0.7.22"),
       libraryDependencies ++= {
         val sbtBinaryVersionValue = (sbtBinaryVersion in pluginCrossBuild).value
 
@@ -51,7 +51,7 @@ object ProjectPlugin extends AutoPlugin {
 
         val (tutPluginVersion, sbtScalafmtVersion) = sbtBinaryVersionValue match {
           case "0.13" => ("0.5.6", "0.6.8")
-          case "1.0"  => ("0.6.3", "1.2.0")
+          case "1.0"  => ("0.6.7", "1.2.0")
         }
 
         Seq(
