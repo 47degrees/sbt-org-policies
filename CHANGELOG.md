@@ -1,5 +1,14 @@
 # Changelog
 
+## 08/07/2018 - Version 0.9.3
+
+Release changes:
+
+* Update Scala versions ([#1032](https://github.com/47deg/sbt-org-policies/pull/1032))
+* Updated plugins.sbt file to "0.9.2" sbt-org-policies version ([#1033](https://github.com/47deg/sbt-org-policies/pull/1033))
+* Upgrade Plugin deps and plugins ([#1035](https://github.com/47deg/sbt-org-policies/pull/1035))
+
+
 ## 06/12/2018 - Version 0.9.2
 
 Release changes:
