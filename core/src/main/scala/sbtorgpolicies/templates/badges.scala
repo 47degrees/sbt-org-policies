@@ -120,7 +120,7 @@ object badges {
       val badgeVersion = sjsV match {
         case sjsVSplit(major, minor, patch, other) if ((major == "0") && (minor == "6")) =>
           patch.toInt match {
-            case d if d >= 17 && d < 24 => s"$major.$minor.17"
+            case d if d >= 17 && d <= 24 => s"$major.$minor.17"
             case _                      => sjsV
           }
         case _ => sjsV
