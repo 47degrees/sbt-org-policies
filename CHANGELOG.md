@@ -1,5 +1,12 @@
 # Changelog
 
+## 10/01/2018 - Version 0.9.4
+
+Release changes:
+
+* Bump cats-core to 1.4.0, cats-effect to 1.0.0 and circe to 0.10.0 ([#1043](https://github.com/47deg/sbt-org-policies/pull/1043))
+
+
 ## 08/07/2018 - Version 0.9.3
 
 Release changes:
