@@ -62,11 +62,12 @@ object ProjectPlugin extends AutoPlugin {
       crossScalaVersions := Seq("2.12.7"),
       libraryDependencies ++= Seq(
         "org.scala-lang.modules" %% "scala-xml" % "1.1.1",
-        %%("github4s", "0.19.0"),
-        %%("cats-core", "1.4.0"),
+        %%("github4s"),
+        %%("cats-core"),
         %%("base64"),
-        %%("moultingyaml"),        
-        %%("cats-laws", "1.4.0")    % Test,
+        %%("moultingyaml"),
+        %%("cats-laws")             % Test,
+        %%("scalacheck", "1.13.5")  % Test force(),
         %%("scalatest")             % Test,
         %%("scheckToolboxDatetime") % Test,
         %%("scalamockScalatest")    % Test
