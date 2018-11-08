@@ -65,7 +65,7 @@ object ProjectPlugin extends AutoPlugin {
         %%("cats-core", "1.4.0"),
         %%("base64"),
         %%("moultingyaml"),        
-        %%("cats-laws", "1.4.0")    % Test exclude ("org.scalacheck", "scalacheck"),
+        %%("cats-laws", "1.4.0")    % Test,
         %%("scalatest")             % Test,
         %%("scheckToolboxDatetime") % Test,
         %%("scalamockScalatest")    % Test

@@ -21,7 +21,7 @@ before_install:
 
 script:
   - sbt ^^$SBT_VERSION clean compile test
-  - sbt ^^$SBT_VERSION scripted
+  - sbt ^^$SBT_VERSION publishLocal scripted
 
 after_success:
   - if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then
