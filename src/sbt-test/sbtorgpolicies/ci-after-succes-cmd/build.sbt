@@ -11,3 +11,5 @@ orgGithubTokenSetting := "GITHUB_TOKEN_REPO"
 orgAfterCISuccessCheckSetting := true
 
 orgAfterCISuccessTaskListSetting := List(orgCreateFiles.asRunnableItem)
+
+dependencyOverrides ++= Seq("org.spire-math" %% "jawn-parser" % "0.13.0")
