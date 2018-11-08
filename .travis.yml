@@ -4,6 +4,8 @@ matrix:
   include:
     - scala: 2.12.7
       jdk: oraclejdk8
+      env:
+      - SBT_VERSION=1.1.1
 
 cache:
   directories:
@@ -18,24 +20,24 @@ before_install:
   - rm -rf $HOME/.ivy2/cache/scala_2.12/sbt_1.0/com.47deg/sbt-org-policies
 
 script:
-  - sbt clean compile test
-  - sbt scripted
+  - sbt ^^$SBT_VERSION clean compile test
+  - sbt ^^$SBT_VERSION scripted
 
 after_success:
   - if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then
       if grep -q "SNAPSHOT" version.sbt; then
-        sbt publish;
+        sbt ^^$SBT_VERSION publish;
       else
-        sbt orgUpdateDocFiles;
+        sbt ^^$SBT_VERSION orgUpdateDocFiles;
         git reset --hard HEAD;
         git clean -f;
         git checkout master;
         git pull origin master;
-        sbt release;
+        sbt ^^$SBT_VERSION release;
       fi
     fi
-  - sbt publishLocal
-  - cd autocheck && sbt -Dplugin.version=$(cat ../version.sbt | sed 's/.*"\(.*\)".*/\1/') checkDependencies
+  - sbt ^^$SBT_VERSION publishLocal
+  - cd autocheck && sbt ^^$SBT_VERSION -Dplugin.version=$(cat ../version.sbt | sed 's/.*"\(.*\)".*/\1/') checkDependencies
 
 cache:
   directories:
