@@ -5,6 +5,7 @@ lazy val `sbt-org-policies` = (project in file("."))
   .aggregate(`org-policies-core`)
   .settings(moduleName := "sbt-org-policies")
   .settings(pluginSettings: _*)
+  .enablePlugins(ScriptedPlugin)
 
 lazy val `org-policies-core` = (project in file("core"))
   .settings(moduleName := "org-policies-core")
