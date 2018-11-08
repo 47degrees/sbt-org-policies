@@ -59,6 +59,7 @@ object ProjectPlugin extends AutoPlugin {
     lazy val coreSettings: Seq[Def.Setting[_]] = commonSettings ++ Seq(
       resolvers += Resolver.typesafeIvyRepo("releases"),
       scalaVersion := "2.12.7",
+      crossScalaVersions := Seq("2.12.7"),
       libraryDependencies ++= Seq(
         "org.scala-lang.modules" %% "scala-xml" % "1.1.1",
         %%("github4s", "0.19.0"),
@@ -78,6 +79,7 @@ object ProjectPlugin extends AutoPlugin {
 
   private[this] val artifactSettings = Seq(
     scalaVersion := "2.12.7",
+    crossScalaVersions := Seq("2.12.7"),
     scalaOrganization := "org.scala-lang",
     startYear := Some(2017),
     orgBadgeListSetting := List(
