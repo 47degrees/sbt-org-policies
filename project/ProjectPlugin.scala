@@ -68,7 +68,7 @@ object ProjectPlugin extends AutoPlugin {
         %%("cats-laws", "1.4.0")    % Test exclude ("org.scalacheck", "scalacheck"),
         %%("scalatest")             % Test,
         %%("scheckToolboxDatetime") % Test,
-        %%("scalamockScalatest")    % Test exclude ("org.scalacheck", "scalacheck")
+        %%("scalamockScalatest")    % Test
       )
     )
 
