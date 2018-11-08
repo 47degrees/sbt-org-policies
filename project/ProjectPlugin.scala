@@ -53,7 +53,8 @@ object ProjectPlugin extends AutoPlugin {
             "-Dplugin.version=" + version.value,
             "-Dscala.version=" + scalaVersion.value
           )
-      }
+      },
+      dependencyOverrides ++= Seq("org.spire-math" %% "jawn-parser" % "0.13.0")
     )
 
     lazy val coreSettings: Seq[Def.Setting[_]] = commonSettings ++ Seq(
@@ -71,7 +72,8 @@ object ProjectPlugin extends AutoPlugin {
         %%("scalatest")             % Test,
         %%("scheckToolboxDatetime") % Test,
         %%("scalamockScalatest")    % Test
-      )
+      ),
+      dependencyOverrides ++= Seq("org.spire-math" %% "jawn-parser" % "0.13.0")
     )
 
   }
