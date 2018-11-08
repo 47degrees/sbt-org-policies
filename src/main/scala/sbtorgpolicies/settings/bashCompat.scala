@@ -19,8 +19,7 @@ package sbtorgpolicies.settings
 import sbt._
 import sbt.Keys._
 import scala.sys.process._
-
-import sbtorgpolicies.OrgPoliciesKeys.{orgPublishReleaseCommandKey, orgPublishReleaseTask}
+import sbtorgpolicies.OrgPoliciesKeys._
 
 trait bashCompat {
   val orgBashTasks =

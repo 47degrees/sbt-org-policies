@@ -62,7 +62,7 @@ class FileValidationTest extends TestOps with OneInstancePerTest {
     val property = forAll { (inputPath: String, content: String, results: List[ValidationResult]) =>
       (mockFileReader.getFileContent _).expects(inputPath).returns(content.asRight)
       def validationFunction(result: ValidationResult)(s: String): ValidationResult = result
-      val validations: List[(String) => ValidationResult]                           = results.map(validationFunction)
+      val validations: List[String => ValidationResult]                             = results.map(validationFunction)
       val result                                                                    = fileValidation.validateFile(inputPath, validations: _*)
       result shouldBeEq results.combineAll
     }

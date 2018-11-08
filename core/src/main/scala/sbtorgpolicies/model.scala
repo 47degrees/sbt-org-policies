@@ -126,7 +126,7 @@ object model {
 
     val `2.10`: String = "2.10.7"
     val `2.11`: String = "2.11.12"
-    val `2.12`: String = "2.12.6"
+    val `2.12`: String = "2.12.7"
     val `2.13`: String = "2.13.0-M4"
 
     val latestScalaVersion: String = `2.12`

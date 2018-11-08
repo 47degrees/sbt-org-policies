@@ -8,7 +8,7 @@ import sbtorgpolicies.OrgPoliciesPlugin
 import sbtorgpolicies.OrgPoliciesPlugin.autoImport._
 import sbtorgpolicies.runnable.syntax._
 import sbtorgpolicies.templates.badges._
-import sbtorgpolicies.model.{sbtV, scalac}
+import sbtorgpolicies.model._
 
 object ProjectPlugin extends AutoPlugin {
 
@@ -22,13 +22,11 @@ object ProjectPlugin extends AutoPlugin {
       name := "sbt-org-policies",
       organization := "com.47deg",
       organizationName := "47 Degrees",
-      organizationHomepage := Some(url("http://47deg.com")),
-      crossScalaVersions := Seq(scalac.`2.12`)
+      organizationHomepage := Some(url("http://47deg.com"))
     )
 
     lazy val pluginSettings: Seq[Def.Setting[_]] = commonSettings ++ Seq(
       sbtPlugin := true,
-      crossSbtVersions := Seq(sbtV.`0.13`, sbtV.`1.0`),
       resolvers ++= Seq(sonatypeRepo("snapshots"), sonatypeRepo("releases")),
       addSbtPlugin("com.typesafe.sbt"   % "sbt-git"                % "1.0.0"),
       addSbtPlugin("com.eed3si9n"       % "sbt-unidoc"             % "0.4.2"),
@@ -44,27 +42,8 @@ object ProjectPlugin extends AutoPlugin {
       addSbtPlugin("de.heikoseeberger"  % "sbt-header"             % "3.0.1"),
       addSbtPlugin("com.47deg"          %% "sbt-dependencies"      % "0.3.9"),
       addSbtPlugin("com.47deg"          %% "sbt-microsites"        % "0.7.24"),
-      libraryDependencies ++= {
-        val sbtBinaryVersionValue = (sbtBinaryVersion in pluginCrossBuild).value
-
-        val scalaBinaryVersionValue = (scalaBinaryVersion in update).value
-
-        val (tutPluginVersion, sbtScalafmtVersion) = sbtBinaryVersionValue match {
-          case "0.13" => ("0.5.6", "0.6.8")
-          case "1.0"  => ("0.6.9", "1.2.0")
-        }
-
-        Seq(
-          Defaults.sbtPluginExtra(
-            "org.tpolecat" % "tut-plugin" % tutPluginVersion,
-            sbtBinaryVersionValue,
-            scalaBinaryVersionValue),
-          Defaults.sbtPluginExtra(
-            "com.geirsson" % "sbt-scalafmt" % sbtScalafmtVersion,
-            sbtBinaryVersionValue,
-            scalaBinaryVersionValue)
-        )
-      },
+      addSbtPlugin("org.tpolecat"       % "tut-plugin"             % "0.6.9"),
+      addSbtPlugin("com.geirsson"       % "sbt-scalafmt"           % "1.2.0"),
       scriptedLaunchOpts := {
         scriptedLaunchOpts.value ++
           Seq(
@@ -79,39 +58,18 @@ object ProjectPlugin extends AutoPlugin {
 
     lazy val coreSettings: Seq[Def.Setting[_]] = commonSettings ++ Seq(
       resolvers += Resolver.typesafeIvyRepo("releases"),
-      crossScalaVersions := Seq(scalac.`2.10`, scalac.`2.12`),
-      scalaVersion := {
-        (sbtBinaryVersion in pluginCrossBuild).value match {
-          case "0.13" => scalac.`2.10`
-          case "1.0"  => scalac.`2.12`
-        }
-      },
+      scalaVersion := "2.12.7",
       libraryDependencies ++= Seq(
-        %%("github4s", "0.15.0"),
-        %%("cats-core", "0.9.0"),
+        "org.scala-lang.modules" %% "scala-xml" % "1.1.1",
+        %%("github4s", "0.19.0"),
+        %%("cats-core", "1.4.0"),
         %%("base64"),
-        %%("moultingyaml"),
+        %%("moultingyaml"),        
+        %%("cats-laws", "1.4.0")    % Test exclude ("org.scalacheck", "scalacheck"),
         %%("scalatest")             % Test,
-        %%("scalacheck", "1.13.4")  % Test,
         %%("scheckToolboxDatetime") % Test,
-        %%("scalamockScalatest")    % Test
-      ),
-      libraryDependencies ++= {
-        lazy val sbtVersionValue = (sbtVersion in pluginCrossBuild).value
-
-        (scalaVersion in update).value match {
-          case scalac.`2.10` =>
-            Seq(
-              "org.scala-sbt" % "sbt" % sbtVersionValue % "provided"
-            )
-          case scalac.`2.12` =>
-            Seq(
-              "org.scala-lang.modules" %% "scala-xml" % "1.0.6",
-              "org.scala-sbt"          % "sbt"        % sbtVersionValue % "provided"
-            )
-          case _ => Nil
-        }
-      }
+        %%("scalamockScalatest")    % Test exclude ("org.scalacheck", "scalacheck")
+      )
     )
 
   }
@@ -119,7 +77,7 @@ object ProjectPlugin extends AutoPlugin {
   override def projectSettings: Seq[Def.Setting[_]] = artifactSettings ++ shellPromptSettings
 
   private[this] val artifactSettings = Seq(
-    scalaVersion := scalac.`2.12`,
+    scalaVersion := "2.12.7",
     scalaOrganization := "org.scala-lang",
     startYear := Some(2017),
     orgBadgeListSetting := List(

@@ -2,14 +2,8 @@ language: scala
 
 matrix:
   include:
-    - scala: 2.12.6
+    - scala: 2.12.7
       jdk: oraclejdk8
-      env:
-        - SBT_VERSION=1.1.1
-    - scala: 2.10.7
-      jdk: oraclejdk8
-      env:
-        - SBT_VERSION=0.13.17
 
 cache:
   directories:
@@ -21,34 +15,30 @@ before_install:
       openssl aes-256-cbc -K $encrypted_7c61f7d7bb76_key -iv $encrypted_7c61f7d7bb76_iv
       -in secring.gpg.enc -out secring.gpg -d;
     fi
-  - rm -rf $HOME/.ivy2/cache/scala_2.10/sbt_0.13/com.47deg/sbt-org-policies
   - rm -rf $HOME/.ivy2/cache/scala_2.12/sbt_1.0/com.47deg/sbt-org-policies
 
 script:
-  - sbt ^^$SBT_VERSION clean compile test
-  - sbt ^^$SBT_VERSION scripted
+  - sbt clean compile test
+  - sbt scripted
 
 after_success:
   - if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then
       if grep -q "SNAPSHOT" version.sbt; then
-        sbt ^^$SBT_VERSION publish;
+        sbt publish;
       else
-        if [ "$SBT_VERSION" = "1.1.1" ]; then
-          sbt ^^$SBT_VERSION orgUpdateDocFiles;
-          git reset --hard HEAD;
-          git clean -f;
-          git checkout master;
-          git pull origin master;
-          sbt ^^$SBT_VERSION release;
-        fi
+        sbt orgUpdateDocFiles;
+        git reset --hard HEAD;
+        git clean -f;
+        git checkout master;
+        git pull origin master;
+        sbt release;
       fi
     fi
-  - sbt ^^$SBT_VERSION publishLocal
-  - cd autocheck && sbt ^^$SBT_VERSION -Dplugin.version=$(cat ../version.sbt | sed 's/.*"\(.*\)".*/\1/') checkDependencies
+  - sbt publishLocal
+  - cd autocheck && sbt -Dplugin.version=$(cat ../version.sbt | sed 's/.*"\(.*\)".*/\1/') checkDependencies
 
 cache:
   directories:
-  - $HOME/.sbt/0.13
   - $HOME/.sbt/1.0
   - $HOME/.sbt/boot/scala*
   - $HOME/.sbt/cache

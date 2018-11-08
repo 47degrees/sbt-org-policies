@@ -198,7 +198,7 @@ trait GitHubArbitraries {
         number = number,
         state = state,
         title = title,
-        body = body,
+        body = Some(body),
         locked = locked,
         html_url = url,
         created_at = createdAt,

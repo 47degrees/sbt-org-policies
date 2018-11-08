@@ -16,7 +16,6 @@
 
 package sbtorgpolicies.settings
 
-import cats.syntax.either._
 import org.joda.time.{DateTime, DateTimeZone}
 import sbt.Keys.{baseDirectory, packageOptions, version}
 import sbt.Package.ManifestAttributes

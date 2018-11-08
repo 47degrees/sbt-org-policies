@@ -24,7 +24,6 @@ import github4s.free.interpreters.{Capture, Interpreters}
 import github4s.jvm.Implicits._
 
 import scala.util.Try
-import scala.language.implicitConversions
 import scalaj.http.HttpResponse
 
 object instances {
@@ -33,10 +32,10 @@ object instances {
 
   implicit val ghResponseMonad: Monad[Github4sResponse] = new Monad[Github4sResponse] {
 
-    override def flatMap[A, B](fa: Github4sResponse[A])(f: (A) => Github4sResponse[B]): Github4sResponse[B] =
+    override def flatMap[A, B](fa: Github4sResponse[A])(f: A => Github4sResponse[B]): Github4sResponse[B] =
       fa.flatMap(ghResult => f(ghResult.result))
 
-    override def tailRecM[A, B](a: A)(f: (A) => Github4sResponse[Either[A, B]]): Github4sResponse[B] = {
+    override def tailRecM[A, B](a: A)(f: A => Github4sResponse[Either[A, B]]): Github4sResponse[B] = {
       f(a).flatMap { ghResult =>
         ghResult.result match {
           case Right(v) =>

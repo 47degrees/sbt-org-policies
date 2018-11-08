@@ -15,13 +15,11 @@
  */
 
 package sbtorgpolicies.settings
-
-// import org.scalafmt.bootstrap.ScalafmtBootstrap
-import sbt.Keys._
 import sbt._
-import sbt.util.CacheStoreFactory
+import sbt.Keys._
 import sbt.internal.inc.Analysis
-import sbtorgpolicies.OrgPoliciesKeys._
+import sbt.util.CacheStoreFactory
+import sbtorgpolicies.OrgPoliciesKeys.orgScalafmtInc
 
 /**
  * https://gist.github.com/olafurpg/e045ef9d8a4273bae3e2ccf610636d66#file-automatescalafmtplugin-scala
