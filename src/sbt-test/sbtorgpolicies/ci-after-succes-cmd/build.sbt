@@ -11,5 +11,3 @@ orgGithubTokenSetting := "GITHUB_TOKEN_REPO"
 orgAfterCISuccessCheckSetting := true
 
 orgAfterCISuccessTaskListSetting := List(orgCreateFiles.asRunnableItem)
-
-dependencyOverrides ++= Seq("com.47deg" %% "org-policies-core" % "0.10.1")
