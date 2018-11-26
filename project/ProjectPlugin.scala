@@ -50,7 +50,7 @@ object ProjectPlugin extends AutoPlugin {
             "-Xmx2048M",
             "-XX:ReservedCodeCacheSize=256m",
             "-XX:+UseConcMarkSweepGC",
-            "-Dplugin.version=" + version.value,
+            "-Dplugin.version=" + "0.10.1",
             "-Dscala.version=" + scalaVersion.value
           )
       },
