@@ -12,4 +12,4 @@ orgAfterCISuccessCheckSetting := true
 
 orgAfterCISuccessTaskListSetting := List(orgCreateFiles.asRunnableItem)
 
-dependencyOverrides ++= Seq("org.spire-math" %% "jawn-parser" % "0.13.0")
+dependencyOverrides ++= Seq("com.47deg", "org-policies-core", "0.10.1")
