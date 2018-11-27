@@ -73,7 +73,8 @@ object ProjectPlugin extends AutoPlugin {
         %%("scheckToolboxDatetime") % Test,
         %%("scalamockScalatest")    % Test
       ),
-      assemblyShadeRules in assembly := Seq(ShadeRule.rename("jawn.**" -> "org_policies_jawn.@1").inLibrary("io.circe" %% "circe-jawn" % "0.10.0"))
+      assemblyShadeRules in assembly := Seq(ShadeRule.rename("jawn.**" -> "org_policies_jawn.@1")
+        .inLibrary("org.spire-math" %% "jawn-parser" % "0.13.0"))
     )
 
   }
