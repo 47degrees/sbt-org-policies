@@ -9,6 +9,7 @@ import sbtorgpolicies.OrgPoliciesPlugin.autoImport._
 import sbtorgpolicies.runnable.syntax._
 import sbtorgpolicies.templates.badges._
 import sbtorgpolicies.model._
+import sbtassembly.AssemblyPlugin.autoImport._
 
 object ProjectPlugin extends AutoPlugin {
 
@@ -72,6 +73,7 @@ object ProjectPlugin extends AutoPlugin {
         %%("scheckToolboxDatetime") % Test,
         %%("scalamockScalatest")    % Test
       ),
+      assemblyShadeRules in assembly := Seq(ShadeRule.rename("jawn.**" -> "org_policies_jawn.@1").inLibrary("io.circe" %% "circe-jawn" % "0.10.0"))
     )
 
   }
