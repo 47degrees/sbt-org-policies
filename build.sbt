@@ -6,6 +6,7 @@ lazy val `sbt-org-policies` = (project in file("."))
   .aggregate(`shaded-jawn-parser`, `org-policies-core`)
   .settings(moduleName := "sbt-org-policies")
   .settings(pluginSettings: _*)
+  .settings(excludeDependencies += "io.circe" %% "circe-jawn")
   .enablePlugins(ScriptedPlugin)
   .disablePlugins(sbtassembly.AssemblyPlugin)
 
