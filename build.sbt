@@ -2,7 +2,7 @@ import sbt.Keys._
 import sbtassembly.AssemblyPlugin.autoImport._
 
 lazy val `sbt-org-policies` = (project in file("."))
-  .dependsOn(`shaded-jawn-parser`, `org-policies-core`)
+  .dependsOn(`org-policies-core`)
   .aggregate(`shaded-jawn-parser`, `org-policies-core`)
   .settings(moduleName := "sbt-org-policies")
   .settings(pluginSettings: _*)
@@ -34,6 +34,7 @@ lazy val `shaded-jawn-parser` = (project in file("shaded-jawn-parser"))
   .settings(
     name := "shaded-jawn-parser",
     libraryDependencies += "org.spire-math" %% "jawn-parser" % "0.13.0",
+    assembly / logLevel := Level.Debug,
     assembly / test := {},
     assembly / assemblyOption ~= { _.copy(includeScala = false) },
     assembly / assemblyJarName := s"${name.value}-${scalaBinaryVersion.value}-${version.value}-assembly.jar",
