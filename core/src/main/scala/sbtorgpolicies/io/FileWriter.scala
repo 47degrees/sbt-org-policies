@@ -77,7 +77,7 @@ class FileWriter {
   def copyFilesRecursively(sourcePath: String, outputPath: String): IOResult[List[Path]] = {
 
     def copySingleFile(f: File): IOResult[Path] = {
-      val filePath = f.getAbsolutePath.replaceAll(sourcePath, "")
+      val filePath = f.getAbsolutePath.replaceAllLiterally(sourcePath, "")
       copy(f.getAbsolutePath, s"${outputPath.ensureFinalSlash}$filePath")
     }
 
