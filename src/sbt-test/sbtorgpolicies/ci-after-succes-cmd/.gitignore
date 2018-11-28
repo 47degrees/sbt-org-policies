@@ -5,4 +5,5 @@ LICENSE
 NOTICE.md
 README.md
 version.sbt
+.scalafmt.conf
 .travis.yml
