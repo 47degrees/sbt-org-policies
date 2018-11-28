@@ -17,7 +17,7 @@ lazy val `org-policies-core` = (project in file("core"))
   .settings(
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
     buildInfoPackage := "sbtorgpolicies",
-    excludeDependencies += ExclusionRule("io.circe", "circe-jawn"),
+    excludeDependencies += "io.circe" %% "circe-jawn",
     Compile / unmanagedJars ++= Seq(
       `shaded-jawn-parser`.base / "target" / s"scala-${scalaBinaryVersion.value}" /
         s"shaded-jawn-parser-${scalaBinaryVersion.value}-${version.value}-assembly.jar"
@@ -34,7 +34,7 @@ lazy val `org-policies-core` = (project in file("core"))
 lazy val `shaded-jawn-parser` = (project in file("shaded-jawn-parser"))
   .settings(
     name := "shaded-jawn-parser",
-    libraryDependencies += "io.circe" %% "circe-jawn" % "0.10.0" exclude("io.circe", "circe-core"),
+    libraryDependencies += "io.circe" %% "circe-jawn" % "0.10.0" excludeAll("io.circe" %% "circe-core"),
     assembly / logLevel := Level.Debug,
     assembly / test := {},
     assembly / assemblyOption ~= { _.copy(includeScala = false) },
