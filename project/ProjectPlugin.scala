@@ -25,7 +25,6 @@ object ProjectPlugin extends AutoPlugin {
     )
 
     lazy val pluginSettings: Seq[Def.Setting[_]] = commonSettings ++ Seq(
-      sbtPlugin := true,
       resolvers ++= Seq(sonatypeRepo("snapshots"), sonatypeRepo("releases")),
       addSbtPlugin("com.typesafe.sbt"   % "sbt-git"                % "1.0.0"),
       addSbtPlugin("com.eed3si9n"       % "sbt-unidoc"             % "0.4.2"),
