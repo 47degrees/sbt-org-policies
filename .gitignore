@@ -7,5 +7,4 @@ deploy_key
 .DS_Store
 output/*
 /secring.gpg
-/core-shaded/
-/core-publish/
+/shading/

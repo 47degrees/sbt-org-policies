@@ -1,8 +1,9 @@
 import dependencies.DependenciesPlugin.autoImport.depUpdateDependencyIssues
 import sbt.Keys._
 import sbt.Resolver.sonatypeRepo
-import sbt._
 import sbt.ScriptedPlugin.autoImport._
+import sbt._
+import sbtassembly.AssemblyPlugin.autoImport.{ShadeRule, assembly, _}
 import sbtorgpolicies.OrgPoliciesKeys.orgAfterCISuccessTaskListSetting
 import sbtorgpolicies.OrgPoliciesPlugin
 import sbtorgpolicies.OrgPoliciesPlugin.autoImport._
@@ -52,6 +53,7 @@ object ProjectPlugin extends AutoPlugin {
             "-Dscala.version=" + scalaVersion.value
           )
       },
+      scriptedBufferLog := false,
     )
 
     lazy val coreSettings: Seq[Def.Setting[_]] = commonSettings ++ Seq(
@@ -71,6 +73,25 @@ object ProjectPlugin extends AutoPlugin {
         %%("scalamockScalatest")    % Test
       ),
     )
+
+    // Shade and bundle jawn-parser and intermediate deps (https://github.com/47deg/sbt-org-policies/issues/1173)
+    lazy val jawnShadingSettings: Seq[Def.Setting[_]] = Seq(
+      // intransitive, so we bundle the bare minimum dependencies to shade the chain of calls from our code to jawn-parser
+      libraryDependencies ++= Seq(
+        %%("github4s"),
+        %%("circe-parser"),
+        "io.circe" %% "circe-jawn" % "0.10.0",
+        "org.spire-math" %% "jawn-parser" % "0.13.0",
+      ).map(_.intransitive()),
+      assembly / assemblyOption ~= (_.copy(includeScala = false)),
+      // must be careful not to rename any calls to unshaded packages outside our bundled dependencies (ex. io.circe.** would break)
+      assembly / assemblyShadeRules := Seq(ShadeRule.rename(
+        "github4s.**"        -> "org_policies_github4s.@1",
+        "io.circe.parser.**" -> "org_policies_circe_parser.@1",
+        "io.circe.jawn.**"   -> "org_policies_circe_jawn.@1",
+        "jawn.**"            -> "org_policies_jawn_parser.@1"
+      )).map(_.inAll),
+    ) ++ noPublishSettings
 
   }
 

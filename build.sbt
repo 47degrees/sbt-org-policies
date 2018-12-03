@@ -1,53 +1,31 @@
 import sbt.Keys._
 import sbtassembly.AssemblyPlugin.autoImport._
 
-lazy val `sbt-org-policies` = (project in file("."))
-  .dependsOn(`org-policies-core-publish`)
-  .aggregate(`org-policies-core-compile`, `org-policies-core-shaded`, `org-policies-core-publish`)
-  .enablePlugins(BuildInfoPlugin)
-  .enablePlugins(SbtPlugin)
-  .settings(moduleName := "sbt-org-policies")
-  .settings(pluginSettings: _*)
+lazy val root = (project in file("."))
+  .aggregate(`org-policies-core-compile`, `org-policies-core-shaded`, `org-policies-core-publish`,
+              `sbt-org-policies-compile`,  `sbt-org-policies-shaded`,  `sbt-org-policies-publish`)
+  .settings(noPublishSettings: _*)
 
 lazy val `org-policies-core-compile` = (project in file("core"))
   .enablePlugins(BuildInfoPlugin)
   .settings(moduleName := "org-policies-core-compile")
   .settings(coreSettings: _*)
+  .settings(noPublishSettings: _*)
   .settings(
     buildInfoKeys := Seq(name, version, scalaVersion, sbtVersion),
     buildInfoPackage := "sbtorgpolicies",
-    publishArtifact := false,
-    publish := {},
-    publishLocal := {},
   )
 
-lazy val `org-policies-core-shaded` = (project in file("core-shaded"))
+lazy val `org-policies-core-shaded` = (project in file("shading/core-shaded"))
   .enablePlugins(AssemblyPlugin)
   .settings(moduleName := "org-policies-core-shaded")
+  .settings(jawnShadingSettings: _*)
   .settings(
     update := (update dependsOn (`org-policies-core-compile` / Compile / packageBin)).value,
     Compile / unmanagedJars +=  (`org-policies-core-compile` / Compile / packageBin / artifactPath).value,
-    // Shade and bundle jawn-parser and intermediate deps (https://github.com/47deg/sbt-org-policies/issues/1173)
-    libraryDependencies ++= Seq(
-      %%("github4s"),
-      %%("circe-parser"),
-      "io.circe" %% "circe-jawn" % "0.10.0",
-      "org.spire-math" %% "jawn-parser" % "0.13.0",
-    ).map(_.intransitive()), // intransitive, to bundle the minimum dependencies to shade the chain of calls from our code to jawn-parser
-    assembly / assemblyOption ~= (_.copy(includeScala = false)),
-    // must be careful not to rename any calls to unshaded packages outside our bundled dependencies (ex. io.circe.** would break)
-    assembly / assemblyShadeRules := Seq(ShadeRule.rename(
-      "github4s.**"        -> "org_policies_github4s.@1",
-      "io.circe.parser.**" -> "org_policies_circe_parser.@1",
-      "io.circe.jawn.**"   -> "org_policies_circe_jawn.@1",
-      "jawn.**"            -> "org_policies_jawn_parser.@1"
-    )).map(_.inAll),
-    publishArtifact := false,
-    publish := {},
-    publishLocal := {},
   )
 
-lazy val `org-policies-core-publish` = (project in file("core-publish"))
+lazy val `org-policies-core-publish` = (project in file("shading/core-publish"))
   .settings(moduleName := "org-policies-core")
   .settings(coreSettings: _*)
   .settings(
@@ -55,8 +33,33 @@ lazy val `org-policies-core-publish` = (project in file("core-publish"))
     Compile / packageBin :=     (`org-policies-core-shaded` / Compile / assembly ).value,
   )
 
-Global / cancelable := true
+lazy val `sbt-org-policies-compile` = (project in file("plugin"))
+  .enablePlugins(SbtPlugin)
+  .dependsOn(`org-policies-core-publish`)
+  .settings(moduleName := "sbt-org-policies-compile")
+  .settings(pluginSettings: _*)
+  .settings(noPublishSettings: _*)
+
+lazy val `sbt-org-policies-shaded` = (project in file("shading/plugin-shaded"))
+  .enablePlugins(AssemblyPlugin)
+  .settings(moduleName := "sbt-org-policies-shaded")
+  .settings(jawnShadingSettings: _*)
+  .settings(
+    update := (update dependsOn (`sbt-org-policies-compile` / Compile / packageBin)).value,
+    Compile / unmanagedJars +=  (`sbt-org-policies-compile` / Compile / packageBin / artifactPath).value,
+  )
+
+lazy val `sbt-org-policies-publish` = (project in file("shading/plugin-publish"))
+  .enablePlugins(SbtPlugin)
+  .settings(moduleName := "sbt-org-policies")
+  .settings(pluginSettings: _*)
+  .settings(
+    update := (update dependsOn (`sbt-org-policies-shaded` / Compile / assembly)).value,
+    Compile / packageBin :=     (`sbt-org-policies-shaded` / Compile / assembly ).value,
+  )
 
 pgpPassphrase := Some(Option(System.getenv().get("PGP_PASSPHRASE")).getOrElse("").toCharArray)
 pgpPublicRing := file(s"$gpgFolder/pubring.gpg")
 pgpSecretRing := file(s"$gpgFolder/secring.gpg")
+
+Global / cancelable := true

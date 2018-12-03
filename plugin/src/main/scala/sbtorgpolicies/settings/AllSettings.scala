@@ -118,7 +118,8 @@ trait AllSettings
   lazy val noPublishSettings = Seq(
     publish := ((): Unit),
     publishLocal := ((): Unit),
-    publishArtifact := false
+    publishArtifact := false,
+    publishMavenStyle := false // suppress warnings about intransitive deps (not published anyway)
   )
 
   lazy val scalaMetaSettings = Seq(

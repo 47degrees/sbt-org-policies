@@ -138,9 +138,9 @@ trait bash extends bashCompat {
 
     getFileContent((rootDir / travisFilePath).getAbsolutePath) flatMap { content =>
       getFields(content, "scala").mapToString map (_.sorted) map verifyVersionsConsistency
-    } valueOr { e =>
-      logger.warn(s"Can't read crossScalaVersion from yaml file $travisFilePath")
-      logger.trace(e)
+    } valueOr { _ =>
+      logger.warn(
+        s"Can't read crossScalaVersion from yaml file $travisFilePath, using default [${defaultCrossV.mkString(",")}]")
       defaultCrossV
     }
   }
