@@ -80,11 +80,13 @@ object ProjectPlugin extends AutoPlugin {
 
     // Shade and bundle jawn-parser and intermediate deps (https://github.com/47deg/sbt-org-policies/issues/1173)
     lazy val jawnShadingSettings: Seq[Def.Setting[_]] = Seq(
-      // intransitive, so we bundle the bare minimum dependencies to shade the chain of calls from our code to jawn-parser
+      // intransitive(), so we bundle the bare minimum dependencies to shade the chain of calls from our code to jawn-parser.
+      // Make sure to keep all versions in sync with those brought in transitively by github4s (not always the latest versions).
+      // Also make sure to include our project's compiled code as an unmanaged jar (in build.sbt) to shade calls to github4s.
       libraryDependencies ++= Seq(
         %%("github4s"),
-        %%("circe-parser"),
-        "io.circe" %% "circe-jawn" % "0.10.1",
+        %%("circe-parser", "0.10.0"),
+        "io.circe" %% "circe-jawn" % "0.10.0",
         "org.spire-math" %% "jawn-parser" % "0.13.0",
       ).map(_.intransitive()),
       assembly / assemblyOption ~= (_.copy(includeScala = false)),
