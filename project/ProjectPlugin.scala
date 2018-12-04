@@ -1,12 +1,12 @@
-import dependencies.DependenciesPlugin.autoImport.depUpdateDependencyIssues
+import dependencies.DependenciesPlugin.autoImport._
 import sbt.Keys._
 import sbt.Resolver.sonatypeRepo
 import sbt.ScriptedPlugin.autoImport._
 import sbt._
-import sbtassembly.AssemblyPlugin.autoImport.{ShadeRule, assembly, _}
-import sbtorgpolicies.OrgPoliciesKeys.orgAfterCISuccessTaskListSetting
+import sbtassembly.AssemblyPlugin.autoImport._
 import sbtorgpolicies.OrgPoliciesPlugin
 import sbtorgpolicies.OrgPoliciesPlugin.autoImport._
+import sbtorgpolicies.model.scalac
 import sbtorgpolicies.runnable.syntax._
 import sbtorgpolicies.templates.badges._
 
@@ -27,23 +27,26 @@ object ProjectPlugin extends AutoPlugin {
 
     lazy val pluginSettings: Seq[Def.Setting[_]] = commonSettings ++ Seq(
       resolvers ++= Seq(sonatypeRepo("snapshots"), sonatypeRepo("releases")),
-      addSbtPlugin("com.typesafe.sbt"   % "sbt-git"                % "1.0.0"),
-      addSbtPlugin("com.eed3si9n"       % "sbt-unidoc"             % "0.4.2"),
-      addSbtPlugin("com.github.gseitz"  % "sbt-release"            % "1.0.10"),
-      addSbtPlugin("org.xerial.sbt"     % "sbt-sonatype"           % "2.3"),
-      addSbtPlugin("com.jsuereth"       % "sbt-pgp"                % "1.1.2"),
-      addSbtPlugin("com.typesafe.sbt"   % "sbt-ghpages"            % "0.6.2"),
-      addSbtPlugin("com.typesafe.sbt"   % "sbt-site"               % "1.3.2"),
-      addSbtPlugin("pl.project13.scala" % "sbt-jmh"                % "0.3.4"),
-      addSbtPlugin("org.scalastyle"     %% "scalastyle-sbt-plugin" % "1.0.0"),
-      addSbtPlugin("org.scoverage"      % "sbt-scoverage"          % "1.6.0-M3"),
-      addSbtPlugin("org.scala-js"       % "sbt-scalajs"            % "0.6.25"),
-      addSbtPlugin("de.heikoseeberger"  % "sbt-header"             % "3.0.1"),
-      addSbtPlugin("com.47deg"          %% "sbt-dependencies"      % "0.3.9"),
-      addSbtPlugin("io.get-coursier"    %  "sbt-coursier"          % "1.0.3"),
-      addSbtPlugin("com.47deg"          %% "sbt-microsites"        % "0.7.24"),
-      addSbtPlugin("org.tpolecat"       % "tut-plugin"             % "0.6.9"),
-      addSbtPlugin("com.geirsson"       % "sbt-scalafmt"           % "1.2.0"),
+      addSbtPlugin(%%("sbt-git", true)),
+      addSbtPlugin(%%("sbt-unidoc", true)),
+      addSbtPlugin(%%("sbt-release", true)),
+      addSbtPlugin(%%("sbt-sonatype", true)),
+      addSbtPlugin(%%("sbt-pgp", true)),
+      addSbtPlugin(%%("sbt-ghpages", true)),
+      addSbtPlugin(%%("sbt-site", true)),
+      addSbtPlugin(%%("sbt-jmh", true)),
+      addSbtPlugin(%%("scalastyle-sbt-plugin", true)),
+      addSbtPlugin(%%("sbt-scoverage", true)),
+      addSbtPlugin(%%("sbt-scalajs", true)),
+      addSbtPlugin(%%("sbt-header", "3.0.1", true)),
+      addSbtPlugin(%%("sbt-dependencies", true)),
+      addSbtPlugin(%%("sbt-coursier", true)),
+      addSbtPlugin(%%("sbt-microsites", true)),
+      addSbtPlugin(%%("tut-plugin", true)),
+      addSbtPlugin(%%("sbt-scalafmt", "1.5.1", true)),
+      libraryDependencies ++= Seq(
+        "com.geirsson" %% "scalafmt-cli" % "1.5.1",
+      ),
       scriptedLaunchOpts := {
         scriptedLaunchOpts.value ++
           Seq(
@@ -59,8 +62,8 @@ object ProjectPlugin extends AutoPlugin {
 
     lazy val coreSettings: Seq[Def.Setting[_]] = commonSettings ++ Seq(
       resolvers += Resolver.typesafeIvyRepo("releases"),
-      scalaVersion := "2.12.7",
-      crossScalaVersions := Seq("2.12.7"),
+      scalaVersion := scalac.`2.12`,
+      crossScalaVersions := Seq(scalac.`2.12`),
       libraryDependencies ++= Seq(
         "org.scala-lang.modules" %% "scala-xml" % "1.1.1",
         %%("github4s"),
@@ -81,7 +84,7 @@ object ProjectPlugin extends AutoPlugin {
       libraryDependencies ++= Seq(
         %%("github4s"),
         %%("circe-parser"),
-        "io.circe" %% "circe-jawn" % "0.10.0",
+        "io.circe" %% "circe-jawn" % "0.10.1",
         "org.spire-math" %% "jawn-parser" % "0.13.0",
       ).map(_.intransitive()),
       assembly / assemblyOption ~= (_.copy(includeScala = false)),
@@ -93,14 +96,13 @@ object ProjectPlugin extends AutoPlugin {
         "jawn.**"            -> "org_policies_jawn_parser.@1"
       )).map(_.inAll),
     ) ++ noPublishSettings
-
   }
 
   override def projectSettings: Seq[Def.Setting[_]] = artifactSettings ++ shellPromptSettings
 
   private[this] val artifactSettings = Seq(
-    scalaVersion := "2.12.7",
-    crossScalaVersions := Seq("2.12.7"),
+    scalaVersion := scalac.`2.12`,
+    crossScalaVersions := Seq(scalac.`2.12`),
     scalaOrganization := "org.scala-lang",
     startYear := Some(2017),
     orgBadgeListSetting := List(
