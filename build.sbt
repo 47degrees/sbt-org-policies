@@ -51,6 +51,7 @@ lazy val `sbt-org-policies-shaded` = (project in file("shading/plugin-shaded"))
 
 lazy val `sbt-org-policies-publish` = (project in file("shading/plugin-publish"))
   .enablePlugins(SbtPlugin)
+  .dependsOn(`org-policies-core-publish`)
   .settings(moduleName := "sbt-org-policies")
   .settings(pluginSettings: _*)
   .settings(
@@ -62,4 +63,5 @@ pgpPassphrase := Some(Option(System.getenv().get("PGP_PASSPHRASE")).getOrElse(""
 pgpPublicRing := file(s"$gpgFolder/pubring.gpg")
 pgpSecretRing := file(s"$gpgFolder/secring.gpg")
 
+ThisBuild / parallelExecution := false
 Global / cancelable := true

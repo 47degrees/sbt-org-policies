@@ -40,6 +40,7 @@ object ProjectPlugin extends AutoPlugin {
       addSbtPlugin("org.scala-js"       % "sbt-scalajs"            % "0.6.25"),
       addSbtPlugin("de.heikoseeberger"  % "sbt-header"             % "3.0.1"),
       addSbtPlugin("com.47deg"          %% "sbt-dependencies"      % "0.3.9"),
+      addSbtPlugin("io.get-coursier"    %  "sbt-coursier"          % "1.0.3"),
       addSbtPlugin("com.47deg"          %% "sbt-microsites"        % "0.7.24"),
       addSbtPlugin("org.tpolecat"       % "tut-plugin"             % "0.6.9"),
       addSbtPlugin("com.geirsson"       % "sbt-scalafmt"           % "1.2.0"),

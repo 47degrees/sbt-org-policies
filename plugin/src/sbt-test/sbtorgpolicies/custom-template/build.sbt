@@ -1,6 +1,6 @@
 version := "1.0"
 
-scalaVersion := sbtorgpolicies.model.scalac.`2.11`
+scalaVersion := sbtorgpolicies.model.scalac.`2.12`
 
 def getLines(fileName: String) =
   IO.readLines(file(fileName))

@@ -2,6 +2,10 @@
 
 > orgAfterCISuccessCommand
 
+$ exists .scalafmt.conf
+
+$ exists .travis.yml
+
 $ exists AUTHORS.md
 
 $ exists CHANGELOG.md

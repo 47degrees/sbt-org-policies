@@ -2,7 +2,7 @@
 
 > orgCreateFiles
 
-$ exists target/scala-2.11/resource_managed/org-policies/templates
+$ exists target/scala-2.12/resource_managed/org-policies/templates
 
 $ exists AUTHORS.md
 
@@ -32,7 +32,7 @@ $ exists .travis.yml
 
 > testCheckSettings
 
-> set crossScalaVersions:=Seq("2.10.6",sbtorgpolicies.model.scalac.`2.11`,sbtorgpolicies.model.scalac.`2.12`)
+> set crossScalaVersions:=Seq(sbtorgpolicies.model.scalac.`2.10`,sbtorgpolicies.model.scalac.`2.11`,sbtorgpolicies.model.scalac.`2.12`)
 
 > testCheckSettings
 

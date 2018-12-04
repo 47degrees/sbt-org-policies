@@ -1,4 +1,4 @@
-scalaVersion := sbtorgpolicies.model.scalac.`2.11`
+scalaVersion := sbtorgpolicies.model.scalac.`2.12`
 
 name := "sbt-org-policies-test"
 
