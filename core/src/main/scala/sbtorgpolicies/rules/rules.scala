@@ -23,7 +23,7 @@ package object rules {
 
   type ValidationResult = ValidatedNel[ValidationException, Unit]
 
-  type ValidationFunction = (String) => ValidationResult
+  type ValidationFunction = String => ValidationResult
 
   val emptyValidation: ValidationFunction = _ => Validated.valid((): Unit)
 

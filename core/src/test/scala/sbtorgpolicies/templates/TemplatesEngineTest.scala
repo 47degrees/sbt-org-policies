@@ -70,7 +70,7 @@ class TemplatesEngineTest extends TestOps {
         |<{{organizationHomePage}}>
         |
         |{{contributors}}
-      """.stripMargin
+      """.stripMargin.replace("\r", "")
 
     val replacements = Map(
       "year"                 -> 2017.asReplaceable,
@@ -86,7 +86,7 @@ class TemplatesEngineTest extends TestOps {
       .replace(
         "{{contributors}}",
         """* 47 Deg
-          |* Developers""".stripMargin)
+          |* Developers""".stripMargin.replace("\r", ""))
 
     val result = templatesEngine.replaceWith(originalContent, replacements)
 
@@ -99,7 +99,7 @@ class TemplatesEngineTest extends TestOps {
     val originalContent =
       """
         |2017 47 Degrees.
-      """.stripMargin
+      """.stripMargin.replace("\r", "")
 
     val replacements = Map(
       "year"                 -> 2017.asReplaceable,
@@ -118,7 +118,7 @@ class TemplatesEngineTest extends TestOps {
     val originalContent =
       """
         |{{year}} 47 Degrees.
-      """.stripMargin
+      """.stripMargin.replace("\r", "")
 
     val replacements = Map.empty[String, Replaceable]
 
@@ -155,7 +155,7 @@ class TemplatesEngineTest extends TestOps {
         | Title
         |
         | Other Stuff
-      """.stripMargin
+      """.stripMargin.replace("\r", "")
 
     val section = "\n2017 (47 Degrees)"
 
@@ -166,7 +166,7 @@ class TemplatesEngineTest extends TestOps {
         |2017 (47 Degrees)
         |
         | Other Stuff
-      """.stripMargin
+      """.stripMargin.replace("\r", "")
 
     val result = templatesEngine.insertIn(originalContent, AppendAfter(" Title".r), section)
 
@@ -185,12 +185,12 @@ class TemplatesEngineTest extends TestOps {
         | (End section)
         |
         | Other Stuff
-      """.stripMargin
+      """.stripMargin.replace("\r", "")
 
     val originalContentWithoutSection =
       """
         | Other Stuff
-      """.stripMargin
+      """.stripMargin.replace("\r", "")
 
     val section =
       """
@@ -198,7 +198,7 @@ class TemplatesEngineTest extends TestOps {
         |
         | New text
         |
-        | (End section)""".stripMargin
+        | (End section)""".stripMargin.replace("\r", "")
 
     val expectedContent =
       """
@@ -209,7 +209,7 @@ class TemplatesEngineTest extends TestOps {
         | (End section)
         |
         | Other Stuff
-      """.stripMargin
+      """.stripMargin.replace("\r", "")
 
     val from = "\n \\(Start section\\)".r
     val to   = "\\(End section\\)".r

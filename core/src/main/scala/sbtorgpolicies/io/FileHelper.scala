@@ -21,7 +21,7 @@ import java.net.URL
 
 import cats.instances.either._
 import cats.instances.list._
-import cats.syntax.cartesian._
+import cats.syntax.apply._
 import cats.syntax.either._
 import cats.syntax.foldable._
 import cats.syntax.traverseFilter._
@@ -60,7 +60,7 @@ class FileHelper {
       projectDir.getAbsolutePath.ensureFinalSlash + f.outputPath
 
     def checkFiles(): IOResult[Unit] =
-      fileList.traverseU_ { f =>
+      fileList.traverse_ { f =>
         if (!exists(templatePath(f)))
           IOException(s"File not found: ${f.templatePath}").asLeft
         else ().asRight

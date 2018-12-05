@@ -31,8 +31,6 @@ import sbtorgpolicies.arbitraries.GitHubArbitraries._
 import sbtorgpolicies.exceptions.{GitHubException, IOException, OrgPolicyException}
 import sbtorgpolicies.io.FileReader
 
-import scala.language.postfixOps
-
 class GitHubOpsTest extends TestOps {
 
   def newGitHubOps: (GitHubOps, FileReader, GHGitData, GHPullRequests, GHRepos, GHUsers) = {
@@ -522,7 +520,7 @@ class GitHubOpsTest extends TestOps {
         .returns(Free.pure[GitHub4s, GHResponse[List[Commit]]](Right(GHResult(Nil, 200, Map.empty))))
 
       (ghPullRequests.list _)
-        .when(*, *, *)
+        .when(*, *, *, *)
         .returns(Free.pure[GitHub4s, GHResponse[List[PullRequest]]](prResponse))
 
       val result: Either[GitHubException, List[PullRequest]] = gitHubOps.latestPullRequests(branch, "", "")
@@ -548,7 +546,7 @@ class GitHubOpsTest extends TestOps {
         .returns(Free.pure[GitHub4s, GHResponse[List[Commit]]](commitsResponse))
 
       (ghPullRequests.list _)
-        .when(*, *, *)
+        .when(*, *, *, *)
         .returns(Free.pure[GitHub4s, GHResponse[List[PullRequest]]](prResponse))
 
       val result: Either[GitHubException, List[PullRequest]] =
@@ -590,7 +588,7 @@ class GitHubOpsTest extends TestOps {
           .returns(Free.pure[GitHub4s, GHResponse[List[Commit]]](newCommitsResponse))
 
         (ghPullRequests.list _)
-          .when(*, *, *)
+          .when(*, *, *, *)
           .returns(Free.pure[GitHub4s, GHResponse[List[PullRequest]]](prResponse))
 
         val result: Either[GitHubException, List[PullRequest]] =

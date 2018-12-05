@@ -1,0 +1,41 @@
+# checks that orgCreateFiles sbt task works as expected when user provides a custom template folder
+
+> orgCreateFiles
+
+$ exists target/scala-2.12/resource_managed/org-policies/templates
+
+$ exists AUTHORS.md
+
+$ exists CHANGELOG.md
+
+$ exists CONTRIBUTING.md
+
+$ exists LICENSE
+
+$ exists NOTICE.md
+
+$ exists README.md
+
+$ exists version.sbt
+
+$ exists .travis.yml
+
+# check the custom LICENSE file
+
+> check
+
+> set orgLicenseSetting := sbtorgpolicies.model.ApacheLicense
+
+> orgCreateFiles
+
+$ exists LICENSE
+
+> checkApache
+
+> set orgLicenseSetting := sbtorgpolicies.model.MITLicense
+
+> orgCreateFiles
+
+$ exists LICENSE
+
+> checkMIT

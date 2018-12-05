@@ -1,0 +1,21 @@
+# checks that the orgValidateFiles sbt task works fine with the required files
+
+$ exists .scalafmt.conf
+
+$ exists .travis.yml
+
+$ exists AUTHORS.md
+
+$ exists CHANGELOG.md
+
+$ exists CONTRIBUTING.md
+
+$ exists LICENSE
+
+$ exists NOTICE.md
+
+$ exists README.md
+
+$ exists version.sbt
+
+> orgValidateFiles

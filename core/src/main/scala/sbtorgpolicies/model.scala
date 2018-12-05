@@ -116,8 +116,8 @@ object model {
   }
 
   object sbtV {
-    val `0.13`: String = "0.13.17"
-    val `1.0`: String  = "1.1.1"
+    val `0.13`: String = "0.13.18"
+    val `1.0`: String  = "1.2.7"
 
     val crossSbtVersions: List[String] = List(`0.13`, `1.0`)
   }
@@ -126,8 +126,8 @@ object model {
 
     val `2.10`: String = "2.10.7"
     val `2.11`: String = "2.11.12"
-    val `2.12`: String = "2.12.6"
-    val `2.13`: String = "2.13.0-M4"
+    val `2.12`: String = "2.12.7"
+    val `2.13`: String = "2.13.0-M5"
 
     val latestScalaVersion: String = `2.12`
 
