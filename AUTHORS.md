@@ -8,5 +8,5 @@ The maintainers of the project are:
 
 ## Contributors
 
-These are the people that have contributed to the root project:
+These are the people that have contributed to the sbt-org-policies project:
 
