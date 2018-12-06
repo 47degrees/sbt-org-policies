@@ -1,11 +1,6 @@
 import sbt.Keys._
 import sbtassembly.AssemblyPlugin.autoImport._
 
-lazy val root = (project in file("."))
-  .aggregate(`org-policies-core-compile`, `org-policies-core-shaded`, `org-policies-core-publish`,
-              `sbt-org-policies-compile`,  `sbt-org-policies-shaded`,  `sbt-org-policies-publish`)
-  .settings(noPublishSettings: _*)
-
 lazy val `org-policies-core-compile` = (project in file("core"))
   .enablePlugins(BuildInfoPlugin)
   .settings(moduleName := "org-policies-core-compile")

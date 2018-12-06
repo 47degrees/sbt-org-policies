@@ -6,7 +6,8 @@ import sbt._
 import sbtassembly.AssemblyPlugin.autoImport._
 import sbtorgpolicies.OrgPoliciesPlugin
 import sbtorgpolicies.OrgPoliciesPlugin.autoImport._
-import sbtorgpolicies.model.scalac
+import sbtorgpolicies.github.GitHubOps
+import sbtorgpolicies.model.{GitHubSettings, scalac}
 import sbtorgpolicies.runnable.syntax._
 import sbtorgpolicies.templates.badges._
 
@@ -18,14 +19,7 @@ object ProjectPlugin extends AutoPlugin {
 
   object autoImport {
 
-    lazy val commonSettings: Seq[Def.Setting[_]] = Seq(
-      name := "sbt-org-policies",
-      organization := "com.47deg",
-      organizationName := "47 Degrees",
-      organizationHomepage := Some(url("http://47deg.com"))
-    )
-
-    lazy val pluginSettings: Seq[Def.Setting[_]] = commonSettings ++ Seq(
+    lazy val pluginSettings: Seq[Def.Setting[_]] = Seq(
       resolvers ++= Seq(sonatypeRepo("snapshots"), sonatypeRepo("releases")),
       addSbtPlugin(%%("sbt-git", true)),
       addSbtPlugin(%%("sbt-unidoc", true)),
@@ -60,7 +54,7 @@ object ProjectPlugin extends AutoPlugin {
       scriptedBufferLog := false,
     )
 
-    lazy val coreSettings: Seq[Def.Setting[_]] = commonSettings ++ Seq(
+    lazy val coreSettings: Seq[Def.Setting[_]] = Seq(
       resolvers += Resolver.typesafeIvyRepo("releases"),
       scalaVersion := scalac.`2.12`,
       crossScalaVersions := Seq(scalac.`2.12`),
@@ -100,7 +94,24 @@ object ProjectPlugin extends AutoPlugin {
     ) ++ noPublishSettings
   }
 
-  override def projectSettings: Seq[Def.Setting[_]] = artifactSettings ++ shellPromptSettings
+  override def projectSettings: Seq[Def.Setting[_]] = artifactSettings ++ shellPromptSettings ++
+    Seq(
+      orgProjectName := name.value,
+      orgGithubSetting := GitHubSettings(
+        organization = "47deg",
+        project = (name in LocalRootProject).value,
+        organizationName = "47 Degrees",
+        groupId = "com.47deg",
+        organizationHomePage = url("http://47deg.com"),
+        organizationEmail = "hello@47deg.com"
+      ),
+      orgGithubTokenSetting := "ORG_GITHUB_TOKEN",
+      orgGithubOpsSetting := new GitHubOps(
+        orgGithubSetting.value.organization,
+        orgGithubSetting.value.project,
+        getEnvVar(orgGithubTokenSetting.value)
+      )
+    )
 
   private[this] val artifactSettings = Seq(
     scalaVersion := scalac.`2.12`,
