@@ -36,7 +36,7 @@ object badges {
 
   case class BadgeIcon(title: String, icon: String, url: String)
 
-  type BadgeBuilder = (BadgeInformation) => Badge
+  type BadgeBuilder = BadgeInformation => Badge
 
   abstract class Badge(info: BadgeInformation) {
     def badgeIcon: Option[BadgeIcon]
@@ -50,8 +50,8 @@ object badges {
     override def badgeIcon: Option[BadgeIcon] =
       BadgeIcon(
         title = "codecov.io",
-        icon = s"http://codecov.io/github/${info.owner}/${info.repo}/coverage.svg?branch=${info.branch}",
-        url = s"http://codecov.io/github/${info.owner}/${info.repo}?branch=${info.branch}"
+        icon = s"http://codecov.io/github/${info.owner}/${info.repo}/branch/master/graph/badge.svg",
+        url = s"http://codecov.io/github/${info.owner}/${info.repo}"
       ).some
   }
 
