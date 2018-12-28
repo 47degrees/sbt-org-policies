@@ -276,6 +276,8 @@ object libraries {
     "grpc-testing"                     -> (("io.grpc", "grpc-testing", v("grpc"))),
     "guava"                            -> (("com.google.guava", "guava", v("guava"))),
     "hammock-core"                     -> (("com.pepegar", "hammock-core", v("hammock"))),
+    "hammock-circe"                    -> (("com.pepegar", "hammock-circe", v("hammock"))),
+    "hammock-asynchttpclient"          -> (("com.pepegar", "hammock-asynchttpclient", v("hammock"))),
     "http4s-blaze-client"              -> (("org.http4s", "http4s-blaze-client", v("http4s"))),
     "http4s-blaze-server"              -> (("org.http4s", "http4s-blaze-server", v("http4s"))),
     "http4s-circe"                     -> (("org.http4s", "http4s-circe", v("http4s"))),
