@@ -44,7 +44,7 @@ object libraries {
     "cassandra-driver"         -> "3.6.0",
     "catalysts"                -> "0.8",
     "catbird"                  -> "18.10.0",
-    "cats"                     -> "1.5.0",
+    "cats"                     -> "1.6.0",
     "cats-effect"              -> "1.1.0",
     "cats-mtl"                 -> "0.4.0",
     "cats-scalacheck"          -> "0.1.0",
