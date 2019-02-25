@@ -1,4 +1,3 @@
-import dependencies.DependenciesPlugin.autoImport._
 import sbt.Keys._
 import sbt.Resolver.sonatypeRepo
 import sbt.ScriptedPlugin.autoImport._
@@ -98,7 +97,6 @@ object ProjectPlugin extends AutoPlugin {
       MavenCentralBadge.apply,
       LicenseBadge.apply,
       GitHubIssuesBadge.apply
-    ),
-    orgAfterCISuccessTaskListSetting ~= (_ filterNot (_ == depUpdateDependencyIssues.asRunnableItem))
+    )
   )
 }
