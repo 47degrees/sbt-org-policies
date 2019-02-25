@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 47 Degrees, LLC. <http://www.47deg.com>
+ * Copyright 2017-2019 47 Degrees, LLC. <http://www.47deg.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport.{
   HeaderFileType,
   HeaderLicense
 }
-import dependencies.DependenciesPlugin.autoImport._
 import scoverage.ScoverageKeys
 import scoverage.ScoverageKeys.coverageEnabled
 import sbtorgpolicies.runnable.SetSetting
@@ -56,8 +55,6 @@ trait DefaultSettings extends AllSettings {
       orgEnforcementSettingsTasks ++
       orgBashTasks ++
       orgCommonTasks ++
-      sbtDependenciesSettings ++
-      sbtMicrositesSettings ++
       AutomateHeaderPlugin.autoImport.automateHeaderSettings(Compile, Test)
 
   lazy val orgCommonDefaultSettings = Seq(
@@ -130,7 +127,6 @@ trait DefaultSettings extends AllSettings {
       getEnvVarOrElse("TRAVIS_PULL_REQUEST") == "false"
     },
     orgAfterCISuccessTaskListSetting := List(
-      depUpdateDependencyIssues.asRunnableItem,
       orgPublishReleaseTask.asRunnableItem(allModules = true, aggregated = false, crossScalaVersions = true),
       orgUpdateDocFiles.asRunnableItem
     ) ++ guard(((baseDirectory in LocalRootProject).value / "docs").exists() && !version.value.endsWith("-SNAPSHOT"))(

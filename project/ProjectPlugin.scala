@@ -18,6 +18,18 @@ object ProjectPlugin extends AutoPlugin {
 
   object autoImport {
 
+    lazy val V = new {
+      val base64: String            = "0.2.4"
+      val cats: String              = "1.6.0"
+      val github4s: String          = "0.20.1"
+      val moultingyaml: String      = "0.4.0"
+      val scalacheck: String        = "1.13.5"
+      val scalacheckToolbox: String = "0.2.5"
+      val scalamock: String         = "3.6.0"
+      val scalatest: String         = "3.0.5"
+      val scalaxml: String          = "1.1.1"
+    }
+
     lazy val commonSettings: Seq[Def.Setting[_]] = Seq(
       name := "sbt-org-policies",
       organization := "com.47deg",
@@ -32,16 +44,10 @@ object ProjectPlugin extends AutoPlugin {
       addSbtPlugin(%%("sbt-release", true)),
       addSbtPlugin(%%("sbt-sonatype", true)),
       addSbtPlugin(%%("sbt-pgp", true)),
-      addSbtPlugin(%%("sbt-ghpages", true)),
-      addSbtPlugin(%%("sbt-site", true)),
       addSbtPlugin(%%("sbt-jmh", true)),
-      addSbtPlugin(%%("scalastyle-sbt-plugin", true)),
       addSbtPlugin(%%("sbt-scoverage", true)),
       addSbtPlugin(%%("sbt-scalajs", true)),
       addSbtPlugin(%%("sbt-header", "3.0.1", true)),
-      addSbtPlugin(%%("sbt-dependencies", true)),
-      addSbtPlugin(%%("sbt-coursier", true)),
-      addSbtPlugin(%%("sbt-microsites", true)),
       addSbtPlugin(%%("tut-plugin", true)),
       addSbtPlugin(%%("sbt-scalafmt", "1.5.1", true)),
       libraryDependencies ++= Seq(
@@ -65,39 +71,18 @@ object ProjectPlugin extends AutoPlugin {
       scalaVersion := scalac.`2.12`,
       crossScalaVersions := Seq(scalac.`2.12`),
       libraryDependencies ++= Seq(
-        "org.scala-lang.modules" %% "scala-xml" % "1.1.1",
-        %%("github4s"),
-        %%("cats-core"),
-        %%("base64"),
-        %%("moultingyaml"),
-        %%("cats-laws")             % Test,
-        %%("scalacheck", "1.13.5")  % Test force(),
-        %%("scalatest")             % Test,
-        %%("scheckToolboxDatetime") % Test,
-        %%("scalamockScalatest")    % Test
-      ),
+        "org.scala-lang.modules" %% "scala-xml" % V.scalaxml,
+        %%("github4s", V.github4s),
+        %%("cats-core", V.cats),
+        %%("base64", V.base64),
+        %%("moultingyaml", V.moultingyaml),
+        %%("cats-laws", V.cats)                          % Test,
+        %%("scalacheck", V.scalacheck)                   % Test force (),
+        %%("scalatest", V.scalatest)                     % Test,
+        %%("scheckToolboxDatetime", V.scalacheckToolbox) % Test,
+        %%("scalamockScalatest", V.scalamock)            % Test
+      )
     )
-
-    // Shade and bundle jawn-parser and intermediate deps (https://github.com/47deg/sbt-org-policies/issues/1173)
-    lazy val jawnShadingSettings: Seq[Def.Setting[_]] = Seq(
-      // intransitive(), so we bundle the bare minimum dependencies to shade the chain of calls from our code to jawn-parser.
-      // Make sure to keep all versions in sync with those brought in transitively by github4s (not always the latest versions).
-      // Also make sure to include our project's compiled code as an unmanaged jar (in build.sbt) to shade calls to github4s.
-      libraryDependencies ++= Seq(
-        %%("github4s"),
-        %%("circe-parser", "0.10.0"),
-        "io.circe" %% "circe-jawn" % "0.10.0",
-        "org.spire-math" %% "jawn-parser" % "0.13.0",
-      ).map(_.intransitive()),
-      assembly / assemblyOption ~= (_.copy(includeScala = false)),
-      // must be careful not to rename any calls to unshaded packages outside our bundled dependencies (ex. io.circe.** would break)
-      assembly / assemblyShadeRules := Seq(ShadeRule.rename(
-        "github4s.**"        -> "org_policies_github4s.@1",
-        "io.circe.parser.**" -> "org_policies_circe_parser.@1",
-        "io.circe.jawn.**"   -> "org_policies_circe_jawn.@1",
-        "jawn.**"            -> "org_policies_jawn_parser.@1"
-      )).map(_.inAll),
-    ) ++ noPublishSettings
   }
 
   override def projectSettings: Seq[Def.Setting[_]] = artifactSettings ++ shellPromptSettings

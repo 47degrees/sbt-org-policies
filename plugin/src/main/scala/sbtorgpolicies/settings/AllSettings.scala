@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 47 Degrees, LLC. <http://www.47deg.com>
+ * Copyright 2017-2019 47 Degrees, LLC. <http://www.47deg.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,10 @@
 
 package sbtorgpolicies.settings
 
-import com.timushev.sbt.updates.UpdatesPlugin.autoImport._
 import com.typesafe.sbt.pgp.PgpKeys
 import com.typesafe.sbt.pgp.PgpKeys._
-import dependencies.DependenciesPlugin
-import dependencies.DependenciesPlugin.autoImport._
 import sbtorgpolicies.runnable.RunnableItemConfigScope
 import sbtorgpolicies.runnable.syntax._
-import microsites.MicrositeKeys._
 import scoverage.ScoverageKeys
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 import sbt.Keys._
@@ -125,7 +121,6 @@ trait AllSettings
   lazy val scalaMetaSettings = Seq(
     addCompilerPlugin(%%("scalameta-paradise") cross CrossVersion.full),
     libraryDependencies += %%("scalameta"),
-    dependencyUpdatesFilter -= moduleFilter(name = "scalameta*"), // we keep scalameta at 1.8.0 until we eventually get rid of it
     scalacOptions += "-Xplugin-require:macroparadise",
     scalacOptions in (Compile, console) ~= (_ filterNot (_ contains "paradise")) // macroparadise plugin doesn't work in repl yet.
   )
@@ -244,29 +239,8 @@ trait AllSettings
   )
 
   /**
-   * Sets the default properties for the sbt-dependencies plugin
-   *
-   * Uses the github settings to set the GitHub owner and repo
-   */
-  val sbtDependenciesSettings: Seq[Setting[_]] =
-    DependenciesPlugin.defaultSettings ++ Seq(
-      depGithubOwnerSetting := orgGithubSetting.value.organization,
-      depGithubRepoSetting := orgGithubSetting.value.project,
-      depGithubTokenSetting := getEnvVar(orgGithubTokenSetting.value)
-    )
-
-  /**
    * Alias helper for the publishMicrosite task when docs module is located in the "docs" sbt module.
    */
   lazy val defaultPublishMicrosite: RunnableItemConfigScope[Unit] = ";project docs;publishMicrosite".asRunnableItem
 
-  /**
-   * Sets the default properties for the sbt-microsites plugin.
-   *
-   */
-  val sbtMicrositesSettings: Seq[Setting[_]] =
-    Seq(
-      micrositeGithubToken := getEnvVar(orgGithubTokenSetting.value),
-      micrositePushSiteWith := GitHub4s
-    )
 }
