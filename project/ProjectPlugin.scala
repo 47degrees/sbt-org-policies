@@ -1,9 +1,7 @@
-import dependencies.DependenciesPlugin.autoImport._
 import sbt.Keys._
 import sbt.Resolver.sonatypeRepo
 import sbt.ScriptedPlugin.autoImport._
 import sbt._
-import sbtassembly.AssemblyPlugin.autoImport._
 import sbtorgpolicies.OrgPoliciesPlugin
 import sbtorgpolicies.OrgPoliciesPlugin.autoImport._
 import sbtorgpolicies.model.scalac
@@ -23,8 +21,9 @@ object ProjectPlugin extends AutoPlugin {
       val cats: String              = "1.6.0"
       val github4s: String          = "0.20.1"
       val moultingyaml: String      = "0.4.0"
+      val scala: String             = "2.12.8"
       val scalacheck: String        = "1.13.5"
-      val scalacheckToolbox: String = "0.2.5"
+      val scalacheckToolbox: String = "0.2.4"
       val scalamock: String         = "3.6.0"
       val scalatest: String         = "3.0.5"
       val scalaxml: String          = "1.1.1"
@@ -77,7 +76,7 @@ object ProjectPlugin extends AutoPlugin {
         %%("base64", V.base64),
         %%("moultingyaml", V.moultingyaml),
         %%("cats-laws", V.cats)                          % Test,
-        %%("scalacheck", V.scalacheck)                   % Test force (),
+        %%("scalacheck", V.scalacheck)                   % Test,
         %%("scalatest", V.scalatest)                     % Test,
         %%("scheckToolboxDatetime", V.scalacheckToolbox) % Test,
         %%("scalamockScalatest", V.scalamock)            % Test
@@ -85,11 +84,12 @@ object ProjectPlugin extends AutoPlugin {
     )
   }
 
+  import autoImport.V
   override def projectSettings: Seq[Def.Setting[_]] = artifactSettings ++ shellPromptSettings
 
   private[this] val artifactSettings = Seq(
-    scalaVersion := scalac.`2.12`,
-    crossScalaVersions := Seq(scalac.`2.12`),
+    scalaVersion := V.scala,
+    crossScalaVersions := Seq(V.scala),
     scalaOrganization := "org.scala-lang",
     startYear := Some(2017),
     orgBadgeListSetting := List(
@@ -97,7 +97,6 @@ object ProjectPlugin extends AutoPlugin {
       MavenCentralBadge.apply,
       LicenseBadge.apply,
       GitHubIssuesBadge.apply
-    ),
-    orgAfterCISuccessTaskListSetting ~= (_ filterNot (_ == depUpdateDependencyIssues.asRunnableItem))
+    )
   )
 }
