@@ -24,7 +24,7 @@ object ProjectPlugin extends AutoPlugin {
       val moultingyaml: String      = "0.4.0"
       val scala: String             = "2.12.8"
       val scalacheck: String        = "1.13.5"
-      val scalacheckToolbox: String = "0.2.5"
+      val scalacheckToolbox: String = "0.2.4"
       val scalamock: String         = "3.6.0"
       val scalatest: String         = "3.0.5"
       val scalaxml: String          = "1.1.1"
@@ -77,7 +77,7 @@ object ProjectPlugin extends AutoPlugin {
         %%("base64", V.base64),
         %%("moultingyaml", V.moultingyaml),
         %%("cats-laws", V.cats)                          % Test,
-        %%("scalacheck", V.scalacheck)                   % Test force (),
+        %%("scalacheck", V.scalacheck)                   % Test,
         %%("scalatest", V.scalatest)                     % Test,
         %%("scheckToolboxDatetime", V.scalacheckToolbox) % Test,
         %%("scalamockScalatest", V.scalamock)            % Test
