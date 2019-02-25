@@ -1,5 +1,18 @@
 # Changelog
 
+## 02/25/2019 - Version 0.11.1
+
+Release changes:
+
+* Upgrades Project, libraries catalog and release 0.10.0 ([#1136](https://github.com/47deg/sbt-org-policies/pull/1136))
+* Fixes the codecov badge ([#1175](https://github.com/47deg/sbt-org-policies/pull/1175))
+* add hammock-circe & hammock-asynchttpclient ([#1176](https://github.com/47deg/sbt-org-policies/pull/1176))
+* Update sbt to 1.2.8 ([#1177](https://github.com/47deg/sbt-org-policies/pull/1177))
+* Update cats to 1.6.0 ([#1178](https://github.com/47deg/sbt-org-policies/pull/1178))
+* Upgrades Plugin ([#1179](https://github.com/47deg/sbt-org-policies/pull/1179))
+* Moves Plugin sources to the project root ([#1181](https://github.com/47deg/sbt-org-policies/pull/1181))
+
+
 ## 11/08/2018 - Version 0.10.0
 
 Release changes:
