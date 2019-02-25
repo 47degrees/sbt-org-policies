@@ -1,8 +1,11 @@
 import sbt.Keys._
 
-lazy val root = (project in file("."))
-  .aggregate(`org-policies-core`, `sbt-org-policies`)
-  .settings(noPublishSettings: _*)
+lazy val `sbt-org-policies` = (project in file("."))
+  .enablePlugins(SbtPlugin)
+  .dependsOn(`org-policies-core`)
+  .aggregate(`org-policies-core`)
+  .settings(name := "sbt-org-policies")
+  .settings(pluginSettings: _*)
 
 lazy val `org-policies-core` = (project in file("core"))
   .enablePlugins(BuildInfoPlugin)
@@ -12,12 +15,6 @@ lazy val `org-policies-core` = (project in file("core"))
     buildInfoKeys := Seq(name, version, scalaVersion, sbtVersion),
     buildInfoPackage := "sbtorgpolicies",
   )
-
-lazy val `sbt-org-policies` = (project in file("plugin"))
-  .enablePlugins(SbtPlugin)
-  .dependsOn(`org-policies-core`)
-  .settings(moduleName := "sbt-org-policies")
-  .settings(pluginSettings: _*)
 
 pgpPassphrase := Some(Option(System.getenv().get("PGP_PASSPHRASE")).getOrElse("").toCharArray)
 pgpPublicRing := file(s"$gpgFolder/pubring.gpg")
