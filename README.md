@@ -1,7 +1,7 @@
 
 [comment]: # (Start Badges)
 
-[![Build Status](https://travis-ci.org/47deg/sbt-org-policies.svg?branch=master)](https://travis-ci.org/47deg/sbt-org-policies) [![Maven Central](https://img.shields.io/badge/maven%20central-0.9.4-green.svg)](https://repo1.maven.org/maven2/com/47deg/sbt-org-policies_2.12_1.0) [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/47deg/sbt-org-policies/master/LICENSE) [![GitHub Issues](https://img.shields.io/github/issues/47deg/sbt-org-policies.svg)](https://github.com/47deg/sbt-org-policies/issues)
+[![Build Status](https://travis-ci.org/47deg/sbt-org-policies.svg?branch=master)](https://travis-ci.org/47deg/sbt-org-policies) [![Maven Central](https://img.shields.io/badge/maven%20central-0.11.1-green.svg)](https://repo1.maven.org/maven2/com/47deg/sbt-org-policies_2.12_1.0) [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/47deg/sbt-org-policies/master/LICENSE) [![GitHub Issues](https://img.shields.io/github/issues/47deg/sbt-org-policies.svg)](https://github.com/47deg/sbt-org-policies/issues)
 
 [comment]: # (End Badges)
 # sbt-org-policies
@@ -14,7 +14,7 @@
 Add the following line to `project/plugins.sbt`:
 
 ```scala
-addSbtPlugin("com.47deg" % "sbt-org-policies" % "0.9.4")
+addSbtPlugin("com.47deg" % "sbt-org-policies" % "0.11.1")
 ```
 
 [comment]: # (End Replace)
@@ -63,6 +63,6 @@ sbt orgCreateFiles
 
 sbt-org-policies is designed and developed by 47 Degrees
 
-Copyright (C) 2017-2018 47 Degrees. <http://47deg.com>
+Copyright (C) 2017-2019 47 Degrees. <http://47deg.com>
 
 [comment]: # (End Copyright)
