@@ -33,7 +33,7 @@ class TemplatesEngine(fileReader: FileReader = FileReader, fileWriter: FileWrite
       .catchNonFatal {
         replacements.foldLeft(content) {
           case (str, (key, replaceable)) =>
-            replacementPattern(key).replaceAllIn(str, replaceable.asString)
+            replacementPattern(key).replaceAllIn(str, escapeGroupRef(replaceable.asString))
         }
       }
       .leftMap(e => IOException(s"Error replacing content", Some(e)))
@@ -73,4 +73,22 @@ class TemplatesEngine(fileReader: FileReader = FileReader, fileWriter: FileWrite
   }
 
   private[this] def replacementPattern(key: String): Regex = s"\\{\\{$key\\}\\}".r
+
+  // The '$' char is interpreted by the `replaceAll` method as a substitution of a group
+  // Since we're not using groups in the regex above, it'll fail. If we found a '$' we want literally that char
+  private[this] def escapeGroupRef(str: String): String = {
+    val first = str.headOption
+      .map {
+        case '$' => "\\$"
+        case s   => s.toString
+      }
+      .getOrElse("")
+
+    val tail = str.sliding(2, 1).map(_.splitAt(1)).map {
+      case (s, "$") if s != "\\" => "\\$"
+      case (_, s)                => s
+    }
+
+    first ++ tail.mkString("")
+  }
 }

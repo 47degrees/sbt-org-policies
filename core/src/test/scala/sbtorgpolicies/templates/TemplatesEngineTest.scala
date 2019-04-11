@@ -70,13 +70,15 @@ class TemplatesEngineTest extends TestOps {
         |<{{organizationHomePage}}>
         |
         |{{contributors}}
+        |{{special}}
       """.stripMargin.replace("\r", "")
 
     val replacements = Map(
       "year"                 -> 2017.asReplaceable,
       "organizationName"     -> "47 Degrees".asReplaceable,
       "organizationHomePage" -> "http://www.47deg.com".asReplaceable,
-      "contributors"         -> List("47 Deg", "Developers").asReplaceable
+      "contributors"         -> List("47 Deg", "Developers").asReplaceable,
+      "special"              -> "special char \\$".asReplaceable
     )
 
     val expectedContent = originalContent
@@ -87,8 +89,11 @@ class TemplatesEngineTest extends TestOps {
         "{{contributors}}",
         """* 47 Deg
           |* Developers""".stripMargin.replace("\r", ""))
+      .replace("{{special}}", "special char $")
 
     val result = templatesEngine.replaceWith(originalContent, replacements)
+
+    result.leftMap(_.printStackTrace())
 
     result.isRight shouldBe true
     result.right.get shouldBe expectedContent
