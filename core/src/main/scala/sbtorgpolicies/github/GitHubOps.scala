@@ -177,8 +177,8 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String], fileRe
       message: String,
       baseDir: File,
       dirToCommit: File,
-      blobConfig: BlobConfig = defaultBlobConfig,
-      commitSha: Option[String] = None): Github4sResponse[RefCommit] = {
+      blobConfig: BlobConfig,
+      commitSha: Option[String]): Github4sResponse[RefCommit] = {
 
     def fetchBaseTreeSha: Github4sResponse[Option[RefCommit]] =
       commitSha map { sha =>
