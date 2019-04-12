@@ -1,5 +1,13 @@
 # Changelog
 
+## 04/12/2019 - Version 0.11.2
+
+Release changes:
+
+* Fixes a bug when the replaceable string contains a dollar sign ([#1182](https://github.com/47deg/sbt-org-policies/pull/1182))
+* Release 0.11.2 ([#1183](https://github.com/47deg/sbt-org-policies/pull/1183))
+
+
 ## 02/25/2019 - Version 0.11.1
 
 Release changes:
