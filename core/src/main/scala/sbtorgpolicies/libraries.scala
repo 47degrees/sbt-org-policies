@@ -86,7 +86,7 @@ object libraries {
     "play"                     -> "2.6.20",
     "postgresql"               -> "42.2.5",
     "prometheus"               -> "0.5.0",
-    "pureconfig"               -> "0.10.1",
+    "pureconfig"               -> "0.10.2",
     "rediscala"                -> "1.8.0",
     "refined"                  -> "0.9.3",
     "roshttp"                  -> "2.1.0",
