@@ -118,6 +118,7 @@ trait DefaultSettings extends AllSettings {
         orgBadgeListSetting.value
       ),
       ScalafmtFileType,
+      CodeOfConductFileType,
       TravisFileType(crossScalaVersions.value, orgScriptCICommandKey, orgAfterCISuccessCommandKey)
     ),
     orgTemplatesDirectorySetting := (resourceDirectory in Compile).value / "org" / "templates",

@@ -10,6 +10,8 @@ $ exists CHANGELOG.md
 
 $ exists CONTRIBUTING.md
 
+$ exists CODE_OF_CONDUCT.md
+
 $ exists LICENSE
 
 $ exists NOTICE.md
