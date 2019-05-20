@@ -34,6 +34,7 @@ package object templates {
 
   val versionFilePath: String  = "version.sbt"
   val scalafmtFilePath: String = ".scalafmt.conf"
+  val cocFilePath: String      = "CODE_OF_CONDUCT.md"
   val travisFilePath: String   = ".travis.yml"
 
   type Replacements = Map[String, Replaceable]
@@ -242,6 +243,18 @@ package object templates {
       finalVersionOnly = false,
       templatePath = "templates/scalafmt.conf.template",
       outputPath = scalafmtFilePath,
+      replacements = Map.empty
+    )
+  }
+
+  def CodeOfConductFileType: FileType = {
+
+    FileType(
+      mandatory = true,
+      overWritable = false,
+      finalVersionOnly = false,
+      templatePath = "templates/CODE_OF_CONDUCT.md.template",
+      outputPath = cocFilePath,
       replacements = Map.empty
     )
   }
