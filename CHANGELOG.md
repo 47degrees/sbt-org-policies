@@ -1,5 +1,12 @@
 # Changelog
 
+## 05/20/2019 - Version 0.11.3
+
+Release changes:
+
+* Switch to Scala CoC ([#1188](https://github.com/47deg/sbt-org-policies/pull/1188))
+
+
 ## 04/12/2019 - Version 0.11.2
 
 Release changes:
