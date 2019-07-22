@@ -71,16 +71,24 @@ object model {
     "-Xplugin-require:macroparadise")
 
   /** Scalac strict compilation options.*/
-  lazy val scalacStrictOptions = Seq(
-    "-Yno-adapted-args",
-    "-Ywarn-dead-code",
-    "-Ywarn-numeric-widen",
-    "-Ywarn-value-discard",
-    "-Xfuture"
-  )
+  def scalacStrictOptions(scalaVersion: String) = {
+    val noAdaptedArgs = if (scalaVersion >= "2.13.0") {
+      Seq()
+    } else {
+      Seq("-Yno-adapted-args")
+    }
+
+    Seq(
+      "-Ywarn-dead-code",
+      "-Ywarn-numeric-widen",
+      "-Ywarn-value-discard",
+      "-Xfuture"
+    ) ++ noAdaptedArgs
+  }
 
   /** Combines all scalac options.*/
-  lazy val scalacAllOptions: Seq[String] = scalacCommonOptions ++ scalacLanguageOptions ++ scalacStrictOptions
+  def scalacAllOptions(scalaVersion: String): Seq[String] =
+    scalacCommonOptions ++ scalacLanguageOptions ++ scalacStrictOptions(scalaVersion)
 
   /** Github settings and related settings usually found in a Github README.*/
   case class GitHubSettings(
