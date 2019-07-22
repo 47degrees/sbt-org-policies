@@ -153,7 +153,7 @@ trait AllSettings
     scalaOrganization := "org.scala-lang",
     scalaVersion := scalac.`2.12`,
     crossScalaVersions := scalac.crossScalaVersions,
-    scalacOptions ++= scalacAllOptions
+    scalacOptions ++= scalacAllOptions(scalaVersion.value)
   )
 
   implicit val settingAppender: sbt.Append.Value[Seq[(String, java.net.URL)], License] =
