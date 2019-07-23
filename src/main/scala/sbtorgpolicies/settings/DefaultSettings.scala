@@ -41,7 +41,6 @@ trait DefaultSettings extends AllSettings {
   lazy val orgDefaultSettings: Seq[Setting[_]] =
     orgCommonDefaultSettings ++
       sharedCommonSettings ++
-      sharedCommonDependencies ++
       sharedReleaseProcess ++
       credentialSettings ++
       sharedPublishSettings ++
