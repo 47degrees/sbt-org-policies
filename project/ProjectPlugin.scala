@@ -18,10 +18,11 @@ object ProjectPlugin extends AutoPlugin {
 
     lazy val V = new {
       val base64: String            = "0.2.4"
-      val cats: String              = "1.6.0"
+      val cats: String              = "1.6.1"
       val github4s: String          = "0.20.1"
       val moultingyaml: String      = "0.4.0"
-      val scala: String             = "2.12.8"
+      val scala212: String          = "2.12.8"
+      val scala213: String          = "2.13.0"
       val scalacheck: String        = "1.13.5"
       val scalacheckToolbox: String = "0.2.4"
       val scalamock: String         = "3.6.0"
@@ -67,8 +68,8 @@ object ProjectPlugin extends AutoPlugin {
 
     lazy val coreSettings: Seq[Def.Setting[_]] = commonSettings ++ Seq(
       resolvers += Resolver.typesafeIvyRepo("releases"),
-      scalaVersion := scalac.`2.12`,
-      crossScalaVersions := Seq(scalac.`2.12`),
+      scalaVersion := V.scala212,
+      crossScalaVersions := Seq(V.scala212),
       libraryDependencies ++= Seq(
         "org.scala-lang.modules" %% "scala-xml" % V.scalaxml,
         %%("github4s", V.github4s),
@@ -88,8 +89,8 @@ object ProjectPlugin extends AutoPlugin {
   override def projectSettings: Seq[Def.Setting[_]] = artifactSettings ++ shellPromptSettings
 
   private[this] val artifactSettings = Seq(
-    scalaVersion := V.scala,
-    crossScalaVersions := Seq(V.scala),
+    scalaVersion := V.scala212,
+    crossScalaVersions := Seq(V.scala212),
     scalaOrganization := "org.scala-lang",
     startYear := Some(2017),
     orgBadgeListSetting := List(
