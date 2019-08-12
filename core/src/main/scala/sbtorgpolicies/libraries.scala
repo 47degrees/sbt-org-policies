@@ -99,7 +99,7 @@ object libraries {
     "scalaj"                   -> "2.4.1",
     "scalameta"                -> "1.8.0", // we keep scalameta at 1.8.0 until we eventually get rid of it
     "scalameta-paradise"       -> "3.0.0-M11",
-    "scalamock"                -> "3.6.0",
+    "scalamock"                -> "4.3.0",
     "scalatags"                -> "0.6.7",
     "scalatest"                -> "3.0.5",
     "scalaz"                   -> "7.2.27",
@@ -332,8 +332,7 @@ object libraries {
     "scalameta"                        -> (("org.scalameta", "scalameta", v("scalameta"))),
     "scalameta-contrib"                -> (("org.scalameta", "contrib", v("scalameta"))),
     "scalameta-paradise"               -> (("org.scalameta", "paradise", v("scalameta-paradise"))),
-    "scalamockScalatest"               -> (("org.scalamock", "scalamock-scalatest-support", v("scalamock"))),
-    "scalamockSpecs2"                  -> (("org.scalamock", "scalamock-specs2-support", v("scalamock"))),
+    "scalamock"                        -> (("org.scalamock", "scalamock", v("scalamock"))),
     "scalatags"                        -> (("com.lihaoyi", "scalatags", v("scalatags"))),
     "scalatest"                        -> (("org.scalatest", "scalatest", v("scalatest"))),
     "scalaz-concurrent"                -> (("org.scalaz", "scalaz-concurrent", v("scalaz"))),
