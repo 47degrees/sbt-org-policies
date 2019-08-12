@@ -4,7 +4,7 @@ name := "sbt-org-policies"
 
 version := "1.0"
 
-scalaVersion := sbtorgpolicies.model.scalac.`2.12`
+scalaVersion := sbtorgpolicies.model.scalac.`2.13`
 
 orgGithubTokenSetting := "GITHUB_TOKEN_REPO"
 
