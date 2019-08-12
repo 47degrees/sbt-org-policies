@@ -50,4 +50,3 @@ after_success:
       fi
     fi
   - sbt ^^$SBT_VERSION publishLocal
-  - cd autocheck && sbt ^^$SBT_VERSION -Dplugin.version=$(cat ../version.sbt | sed 's/.*"\(.*\)".*/\1/') checkDependencies
