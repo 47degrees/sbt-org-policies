@@ -2,7 +2,7 @@
 
 > orgCreateFiles
 
-$ exists target/scala-2.12/resource_managed/org-policies/templates
+$ exists target/scala-2.13/resource_managed/org-policies/templates
 
 $ exists AUTHORS.md
 
