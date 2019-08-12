@@ -45,7 +45,7 @@ object ProjectPlugin extends AutoPlugin {
       addSbtPlugin(%%("sbt-sonatype", true)),
       addSbtPlugin(%%("sbt-pgp", true)),
       addSbtPlugin(%%("sbt-jmh", true)),
-      addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.6.0"),
+      addSbtPlugin(%%("sbt-scoverage", true)),
       addSbtPlugin(%%("sbt-scalajs", true)),
       addSbtPlugin(%%("sbt-header", "3.0.1", true)),
       addSbtPlugin(%%("tut-plugin", true)),
@@ -80,7 +80,7 @@ object ProjectPlugin extends AutoPlugin {
         %%("scalacheck", V.scalacheck)                   % Test,
         %%("scalatest", V.scalatest)                     % Test,
         %%("scheckToolboxDatetime", V.scalacheckToolbox) % Test,
-        "org.scalamock" %% "scalamock" % V.scalamock     % Test
+        %%("scalamock", V.scalamock)                     % Test
       )
     )
   }
