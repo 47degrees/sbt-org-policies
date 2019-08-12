@@ -2,7 +2,7 @@
 
 > orgCreateFiles
 
-$ exists target/scala-2.12/resource_managed/org-policies/templates
+$ exists target/scala-2.13/resource_managed/org-policies/templates
 
 $ exists AUTHORS.md
 
@@ -32,7 +32,7 @@ $ exists .travis.yml
 
 > testCheckSettings
 
-> set crossScalaVersions:=Seq(sbtorgpolicies.model.scalac.`2.10`,sbtorgpolicies.model.scalac.`2.11`,sbtorgpolicies.model.scalac.`2.12`)
+> set crossScalaVersions:=Seq(sbtorgpolicies.model.scalac.`2.11`,sbtorgpolicies.model.scalac.`2.12`,sbtorgpolicies.model.scalac.`2.13`)
 
 > testCheckSettings
 
@@ -40,7 +40,7 @@ $ exists .travis.yml
 
 > testCheckSettings
 
-> set scalaVersion:=sbtorgpolicies.model.scalac.`2.12`
+> set scalaVersion:=sbtorgpolicies.model.scalac.`2.13`
 
 > set scoverage.ScoverageKeys.coverageMinimum:=80
 
