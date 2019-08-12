@@ -131,7 +131,7 @@ object libraries {
     "sbt-release"           -> "1.0.10",
     "sbt-scalafmt"          -> "1.5.1",
     "sbt-scalajs"           -> "0.6.26",
-    "sbt-scoverage"         -> "1.6.0-M3",
+    "sbt-scoverage"         -> "1.6.0",
     "sbt-site"              -> "1.3.2",
     "sbt-sonatype"          -> "2.3",
     "sbt-unidoc"            -> "0.4.2",

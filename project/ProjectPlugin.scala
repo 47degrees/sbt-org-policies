@@ -45,7 +45,7 @@ object ProjectPlugin extends AutoPlugin {
       addSbtPlugin(%%("sbt-sonatype", true)),
       addSbtPlugin(%%("sbt-pgp", true)),
       addSbtPlugin(%%("sbt-jmh", true)),
-      addSbtPlugin(%%("sbt-scoverage", true)),
+      addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.6.0"),
       addSbtPlugin(%%("sbt-scalajs", true)),
       addSbtPlugin(%%("sbt-header", "3.0.1", true)),
       addSbtPlugin(%%("tut-plugin", true)),
