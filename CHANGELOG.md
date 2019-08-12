@@ -1,5 +1,13 @@
 # Changelog
 
+## 08/12/2019 - Version 0.12.0-M2
+
+Release changes:
+
+* Removes autocheck module ([#1192](https://github.com/47deg/sbt-org-policies/pull/1192))
+* Bumps up circular dep ([#1193](https://github.com/47deg/sbt-org-policies/pull/1193))
+
+
 ## 08/12/2019 - Version 0.12.0-M1
 
 Release changes:
