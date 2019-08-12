@@ -80,7 +80,7 @@ object ProjectPlugin extends AutoPlugin {
         %%("scalacheck", V.scalacheck)                   % Test,
         %%("scalatest", V.scalatest)                     % Test,
         %%("scheckToolboxDatetime", V.scalacheckToolbox) % Test,
-        %%("scalamock", V.scalamock)                     % Test
+        "org.scalamock" %% "scalamock" % V.scalamock     % Test
       )
     )
   }
