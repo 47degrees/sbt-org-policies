@@ -1,5 +1,16 @@
 # Changelog
 
+## 08/12/2019 - Version 0.12.0-M1
+
+Release changes:
+
+* Update kind-projector plugin ([#1189](https://github.com/47deg/sbt-org-policies/pull/1189))
+* Update pureconfig to 0.10.2 ([#1185](https://github.com/47deg/sbt-org-policies/pull/1185))
+* Update github4s to 0.20.1 ([#1186](https://github.com/47deg/sbt-org-policies/pull/1186))
+* Don't set -Yno-adapted-args in Scala 2.13 ([#1190](https://github.com/47deg/sbt-org-policies/pull/1190))
+* Upgrades build ([#1191](https://github.com/47deg/sbt-org-policies/pull/1191))
+
+
 ## 05/20/2019 - Version 0.11.3
 
 Release changes:
