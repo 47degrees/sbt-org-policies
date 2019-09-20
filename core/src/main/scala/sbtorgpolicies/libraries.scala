@@ -99,7 +99,7 @@ object libraries {
     "scalaj"                   -> "2.4.1",
     "scalameta"                -> "1.8.0", // we keep scalameta at 1.8.0 until we eventually get rid of it
     "scalameta-paradise"       -> "3.0.0-M11",
-    "scalamock"                -> "4.3.0",
+    "scalamock"                -> "4.4.0",
     "scalatags"                -> "0.6.7",
     "scalatest"                -> "3.0.5",
     "scalaz"                   -> "7.2.27",
