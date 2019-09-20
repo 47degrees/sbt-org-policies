@@ -127,7 +127,7 @@ object libraries {
     "sbt-git"               -> "1.0.0",
     "sbt-header"            -> "5.0.0",
     "sbt-pgp"               -> "1.1.2",
-    "sbt-jmh"               -> "0.3.4",
+    "sbt-jmh"               -> "0.3.7",
     "sbt-release"           -> "1.0.10",
     "sbt-scalafmt"          -> "1.5.1",
     "sbt-scalajs"           -> "0.6.26",
