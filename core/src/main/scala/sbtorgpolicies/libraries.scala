@@ -137,7 +137,7 @@ object libraries {
     "sbt-unidoc"            -> "0.4.2",
     "sbt-wartremover"       -> "2.2.1",
     "scalastyle-sbt-plugin" -> "1.0.0",
-    "tut-plugin"            -> "0.6.10"
+    "tut-plugin"            -> "0.6.12"
   )
 
   val v: Map[String, String] = v47 ++ vOthers ++ vPlugins47 ++ vPluginsOthers
