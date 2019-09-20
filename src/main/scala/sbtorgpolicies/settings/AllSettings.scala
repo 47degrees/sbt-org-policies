@@ -50,11 +50,7 @@ trait AllSettings
    * Adds Sonatype release repository and "withCachedResolution" to the update options
    */
   lazy val sharedCommonSettings = Seq(
-    resolvers ++= Seq(
-      Resolver.sonatypeRepo("releases"),
-      Resolver.typesafeIvyRepo("releases"),
-      Resolver.bintrayRepo("beyondthelines", "maven")
-    ),
+    resolvers ++= Seq(Resolver.sonatypeRepo("releases")),
     updateOptions := updateOptions.value.withCachedResolution(true)
   )
 
