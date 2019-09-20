@@ -77,7 +77,7 @@ object libraries {
     "monix"                    -> "3.0.0-M3",
     "monocle"                  -> "1.5.0",
     "mockito"                  -> "2.23.4",
-    "moultingyaml"             -> "0.4.0",
+    "moultingyaml"             -> "0.4.1",
     "netty-tcnative"           -> "2.0.12.Final",
     "newrelic"                 -> "4.8.0",
     "paradise"                 -> "2.1.1",

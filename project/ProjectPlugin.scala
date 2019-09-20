@@ -20,7 +20,7 @@ object ProjectPlugin extends AutoPlugin {
       val base64: String            = "0.2.4"
       val cats: String              = "1.6.1"
       val github4s: String          = "0.20.1"
-      val moultingyaml: String      = "0.4.0"
+      val moultingyaml: String      = "0.4.1"
       val scala212: String          = "2.12.9"
       val scala213: String          = "2.13.0"
       val scalacheck: String        = "1.13.5"
