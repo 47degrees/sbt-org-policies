@@ -133,7 +133,7 @@ object libraries {
     "sbt-scalajs"           -> "0.6.26",
     "sbt-scoverage"         -> "1.6.0",
     "sbt-site"              -> "1.3.2",
-    "sbt-sonatype"          -> "2.3",
+    "sbt-sonatype"          -> "2.6",
     "sbt-unidoc"            -> "0.4.2",
     "sbt-wartremover"       -> "2.2.1",
     "scalastyle-sbt-plugin" -> "1.0.0",
