@@ -40,7 +40,7 @@ object libraries {
     "avro"                     -> "1.8.2",
     "avro4s"                   -> "2.0.3",
     "avrohugger"               -> "1.0.0-RC14",
-    "base64"                   -> "0.2.4",
+    "base64"                   -> "0.2.9",
     "cassandra-driver"         -> "3.6.0",
     "catalysts"                -> "0.8",
     "catbird"                  -> "18.10.0",
