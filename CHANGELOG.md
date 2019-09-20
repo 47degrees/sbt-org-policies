@@ -1,5 +1,12 @@
 # Changelog
 
+## 09/20/2019 - Version 0.12.0-M3
+
+Release changes:
+
+* Fix Multiple resolvers warning ([#1194](https://github.com/47deg/sbt-org-policies/pull/1194))
+
+
 ## 08/12/2019 - Version 0.12.0-M2
 
 Release changes:
