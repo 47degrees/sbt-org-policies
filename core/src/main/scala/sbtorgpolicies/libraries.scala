@@ -130,7 +130,7 @@ object libraries {
     "sbt-jmh"               -> "0.3.7",
     "sbt-release"           -> "1.0.10",
     "sbt-scalafmt"          -> "1.5.1",
-    "sbt-scalajs"           -> "0.6.26",
+    "sbt-scalajs"           -> "0.6.29",
     "sbt-scoverage"         -> "1.6.0",
     "sbt-site"              -> "1.3.2",
     "sbt-sonatype"          -> "2.6",
