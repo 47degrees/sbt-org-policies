@@ -77,7 +77,7 @@ object libraries {
     "monix"                    -> "3.0.0-M3",
     "monocle"                  -> "1.5.0",
     "mockito"                  -> "2.23.4",
-    "moultingyaml"             -> "0.4.0",
+    "moultingyaml"             -> "0.4.1",
     "netty-tcnative"           -> "2.0.12.Final",
     "newrelic"                 -> "4.8.0",
     "paradise"                 -> "2.1.1",
@@ -101,7 +101,7 @@ object libraries {
     "scalameta-paradise"       -> "3.0.0-M11",
     "scalamock"                -> "4.3.0",
     "scalatags"                -> "0.6.7",
-    "scalatest"                -> "3.0.5",
+    "scalatest"                -> "3.0.8",
     "scalaz"                   -> "7.2.27",
     "scalazspecs2"             -> "0.5.2",
     "scanamo"                  -> "0.9.5",
@@ -127,17 +127,17 @@ object libraries {
     "sbt-git"               -> "1.0.0",
     "sbt-header"            -> "5.0.0",
     "sbt-pgp"               -> "1.1.2",
-    "sbt-jmh"               -> "0.3.4",
-    "sbt-release"           -> "1.0.11",
+    "sbt-jmh"               -> "0.3.7",
+    "sbt-release"           -> "1.0.10",
     "sbt-scalafmt"          -> "1.5.1",
-    "sbt-scalajs"           -> "0.6.26",
+    "sbt-scalajs"           -> "0.6.29",
     "sbt-scoverage"         -> "1.6.0",
     "sbt-site"              -> "1.3.2",
-    "sbt-sonatype"          -> "2.3",
+    "sbt-sonatype"          -> "2.6",
     "sbt-unidoc"            -> "0.4.2",
     "sbt-wartremover"       -> "2.2.1",
     "scalastyle-sbt-plugin" -> "1.0.0",
-    "tut-plugin"            -> "0.6.10"
+    "tut-plugin"            -> "0.6.12"
   )
 
   val v: Map[String, String] = v47 ++ vOthers ++ vPlugins47 ++ vPluginsOthers
