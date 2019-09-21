@@ -18,16 +18,16 @@ object ProjectPlugin extends AutoPlugin {
 
     lazy val V = new {
       val base64: String            = "0.2.4"
-      val cats: String              = "1.6.1"
+      val cats: String              = "2.0.0"
       val github4s: String          = "0.20.1"
-      val moultingyaml: String      = "0.4.0"
+      val moultingyaml: String      = "0.4.1"
       val scala212: String          = "2.12.9"
       val scala213: String          = "2.13.0"
       val scalacheck: String        = "1.13.5"
       val scalacheckToolbox: String = "0.2.4"
       val scalamock: String         = "4.3.0"
-      val scalatest: String         = "3.0.5"
-      val scalaxml: String          = "1.2.0"
+      val scalatest: String         = "3.0.8"
+      val scalaxml: String          = "1.1.1"
     }
 
     lazy val commonSettings: Seq[Def.Setting[_]] = Seq(
@@ -47,7 +47,7 @@ object ProjectPlugin extends AutoPlugin {
       addSbtPlugin(%%("sbt-jmh", true)),
       addSbtPlugin(%%("sbt-scoverage", true)),
       addSbtPlugin(%%("sbt-scalajs", true)),
-      addSbtPlugin(%%("sbt-header", "3.0.1", true)),
+      addSbtPlugin(%%("sbt-header", "3.0.2", true)),
       addSbtPlugin(%%("tut-plugin", true)),
       addSbtPlugin(%%("sbt-scalafmt", "1.5.1", true)),
       libraryDependencies ++= Seq(
