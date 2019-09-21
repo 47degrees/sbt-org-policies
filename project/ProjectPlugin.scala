@@ -27,7 +27,7 @@ object ProjectPlugin extends AutoPlugin {
       val scalacheckToolbox: String = "0.2.4"
       val scalamock: String         = "4.3.0"
       val scalatest: String         = "3.0.8"
-      val scalaxml: String          = "1.1.1"
+      val scalaxml: String          = "1.2.0"
     }
 
     lazy val commonSettings: Seq[Def.Setting[_]] = Seq(
