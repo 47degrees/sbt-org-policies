@@ -23,7 +23,7 @@ object ProjectPlugin extends AutoPlugin {
       val moultingyaml: String      = "0.4.1"
       val scala212: String          = "2.12.9"
       val scala213: String          = "2.13.0"
-      val scalacheck: String        = "1.13.5"
+      val scalacheck: String        = "1.14.1"
       val scalacheckToolbox: String = "0.2.6"
       val scalamock: String         = "4.4.0"
       val scalatest: String         = "3.0.8"
