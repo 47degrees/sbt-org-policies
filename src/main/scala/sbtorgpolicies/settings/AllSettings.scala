@@ -149,7 +149,8 @@ trait AllSettings
     scalaOrganization := "org.scala-lang",
     scalaVersion := scalac.`2.12`,
     crossScalaVersions := scalac.crossScalaVersions,
-    scalacOptions ++= scalacAllOptions(scalaVersion.value)
+    scalacOptions ++= scalacAllOptions(scalaVersion.value),
+    Compile / console / scalacOptions -= "-Xlint"
   )
 
   implicit val settingAppender: sbt.Append.Value[Seq[(String, java.net.URL)], License] =
