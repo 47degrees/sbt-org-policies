@@ -28,6 +28,7 @@ import sbtrelease.ReleasePlugin.autoImport.ReleaseKeys._
 import sbtrelease.ReleasePlugin.autoImport._
 import sbtrelease.ReleaseStateTransformations._
 import sbtrelease.{Utilities, Vcs}
+import github4s.free.domain.Ref
 
 trait release {
   import Utilities._
@@ -63,19 +64,20 @@ trait release {
   lazy val orgTagRelease: ReleaseStep = { st: State =>
     val ghOps: GitHubOps = st.extract.get(orgGithubOpsSetting)
 
-    def findTag(tag: String): Option[String] = {
-      if (ghOps.fetchReference(s"tags/$tag").isRight) {
+    def checkTagDoesNotExist(tag: String): Unit = {
+      // This returns a list of tags that start with the given tag name.
+      // We have to filter to get only the exact tag we are looking for.
+      val refs = ghOps.fetchReference(s"tags/$tag")
+      if (refs.fold[List[Ref]](_ => Nil, _.filter(_.ref.endsWith(tag))).nonEmpty) {
         sys.error("Tag [%s] already exists. Aborting release!" format tag)
-      } else {
-        Some(tag)
       }
     }
 
     val (tagState, tag)            = st.extract.runTask(releaseTagName, st)
     val (commentState, tagComment) = st.extract.runTask(releaseTagComment, tagState)
-    val tagToUse                   = findTag(tag)
-    val branch                     = st.extract.get(orgCommitBranchSetting)
-    val file                       = st.extract.get(releaseVersionFile)
+    checkTagDoesNotExist(tag)
+    val branch = st.extract.get(orgCommitBranchSetting)
+    val file   = st.extract.get(releaseVersionFile)
 
     val releaseDescription = ghOps.latestPullRequests(branch, file.getName, orgVersionCommitMessage) match {
       case Right(Nil) => s"* $tagComment"
@@ -89,15 +91,14 @@ trait release {
         sys.error("Tag release process couldn't fetch the pull request list from Github. Aborting release!")
     }
 
-    tagToUse.foreach(ghOps.createTagRelease(branch, _, tagComment, releaseDescription))
+    ghOps.createTagRelease(branch, tag, tagComment, releaseDescription)
 
-    tagToUse map (t =>
-      reapply(
-        Seq[Setting[_]](
-          releaseTagComment := releaseDescription,
-          packageOptions += ManifestAttributes("Vcs-Release-Tag" -> t)
-        ),
-        commentState)) getOrElse commentState
+    reapply(
+      Seq[Setting[_]](
+        releaseTagComment := releaseDescription,
+        packageOptions += ManifestAttributes("Vcs-Release-Tag" -> tag)
+      ),
+      commentState)
   }
 
   lazy val orgUpdateChangeLog: ReleaseStep = { st: State =>
