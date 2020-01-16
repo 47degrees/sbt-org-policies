@@ -18,7 +18,7 @@ package sbtorgpolicies
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FunSuite, Matchers}
-import org.scalatest.prop.Checkers
+import org.scalatestplus.scalacheck.Checkers
 
 import scala.language.implicitConversions
 
