@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 47 Degrees, LLC. <http://www.47deg.com>
+ * Copyright 2017-2020 47 Degrees, LLC. <http://www.47deg.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -133,7 +133,7 @@ object libraries {
     "sbt-scalajs"           -> "0.6.29",
     "sbt-scoverage"         -> "1.6.1",
     "sbt-site"              -> "1.3.2",
-    "sbt-sonatype"          -> "2.6",
+    "sbt-sonatype"          -> "3.8.1",
     "sbt-unidoc"            -> "0.4.2",
     "sbt-wartremover"       -> "2.2.1",
     "scalastyle-sbt-plugin" -> "1.0.0",
