@@ -1,5 +1,37 @@
 # Changelog
 
+## 01/16/2020 - Version 0.12.0.1
+
+Release changes:
+
+* Update scalatest to 3.0.8 ([#1207](https://github.com/47deg/sbt-org-policies/pull/1207))
+* Update sbt-scalajs to 0.6.29 ([#1202](https://github.com/47deg/sbt-org-policies/pull/1202))
+* Update moultingyaml to 0.4.1 ([#1201](https://github.com/47deg/sbt-org-policies/pull/1201))
+* Update sbt-header to 3.0.2 ([#1200](https://github.com/47deg/sbt-org-policies/pull/1200))
+* Update sbt-org-policies to 0.12.0-M3 ([#1195](https://github.com/47deg/sbt-org-policies/pull/1195))
+* Update sbt-release to 1.0.11 ([#1197](https://github.com/47deg/sbt-org-policies/pull/1197))
+* Update sbt-pgp to 2.0.0 ([#1199](https://github.com/47deg/sbt-org-policies/pull/1199))
+* Update base64 to 0.2.9 ([#1198](https://github.com/47deg/sbt-org-policies/pull/1198))
+* Update scala-xml to 1.2.0 ([#1203](https://github.com/47deg/sbt-org-policies/pull/1203))
+* Update scalamock to 4.4.0 ([#1206](https://github.com/47deg/sbt-org-policies/pull/1206))
+* Update scalacheck-toolbox-datetime to 0.2.6 ([#1196](https://github.com/47deg/sbt-org-policies/pull/1196))
+* Update scalacheck-toolbox-datetime to 0.3.1 ([#1213](https://github.com/47deg/sbt-org-policies/pull/1213))
+* Update scalacheck to 1.14.1 ([#1205](https://github.com/47deg/sbt-org-policies/pull/1205))
+* Update scalacheck to 1.14.2 ([#1214](https://github.com/47deg/sbt-org-policies/pull/1214))
+* Update sbt to 1.3.3 ([#1215](https://github.com/47deg/sbt-org-policies/pull/1215))
+* Update sbt-release to 1.0.12 ([#1216](https://github.com/47deg/sbt-org-policies/pull/1216))
+* Update sbt to 1.3.4 ([#1218](https://github.com/47deg/sbt-org-policies/pull/1218))
+* Update sbt-scoverage to 1.6.1 ([#1219](https://github.com/47deg/sbt-org-policies/pull/1219))
+* Update scalacheck to 1.14.3 ([#1223](https://github.com/47deg/sbt-org-policies/pull/1223))
+* Update sbt to 1.3.6 ([#1227](https://github.com/47deg/sbt-org-policies/pull/1227))
+* Turn off annoying "unused import" warnings in console ([#1228](https://github.com/47deg/sbt-org-policies/pull/1228))
+* Update sbt to 1.3.7 ([#1230](https://github.com/47deg/sbt-org-policies/pull/1230))
+* Use sbt-sonatype's bundle release feature for faster releases ([#1231](https://github.com/47deg/sbt-org-policies/pull/1231))
+* Release 0.12.0 ([#1232](https://github.com/47deg/sbt-org-policies/pull/1232))
+* Fix the does-this-tag-already-exist logic ([#1233](https://github.com/47deg/sbt-org-policies/pull/1233))
+* Release v0.12.0.1 ([#1234](https://github.com/47deg/sbt-org-policies/pull/1234))
+
+
 ## 09/20/2019 - Version 0.12.0-M3
 
 Release changes:
