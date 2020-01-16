@@ -21,8 +21,8 @@ object ProjectPlugin extends AutoPlugin {
       val cats: String              = "2.0.0"
       val github4s: String          = "0.20.1"
       val moultingyaml: String      = "0.4.1"
-      val scala212: String          = "2.12.9"
-      val scala213: String          = "2.13.0"
+      val scala212: String          = "2.12.10"
+      val scala213: String          = "2.13.1"
       val scalacheck: String        = "1.14.3"
       val scalacheckToolbox: String = "0.3.1"
       val scalamock: String         = "4.4.0"
@@ -42,7 +42,8 @@ object ProjectPlugin extends AutoPlugin {
       addSbtPlugin(%%("sbt-git", true)),
       addSbtPlugin(%%("sbt-unidoc", true)),
       addSbtPlugin(%%("sbt-release", true)),
-      addSbtPlugin(%%("sbt-sonatype", true)),
+      // TODO this version number can be removed when we upgrade the sbt-org-policies circular dependency
+      addSbtPlugin(%%("sbt-sonatype", "3.8.1", true)),
       addSbtPlugin(%%("sbt-pgp", true)),
       addSbtPlugin(%%("sbt-jmh", true)),
       addSbtPlugin(%%("sbt-scoverage", true)),
