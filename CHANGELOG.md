@@ -1,5 +1,12 @@
 # Changelog
 
+## 01/17/2020 - Version 0.12.1
+
+Release changes:
+
+* Release v0.12.1 ([#1235](https://github.com/47deg/sbt-org-policies/pull/1235))
+
+
 ## 01/16/2020 - Version 0.12.0.1
 
 Release changes:
