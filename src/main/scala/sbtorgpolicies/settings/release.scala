@@ -79,26 +79,27 @@ trait release {
     val branch = st.extract.get(orgCommitBranchSetting)
     val file   = st.extract.get(releaseVersionFile)
 
-    val releaseDescription = ghOps.latestPullRequests(branch, file.getName, orgVersionCommitMessage) match {
-      case Right(Nil) => s"* $tagComment"
-      case Right(list) =>
-        list map { pr =>
-          val prTitle = pr.title.replace(s" (#${pr.number})", "")
-          s"* $prTitle ([#${pr.number}](${pr.html_url}))"
-        } mkString "\n"
-      case Left(e) =>
-        e.printStackTrace()
-        sys.error("Tag release process couldn't fetch the pull request list from Github. Aborting release!")
-    }
+    val releaseDescription =
+      ghOps.latestPullRequests(branch, file.getName, orgVersionCommitMessage) match {
+        case Right(Nil) => s"* $tagComment"
+        case Right(list) =>
+          list map { pr =>
+            val prTitle = pr.title.replace(s" (#${pr.number})", "")
+            s"* $prTitle ([#${pr.number}](${pr.html_url}))"
+          } mkString "\n"
+        case Left(e) =>
+          e.printStackTrace()
+          sys.error(
+            "Tag release process couldn't fetch the pull request list from Github. Aborting release!")
+      }
 
     ghOps.createTagRelease(branch, tag, tagComment, releaseDescription)
 
-    reapply(
-      Seq[Setting[_]](
-        releaseTagComment := releaseDescription,
-        packageOptions += ManifestAttributes("Vcs-Release-Tag" -> tag)
-      ),
-      commentState)
+    reapply(Seq[Setting[_]](
+              releaseTagComment := releaseDescription,
+              packageOptions += ManifestAttributes("Vcs-Release-Tag" -> tag)
+            ),
+            commentState)
   }
 
   lazy val orgUpdateChangeLog: ReleaseStep = { st: State =>
@@ -114,17 +115,17 @@ trait release {
 
     val vs = st
       .get(versions)
-      .getOrElse(sys.error("No versions are set! Was this release part executed before inquireVersions?"))
+      .getOrElse(
+        sys.error("No versions are set! Was this release part executed before inquireVersions?"))
 
     (for {
       _ <- fh.createResources(orgTemplatesDir, orgTargetDir)
       fileType = ChangelogFileType(DateTime.now(DateTimeZone.UTC), vs._1, comment)
       _ <- fh.checkOrgFiles(baseDir, orgTargetDir, List(fileType))
-      maybeRef <- ghOps.commitFiles(
-        baseDir = baseDir,
-        branch = branch,
-        message = s"$commitMessage [ci skip]",
-        files = List(new File(baseDir, fileType.outputPath)))
+      maybeRef <- ghOps.commitFiles(baseDir = baseDir,
+                                    branch = branch,
+                                    message = s"$commitMessage [ci skip]",
+                                    files = List(new File(baseDir, fileType.outputPath)))
     } yield maybeRef) match {
       case Right(Some(_)) =>
         st.log.info("Update Change Log was finished successfully")
@@ -146,7 +147,8 @@ trait release {
 
     val vs = st
       .get(versions)
-      .getOrElse(sys.error("No versions are set! Was this release part executed before inquireVersions?"))
+      .getOrElse(
+        sys.error("No versions are set! Was this release part executed before inquireVersions?"))
 
     val commitMessage = s"$orgVersionCommitMessage to ${vs._2}"
 
@@ -175,6 +177,7 @@ trait release {
   private[this] def vcs(st: State): Vcs =
     st.extract
       .get(releaseVcs)
-      .getOrElse(sys.error("Aborting release. Working directory is not a repository of a recognized VCS."))
+      .getOrElse(
+        sys.error("Aborting release. Working directory is not a repository of a recognized VCS."))
 
 }

@@ -67,18 +67,19 @@ trait DefaultSettings extends AllSettings {
       organizationEmail = "hello@47deg.com"
     ),
     orgGithubTokenSetting := "ORG_GITHUB_TOKEN",
-    orgGithubOpsSetting := new GitHubOps(
-      orgGithubSetting.value.organization,
-      orgGithubSetting.value.project,
-      getEnvVar(orgGithubTokenSetting.value)),
+    orgGithubOpsSetting := new GitHubOps(orgGithubSetting.value.organization,
+                                         orgGithubSetting.value.project,
+                                         getEnvVar(orgGithubTokenSetting.value)),
     orgLicenseSetting := ApacheLicense,
     headerMappings := Map(
       HeaderFileType.scala -> HeaderCommentStyle.CStyleBlockComment,
       HeaderFileType.java  -> HeaderCommentStyle.CStyleBlockComment
     ),
     headerLicense := Some(
-      HeaderLicense.ALv2(replaceableYear(startYear.value), "47 Degrees, LLC. <http://www.47deg.com>")),
-    orgMaintainersSetting := List(Dev("47degdev", Some("47 Degrees (twitter: @47deg)"), Some("hello@47deg.com"))),
+      HeaderLicense
+        .ALv2(replaceableYear(startYear.value), "47 Degrees, LLC. <http://www.47deg.com>")),
+    orgMaintainersSetting := List(
+      Dev("47degdev", Some("47 Degrees (twitter: @47deg)"), Some("hello@47deg.com"))),
     orgContributorsSetting := Nil,
     orgCommitBranchSetting := "master",
     orgCommitMessageSetting := "Updates policy files from SBT",
@@ -94,12 +95,14 @@ trait DefaultSettings extends AllSettings {
     orgEnforcedFilesSetting := List(
       LicenseFileType(orgGithubSetting.value, orgLicenseSetting.value, startYear.value),
       ContributingFileType(orgProjectName.value, orgGithubSetting.value),
-      AuthorsFileType(
-        orgProjectName.value,
-        orgGithubSetting.value,
-        orgMaintainersSetting.value,
-        orgContributorsSetting.value),
-      NoticeFileType(orgProjectName.value, orgGithubSetting.value, orgLicenseSetting.value, startYear.value),
+      AuthorsFileType(orgProjectName.value,
+                      orgGithubSetting.value,
+                      orgMaintainersSetting.value,
+                      orgContributorsSetting.value),
+      NoticeFileType(orgProjectName.value,
+                     orgGithubSetting.value,
+                     orgLicenseSetting.value,
+                     startYear.value),
       VersionSbtFileType,
       ChangelogFileType,
       ReadmeFileType(
@@ -127,10 +130,12 @@ trait DefaultSettings extends AllSettings {
       getEnvVarOrElse("TRAVIS_PULL_REQUEST") == "false"
     },
     orgAfterCISuccessTaskListSetting := List(
-      orgPublishReleaseTask.asRunnableItem(allModules = true, aggregated = false, crossScalaVersions = true),
+      orgPublishReleaseTask
+        .asRunnableItem(allModules = true, aggregated = false, crossScalaVersions = true),
       orgUpdateDocFiles.asRunnableItem
-    ) ++ guard(((baseDirectory in LocalRootProject).value / "docs").exists() && !version.value.endsWith("-SNAPSHOT"))(
-      defaultPublishMicrosite),
+    ) ++ guard(
+      ((baseDirectory in LocalRootProject).value / "docs").exists() && !version.value.endsWith(
+        "-SNAPSHOT"))(defaultPublishMicrosite),
     orgScriptTaskListSetting := List(
       orgValidateFiles.asRunnableItem,
       orgCheckSettings.asRunnableItem,

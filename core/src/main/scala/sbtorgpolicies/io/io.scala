@@ -81,7 +81,8 @@ package object io {
     }
 
     def write(file: File, content: String, charset: Charset = Charset.forName("UTF-8")): Unit = {
-      val writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false), charset))
+      val writer = new BufferedWriter(
+        new OutputStreamWriter(new FileOutputStream(file, false), charset))
       writer.write(content)
       writer.close()
     }

@@ -42,18 +42,14 @@ object ProjectPlugin extends AutoPlugin {
       addSbtPlugin(%%("sbt-git", true)),
       addSbtPlugin(%%("sbt-unidoc", true)),
       addSbtPlugin(%%("sbt-release", true)),
-      // TODO this version number can be removed when we upgrade the sbt-org-policies circular dependency
-      addSbtPlugin(%%("sbt-sonatype", "3.8.1", true)),
+      addSbtPlugin(%%("sbt-sonatype", true)),
       addSbtPlugin(%%("sbt-pgp", true)),
       addSbtPlugin(%%("sbt-jmh", true)),
       addSbtPlugin(%%("sbt-scoverage", true)),
       addSbtPlugin(%%("sbt-scalajs", true)),
       addSbtPlugin(%%("sbt-header", "3.0.2", true)),
       addSbtPlugin(%%("tut-plugin", true)),
-      addSbtPlugin(%%("sbt-scalafmt", "1.5.1", true)),
-      libraryDependencies ++= Seq(
-        "com.geirsson" %% "scalafmt-cli" % "1.5.1",
-      ),
+      addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.3.0"),
       scriptedLaunchOpts := {
         scriptedLaunchOpts.value ++
           Seq(

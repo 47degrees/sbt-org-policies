@@ -27,6 +27,8 @@ package object rules {
 
   val emptyValidation: ValidationFunction = _ => Validated.valid((): Unit)
 
-  def mkValidation(path: String, list: List[ValidationFunction], policyLevel: PolicyLevel = PolicyError): Validation =
+  def mkValidation(path: String,
+                   list: List[ValidationFunction],
+                   policyLevel: PolicyLevel = PolicyError): Validation =
     Validation(policyLevel, ValidationRule(path, list))
 }

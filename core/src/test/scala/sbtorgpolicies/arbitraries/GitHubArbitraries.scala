@@ -50,7 +50,8 @@ trait GitHubArbitraries {
   } toList
 
   def genGHResponse[T](gen: Gen[T]): Gen[GHResponse[T]] =
-    Gen.oneOf(genGHException.map(_.asLeft[GHResult[T]]), gen.map(v => GHResult(v, 200, Map.empty).asRight[GHException]))
+    Gen.oneOf(genGHException.map(_.asLeft[GHResult[T]]),
+              gen.map(v => GHResult(v, 200, Map.empty).asRight[GHException]))
 
   val genGHException: Gen[GHException] = {
     val message = "Generated Exception"
@@ -179,7 +180,8 @@ trait GitHubArbitraries {
         zipball_url = zipballUrl
       )
 
-  def genPullRequest(genMergedAt: Gen[Option[String]] = Gen.option(genDateTimeString)): Gen[PullRequest] =
+  def genPullRequest(
+      genMergedAt: Gen[Option[String]] = Gen.option(genDateTimeString)): Gen[PullRequest] =
     for {
       id        <- Gen.posNum[Int]
       number    <- Gen.posNum[Int]
@@ -262,9 +264,10 @@ trait GitHubArbitraries {
     genGHResponse(genRef(ref))
   }
 
-  implicit val ghResponseNonEmptyListRefArbitrary: Arbitrary[GHResponse[NonEmptyList[Ref]]] = Arbitrary {
-    genGHResponse(genNonEmptyListRef(ref))
-  }
+  implicit val ghResponseNonEmptyListRefArbitrary: Arbitrary[GHResponse[NonEmptyList[Ref]]] =
+    Arbitrary {
+      genGHResponse(genNonEmptyListRef(ref))
+    }
 
   implicit val ghResponseTagArbitrary: Arbitrary[GHResponse[Tag]] = Arbitrary {
     genGHResponse(genTag)
@@ -274,9 +277,10 @@ trait GitHubArbitraries {
     genGHResponse(genRelease)
   }
 
-  implicit val ghResponsePullRequestListArbitrary: Arbitrary[GHResponse[List[PullRequest]]] = Arbitrary {
-    genGHResponse(Gen.listOf(genPullRequest()))
-  }
+  implicit val ghResponsePullRequestListArbitrary: Arbitrary[GHResponse[List[PullRequest]]] =
+    Arbitrary {
+      genGHResponse(Gen.listOf(genPullRequest()))
+    }
 
   implicit val ghResponseRefCommitArbitrary: Arbitrary[GHResponse[RefCommit]] = Arbitrary {
     genGHResponse(genRefCommit)

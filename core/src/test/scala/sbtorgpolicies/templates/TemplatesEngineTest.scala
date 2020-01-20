@@ -53,10 +53,11 @@ class TemplatesEngineTest extends TestOps {
 
   test("TemplatesEngine.replaceFileContentsWith fails when FileReader throws and Exception") {
 
-    val property = forAll { (inputPath: String, exception: IOException, replacements: Replacements) =>
-      val (te, fileReader, _) = newTemplatesEngine
-      (fileReader.withFileContent[String] _).when(*, *).returns(exception.asLeft)
-      te.replaceFileContentsWith(inputPath, replacements).isLeft
+    val property = forAll {
+      (inputPath: String, exception: IOException, replacements: Replacements) =>
+        val (te, fileReader, _) = newTemplatesEngine
+        (fileReader.withFileContent[String] _).when(*, *).returns(exception.asLeft)
+        te.replaceFileContentsWith(inputPath, replacements).isLeft
     }
 
     check(property)
@@ -85,9 +86,8 @@ class TemplatesEngineTest extends TestOps {
       .replace("{{year}}", "2017")
       .replace("{{organizationName}}", "47 Degrees")
       .replace("{{organizationHomePage}}", "http://www.47deg.com")
-      .replace(
-        "{{contributors}}",
-        """* 47 Deg
+      .replace("{{contributors}}",
+               """* 47 Deg
           |* Developers""".stripMargin.replace("\r", ""))
       .replace("{{special}}", "special char $")
 
@@ -138,7 +138,8 @@ class TemplatesEngineTest extends TestOps {
       forAll { (content: String, section: String) =>
         val result = templatesEngine.insertIn(content, AppendAtTheBeginning, section)
 
-        (result.isRight && result.right.get.startsWith(section) && result.right.get.endsWith(content)) shouldBeEq true
+        (result.isRight && result.right.get.startsWith(section) && result.right.get
+          .endsWith(content)) shouldBeEq true
       }
     }
   }
@@ -148,7 +149,8 @@ class TemplatesEngineTest extends TestOps {
       forAll { (content: String, section: String) =>
         val result = templatesEngine.insertIn(content, AppendAtTheEnd, section)
 
-        (result.isRight && result.right.get.endsWith(section) && result.right.get.startsWith(content)) shouldBeEq true
+        (result.isRight && result.right.get.endsWith(section) && result.right.get
+          .startsWith(content)) shouldBeEq true
       }
     }
   }
@@ -222,13 +224,13 @@ class TemplatesEngineTest extends TestOps {
     val result1 = templatesEngine.insertIn(originalContent, ReplaceSection(from, to), section)
     result1 shouldBe Right(expectedContent)
 
-    val result2 = templatesEngine.insertIn(originalContentWithoutSection, ReplaceSection(from, to), section)
+    val result2 =
+      templatesEngine.insertIn(originalContentWithoutSection, ReplaceSection(from, to), section)
     result2 shouldBe Right(expectedContent)
 
-    val result3 = templatesEngine.insertIn(
-      originalContentWithoutSection,
-      ReplaceSection(from, to, insertIfNotFound = false),
-      section)
+    val result3 = templatesEngine.insertIn(originalContentWithoutSection,
+                                           ReplaceSection(from, to, insertIfNotFound = false),
+                                           section)
     result3 shouldBe Right(originalContentWithoutSection)
   }
 }
