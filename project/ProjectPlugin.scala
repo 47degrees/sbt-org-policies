@@ -42,8 +42,7 @@ object ProjectPlugin extends AutoPlugin {
       addSbtPlugin(%%("sbt-git", true)),
       addSbtPlugin(%%("sbt-unidoc", true)),
       addSbtPlugin(%%("sbt-release", true)),
-      // TODO this version number can be removed when we upgrade the sbt-org-policies circular dependency
-      addSbtPlugin(%%("sbt-sonatype", "3.8.1", true)),
+      addSbtPlugin(%%("sbt-sonatype", true)),
       addSbtPlugin(%%("sbt-pgp", true)),
       addSbtPlugin(%%("sbt-jmh", true)),
       addSbtPlugin(%%("sbt-scoverage", true)),
