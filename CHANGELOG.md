@@ -1,5 +1,14 @@
 # Changelog
 
+## 01/20/2020 - Version 0.12.2
+
+Release changes:
+
+* Update sbt-release to 1.0.13 ([#1236](https://github.com/47deg/sbt-org-policies/pull/1236))
+* Upgrade scalafmt to 2.x and apply the formatter ([#1237](https://github.com/47deg/sbt-org-policies/pull/1237))
+* Release 0.12.2 ([#1238](https://github.com/47deg/sbt-org-policies/pull/1238))
+
+
 ## 01/17/2020 - Version 0.12.1
 
 Release changes:
