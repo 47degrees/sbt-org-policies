@@ -16,8 +16,8 @@
 
 package sbtorgpolicies.settings
 
-import com.typesafe.sbt.pgp.PgpKeys
-import com.typesafe.sbt.pgp.PgpKeys._
+import com.jsuereth.sbtpgp.PgpKeys
+import com.jsuereth.sbtpgp.PgpKeys._
 import sbtorgpolicies.runnable.RunnableItemConfigScope
 import sbtorgpolicies.runnable.syntax._
 import scoverage.ScoverageKeys
