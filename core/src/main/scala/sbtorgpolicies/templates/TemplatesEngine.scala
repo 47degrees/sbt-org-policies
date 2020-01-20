@@ -38,35 +38,39 @@ class TemplatesEngine(fileReader: FileReader = FileReader, fileWriter: FileWrite
       }
       .leftMap(e => IOException(s"Error replacing content", Some(e)))
 
-  def insertIn(content: String, appendPosition: AppendPosition, section: String): IOResult[String] = {
+  def insertIn(content: String,
+               appendPosition: AppendPosition,
+               section: String): IOResult[String] = {
 
     def insertBetween(content: String, from: Regex, to: Regex, section: String): Option[String] =
       for {
         startMatch <- from.findFirstMatchIn(content)
         endContent = safeSubStr(content, startMatch.end)
         endMatch <- to.findFirstMatchIn(endContent)
-      } yield content.substring(0, startMatch.start) + section + safeSubStr(endContent, endMatch.end)
+      } yield
+        content.substring(0, startMatch.start) + section + safeSubStr(endContent, endMatch.end)
 
-    def replaceSection(
-        content: String,
-        from: Regex,
-        to: Regex,
-        section: String,
-        insertIfNotFound: Boolean,
-        defaultTop: Boolean): String = insertBetween(content, from, to, section) match {
-      case Some(s)                             => s
-      case _ if insertIfNotFound && defaultTop => section + "\n" + content
-      case _ if insertIfNotFound               => content + "\n" + section
-      case _                                   => content
-    }
+    def replaceSection(content: String,
+                       from: Regex,
+                       to: Regex,
+                       section: String,
+                       insertIfNotFound: Boolean,
+                       defaultTop: Boolean): String =
+      insertBetween(content, from, to, section) match {
+        case Some(s)                             => s
+        case _ if insertIfNotFound && defaultTop => section + "\n" + content
+        case _ if insertIfNotFound               => content + "\n" + section
+        case _                                   => content
+      }
 
     Either
       .catchNonFatal {
         appendPosition match {
-          case AppendAtTheBeginning                  => section + "\n" + content
-          case AppendAtTheEnd                        => content + "\n" + section
-          case AppendAfter(regex)                    => regex.replaceFirstIn(content, "$0\n" + section)
-          case ReplaceSection(from, to, insert, top) => replaceSection(content, from, to, section, insert, top)
+          case AppendAtTheBeginning => section + "\n" + content
+          case AppendAtTheEnd       => content + "\n" + section
+          case AppendAfter(regex)   => regex.replaceFirstIn(content, "$0\n" + section)
+          case ReplaceSection(from, to, insert, top) =>
+            replaceSection(content, from, to, section, insert, top)
         }
       }
       .leftMap(e => IOException(s"Error inserting content", Some(e)))

@@ -42,6 +42,7 @@ trait modelArbitratries {
 
   implicit val licenseArbitrary: Arbitrary[License] =
     Arbitrary {
-      Gen.oneOf[License](Gen.oneOf[License](MITLicense, ApacheLicense), customLicenseArbitrary.arbitrary)
+      Gen.oneOf[License](Gen.oneOf[License](MITLicense, ApacheLicense),
+                         customLicenseArbitrary.arbitrary)
     }
 }

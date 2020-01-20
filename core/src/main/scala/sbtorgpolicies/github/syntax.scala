@@ -31,11 +31,14 @@ object syntax {
 
   type EitherTGHResult[A] = EitherT[GHIO, GHException, GHResult[A]]
 
-  implicit def ghEitherTSyntax[A](eitherT: EitherTGHResult[A]): EitherTOps[A] = new EitherTOps[A](eitherT)
+  implicit def ghEitherTSyntax[A](eitherT: EitherTGHResult[A]): EitherTOps[A] =
+    new EitherTOps[A](eitherT)
 
-  implicit def ghResponseSyntax[A](ghResponse: GHIO[GHResponse[A]]): GHResponseOps[A] = new GHResponseOps(ghResponse)
+  implicit def ghResponseSyntax[A](ghResponse: GHIO[GHResponse[A]]): GHResponseOps[A] =
+    new GHResponseOps(ghResponse)
 
-  implicit def ghResultSyntax[A](gHResult: GHResult[A]): GHResultOps[A] = new GHResultOps[A](gHResult)
+  implicit def ghResultSyntax[A](gHResult: GHResult[A]): GHResultOps[A] =
+    new GHResultOps[A](gHResult)
 
   final class EitherTOps[A](eitherT: EitherTGHResult[A]) {
 
@@ -48,11 +51,13 @@ object syntax {
 
     val commonHeaders: Map[String, String] = Map("user-agent" -> "sbt-org-policies")
 
-    def execE: Either[GitHubException, A] = ghResponse.exec[Try, HttpResponse[String]](commonHeaders) match {
-      case Success(Right(r)) => Right(r.result)
-      case Success(Left(e))  => Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
-      case Failure(e)        => Left(GitHubException("Error making request to GitHub", Some(e)))
-    }
+    def execE: Either[GitHubException, A] =
+      ghResponse.exec[Try, HttpResponse[String]](commonHeaders) match {
+        case Success(Right(r)) => Right(r.result)
+        case Success(Left(e)) =>
+          Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
+        case Failure(e) => Left(GitHubException("Error making request to GitHub", Some(e)))
+      }
 
   }
 

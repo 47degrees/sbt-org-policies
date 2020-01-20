@@ -32,30 +32,32 @@ case class ReplaceableT[T](t: T) extends Replaceable {
 }
 
 case class ReplaceableList[T](list: List[T]) extends Replaceable {
-  override def asString: String = list.map(elem => s"* ${elem.asReplaceable.asString}").mkString("\n")
+  override def asString: String =
+    list.map(elem => s"* ${elem.asReplaceable.asString}").mkString("\n")
 }
 
-case class FileType(
-    mandatory: Boolean,
-    overWritable: Boolean,
-    finalVersionOnly: Boolean,
-    templatePath: String,
-    outputPath: String,
-    replacements: Replacements,
-    fileSections: List[FileSection] = Nil,
-    validations: List[ValidationFunction] = Nil)
+case class FileType(mandatory: Boolean,
+                    overWritable: Boolean,
+                    finalVersionOnly: Boolean,
+                    templatePath: String,
+                    outputPath: String,
+                    replacements: Replacements,
+                    fileSections: List[FileSection] = Nil,
+                    validations: List[ValidationFunction] = Nil)
 
-case class FileSection(
-    appendPosition: AppendPosition,
-    template: String,
-    replacements: Replacements,
-    shouldAppend: (String) => Boolean = _ => true)
+case class FileSection(appendPosition: AppendPosition,
+                       template: String,
+                       replacements: Replacements,
+                       shouldAppend: (String) => Boolean = _ => true)
 
 sealed trait AppendPosition
 case object AppendAtTheBeginning    extends AppendPosition
 case object AppendAtTheEnd          extends AppendPosition
 case class AppendAfter(line: Regex) extends AppendPosition
-case class ReplaceSection(from: Regex, to: Regex, insertIfNotFound: Boolean = true, defaultTop: Boolean = true)
+case class ReplaceSection(from: Regex,
+                          to: Regex,
+                          insertIfNotFound: Boolean = true,
+                          defaultTop: Boolean = true)
     extends AppendPosition
 
 case class NewReleaseSection(date: DateTime, version: String, changes: String)

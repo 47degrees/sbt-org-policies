@@ -32,21 +32,22 @@ import sbtrelease.ReleaseStateTransformations.reapply
 
 trait bash extends bashCompat {
 
-  val orgPublishReleaseCommand: Command = Command(orgPublishReleaseCommandKey)(_ => OptNotSpace) { (inputState, _) =>
-    val st: State = deferredFetchContributorsState(inputState)
-    val extracted = Project.extract(st)
+  val orgPublishReleaseCommand: Command = Command(orgPublishReleaseCommandKey)(_ => OptNotSpace) {
+    (inputState, _) =>
+      val st: State = deferredFetchContributorsState(inputState)
+      val extracted = Project.extract(st)
 
-    val buildV     = extracted.get(version in ThisBuild)
-    val scalaV     = extracted.get(scalaVersion)
-    val crossBuild = extracted.get(crossScalaVersions).toList
-    val orgBranch  = extracted.get(orgCommitBranchSetting)
-    val rootDir    = extracted.get(baseDirectory in LocalRootProject)
+      val buildV     = extracted.get(version in ThisBuild)
+      val scalaV     = extracted.get(scalaVersion)
+      val crossBuild = extracted.get(crossScalaVersions).toList
+      val orgBranch  = extracted.get(orgCommitBranchSetting)
+      val rootDir    = extracted.get(baseDirectory in LocalRootProject)
 
-    val crossV       = readCrossScalaFromYaml(rootDir, crossBuild, st.log)
-    val isLastScalaV = isLastScalaVersion(scalaV, crossV, st.log)
-    val isSnapshotV  = buildV.endsWith("-SNAPSHOT")
+      val crossV       = readCrossScalaFromYaml(rootDir, crossBuild, st.log)
+      val isLastScalaV = isLastScalaVersion(scalaV, crossV, st.log)
+      val isSnapshotV  = buildV.endsWith("-SNAPSHOT")
 
-    st.log.info(s"""orgPublishRelease Command Initiated
+      st.log.info(s"""orgPublishRelease Command Initiated
                               |Build Version = $buildV
                               |Scala Version = $scalaV
                               |crossScalaVersions = $crossV
@@ -54,54 +55,58 @@ trait bash extends bashCompat {
                               |isLastScalaV = $isLastScalaV
          """.stripMargin)
 
-    val finalState = (isSnapshotV, isLastScalaV) match {
-      case (true, _) =>
-        st.log.info("SNAPSHOT version detected, skipping release and publishing it...")
+      val finalState = (isSnapshotV, isLastScalaV) match {
+        case (true, _) =>
+          st.log.info("SNAPSHOT version detected, skipping release and publishing it...")
 
-        val ref = extracted.get(thisProjectRef)
+          val ref = extracted.get(thisProjectRef)
 
-        extracted.runAggregated[Unit](publish in Global in ref, st)
-        st
-      case (false, true) =>
-        st.log.info("Release Version detected, starting the release process...")
-
-        "git reset --hard HEAD" ::
-          "git clean -f" ::
-          s"git checkout $orgBranch" ::
-          "git pull origin master" ::
-          "release" ::
+          extracted.runAggregated[Unit](publish in Global in ref, st)
           st
-      case _ =>
-        st.log.info(s"Release Version detected but it'll be skipped for Scala $scalaV...")
-        st
-    }
+        case (false, true) =>
+          st.log.info("Release Version detected, starting the release process...")
 
-    finalState
+          "git reset --hard HEAD" ::
+            "git clean -f" ::
+            s"git checkout $orgBranch" ::
+            "git pull origin master" ::
+            "release" ::
+            st
+        case _ =>
+          st.log.info(s"Release Version detected but it'll be skipped for Scala $scalaV...")
+          st
+      }
+
+      finalState
   }
 
   val orgScriptCICommand: Command = Command(orgScriptCICommandKey)(_ => OptNotSpace) { (st, _) =>
     runTaskListCommand("orgScriptCI", orgScriptTaskListSetting, st)
   }
 
-  val orgAfterCISuccessCommand: Command = Command(orgAfterCISuccessCommandKey)(_ => OptNotSpace) { (st, _) =>
-    val extracted = Project.extract(st)
+  val orgAfterCISuccessCommand: Command = Command(orgAfterCISuccessCommandKey)(_ => OptNotSpace) {
+    (st, _) =>
+      val extracted = Project.extract(st)
 
-    if (extracted.get(orgAfterCISuccessCheckSetting)) {
+      if (extracted.get(orgAfterCISuccessCheckSetting)) {
 
-      runTaskListCommand(
-        "orgAfterCISuccess",
-        orgAfterCISuccessTaskListSetting,
-        st,
-        deferredFetchContributorsState
-      )
+        runTaskListCommand(
+          "orgAfterCISuccess",
+          orgAfterCISuccessTaskListSetting,
+          st,
+          deferredFetchContributorsState
+        )
 
-    } else {
-      st.log.info("[orgAfterCISuccess] orgAfterCISuccessCheckSetting is false, skipping tasks after CI success")
-      st
-    }
+      } else {
+        st.log.info(
+          "[orgAfterCISuccess] orgAfterCISuccessCheckSetting is false, skipping tasks after CI success")
+        st
+      }
   }
 
-  private[this] def isLastScalaVersion(scalaV: String, crossV: List[String], logger: Logger): Boolean = {
+  private[this] def isLastScalaVersion(scalaV: String,
+                                       crossV: List[String],
+                                       logger: Logger): Boolean = {
     crossV.sorted.lastOption match {
       case None =>
         logger.warn("crossScalaVersions is empty")
@@ -115,7 +120,9 @@ trait bash extends bashCompat {
     }
   }
 
-  private[this] def readCrossScalaFromYaml(rootDir: File, defaultCrossV: List[String], logger: Logger): List[String] = {
+  private[this] def readCrossScalaFromYaml(rootDir: File,
+                                           defaultCrossV: List[String],
+                                           logger: Logger): List[String] = {
 
     import FileReader._
     import YamlOps._
@@ -140,7 +147,8 @@ trait bash extends bashCompat {
       getFields(content, "scala").mapToString map (_.sorted) map verifyVersionsConsistency
     } valueOr { _ =>
       logger.warn(
-        s"Can't read crossScalaVersion from yaml file $travisFilePath, using default [${defaultCrossV.mkString(",")}]")
+        s"Can't read crossScalaVersion from yaml file $travisFilePath, using default [${defaultCrossV
+          .mkString(",")}]")
       defaultCrossV
     }
   }
@@ -161,7 +169,8 @@ trait bash extends bashCompat {
     val isLastScalaV = isLastScalaVersion(scalaV, crossV, st.log)
     val isRootModule = baseDir.getAbsolutePath == rootDir.getAbsolutePath
 
-    val runnableItemList: List[RunnableItemConfigScope[_]] = extracted.get(runnableItemListSettingKey)
+    val runnableItemList: List[RunnableItemConfigScope[_]] =
+      extracted.get(runnableItemListSettingKey)
 
     val filteredRunnableItemList: List[RunnableItemConfigScope[_]] =
       runnableItemList
@@ -174,10 +183,9 @@ trait bash extends bashCompat {
     runFilteredCommandList(filteredRunnableItemList, st, stateToState)
   }
 
-  private[this] def runFilteredCommandList(
-      runnableList: List[RunnableItemConfigScope[_]],
-      st: State,
-      stateToState: (State) => State): State = {
+  private[this] def runFilteredCommandList(runnableList: List[RunnableItemConfigScope[_]],
+                                           st: State,
+                                           stateToState: (State) => State): State = {
 
     if (runnableList.nonEmpty) {
 
@@ -220,16 +228,16 @@ trait bash extends bashCompat {
     val setContributorState =
       reapply(Seq[Setting[_]](orgContributorsSetting := contributorList), fetchContributorsState)
 
-    reapply(Seq[Setting[_]](pomExtra := <developers> { devs.map(_.pomExtra) } </developers>), setContributorState)
+    reapply(Seq[Setting[_]](pomExtra := <developers> { devs.map(_.pomExtra) } </developers>),
+            setContributorState)
   }
 
-  private[this] def logInfo(
-      commandName: String,
-      isLastScalaV: Boolean,
-      isRootModule: Boolean,
-      runnableItemList: List[RunnableItemConfigScope[_]],
-      filteredRunnableItemList: List[RunnableItemConfigScope[_]],
-      st: State): Unit = {
+  private[this] def logInfo(commandName: String,
+                            isLastScalaV: Boolean,
+                            isRootModule: Boolean,
+                            runnableItemList: List[RunnableItemConfigScope[_]],
+                            filteredRunnableItemList: List[RunnableItemConfigScope[_]],
+                            st: State): Unit = {
 
     val nonRunnableItems: Set[RunnableItemConfigScope[_]] = runnableItemList.toSet -- filteredRunnableItemList.toSet
 
@@ -258,7 +266,8 @@ trait bash extends bashCompat {
       st.log.info(s"[$commandName] Skipping the next runnable items: $discardedItems")
 
     } else
-      st.log.info(s"[$commandName] None command will be skipped, all of them are going to be executed")
+      st.log.info(
+        s"[$commandName] None command will be skipped, all of them are going to be executed")
 
     if (filteredRunnableItemList.nonEmpty) {
 
@@ -285,7 +294,8 @@ trait bash extends bashCompat {
         (task.key.label, task.key.description)
 
       case RunnableItemConfigScope(RunnableSetSetting(setSetting), _, _, _) =>
-        (s"Setting ${setSetting.setting.key.label} to ${setSetting.value}", setSetting.setting.key.description)
+        (s"Setting ${setSetting.setting.key.label} to ${setSetting.value}",
+         setSetting.setting.key.description)
 
       case RunnableItemConfigScope(RunnableProcess(process), _, _, _) =>
         (s"Running process $process", None)

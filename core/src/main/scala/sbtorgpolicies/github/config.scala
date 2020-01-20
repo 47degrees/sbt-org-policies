@@ -21,8 +21,9 @@ object config {
   val blobMode: String = "100644"
   val blobType: String = "blob"
 
-  val defaultTextExtensions: Set[String] = Set(".md", ".css", ".html", ".properties", ".txt", ".scala", ".sbt")
-  val defaultMaximumSize: Int            = 4048
+  val defaultTextExtensions: Set[String] =
+    Set(".md", ".css", ".html", ".properties", ".txt", ".scala", ".sbt")
+  val defaultMaximumSize: Int = 4048
 
   case class BlobConfig(acceptedExtensions: Set[String], maximumSize: Int)
 

@@ -92,7 +92,8 @@ trait AllSettings
     credentials ++= (for {
       username <- getEnvVar("SONATYPE_USERNAME")
       password <- getEnvVar("SONATYPE_PASSWORD")
-    } yield Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", username, password)).toSeq
+    } yield
+      Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", username, password)).toSeq
   )
 
   lazy val gpgFolder: String = getEnvVar("PGP_FOLDER") getOrElse "."
@@ -132,7 +133,8 @@ trait AllSettings
     parallelExecution := false,
     jsEnv := new org.scalajs.jsenv.nodejs.NodeJSEnv(),
     // batch mode decreases the amount of memory needed to compile scala.js code
-    scalaJSOptimizerOptions := scalaJSOptimizerOptions.value.withBatchMode(getEnvVar("TRAVIS").isDefined)
+    scalaJSOptimizerOptions := scalaJSOptimizerOptions.value.withBatchMode(
+      getEnvVar("TRAVIS").isDefined)
   )
 
   /**
@@ -156,7 +158,8 @@ trait AllSettings
 
   implicit val settingAppender: sbt.Append.Value[Seq[(String, java.net.URL)], License] =
     new sbt.Append.Value[Seq[(String, URL)], License] {
-      override def appendValue(a: Seq[(String, URL)], b: License): Seq[(String, URL)] = a :+ b.tupled
+      override def appendValue(a: Seq[(String, URL)], b: License): Seq[(String, URL)] =
+        a :+ b.tupled
     }
 
   /**
@@ -168,7 +171,8 @@ trait AllSettings
   val sharedPublishSettings: Seq[Setting[_]] = Seq(
     homepage := Some(url(orgGithubSetting.value.home)),
     licenses += orgLicenseSetting.value,
-    scmInfo := Some(ScmInfo(url(orgGithubSetting.value.home), "scm:git:" + orgGithubSetting.value.repo)),
+    scmInfo := Some(
+      ScmInfo(url(orgGithubSetting.value.home), "scm:git:" + orgGithubSetting.value.repo)),
     apiURL := Some(url(orgGithubSetting.value.api)),
     releaseCrossBuild := true,
     releasePublishArtifactsAction := PgpKeys.publishSigned.value,
@@ -188,10 +192,7 @@ trait AllSettings
   )
 
   lazy val scalafmtSettings: Seq[Setting[_]] =
-    List(
-      includeFilter.in(orgScalafmtInc) := "*.scala",
-      excludeFilter.in(orgScalafmtInc) := ".scalafmt.conf"
-    ) ++ orgAutomateScalafmtFor(Compile, Test)
+    orgAutomateScalafmtFor(Compile, Test)
 
   /** Common unidoc settings, adding the "-Ymacro-no-expand" scalac option.*/
   lazy val unidocCommonSettings = Seq(
@@ -233,6 +234,7 @@ trait AllSettings
   /**
    * Alias helper for the publishMicrosite task when docs module is located in the "docs" sbt module.
    */
-  lazy val defaultPublishMicrosite: RunnableItemConfigScope[Unit] = ";project docs;publishMicrosite".asRunnableItem
+  lazy val defaultPublishMicrosite: RunnableItemConfigScope[Unit] =
+    ";project docs;publishMicrosite".asRunnableItem
 
 }

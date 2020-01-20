@@ -18,11 +18,10 @@ package sbtorgpolicies.runnable
 
 import sbt._
 
-case class RunnableItemConfigScope[T](
-    item: RunnableItem[T],
-    allModules: Boolean = false,
-    aggregated: Boolean = false,
-    crossScalaVersions: Boolean = false)
+case class RunnableItemConfigScope[T](item: RunnableItem[T],
+                                      allModules: Boolean = false,
+                                      aggregated: Boolean = false,
+                                      crossScalaVersions: Boolean = false)
 
 case class SetSetting[T](setting: SettingKey[T], value: T)
 

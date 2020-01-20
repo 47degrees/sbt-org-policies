@@ -35,11 +35,14 @@ trait ValidationFunctions {
 
     content: String =>
       validateList(content, list) { string =>
-        if (content.contains(string)) ().valid else ValidationException(s"$string not found").invalidNel
+        if (content.contains(string)) ().valid
+        else ValidationException(s"$string not found").invalidNel
       }
   }
 
-  def requiredSection(startRegExp: Regex, endRegExp: Regex, validation: ValidationFunction): ValidationFunction = {
+  def requiredSection(startRegExp: Regex,
+                      endRegExp: Regex,
+                      validation: ValidationFunction): ValidationFunction = {
 
     case class Section(started: Boolean = false, ended: Boolean = false, lines: List[String] = Nil)
 
@@ -68,10 +71,9 @@ trait ValidationFunctions {
       }
   }
 
-  def validTravisFile(
-      crossScalaVersions: Seq[String],
-      scriptExpectedTasks: Seq[String],
-      afterSuccessTasks: Seq[String]): ValidationFunction = {
+  def validTravisFile(crossScalaVersions: Seq[String],
+                      scriptExpectedTasks: Seq[String],
+                      afterSuccessTasks: Seq[String]): ValidationFunction = {
 
     def validateCrossScalaVersions(content: String): ValidationResult = {
 
@@ -83,7 +85,9 @@ trait ValidationFunctions {
             s"cross scala versions for this project: $crossScalaVersions").invalidNel
     }
 
-    def validateTasks(content: String, section: String, expectedTasks: Seq[String]): ValidationResult = {
+    def validateTasks(content: String,
+                      section: String,
+                      expectedTasks: Seq[String]): ValidationResult = {
       val tasksInTravisFile: List[String] = YamlOps.getFields(content, section).toList
 
       if (expectedTasks.forall(expectedTsk => tasksInTravisFile.exists(_.contains(expectedTsk))))

@@ -39,7 +39,9 @@ package object templates {
 
   type Replacements = Map[String, Replaceable]
 
-  def LicenseFileType(ghSettings: GitHubSettings, license: License, startYear: Option[Int]): FileType = {
+  def LicenseFileType(ghSettings: GitHubSettings,
+                      license: License,
+                      startYear: Option[Int]): FileType = {
 
     def licenseFile: String = license match {
       case ApacheLicense => "templates/LICENSE_ASL2.template"
@@ -77,11 +79,10 @@ package object templates {
     )
   )
 
-  def AuthorsFileType(
-      projectName: String,
-      ghSettings: GitHubSettings,
-      maintainers: List[Dev],
-      contributors: List[Dev]): FileType = {
+  def AuthorsFileType(projectName: String,
+                      ghSettings: GitHubSettings,
+                      maintainers: List[Dev],
+                      contributors: List[Dev]): FileType = {
 
     def devTemplate(dev: Dev): String =
       dev.name match {
@@ -106,11 +107,10 @@ package object templates {
     )
   }
 
-  def NoticeFileType(
-      projectName: String,
-      ghSettings: GitHubSettings,
-      license: License,
-      startYear: Option[Int]): FileType = {
+  def NoticeFileType(projectName: String,
+                     ghSettings: GitHubSettings,
+                     license: License,
+                     startYear: Option[Int]): FileType = {
 
     FileType(
       mandatory = true,
@@ -164,25 +164,23 @@ package object templates {
       } toList
     )
 
-  def ReadmeFileType(
-      projectName: String,
-      ghSettings: GitHubSettings,
-      startYear: Option[Int],
-      license: License,
-      branch: String,
-      sbtPlugin: Boolean,
-      libraryName: String,
-      libraryVersion: String,
-      scalaBinaryVersion: String,
-      sbtBinaryVersion: String,
-      scalaJSVersion: Option[String],
-      badgeBuilderList: List[BadgeBuilder] = Nil): FileType = {
+  def ReadmeFileType(projectName: String,
+                     ghSettings: GitHubSettings,
+                     startYear: Option[Int],
+                     license: License,
+                     branch: String,
+                     sbtPlugin: Boolean,
+                     libraryName: String,
+                     libraryVersion: String,
+                     scalaBinaryVersion: String,
+                     sbtBinaryVersion: String,
+                     scalaJSVersion: Option[String],
+                     badgeBuilderList: List[BadgeBuilder] = Nil): FileType = {
 
     def replaceSection(title: String, top: Boolean): ReplaceSection =
-      ReplaceSection(
-        from = markdownComment(title, scape = true).r,
-        to = markdownComment(title, start = false, scape = true).r,
-        defaultTop = top)
+      ReplaceSection(from = markdownComment(title, scape = true).r,
+                     to = markdownComment(title, start = false, scape = true).r,
+                     defaultTop = top)
 
     def replaceableBadges: Replaceable = {
       val info = BadgeInformation(
@@ -259,7 +257,9 @@ package object templates {
     )
   }
 
-  def TravisFileType(crossScalaV: Seq[String], scriptCICommand: String, afterCISuccessCommand: String): FileType = {
+  def TravisFileType(crossScalaV: Seq[String],
+                     scriptCICommand: String,
+                     afterCISuccessCommand: String): FileType = {
 
     import sbtorgpolicies.model.YamlFormats._
 

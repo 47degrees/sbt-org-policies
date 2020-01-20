@@ -50,10 +50,7 @@ object ProjectPlugin extends AutoPlugin {
       addSbtPlugin(%%("sbt-scalajs", true)),
       addSbtPlugin(%%("sbt-header", "3.0.2", true)),
       addSbtPlugin(%%("tut-plugin", true)),
-      addSbtPlugin(%%("sbt-scalafmt", "1.5.1", true)),
-      libraryDependencies ++= Seq(
-        "com.geirsson" %% "scalafmt-cli" % "1.5.1",
-      ),
+      addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.3.0"),
       scriptedLaunchOpts := {
         scriptedLaunchOpts.value ++
           Seq(

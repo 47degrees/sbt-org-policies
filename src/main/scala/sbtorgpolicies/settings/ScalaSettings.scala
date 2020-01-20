@@ -28,10 +28,12 @@ trait ScalaSettings { self: dependencies =>
     getLib(artifactId, Some(version)).toModuleId.withCrossVersion(sbt.librarymanagement.Disabled())
 
   def %(artifactId: String, isSbtPlugin: Boolean): ModuleID =
-    getLib(artifactId, isSbtPlugin = isSbtPlugin).toModuleId.withCrossVersion(sbt.librarymanagement.Disabled())
+    getLib(artifactId, isSbtPlugin = isSbtPlugin).toModuleId
+      .withCrossVersion(sbt.librarymanagement.Disabled())
 
   def %(artifactId: String, version: String, isSbtPlugin: Boolean): ModuleID =
-    getLib(artifactId, Some(version), isSbtPlugin).toModuleId.withCrossVersion(sbt.librarymanagement.Disabled())
+    getLib(artifactId, Some(version), isSbtPlugin).toModuleId
+      .withCrossVersion(sbt.librarymanagement.Disabled())
 
   /**
    * It allows alternative Scala organization, however, scala-lang is still used
