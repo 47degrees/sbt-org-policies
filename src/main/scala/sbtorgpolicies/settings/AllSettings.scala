@@ -80,9 +80,9 @@ trait AllSettings
       orgTagRelease,
       orgUpdateChangeLog,
       if (sbtPlugin.value) releaseStepCommandAndRemaining("^ publishSigned") else publishArtifacts,
+      releaseStepCommandAndRemaining("sonatypeBundleRelease"),
       setNextVersion,
       orgCommitNextVersion,
-      ReleaseStep(action = "sonatypeBundleRelease" :: _),
       orgPostRelease
     )
   )

@@ -7,6 +7,8 @@ import sbtorgpolicies.OrgPoliciesPlugin.autoImport._
 import sbtorgpolicies.model.scalac
 import sbtorgpolicies.runnable.syntax._
 import sbtorgpolicies.templates.badges._
+import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
+import sbtrelease.ReleasePlugin.autoImport._
 
 object ProjectPlugin extends AutoPlugin {
 
@@ -61,6 +63,21 @@ object ProjectPlugin extends AutoPlugin {
           )
       },
       scriptedBufferLog := false,
+      // TODO this custom release process can be removed when the cyclic dependency is upgraded to 0.12.3 or newer
+      releaseProcess := Seq[ReleaseStep](
+        orgInitialVcsChecks,
+        checkSnapshotDependencies,
+        orgInquireVersions,
+        if (sbtPlugin.value) releaseStepCommandAndRemaining("^ clean") else runClean,
+        if (sbtPlugin.value) releaseStepCommandAndRemaining("^ test") else runTest,
+        orgTagRelease,
+        orgUpdateChangeLog,
+        if (sbtPlugin.value) releaseStepCommandAndRemaining("^ publishSigned") else publishArtifacts,
+        releaseStepCommandAndRemaining("sonatypeBundleRelease"),
+        setNextVersion,
+        orgCommitNextVersion,
+        orgPostRelease
+      )
     )
 
     lazy val coreSettings: Seq[Def.Setting[_]] = commonSettings ++ Seq(
