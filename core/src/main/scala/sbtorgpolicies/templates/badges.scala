@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 47 Degrees, LLC. <http://www.47deg.com>
+ * Copyright 2017-2020 47 Degrees, LLC. <http://www.47deg.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,18 +21,17 @@ import sbtorgpolicies.model.{ApacheLicense, License, MITLicense}
 
 object badges {
 
-  case class BadgeInformation(
-      owner: String,
-      repo: String,
-      branch: String,
-      sbtPlugin: Boolean,
-      libOrg: String,
-      libName: String,
-      libVersion: String,
-      scalaBinaryVersion: String,
-      sbtBinaryVersion: String,
-      scalaJSV: Option[String] = None,
-      license: Option[License] = None)
+  case class BadgeInformation(owner: String,
+                              repo: String,
+                              branch: String,
+                              sbtPlugin: Boolean,
+                              libOrg: String,
+                              libName: String,
+                              libVersion: String,
+                              scalaBinaryVersion: String,
+                              sbtBinaryVersion: String,
+                              scalaJSV: Option[String] = None,
+                              license: Option[License] = None)
 
   case class BadgeIcon(title: String, icon: String, url: String)
 

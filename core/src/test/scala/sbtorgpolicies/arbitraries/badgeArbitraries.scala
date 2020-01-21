@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 47 Degrees, LLC. <http://www.47deg.com>
+ * Copyright 2017-2020 47 Degrees, LLC. <http://www.47deg.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,18 +37,17 @@ trait badgeArbitraries extends modelArbitratries {
         scalaJSV           <- Gen.option(scalaJSVArbitrary.arbitrary)
         license            <- Arbitrary.arbitrary[Option[License]]
       } yield
-        BadgeInformation(
-          owner,
-          repo,
-          branch,
-          sbtPlugin,
-          libOrg,
-          libName,
-          libVersion,
-          scalaBinaryVersion,
-          sbtBinaryVersion,
-          scalaJSV,
-          license)
+        BadgeInformation(owner,
+                         repo,
+                         branch,
+                         sbtPlugin,
+                         libOrg,
+                         libName,
+                         libVersion,
+                         scalaBinaryVersion,
+                         sbtBinaryVersion,
+                         scalaJSV,
+                         license)
     }
 
   val scalaJSVArbitrary: Arbitrary[String] = {

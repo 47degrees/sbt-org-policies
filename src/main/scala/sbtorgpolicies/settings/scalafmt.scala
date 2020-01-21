@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 47 Degrees, LLC. <http://www.47deg.com>
+ * Copyright 2017-2020 47 Degrees, LLC. <http://www.47deg.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,71 +16,13 @@
 
 package sbtorgpolicies.settings
 import sbt._
-import sbt.Keys._
-import sbt.internal.inc.Analysis
-import sbt.util.CacheStoreFactory
-import sbtorgpolicies.OrgPoliciesKeys.orgScalafmtInc
+import org.scalafmt.sbt.ScalafmtPlugin.autoImport.scalafmtOnCompile
 
-/**
- * https://gist.github.com/olafurpg/e045ef9d8a4273bae3e2ccf610636d66#file-automatescalafmtplugin-scala
- */
 trait scalafmt {
 
   def orgAutomateScalafmtFor(configurations: Configuration*): Seq[Setting[_]] =
     configurations.flatMap { c =>
-      inConfig(c)(
-        Seq(
-          orgScalafmtInc := {
-            orgScalafmtIncDef.value
-            (): Unit
-          },
-          sourceDirectories.in(orgScalafmtInc) := Seq(scalaSource.value),
-          compileInputs.in(compile) := (compileInputs.in(compile) dependsOn orgScalafmtInc).value
-        )
-      )
+      inConfig(c)(scalafmtOnCompile := true)
     }
-
-  val orgScalafmtIncDef: Def.Initialize[Task[Set[File]]] = Def.task {
-    val cache: CacheStoreFactory = CacheStoreFactory(streams.value.cacheDirectory / "scalafmt")
-    val include: FileFilter      = includeFilter.in(orgScalafmtInc).value
-    val exclude: FileFilter      = excludeFilter.in(orgScalafmtInc).value
-    val sources: Set[File] =
-      sourceDirectories
-        .in(orgScalafmtInc)
-        .value
-        .descendantsExcept(include, exclude)
-        .get
-        .toSet
-
-    def format(handler: Set[File] => Unit, msg: String): Set[File] = {
-      def update(handler: Set[File] => Unit, msg: String)(
-          in: ChangeReport[File],
-          out: ChangeReport[File]): Set[File] = {
-        val label: String    = Reference.display(thisProjectRef.value)
-        val files: Set[File] = in.modified -- in.removed
-
-        lazy val log: Logger = streams.value.log
-
-        Analysis
-          .counted("Scala source", "", "s", files.size)
-          .foreach(count => log.info(s"$msg $count in $label ..."))
-        handler(files)
-        files
-      }
-
-      FileFunction.cached(cache, FilesInfo.hash, FilesInfo.exists)(update(handler, msg))(
-        sources
-      )
-    }
-
-    def formattingHandler(files: Set[File]) =
-      if (files.nonEmpty) {
-        val filesArg = files.map(_.getAbsolutePath).mkString(",")
-        org.scalafmt.cli.Cli.main(Array("--quiet", "--non-interactive", "--files", filesArg))
-      }
-
-    format(formattingHandler, "Formatting")
-    format(_ => (), "Reformatted") // Recalculate the cache
-  }
 
 }

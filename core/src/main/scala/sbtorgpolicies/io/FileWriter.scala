@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 47 Degrees, LLC. <http://www.47deg.com>
+ * Copyright 2017-2020 47 Degrees, LLC. <http://www.47deg.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,8 @@ class FileWriter {
 
   def writeContentToFile(content: String, output: String): IOResult[Unit] = {
 
-    def writeFile: Either[Throwable, Unit] = Either.catchNonFatal(IO.write(IO.file(output), content))
+    def writeFile: Either[Throwable, Unit] =
+      Either.catchNonFatal(IO.write(IO.file(output), content))
 
     (for {
       result <- createFile(output)
@@ -59,7 +60,8 @@ class FileWriter {
       .catchNonFatal(output.exists() || output.mkdir())
       .leftMap(e => IOException(s"Error creating directory $output", Some(e)))
 
-  def createDir(output: String): IOResult[Boolean] = createDir(output.fixPath.ensureFinalSlash.toFile)
+  def createDir(output: String): IOResult[Boolean] =
+    createDir(output.fixPath.ensureFinalSlash.toFile)
 
   def copy(input: String, output: String): IOResult[Path] = {
 
@@ -90,7 +92,9 @@ class FileWriter {
     } yield paths
   }
 
-  def copyJARResourcesTo(jarUrl: URL, output: String, filter: String = ""): Either[IOException, Unit] =
+  def copyJARResourcesTo(jarUrl: URL,
+                         output: String,
+                         filter: String = ""): Either[IOException, Unit] =
     Either
       .catchNonFatal {
         output.fixPath.toFile.mkdir()
@@ -101,10 +105,9 @@ class FileWriter {
         Stream.continually(zipIn.getNextEntry).takeWhile(_ != null).foreach { entry =>
           val newFile = IO.file(output + File.separator + entry.getName)
 
-          (
-            entry.isDirectory,
-            !newFile.exists() &&
-              newFile.getAbsolutePath.startsWith(s"$output$filter")) match {
+          (entry.isDirectory,
+           !newFile.exists() &&
+             newFile.getAbsolutePath.startsWith(s"$output$filter")) match {
             case (true, true) => createDir(newFile)
             case (true, _)    =>
             case (false, true) =>
@@ -121,7 +124,8 @@ class FileWriter {
           }
         }
       }
-      .leftMap(e => IOException(s"Error copying resources from $jarUrl to directory $output", Some(e)))
+      .leftMap(e =>
+        IOException(s"Error copying resources from $jarUrl to directory $output", Some(e)))
 }
 
 object FileWriter extends FileWriter

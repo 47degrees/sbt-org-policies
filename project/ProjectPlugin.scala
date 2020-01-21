@@ -7,6 +7,8 @@ import sbtorgpolicies.OrgPoliciesPlugin.autoImport._
 import sbtorgpolicies.model.scalac
 import sbtorgpolicies.runnable.syntax._
 import sbtorgpolicies.templates.badges._
+import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
+import sbtrelease.ReleasePlugin.autoImport._
 
 object ProjectPlugin extends AutoPlugin {
 
@@ -18,11 +20,11 @@ object ProjectPlugin extends AutoPlugin {
 
     lazy val V = new {
       val base64: String            = "0.2.9"
-      val cats: String              = "2.0.0"
-      val github4s: String          = "0.21.0"
+      val cats: String              = "2.1.0"
+      val github4s: String          = "0.20.1"
       val moultingyaml: String      = "0.4.1"
-      val scala212: String          = "2.12.9"
-      val scala213: String          = "2.13.0"
+      val scala212: String          = "2.12.10"
+      val scala213: String          = "2.13.1"
       val scalacheck: String        = "1.14.3"
       val scalacheckToolbox: String = "0.3.1"
       val scalamock: String         = "4.4.0"
@@ -49,10 +51,7 @@ object ProjectPlugin extends AutoPlugin {
       addSbtPlugin(%%("sbt-scalajs", true)),
       addSbtPlugin(%%("sbt-header", "3.0.2", true)),
       addSbtPlugin(%%("tut-plugin", true)),
-      addSbtPlugin(%%("sbt-scalafmt", "1.5.1", true)),
-      libraryDependencies ++= Seq(
-        "com.geirsson" %% "scalafmt-cli" % "1.5.1",
-      ),
+      addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.3.0"),
       scriptedLaunchOpts := {
         scriptedLaunchOpts.value ++
           Seq(
@@ -64,6 +63,21 @@ object ProjectPlugin extends AutoPlugin {
           )
       },
       scriptedBufferLog := false,
+      // TODO this custom release process can be removed when the cyclic dependency is upgraded to 0.12.3 or newer
+      releaseProcess := Seq[ReleaseStep](
+        orgInitialVcsChecks,
+        checkSnapshotDependencies,
+        orgInquireVersions,
+        if (sbtPlugin.value) releaseStepCommandAndRemaining("^ clean") else runClean,
+        if (sbtPlugin.value) releaseStepCommandAndRemaining("^ test") else runTest,
+        orgTagRelease,
+        orgUpdateChangeLog,
+        if (sbtPlugin.value) releaseStepCommandAndRemaining("^ publishSigned") else publishArtifacts,
+        releaseStepCommandAndRemaining("sonatypeBundleRelease"),
+        setNextVersion,
+        orgCommitNextVersion,
+        orgPostRelease
+      )
     )
 
     lazy val coreSettings: Seq[Def.Setting[_]] = commonSettings ++ Seq(

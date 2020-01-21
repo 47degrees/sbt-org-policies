@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 47 Degrees, LLC. <http://www.47deg.com>
+ * Copyright 2017-2020 47 Degrees, LLC. <http://www.47deg.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,9 @@ trait fileValidation extends ValidationFunctions {
         val files: List[FileType] = orgEnforcedFilesSetting.value
         val validations: List[Validation] = files.flatMap {
           case FileType(true, _, _, _, path, _, _, list) =>
-            List(mkValidation((baseDirFile / path).getAbsolutePath, if (list.isEmpty) List(emptyValidation) else list))
+            List(
+              mkValidation((baseDirFile / path).getAbsolutePath,
+                           if (list.isEmpty) List(emptyValidation) else list))
           case _ =>
             Nil
         }
@@ -60,10 +62,14 @@ trait fileValidation extends ValidationFunctions {
       }
     }
 
-    fileValidation.validateFile(validation.validationRule.inputPath, validation.validationRule.validationList: _*) match {
-      case Valid(_) => log.info(s"File ${validation.validationRule.inputPath} was validated successfully")
+    fileValidation.validateFile(validation.validationRule.inputPath,
+                                validation.validationRule.validationList: _*) match {
+      case Valid(_) =>
+        log.info(s"File ${validation.validationRule.inputPath} was validated successfully")
       case Invalid(errors) =>
-        errorHandler(s"Some errors where found while validating ${validation.validationRule.inputPath}:", errors.toList)
+        errorHandler(
+          s"Some errors where found while validating ${validation.validationRule.inputPath}:",
+          errors.toList)
     }
 
   }

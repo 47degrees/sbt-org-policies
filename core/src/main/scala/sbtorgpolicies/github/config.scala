@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 47 Degrees, LLC. <http://www.47deg.com>
+ * Copyright 2017-2020 47 Degrees, LLC. <http://www.47deg.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,9 @@ object config {
   val blobMode: String = "100644"
   val blobType: String = "blob"
 
-  val defaultTextExtensions: Set[String] = Set(".md", ".css", ".html", ".properties", ".txt", ".scala", ".sbt")
-  val defaultMaximumSize: Int            = 4048
+  val defaultTextExtensions: Set[String] =
+    Set(".md", ".css", ".html", ".properties", ".txt", ".scala", ".sbt")
+  val defaultMaximumSize: Int = 4048
 
   case class BlobConfig(acceptedExtensions: Set[String], maximumSize: Int)
 

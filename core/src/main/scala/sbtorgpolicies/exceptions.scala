@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 47 Degrees, LLC. <http://www.47deg.com>
+ * Copyright 2017-2020 47 Degrees, LLC. <http://www.47deg.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,11 +28,15 @@ object exceptions {
     override def toString: String = message
   }
 
-  case class IOException(msg: String, cause: Option[Throwable] = None) extends OrgPolicyException(msg, cause)
+  case class IOException(msg: String, cause: Option[Throwable] = None)
+      extends OrgPolicyException(msg, cause)
 
-  case class ValidationException(msg: String, cause: Option[Throwable] = None) extends OrgPolicyException(msg, cause)
+  case class ValidationException(msg: String, cause: Option[Throwable] = None)
+      extends OrgPolicyException(msg, cause)
 
-  case class GitHubException(msg: String, cause: Option[Throwable] = None) extends OrgPolicyException(msg, cause)
+  case class GitHubException(msg: String, cause: Option[Throwable] = None)
+      extends OrgPolicyException(msg, cause)
 
-  case class YamlException(msg: String, cause: Option[Throwable] = None) extends OrgPolicyException(msg, cause)
+  case class YamlException(msg: String, cause: Option[Throwable] = None)
+      extends OrgPolicyException(msg, cause)
 }

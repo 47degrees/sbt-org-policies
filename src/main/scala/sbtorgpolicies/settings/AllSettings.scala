@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 47 Degrees, LLC. <http://www.47deg.com>
+ * Copyright 2017-2020 47 Degrees, LLC. <http://www.47deg.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package sbtorgpolicies.settings
 
-import com.typesafe.sbt.pgp.PgpKeys
-import com.typesafe.sbt.pgp.PgpKeys._
+import com.jsuereth.sbtpgp.PgpKeys
+import com.jsuereth.sbtpgp.PgpKeys._
 import sbtorgpolicies.runnable.RunnableItemConfigScope
 import sbtorgpolicies.runnable.syntax._
 import scoverage.ScoverageKeys
@@ -31,6 +31,7 @@ import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 import sbtrelease.ReleasePlugin.autoImport._
 import sbtunidoc.BaseUnidocPlugin.autoImport._
 import sbtunidoc.ScalaUnidocPlugin.autoImport._
+import xerial.sbt.Sonatype.SonatypeKeys.sonatypePublishToBundle
 
 trait AllSettings
     extends dependencies
@@ -79,9 +80,9 @@ trait AllSettings
       orgTagRelease,
       orgUpdateChangeLog,
       if (sbtPlugin.value) releaseStepCommandAndRemaining("^ publishSigned") else publishArtifacts,
+      releaseStepCommandAndRemaining("sonatypeBundleRelease"),
       setNextVersion,
       orgCommitNextVersion,
-      ReleaseStep(action = "sonatypeReleaseAll" :: _),
       orgPostRelease
     )
   )
@@ -91,7 +92,8 @@ trait AllSettings
     credentials ++= (for {
       username <- getEnvVar("SONATYPE_USERNAME")
       password <- getEnvVar("SONATYPE_PASSWORD")
-    } yield Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", username, password)).toSeq
+    } yield
+      Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", username, password)).toSeq
   )
 
   lazy val gpgFolder: String = getEnvVar("PGP_FOLDER") getOrElse "."
@@ -131,7 +133,8 @@ trait AllSettings
     parallelExecution := false,
     jsEnv := new org.scalajs.jsenv.nodejs.NodeJSEnv(),
     // batch mode decreases the amount of memory needed to compile scala.js code
-    scalaJSOptimizerOptions := scalaJSOptimizerOptions.value.withBatchMode(getEnvVar("TRAVIS").isDefined)
+    scalaJSOptimizerOptions := scalaJSOptimizerOptions.value.withBatchMode(
+      getEnvVar("TRAVIS").isDefined)
   )
 
   /**
@@ -149,12 +152,14 @@ trait AllSettings
     scalaOrganization := "org.scala-lang",
     scalaVersion := scalac.`2.12`,
     crossScalaVersions := scalac.crossScalaVersions,
-    scalacOptions ++= scalacAllOptions(scalaVersion.value)
+    scalacOptions ++= scalacAllOptions(scalaVersion.value),
+    Compile / console / scalacOptions -= "-Xlint"
   )
 
   implicit val settingAppender: sbt.Append.Value[Seq[(String, java.net.URL)], License] =
     new sbt.Append.Value[Seq[(String, URL)], License] {
-      override def appendValue(a: Seq[(String, URL)], b: License): Seq[(String, URL)] = a :+ b.tupled
+      override def appendValue(a: Seq[(String, URL)], b: License): Seq[(String, URL)] =
+        a :+ b.tupled
     }
 
   /**
@@ -166,20 +171,15 @@ trait AllSettings
   val sharedPublishSettings: Seq[Setting[_]] = Seq(
     homepage := Some(url(orgGithubSetting.value.home)),
     licenses += orgLicenseSetting.value,
-    scmInfo := Some(ScmInfo(url(orgGithubSetting.value.home), "scm:git:" + orgGithubSetting.value.repo)),
+    scmInfo := Some(
+      ScmInfo(url(orgGithubSetting.value.home), "scm:git:" + orgGithubSetting.value.repo)),
     apiURL := Some(url(orgGithubSetting.value.api)),
     releaseCrossBuild := true,
     releasePublishArtifactsAction := PgpKeys.publishSigned.value,
     publishMavenStyle := true,
     publishArtifact in Test := false,
     pomIncludeRepository := Function.const(false),
-    publishTo := {
-      val nexus = "https://oss.sonatype.org/"
-      if (isSnapshot.value)
-        Some("Snapshots" at nexus + "content/repositories/snapshots")
-      else
-        Some("Releases" at nexus + "service/local/staging/deploy/maven2")
-    },
+    publishTo := sonatypePublishToBundle.value,
     autoAPIMappings := true,
     pomExtra := <developers> { (orgMaintainersSetting.value ++ orgContributorsSetting.value).map(_.pomExtra) } </developers>
   )
@@ -192,10 +192,7 @@ trait AllSettings
   )
 
   lazy val scalafmtSettings: Seq[Setting[_]] =
-    List(
-      includeFilter.in(orgScalafmtInc) := "*.scala",
-      excludeFilter.in(orgScalafmtInc) := ".scalafmt.conf"
-    ) ++ orgAutomateScalafmtFor(Compile, Test)
+    orgAutomateScalafmtFor(Compile, Test)
 
   /** Common unidoc settings, adding the "-Ymacro-no-expand" scalac option.*/
   lazy val unidocCommonSettings = Seq(
@@ -237,6 +234,7 @@ trait AllSettings
   /**
    * Alias helper for the publishMicrosite task when docs module is located in the "docs" sbt module.
    */
-  lazy val defaultPublishMicrosite: RunnableItemConfigScope[Unit] = ";project docs;publishMicrosite".asRunnableItem
+  lazy val defaultPublishMicrosite: RunnableItemConfigScope[Unit] =
+    ";project docs;publishMicrosite".asRunnableItem
 
 }

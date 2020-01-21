@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 47 Degrees, LLC. <http://www.47deg.com>
+ * Copyright 2017-2020 47 Degrees, LLC. <http://www.47deg.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,10 @@ import sbtorgpolicies.github.instances._
 import sbtorgpolicies.github.syntax._
 import sbtorgpolicies.io.{FileReader, IO, IOResult}
 
-class GitHubOps(owner: String, repo: String, accessToken: Option[String], fileReader: FileReader = FileReader) {
+class GitHubOps(owner: String,
+                repo: String,
+                accessToken: Option[String],
+                fileReader: FileReader = FileReader) {
 
   val gh: Github = Github(accessToken)
 
@@ -50,11 +53,10 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String], fileRe
     op.execE
   }
 
-  def commitFiles(
-      baseDir: File,
-      branch: String,
-      message: String,
-      files: List[File]): Either[OrgPolicyException, Option[Ref]] = {
+  def commitFiles(baseDir: File,
+                  branch: String,
+                  message: String,
+                  files: List[File]): Either[OrgPolicyException, Option[Ref]] = {
 
     def relativePath(file: File): String = IO.relativize(baseDir, file).getOrElse(file.getName)
 
@@ -79,8 +81,10 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String], fileRe
 
     def fetchFilesContents(commitSha: String): Github4sResponse[List[(String, Option[String])]] = {
 
-      def fetchFileContents(path: String, commitSha: String): Github4sResponse[(String, Option[String])] =
-        EitherT(gh.repos.getContents(owner = owner, repo = repo, path = path, ref = Some(commitSha)))
+      def fetchFileContents(path: String,
+                            commitSha: String): Github4sResponse[(String, Option[String])] =
+        EitherT(
+          gh.repos.getContents(owner = owner, repo = repo, path = path, ref = Some(commitSha)))
           .map(ghRes => ghRes.map(contents => path -> contents.head.content))
           .orElse((path, none[String]).pure[Github4sResponse])
 
@@ -99,7 +103,8 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String], fileRe
       }
     }
 
-    def createTree(baseTreeSha: String, filteredFilesContent: List[(String, String)]): Github4sResponse[TreeResult] = {
+    def createTree(baseTreeSha: String,
+                   filteredFilesContent: List[(String, String)]): Github4sResponse[TreeResult] = {
 
       def treeData: List[TreeDataBlob] = filteredFilesContent.map {
         case (path, content) => TreeDataBlob(path, blobMode, blobType, content)
@@ -132,10 +137,9 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String], fileRe
       gHResultBaseTree <- fetchBaseTreeSha(parentCommitSha)
       baseTreeSha = gHResultBaseTree.result.tree.sha
       ghResultFilesContent <- fetchFilesContents(parentCommitSha)
-      ghResultUpdate <- commitFilesIfChanged(
-        baseTreeSha,
-        parentCommitSha,
-        filterNonChangedFiles(ghResultFilesContent.result))
+      ghResultUpdate <- commitFilesIfChanged(baseTreeSha,
+                                             parentCommitSha,
+                                             filterNonChangedFiles(ghResultFilesContent.result))
     } yield ghResultUpdate
 
     op.execE
@@ -149,12 +153,11 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String], fileRe
       case Left(e) => Left(e)
     }
 
-  def commitDir(
-      branch: String,
-      message: String,
-      baseDir: File,
-      dirList: NonEmptyList[File],
-      blobConfig: BlobConfig = defaultBlobConfig): Either[OrgPolicyException, Ref] = {
+  def commitDir(branch: String,
+                message: String,
+                baseDir: File,
+                dirList: NonEmptyList[File],
+                blobConfig: BlobConfig = defaultBlobConfig): Either[OrgPolicyException, Ref] = {
 
     def updateCommitDirH(dir: File, sha: Option[String]): Github4sResponse[RefCommit] =
       updateCommitDir(branch, message, baseDir, dir, blobConfig, sha)
@@ -172,13 +175,12 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String], fileRe
     op.execE
   }
 
-  private[this] def updateCommitDir(
-      branch: String,
-      message: String,
-      baseDir: File,
-      dirToCommit: File,
-      blobConfig: BlobConfig,
-      commitSha: Option[String]): Github4sResponse[RefCommit] = {
+  private[this] def updateCommitDir(branch: String,
+                                    message: String,
+                                    baseDir: File,
+                                    dirToCommit: File,
+                                    blobConfig: BlobConfig,
+                                    commitSha: Option[String]): Github4sResponse[RefCommit] = {
 
     def fetchBaseTreeSha: Github4sResponse[Option[RefCommit]] =
       commitSha map { sha =>
@@ -203,16 +205,20 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String], fileRe
         )
 
       def createTreeDataSha(filePath: String, array: Array[Byte]): Github4sResponse[TreeData] =
-        EitherT(ghWithRateLimit.gitData.createBlob(owner, repo, array.toBase64, Some("base64"))) map { refInfo =>
-          refInfo.map(v => TreeDataSha(filePath, blobMode, blobType, v.sha))
+        EitherT(ghWithRateLimit.gitData.createBlob(owner, repo, array.toBase64, Some("base64"))) map {
+          refInfo =>
+            refInfo.map(v => TreeDataSha(filePath, blobMode, blobType, v.sha))
         }
 
       def createTreeDataBlob(filePath: String, array: Array[Byte]): Github4sResponse[TreeData] =
-        (TreeDataBlob(filePath, blobMode, blobType, new String(array)): TreeData).pure[Github4sResponse]
+        (TreeDataBlob(filePath, blobMode, blobType, new String(array)): TreeData)
+          .pure[Github4sResponse]
 
-      def createTreeData(file: File, filePath: String, array: Array[Byte]): Github4sResponse[TreeData] =
+      def createTreeData(file: File,
+                         filePath: String,
+                         array: Array[Byte]): Github4sResponse[TreeData] =
         if (blobConfig.acceptedExtensions.exists(s => file.getName.toLowerCase.endsWith(s)) &&
-          array.length < blobConfig.maximumSize) {
+            array.length < blobConfig.maximumSize) {
           createTreeDataBlob(filePath, array)
         } else {
           createTreeDataSha(filePath, array)
@@ -228,11 +234,13 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String], fileRe
       files.traverse(processFile)
     }
 
-    def createTree(baseTreeSha: Option[String], treeData: List[TreeData]): Github4sResponse[TreeResult] =
+    def createTree(baseTreeSha: Option[String],
+                   treeData: List[TreeData]): Github4sResponse[TreeResult] =
       EitherT(ghWithRateLimit.gitData.createTree(owner, repo, baseTreeSha, treeData))
 
     def createCommit(treeSha: String, parentCommit: String): Github4sResponse[RefCommit] =
-      EitherT(ghWithRateLimit.gitData.createCommit(owner, repo, message, treeSha, List(parentCommit)))
+      EitherT(
+        ghWithRateLimit.gitData.createCommit(owner, repo, message, treeSha, List(parentCommit)))
 
     def parentCommitSha: Github4sResponse[String] =
       commitSha.map(sha => sha.pure[Github4sResponse]).getOrElse {
@@ -251,11 +259,10 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String], fileRe
   def fetchReference(ref: String): Either[GitHubException, NonEmptyList[Ref]] =
     gh.gitData.getReference(owner, repo, ref).execE
 
-  def createTagRelease(
-      branch: String,
-      tag: String,
-      message: String,
-      releaseDescription: String): Either[GitHubException, Release] = {
+  def createTagRelease(branch: String,
+                       tag: String,
+                       message: String,
+                       releaseDescription: String): Either[GitHubException, Release] = {
 
     def createTag(obj: RefObject): Github4sResponse[Tag] =
       EitherT(gh.gitData.createTag(owner, repo, tag, message, obj.sha, obj.`type`))
@@ -276,10 +283,9 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String], fileRe
     op.execE
   }
 
-  def latestPullRequests(
-      branch: String,
-      inPath: String,
-      message: String): Either[GitHubException, List[PullRequest]] = {
+  def latestPullRequests(branch: String,
+                         inPath: String,
+                         message: String): Either[GitHubException, List[PullRequest]] = {
 
     def fetchLastCommit: Github4sResponse[Option[Commit]] = {
 
@@ -297,8 +303,10 @@ class GitHubOps(owner: String, repo: String, accessToken: Option[String], fileRe
         list.mapFilter(pr => pr.merged_at.filter(_ > date).as(pr)).reverse
       }
 
-      val filters = List(PRFilterClosed, PRFilterBase(branch), PRFilterSortUpdated, PRFilterOrderDesc)
-      EitherT(gh.pullRequests.list(owner, repo, filters)).map(ghResult => ghResult.map(orderAndFilter))
+      val filters =
+        List(PRFilterClosed, PRFilterBase(branch), PRFilterSortUpdated, PRFilterOrderDesc)
+      EitherT(gh.pullRequests.list(owner, repo, filters)).map(ghResult =>
+        ghResult.map(orderAndFilter))
     }
 
     val op = for {

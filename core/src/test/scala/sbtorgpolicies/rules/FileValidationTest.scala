@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 47 Degrees, LLC. <http://www.47deg.com>
+ * Copyright 2017-2020 47 Degrees, LLC. <http://www.47deg.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,10 +37,11 @@ class FileValidationTest extends TestOps with OneInstancePerTest {
 
   test("FileValidation.validateFile works as expected") {
 
-    val property = forAll { (inputPath: String, content: String, validationResult: ValidationResult) =>
-      (mockFileReader.getFileContent _).expects(inputPath).returns(content.asRight)
-      val result = fileValidation.validateFile(inputPath, _ => validationResult)
-      result shouldBeEq validationResult
+    val property = forAll {
+      (inputPath: String, content: String, validationResult: ValidationResult) =>
+        (mockFileReader.getFileContent _).expects(inputPath).returns(content.asRight)
+        val result = fileValidation.validateFile(inputPath, _ => validationResult)
+        result shouldBeEq validationResult
     }
 
     check(property)
