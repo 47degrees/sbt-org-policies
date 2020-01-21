@@ -1,5 +1,14 @@
 # Changelog
 
+## 01/21/2020 - Version 0.12.3
+
+Release changes:
+
+* Update cats-core, cats-laws to 2.1.0 ([#1226](https://github.com/47deg/sbt-org-policies/pull/1226))
+* Fix release process ([#1239](https://github.com/47deg/sbt-org-policies/pull/1239))
+* Release 0.12.3 ([#1240](https://github.com/47deg/sbt-org-policies/pull/1240))
+
+
 ## 01/20/2020 - Version 0.12.2
 
 Release changes:
