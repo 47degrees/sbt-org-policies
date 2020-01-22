@@ -137,7 +137,7 @@ object libraries {
     "sbt-unidoc"            -> "0.4.2",
     "sbt-wartremover"       -> "2.2.1",
     "scalastyle-sbt-plugin" -> "1.0.0",
-    "tut-plugin"            -> "0.6.12"
+    "sbt-mdoc"              -> "2.1.1"
   )
 
   val v: Map[String, String] = v47 ++ vOthers ++ vPlugins47 ++ vPluginsOthers
@@ -378,7 +378,7 @@ object libraries {
     "sbt-sonatype"     -> (("org.xerial.sbt", "sbt-sonatype", v("sbt-sonatype"))),
     "sbt-unidoc"       -> (("com.eed3si9n", "sbt-unidoc", v("sbt-unidoc"))),
     "sbt-wartremover"  -> (("org.wartremover", "sbt-wartremover", v("sbt-wartremover"))),
-    "tut-plugin"       -> (("org.tpolecat", "tut-plugin", v("tut-plugin")))
+    "sbt-mdoc"         -> (("org.scalameta", "sbt-mdoc", v("sbt-mdoc")))
   )
 
   val pluginScalaLibs: Map[String, Artifact] = Map[String, Artifact](
