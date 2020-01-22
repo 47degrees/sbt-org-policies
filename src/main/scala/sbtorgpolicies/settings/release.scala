@@ -43,7 +43,8 @@ trait release {
     if (hasModifiedFiles) sys.error("Aborting release: unstaged modified files")
     if (hasUntrackedFiles && !extracted.get(releaseIgnoreUntrackedFiles)) {
       sys.error(
-        "Aborting release: untracked files. Remove them or specify 'releaseIgnoreUntrackedFiles := true' in settings")
+        "Aborting release: untracked files. Remove them or specify 'releaseIgnoreUntrackedFiles := true' in settings"
+      )
     }
 
     st.log.info("Starting release process off commit: " + vcs(st).currentHash)
@@ -90,16 +91,19 @@ trait release {
         case Left(e) =>
           e.printStackTrace()
           sys.error(
-            "Tag release process couldn't fetch the pull request list from Github. Aborting release!")
+            "Tag release process couldn't fetch the pull request list from Github. Aborting release!"
+          )
       }
 
     ghOps.createTagRelease(branch, tag, tagComment, releaseDescription)
 
-    reapply(Seq[Setting[_]](
-              releaseTagComment := releaseDescription,
-              packageOptions += ManifestAttributes("Vcs-Release-Tag" -> tag)
-            ),
-            commentState)
+    reapply(
+      Seq[Setting[_]](
+        releaseTagComment := releaseDescription,
+        packageOptions += ManifestAttributes("Vcs-Release-Tag" -> tag)
+      ),
+      commentState
+    )
   }
 
   lazy val orgUpdateChangeLog: ReleaseStep = { st: State =>
@@ -116,16 +120,19 @@ trait release {
     val vs = st
       .get(versions)
       .getOrElse(
-        sys.error("No versions are set! Was this release part executed before inquireVersions?"))
+        sys.error("No versions are set! Was this release part executed before inquireVersions?")
+      )
 
     (for {
       _ <- fh.createResources(orgTemplatesDir, orgTargetDir)
       fileType = ChangelogFileType(DateTime.now(DateTimeZone.UTC), vs._1, comment)
       _ <- fh.checkOrgFiles(baseDir, orgTargetDir, List(fileType))
-      maybeRef <- ghOps.commitFiles(baseDir = baseDir,
-                                    branch = branch,
-                                    message = s"$commitMessage [ci skip]",
-                                    files = List(new File(baseDir, fileType.outputPath)))
+      maybeRef <- ghOps.commitFiles(
+        baseDir = baseDir,
+        branch = branch,
+        message = s"$commitMessage [ci skip]",
+        files = List(new File(baseDir, fileType.outputPath))
+      )
     } yield maybeRef) match {
       case Right(Some(_)) =>
         st.log.info("Update Change Log was finished successfully")
@@ -148,7 +155,8 @@ trait release {
     val vs = st
       .get(versions)
       .getOrElse(
-        sys.error("No versions are set! Was this release part executed before inquireVersions?"))
+        sys.error("No versions are set! Was this release part executed before inquireVersions?")
+      )
 
     val commitMessage = s"$orgVersionCommitMessage to ${vs._2}"
 
@@ -169,7 +177,8 @@ trait release {
     if (sbtorgpolicies.utils.getEnvVar("TRAVIS").isEmpty) {
       st.log.warn(
         "No Travis Environment detected, please be sure you revert " +
-          "your local changes and fetch the latest remote changes")
+          "your local changes and fetch the latest remote changes"
+      )
     }
     st
   }
@@ -178,6 +187,7 @@ trait release {
     st.extract
       .get(releaseVcs)
       .getOrElse(
-        sys.error("Aborting release. Working directory is not a repository of a recognized VCS."))
+        sys.error("Aborting release. Working directory is not a repository of a recognized VCS.")
+      )
 
 }

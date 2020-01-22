@@ -92,8 +92,12 @@ trait AllSettings
     credentials ++= (for {
       username <- getEnvVar("SONATYPE_USERNAME")
       password <- getEnvVar("SONATYPE_PASSWORD")
-    } yield
-      Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", username, password)).toSeq
+    } yield Credentials(
+      "Sonatype Nexus Repository Manager",
+      "oss.sonatype.org",
+      username,
+      password
+    )).toSeq
   )
 
   lazy val gpgFolder: String = getEnvVar("PGP_FOLDER") getOrElse "."
@@ -134,7 +138,8 @@ trait AllSettings
     jsEnv := new org.scalajs.jsenv.nodejs.NodeJSEnv(),
     // batch mode decreases the amount of memory needed to compile scala.js code
     scalaJSOptimizerOptions := scalaJSOptimizerOptions.value.withBatchMode(
-      getEnvVar("TRAVIS").isDefined)
+      getEnvVar("TRAVIS").isDefined
+    )
   )
 
   /**
@@ -172,7 +177,8 @@ trait AllSettings
     homepage := Some(url(orgGithubSetting.value.home)),
     licenses += orgLicenseSetting.value,
     scmInfo := Some(
-      ScmInfo(url(orgGithubSetting.value.home), "scm:git:" + orgGithubSetting.value.repo)),
+      ScmInfo(url(orgGithubSetting.value.home), "scm:git:" + orgGithubSetting.value.repo)
+    ),
     apiURL := Some(url(orgGithubSetting.value.api)),
     releaseCrossBuild := true,
     releasePublishArtifactsAction := PgpKeys.publishSigned.value,
@@ -181,7 +187,9 @@ trait AllSettings
     pomIncludeRepository := Function.const(false),
     publishTo := sonatypePublishToBundle.value,
     autoAPIMappings := true,
-    pomExtra := <developers> { (orgMaintainersSetting.value ++ orgContributorsSetting.value).map(_.pomExtra) } </developers>
+    pomExtra := <developers> {
+      (orgMaintainersSetting.value ++ orgContributorsSetting.value).map(_.pomExtra)
+    } </developers>
   )
 
   /** Common coverage settings, with minimum coverage defaulting to 80.*/

@@ -58,9 +58,11 @@ trait dependencies extends ScalaSettings {
 
   }
 
-  protected[this] def getLib(lib: String,
-                             maybeVersion: Option[String] = None,
-                             isSbtPlugin: Boolean = false): Dep = {
+  protected[this] def getLib(
+      lib: String,
+      maybeVersion: Option[String] = None,
+      isSbtPlugin: Boolean = false
+  ): Dep = {
     val artifact: (String, String, String) = (if (isSbtPlugin) allPlugins else libs)(lib)
     val dep                                = Dep(artifact._1, artifact._2, artifact._3)
     maybeVersion.foldLeft(dep)((module, revision) => module.copy(revision = revision))

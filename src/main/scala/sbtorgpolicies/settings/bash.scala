@@ -99,30 +99,36 @@ trait bash extends bashCompat {
 
       } else {
         st.log.info(
-          "[orgAfterCISuccess] orgAfterCISuccessCheckSetting is false, skipping tasks after CI success")
+          "[orgAfterCISuccess] orgAfterCISuccessCheckSetting is false, skipping tasks after CI success"
+        )
         st
       }
   }
 
-  private[this] def isLastScalaVersion(scalaV: String,
-                                       crossV: List[String],
-                                       logger: Logger): Boolean = {
+  private[this] def isLastScalaVersion(
+      scalaV: String,
+      crossV: List[String],
+      logger: Logger
+  ): Boolean = {
     crossV.sorted.lastOption match {
       case None =>
         logger.warn("crossScalaVersions is empty")
         false
       case Some(v) if v < scalaV =>
         logger.warn(
-          s"Current Scala version ($scalaV) is greater than the major Scala version supported in crossScalaVersions ($crossV)")
+          s"Current Scala version ($scalaV) is greater than the major Scala version supported in crossScalaVersions ($crossV)"
+        )
         false
       case Some(v) if v == scalaV => true
       case Some(v)                => false
     }
   }
 
-  private[this] def readCrossScalaFromYaml(rootDir: File,
-                                           defaultCrossV: List[String],
-                                           logger: Logger): List[String] = {
+  private[this] def readCrossScalaFromYaml(
+      rootDir: File,
+      defaultCrossV: List[String],
+      logger: Logger
+  ): List[String] = {
 
     import FileReader._
     import YamlOps._
@@ -133,12 +139,14 @@ trait bash extends bashCompat {
 
       if (notInConfig.nonEmpty) {
         logger.warn(
-          s"The Scala versions $notInConfig are defined in $travisFilePath but not in your project configuration")
+          s"The Scala versions $notInConfig are defined in $travisFilePath but not in your project configuration"
+        )
       }
 
       if (notInYaml.nonEmpty) {
         logger.warn(
-          s"The Scala versions $notInYaml are defined in your project configuration but not in $travisFilePath")
+          s"The Scala versions $notInYaml are defined in your project configuration but not in $travisFilePath"
+        )
       }
       yamlVersions
     }
@@ -148,7 +156,8 @@ trait bash extends bashCompat {
     } valueOr { _ =>
       logger.warn(
         s"Can't read crossScalaVersion from yaml file $travisFilePath, using default [${defaultCrossV
-          .mkString(",")}]")
+          .mkString(",")}]"
+      )
       defaultCrossV
     }
   }
@@ -157,7 +166,8 @@ trait bash extends bashCompat {
       commandName: String,
       runnableItemListSettingKey: SettingKey[List[RunnableItemConfigScope[_]]],
       st: State,
-      stateToState: (State) => State = st => st): State = {
+      stateToState: (State) => State = st => st
+  ): State = {
 
     val extracted = Project.extract(st)
 
@@ -183,9 +193,11 @@ trait bash extends bashCompat {
     runFilteredCommandList(filteredRunnableItemList, st, stateToState)
   }
 
-  private[this] def runFilteredCommandList(runnableList: List[RunnableItemConfigScope[_]],
-                                           st: State,
-                                           stateToState: (State) => State): State = {
+  private[this] def runFilteredCommandList(
+      runnableList: List[RunnableItemConfigScope[_]],
+      st: State,
+      stateToState: (State) => State
+  ): State = {
 
     if (runnableList.nonEmpty) {
 
@@ -228,16 +240,20 @@ trait bash extends bashCompat {
     val setContributorState =
       reapply(Seq[Setting[_]](orgContributorsSetting := contributorList), fetchContributorsState)
 
-    reapply(Seq[Setting[_]](pomExtra := <developers> { devs.map(_.pomExtra) } </developers>),
-            setContributorState)
+    reapply(
+      Seq[Setting[_]](pomExtra := <developers> {devs.map(_.pomExtra)} </developers>),
+      setContributorState
+    )
   }
 
-  private[this] def logInfo(commandName: String,
-                            isLastScalaV: Boolean,
-                            isRootModule: Boolean,
-                            runnableItemList: List[RunnableItemConfigScope[_]],
-                            filteredRunnableItemList: List[RunnableItemConfigScope[_]],
-                            st: State): Unit = {
+  private[this] def logInfo(
+      commandName: String,
+      isLastScalaV: Boolean,
+      isRootModule: Boolean,
+      runnableItemList: List[RunnableItemConfigScope[_]],
+      filteredRunnableItemList: List[RunnableItemConfigScope[_]],
+      st: State
+  ): Unit = {
 
     val nonRunnableItems: Set[RunnableItemConfigScope[_]] = runnableItemList.toSet -- filteredRunnableItemList.toSet
 
@@ -267,7 +283,8 @@ trait bash extends bashCompat {
 
     } else
       st.log.info(
-        s"[$commandName] None command will be skipped, all of them are going to be executed")
+        s"[$commandName] None command will be skipped, all of them are going to be executed"
+      )
 
     if (filteredRunnableItemList.nonEmpty) {
 
@@ -294,8 +311,10 @@ trait bash extends bashCompat {
         (task.key.label, task.key.description)
 
       case RunnableItemConfigScope(RunnableSetSetting(setSetting), _, _, _) =>
-        (s"Setting ${setSetting.setting.key.label} to ${setSetting.value}",
-         setSetting.setting.key.description)
+        (
+          s"Setting ${setSetting.setting.key.label} to ${setSetting.value}",
+          setSetting.setting.key.description
+        )
 
       case RunnableItemConfigScope(RunnableProcess(process), _, _, _) =>
         (s"Running process $process", None)

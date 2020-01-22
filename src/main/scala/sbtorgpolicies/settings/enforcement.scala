@@ -42,7 +42,8 @@ trait enforcement {
     val isSbtPlugin       = sbtPlugin.value
     if (!isSbtPlugin && scalaVersionValue != scalac.latestScalaVersion) {
       throw ValidationException(
-        s"scalaVersion is $scalaVersionValue. It should be ${scalac.latestScalaVersion}")
+        s"scalaVersion is $scalaVersionValue. It should be ${scalac.latestScalaVersion}"
+      )
     }
   }
 
@@ -64,11 +65,13 @@ trait enforcement {
 
     if (!coverageFailOnMinimumValue)
       throw ValidationException(
-        s"coverageFailOnMinimum is $coverageFailOnMinimumValue, however, it should be enabled.")
+        s"coverageFailOnMinimum is $coverageFailOnMinimumValue, however, it should be enabled."
+      )
 
     if (coverageMinimumValue < scoverageMinimum)
       throw ValidationException(
-        s"coverageMinimumValue is $coverageMinimumValue. It should be at least $scoverageMinimum%")
+        s"coverageMinimumValue is $coverageMinimumValue. It should be at least $scoverageMinimum%"
+      )
   }
 
   private[this] def checkFileHeaderSettings = Def.task {

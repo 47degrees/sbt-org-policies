@@ -145,24 +145,40 @@ object libraries {
   val langLibs: Map[String, Artifact] = Map(
     "paradise"    -> (("org.scalamacros", "paradise", v("paradise"))),
     "quasiquotes" -> (("org.scalamacros", "quasiquotes", v("paradise"))),
-    "scala-parser-combinators" -> (("org.scala-lang.modules",
-                                    "scala-parser-combinators",
-                                    v("scala-parser-combinators"))),
+    "scala-parser-combinators" -> (
+      (
+        "org.scala-lang.modules",
+        "scala-parser-combinators",
+        v("scala-parser-combinators")
+      )
+    ),
     "scala-reflect" -> (("org.scala-lang", "scala-reflect", v("scala-reflect"))),
     "scala-xml"     -> (("org.scala-lang.modules", "scala-xml", v("scala-xml")))
   )
 
   val javaLibs: Map[String, Artifact] = Map(
     "avro" -> (("org.apache.avro", "avro", v("avro"))),
-    "cassandra-driver-core" -> (("com.datastax.cassandra",
-                                 "cassandra-driver-core",
-                                 v("cassandra-driver"))),
-    "cassandra-driver-extras" -> (("com.datastax.cassandra",
-                                   "cassandra-driver-extras",
-                                   v("cassandra-driver"))),
-    "cassandra-driver-mapping" -> (("com.datastax.cassandra",
-                                    "cassandra-driver-mapping",
-                                    v("cassandra-driver"))),
+    "cassandra-driver-core" -> (
+      (
+        "com.datastax.cassandra",
+        "cassandra-driver-core",
+        v("cassandra-driver")
+      )
+    ),
+    "cassandra-driver-extras" -> (
+      (
+        "com.datastax.cassandra",
+        "cassandra-driver-extras",
+        v("cassandra-driver")
+      )
+    ),
+    "cassandra-driver-mapping" -> (
+      (
+        "com.datastax.cassandra",
+        "cassandra-driver-mapping",
+        v("cassandra-driver")
+      )
+    ),
     "config"           -> (("com.typesafe", "config", v("config"))),
     "embedded-redis"   -> (("com.orange.redis-embedded", "embedded-redis", v("embedded-redis"))),
     "h2"               -> (("com.h2database", "h2", v("h2"))),
@@ -235,9 +251,13 @@ object libraries {
     "droste-core"              -> (("io.higherkindness", "droste-core", v("droste"))),
     "droste-laws"              -> (("io.higherkindness", "droste-laws", v("droste"))),
     "scalatest-embedded-kafka" -> (("net.manub", "scalatest-embedded-kafka", v("embedded-kafka"))),
-    "scalatest-embedded-kafka-streams" -> (("net.manub",
-                                            "scalatest-embedded-kafka-streams",
-                                            v("embedded-kafka"))),
+    "scalatest-embedded-kafka-streams" -> (
+      (
+        "net.manub",
+        "scalatest-embedded-kafka-streams",
+        v("embedded-kafka")
+      )
+    ),
     "export-hook"             -> (("org.typelevel", "export-hook", v("export-hook"))),
     "fetch"                   -> (("com.47deg", "fetch", v("fetch"))),
     "fetch-monix"             -> (("com.47deg", "fetch-monix", v("fetch"))),
@@ -314,9 +334,13 @@ object libraries {
     "monocle-macro"           -> (("com.github.julien-truffaut", "monocle-macro", v("monocle"))),
     "monocle-state"           -> (("com.github.julien-truffaut", "monocle-state", v("monocle"))),
     "moultingyaml"            -> (("net.jcazevedo", "moultingyaml", v("moultingyaml"))),
-    "netty-tcnative-boringssl-static" -> (("io.netty",
-                                           "netty-tcnative-boringssl-static",
-                                           v("netty-tcnative"))),
+    "netty-tcnative-boringssl-static" -> (
+      (
+        "io.netty",
+        "netty-tcnative-boringssl-static",
+        v("netty-tcnative")
+      )
+    ),
     "org-policies-core"  -> (("com.47deg", "org-policies-core", v("org-policies"))),
     "pbdirect"           -> (("beyondthelines", "pbdirect", v("pbdirect"))),
     "pcplod"             -> (("org.ensime", "pcplod", v("pcplod"))),
@@ -330,9 +354,13 @@ object libraries {
     "refined"            -> (("eu.timepit", "refined", v("refined"))),
     "roshttp"            -> (("fr.hmil", "roshttp", v("roshttp"))),
     "scalacheck"         -> (("org.scalacheck", "scalacheck", v("scalacheck"))),
-    "scheckShapeless" -> (("com.github.alexarchambault",
-                           "scalacheck-shapeless_1.13",
-                           v("scheckShapeless"))),
+    "scheckShapeless" -> (
+      (
+        "com.github.alexarchambault",
+        "scalacheck-shapeless_1.13",
+        v("scheckShapeless")
+      )
+    ),
     "scheckToolboxDatetime" -> (("com.47deg", "scalacheck-toolbox-datetime", v("scheckToolbox"))),
     "scheckToolboxMagic"    -> (("com.47deg", "scalacheck-toolbox-magic", v("scheckToolbox"))),
     "scheckToolboxComb"     -> (("com.47deg", "scalacheck-toolbox-combinators", v("scheckToolbox"))),
@@ -382,9 +410,13 @@ object libraries {
   )
 
   val pluginScalaLibs: Map[String, Artifact] = Map[String, Artifact](
-    "scalastyle-sbt-plugin" -> (("org.scalastyle",
-                                 "scalastyle-sbt-plugin",
-                                 v("scalastyle-sbt-plugin")))
+    "scalastyle-sbt-plugin" -> (
+      (
+        "org.scalastyle",
+        "scalastyle-sbt-plugin",
+        v("scalastyle-sbt-plugin")
+      )
+    )
   )
 
   val libs: Map[String, Artifact] = langLibs ++ javaLibs ++ scalaLibs

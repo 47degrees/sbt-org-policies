@@ -122,19 +122,21 @@ class GitHubOpsTest extends TestOps {
         val contents = filesAndContents.map {
           case (s1, s2) =>
             val content =
-              Content("file",
-                      Some("base64"),
-                      None,
-                      None,
-                      5432,
-                      s1,
-                      s1,
-                      Some(s2),
-                      s"sha-$s1",
-                      "",
-                      "",
-                      "",
-                      None)
+              Content(
+                "file",
+                Some("base64"),
+                None,
+                None,
+                5432,
+                s1,
+                s1,
+                Some(s2),
+                s"sha-$s1",
+                "",
+                "",
+                "",
+                None
+              )
             (s1, content)
         }
 
@@ -148,10 +150,12 @@ class GitHubOpsTest extends TestOps {
         }
 
         val result: Either[OrgPolicyException, Option[Ref]] =
-          gitHubOps.commitFiles(baseDir,
-                                branch,
-                                sampleMessage,
-                                filesAndContents.map(t => new File(baseDir, t._1)))
+          gitHubOps.commitFiles(
+            baseDir,
+            branch,
+            sampleMessage,
+            filesAndContents.map(t => new File(baseDir, t._1))
+          )
 
         (nelRefResponse, refCommitResponse) match {
           case (Left(e), _) =>
@@ -172,11 +176,13 @@ class GitHubOpsTest extends TestOps {
 
   test("GithubOps.commitFiles works as expected when some files need to be updated") {
     val property = forAll {
-      (nelRefR: GHResponse[NonEmptyList[Ref]],
-       refCommitR: GHResponse[RefCommit],
-       treeResultR: GHResponse[TreeResult],
-       createCommitR: GHResponse[RefCommit],
-       updateReferenceR: GHResponse[Ref]) =>
+      (
+          nelRefR: GHResponse[NonEmptyList[Ref]],
+          refCommitR: GHResponse[RefCommit],
+          treeResultR: GHResponse[TreeResult],
+          createCommitR: GHResponse[RefCommit],
+          updateReferenceR: GHResponse[Ref]
+      ) =>
         val (gitHubOps, fileReader, ghGitData, _, ghRepos, _) = newGitHubOps
         import sbtorgpolicies.io.syntax._
         filesAndContents foreach {
@@ -200,8 +206,11 @@ class GitHubOpsTest extends TestOps {
           case (s1, _) =>
             (ghRepos.getContents _)
               .when(owner, repo, s1, maybeParentCommit)
-              .returns(Free.pure[GitHub4s, GHResponse[NonEmptyList[Content]]](
-                UnexpectedException("Not Found").asLeft))
+              .returns(
+                Free.pure[GitHub4s, GHResponse[NonEmptyList[Content]]](
+                  UnexpectedException("Not Found").asLeft
+                )
+              )
         }
 
         (ghGitData.createTree _)
@@ -217,10 +226,12 @@ class GitHubOpsTest extends TestOps {
           .returns(Free.pure[GitHub4s, GHResponse[Ref]](updateReferenceR))
 
         val result: Either[OrgPolicyException, Option[Ref]] =
-          gitHubOps.commitFiles(baseDir,
-                                branch,
-                                sampleMessage,
-                                filesAndContents.map(t => new File(baseDir, t._1)))
+          gitHubOps.commitFiles(
+            baseDir,
+            branch,
+            sampleMessage,
+            filesAndContents.map(t => new File(baseDir, t._1))
+          )
 
         (nelRefR, refCommitR, treeResultR, createCommitR, updateReferenceR) match {
           case (Left(e), _, _, _, _) =>
@@ -254,10 +265,12 @@ class GitHubOpsTest extends TestOps {
     (fileReader.getFileContent _).when(*).returns(ioException.asLeft)
 
     val result: Either[OrgPolicyException, Option[Ref]] =
-      gitHubOps.commitFiles(baseDir,
-                            branch,
-                            sampleMessage,
-                            filesAndContents.map(t => new File(baseDir, t._1)))
+      gitHubOps.commitFiles(
+        baseDir,
+        branch,
+        sampleMessage,
+        filesAndContents.map(t => new File(baseDir, t._1))
+      )
 
     result shouldBe ioException.asLeft
 
@@ -282,19 +295,21 @@ class GitHubOpsTest extends TestOps {
         val contents = filesAndContents.map {
           case (s1, s2) =>
             val content =
-              Content("file",
-                      Some("base64"),
-                      None,
-                      None,
-                      5432,
-                      s1,
-                      s1,
-                      Some(s2),
-                      s"sha-$s1",
-                      "",
-                      "",
-                      "",
-                      None)
+              Content(
+                "file",
+                Some("base64"),
+                None,
+                None,
+                5432,
+                s1,
+                s1,
+                Some(s2),
+                s"sha-$s1",
+                "",
+                "",
+                "",
+                None
+              )
             (s1, content)
         }
 
@@ -328,11 +343,13 @@ class GitHubOpsTest extends TestOps {
 
   test("GithubOps.commitFilesAndContents works as expected when some files need to be updated") {
     val property = forAll {
-      (nelRefR: GHResponse[NonEmptyList[Ref]],
-       refCommitR: GHResponse[RefCommit],
-       treeResultR: GHResponse[TreeResult],
-       createCommitR: GHResponse[RefCommit],
-       updateReferenceR: GHResponse[Ref]) =>
+      (
+          nelRefR: GHResponse[NonEmptyList[Ref]],
+          refCommitR: GHResponse[RefCommit],
+          treeResultR: GHResponse[TreeResult],
+          createCommitR: GHResponse[RefCommit],
+          updateReferenceR: GHResponse[Ref]
+      ) =>
         val (gitHubOps, _, ghGitData, _, ghRepos, _) = newGitHubOps
 
         (ghGitData.getReference _)
@@ -349,8 +366,11 @@ class GitHubOpsTest extends TestOps {
           case (s1, _) =>
             (ghRepos.getContents _)
               .when(owner, repo, s1, maybeParentCommit)
-              .returns(Free.pure[GitHub4s, GHResponse[NonEmptyList[Content]]](
-                UnexpectedException("Not Found").asLeft))
+              .returns(
+                Free.pure[GitHub4s, GHResponse[NonEmptyList[Content]]](
+                  UnexpectedException("Not Found").asLeft
+                )
+              )
         }
 
         (ghGitData.createTree _)
@@ -415,12 +435,14 @@ class GitHubOpsTest extends TestOps {
 
   test("GithubOps.commitDir works as expected") {
     val property = forAll {
-      (refInfoR: GHResponse[RefInfo],
-       refCommitR: GHResponse[RefCommit],
-       treeResultR: GHResponse[TreeResult],
-       nelRefR: GHResponse[NonEmptyList[Ref]],
-       createCommitR: GHResponse[RefCommit],
-       updateReferenceR: GHResponse[Ref]) =>
+      (
+          refInfoR: GHResponse[RefInfo],
+          refCommitR: GHResponse[RefCommit],
+          treeResultR: GHResponse[TreeResult],
+          nelRefR: GHResponse[NonEmptyList[Ref]],
+          createCommitR: GHResponse[RefCommit],
+          updateReferenceR: GHResponse[Ref]
+      ) =>
         val (gitHubOps, fileReader, ghGitData, _, _, _) = newGitHubOps
 
         val files: List[(File, String)] = filesAndContents.map(t => (new File(baseDir, t._1), t._2))
@@ -503,10 +525,12 @@ class GitHubOpsTest extends TestOps {
 
   test("GithubOps.createTagRelease works as expected") {
     val property = forAll {
-      (nelRefResponse: GHResponse[NonEmptyList[Ref]],
-       tagResponse: GHResponse[Tag],
-       refResponse: GHResponse[Ref],
-       releaseResponse: GHResponse[Release]) =>
+      (
+          nelRefResponse: GHResponse[NonEmptyList[Ref]],
+          tagResponse: GHResponse[Tag],
+          refResponse: GHResponse[Ref],
+          releaseResponse: GHResponse[Release]
+      ) =>
         val (gitHubOps, _, ghGitData, _, ghRepos, _) = newGitHubOps
 
         (ghGitData.getReference _)
@@ -550,7 +574,8 @@ class GitHubOpsTest extends TestOps {
   }
 
   test(
-    "GithubOps.latestPullRequests should return all merged pull requests if there isn't any commit") {
+    "GithubOps.latestPullRequests should return all merged pull requests if there isn't any commit"
+  ) {
 
     val property = forAll { prResponse: GHResponse[List[PullRequest]] =>
       val (gitHubOps, _, _, ghPullRequests, ghRepos, _) = newGitHubOps
@@ -558,7 +583,8 @@ class GitHubOpsTest extends TestOps {
       (ghRepos.listCommits _)
         .when(*, *, *, *, *, *, *, *)
         .returns(
-          Free.pure[GitHub4s, GHResponse[List[Commit]]](Right(GHResult(Nil, 200, Map.empty))))
+          Free.pure[GitHub4s, GHResponse[List[Commit]]](Right(GHResult(Nil, 200, Map.empty)))
+        )
 
       (ghPullRequests.list _)
         .when(*, *, *, *)
@@ -578,7 +604,8 @@ class GitHubOpsTest extends TestOps {
   }
 
   test(
-    "GithubOps.latestPullRequests should return all merged pull requests if there are commits but the message doesn't match") {
+    "GithubOps.latestPullRequests should return all merged pull requests if there are commits but the message doesn't match"
+  ) {
 
     val property = forAll {
       (prResponse: GHResponse[List[PullRequest]], commitsResponse: GHResponse[List[Commit]]) =>
@@ -608,19 +635,22 @@ class GitHubOpsTest extends TestOps {
   }
 
   test(
-    "GithubOps.latestPullRequests should return all merged pull requests with date greater than the selected commit") {
+    "GithubOps.latestPullRequests should return all merged pull requests with date greater than the selected commit"
+  ) {
 
     val property = forAll(genGHResPRListMergedFrom2015, ghResponseCommitListArbitrary.arbitrary) {
       (prResponse: GHResponse[List[PullRequest]], commitsResponse: GHResponse[List[Commit]]) =>
         val (gitHubOps, _, _, ghPullRequests, ghRepos, _) = newGitHubOps
 
-        val commit = Commit(sha = "sha",
-                            message = nonExistingMessage,
-                            date = dateTimeFormat.print(date2015),
-                            url = "http://github.com",
-                            login = None,
-                            avatar_url = None,
-                            author_url = None)
+        val commit = Commit(
+          sha = "sha",
+          message = nonExistingMessage,
+          date = dateTimeFormat.print(date2015),
+          url = "http://github.com",
+          login = None,
+          avatar_url = None,
+          author_url = None
+        )
 
         val newCommitsResponse = commitsResponse map { ghResult =>
           ghResult.copy(result = commit :: ghResult.result)
