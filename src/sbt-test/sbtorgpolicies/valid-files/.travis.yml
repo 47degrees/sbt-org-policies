@@ -37,7 +37,7 @@ install:
 
 script:
   - sbt ++$TRAVIS_SCALA_VERSION orgScriptCI
-  - sbt ++$TRAVIS_SCALA_VERSION tut
+  - sbt ++$TRAVIS_SCALA_VERSION mdoc
 
 after_success:
   - sbt ++$TRAVIS_SCALA_VERSION orgAfterCISuccess
