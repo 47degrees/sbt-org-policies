@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 47 Degrees, LLC. <http://www.47deg.com>
+ * Copyright 2017-2020 47 Degrees, LLC. <http://www.47deg.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,9 @@ class FileHelper {
     } yield ()
   }
 
-  def checkOrgFiles(projectDir: File, baseDir: File, fileList: List[FileType]): IOResult[List[FileType]] = {
+  def checkOrgFiles(projectDir: File,
+                    baseDir: File,
+                    fileList: List[FileType]): IOResult[List[FileType]] = {
 
     def templatePath(f: FileType): String =
       baseDir.getAbsolutePath.ensureFinalSlash + f.templatePath
@@ -68,7 +70,8 @@ class FileHelper {
 
     def prepareFileContent(file: FileType): IOResult[Option[String]] =
       if (!exists(file.outputPath) || file.overWritable) {
-        templatesEngine.replaceFileContentsWith(templatePath(file), file.replacements) map (Option(_))
+        templatesEngine.replaceFileContentsWith(templatePath(file), file.replacements) map (Option(
+          _))
       } else if (file.fileSections.nonEmpty) {
         getFileContent(file.outputPath) map (Option(_))
       } else Right(None)
@@ -84,12 +87,14 @@ class FileHelper {
     def replaceSections(fileContent: String, fileSections: List[FileSection]): IOResult[String] =
       fileSections.foldM(fileContent)(replaceSection)
 
-    def processSectionsIfWritable(maybeContent: Option[String], fileType: FileType): IOResult[Option[String]] =
+    def processSectionsIfWritable(maybeContent: Option[String],
+                                  fileType: FileType): IOResult[Option[String]] =
       maybeContent map { c =>
         replaceSections(c, fileType.fileSections) map (Option(_))
       } getOrElse None.asRight
 
-    def writeToFileIfWritable(maybeContent: Option[String], fileType: FileType): IOResult[Option[FileType]] =
+    def writeToFileIfWritable(maybeContent: Option[String],
+                              fileType: FileType): IOResult[Option[FileType]] =
       maybeContent map { c =>
         writeContentToFile(c, outputPath(fileType)) map (_ => Option(fileType))
       } getOrElse None.asRight

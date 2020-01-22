@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 47 Degrees, LLC. <http://www.47deg.com>
+ * Copyright 2017-2020 47 Degrees, LLC. <http://www.47deg.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,8 @@ trait enforcement {
     val scalaVersionValue = scalaVersion.value
     val isSbtPlugin       = sbtPlugin.value
     if (!isSbtPlugin && scalaVersionValue != scalac.latestScalaVersion) {
-      throw ValidationException(s"scalaVersion is $scalaVersionValue. It should be ${scalac.latestScalaVersion}")
+      throw ValidationException(
+        s"scalaVersion is $scalaVersionValue. It should be ${scalac.latestScalaVersion}")
     }
   }
 
@@ -51,7 +52,8 @@ trait enforcement {
     if (!isSbtPlugin && !scalac.crossScalaVersions.forall(crossScalaVersionsValue.contains)) {
       throw ValidationException(s"""
            |crossScalaVersions is $crossScalaVersionsValue.
-           |It should have at least these versions: ${scalac.crossScalaVersions.mkString(",")}""".stripMargin)
+           |It should have at least these versions: ${scalac.crossScalaVersions
+                                     .mkString(",")}""".stripMargin)
     }
   }
 
@@ -61,7 +63,8 @@ trait enforcement {
     val coverageMinimumValue       = ScoverageKeys.coverageMinimum.value
 
     if (!coverageFailOnMinimumValue)
-      throw ValidationException(s"coverageFailOnMinimum is $coverageFailOnMinimumValue, however, it should be enabled.")
+      throw ValidationException(
+        s"coverageFailOnMinimum is $coverageFailOnMinimumValue, however, it should be enabled.")
 
     if (coverageMinimumValue < scoverageMinimum)
       throw ValidationException(

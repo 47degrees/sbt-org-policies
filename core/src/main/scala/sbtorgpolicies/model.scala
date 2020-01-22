@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 47 Degrees, LLC. <http://www.47deg.com>
+ * Copyright 2017-2020 47 Degrees, LLC. <http://www.47deg.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,8 @@ object model {
   }
 
   /** Apache 2.0 License.*/
-  case object ApacheLicense extends License("Apache License", IO.url("http://www.apache.org/licenses/LICENSE-2.0.txt"))
+  case object ApacheLicense
+      extends License("Apache License", IO.url("http://www.apache.org/licenses/LICENSE-2.0.txt"))
 
   /** MIT License.*/
   case object MITLicense extends License("MIT", IO.url("http://opensource.org/licenses/MIT"))
@@ -65,10 +66,9 @@ object model {
     "-language:reflectiveCalls"
   )
 
-  lazy val scalacAdvancedOptions = Seq(
-    "-Ypartial-unification", // enable fix for SI-2712
-    "-Yliteral-types", // enable SIP-23 implementation
-    "-Xplugin-require:macroparadise")
+  lazy val scalacAdvancedOptions = Seq("-Ypartial-unification", // enable fix for SI-2712
+                                       "-Yliteral-types", // enable SIP-23 implementation
+                                       "-Xplugin-require:macroparadise")
 
   /** Scalac strict compilation options.*/
   def scalacStrictOptions(scalaVersion: String) = {
@@ -91,13 +91,12 @@ object model {
     scalacCommonOptions ++ scalacLanguageOptions ++ scalacStrictOptions(scalaVersion)
 
   /** Github settings and related settings usually found in a Github README.*/
-  case class GitHubSettings(
-      organization: String,
-      project: String,
-      organizationName: String,
-      groupId: String,
-      organizationHomePage: URL,
-      organizationEmail: String) {
+  case class GitHubSettings(organization: String,
+                            project: String,
+                            organizationName: String,
+                            groupId: String,
+                            organizationHomePage: URL,
+                            organizationEmail: String) {
     def home: String         = s"https://github.com/$organization/$project"
     def homePage: URL        = IO.url(s"https://$organization.github.io/$project/")
     def repo: String         = s"git@github.com:$organization/$project.git"

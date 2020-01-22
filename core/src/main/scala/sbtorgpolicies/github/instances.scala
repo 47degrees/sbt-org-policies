@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 47 Degrees, LLC. <http://www.47deg.com>
+ * Copyright 2017-2020 47 Degrees, LLC. <http://www.47deg.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,10 +32,12 @@ object instances {
 
   implicit val ghResponseMonad: Monad[Github4sResponse] = new Monad[Github4sResponse] {
 
-    override def flatMap[A, B](fa: Github4sResponse[A])(f: A => Github4sResponse[B]): Github4sResponse[B] =
+    override def flatMap[A, B](fa: Github4sResponse[A])(
+        f: A => Github4sResponse[B]): Github4sResponse[B] =
       fa.flatMap(ghResult => f(ghResult.result))
 
-    override def tailRecM[A, B](a: A)(f: A => Github4sResponse[Either[A, B]]): Github4sResponse[B] = {
+    override def tailRecM[A, B](a: A)(
+        f: A => Github4sResponse[Either[A, B]]): Github4sResponse[B] = {
       f(a).flatMap { ghResult =>
         ghResult.result match {
           case Right(v) =>

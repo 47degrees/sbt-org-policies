@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 47 Degrees, LLC. <http://www.47deg.com>
+ * Copyright 2017-2020 47 Degrees, LLC. <http://www.47deg.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,15 +30,19 @@ import scala.util.matching.Regex
 trait files {
 
   val orgFilesSettings = Seq(
-    orgUpdateDocFilesSetting := List(baseDirectory.value / "docs", baseDirectory.value / "README.md"),
+    orgUpdateDocFilesSetting := List(baseDirectory.value / "docs",
+                                     baseDirectory.value / "README.md"),
     orgUpdateDocFilesCommitSetting := true,
-    orgUpdateDocFilesReplacementsSetting := Map("\"\\d+\\.\\d+\\.\\d+\"(-SNAPSHOT)?" -> ("\"" + version.value + "\""))
+    orgUpdateDocFilesReplacementsSetting := Map(
+      "\"\\d+\\.\\d+\\.\\d+\"(-SNAPSHOT)?" -> ("\"" + version.value + "\""))
   )
 
   val orgFilesTasks =
     Seq(
       orgCreateFiles := Def.task {
-        onlyRootUnitTask(baseDirectory.value, (baseDirectory in LocalRootProject).value, streams.value.log) {
+        onlyRootUnitTask(baseDirectory.value,
+                         (baseDirectory in LocalRootProject).value,
+                         streams.value.log) {
           createPolicyFiles(
             baseDir = (baseDirectory in LocalRootProject).value,
             templatesDir = orgTemplatesDirectorySetting.value,
@@ -51,7 +55,9 @@ trait files {
         }
       }.value,
       orgUpdateDocFiles := Def.task {
-        onlyRootUnitTask(baseDirectory.value, (baseDirectory in LocalRootProject).value, streams.value.log) {
+        onlyRootUnitTask(baseDirectory.value,
+                         (baseDirectory in LocalRootProject).value,
+                         streams.value.log) {
 
           val taskStreams: TaskStreams = streams.value
           val baseDir: File            = (baseDirectory in LocalRootProject).value
@@ -79,28 +85,30 @@ trait files {
               file.getName.indexOf('.') < 0 || file.getName.endsWith(".md")
             }
 
-            val replaced: List[ProcessedFile] = replaceTextEngine.replaceBlocks(
-              startBlockRegex,
-              endBlockRegex,
-              replacements,
-              updateDocFiles,
-              isFileSupported) match {
-              case Left(e) =>
-                taskStreams.log.error(s"Error updating policy files")
-                e.printStackTrace()
-                Nil
-              case Right(l) => l
-            }
+            val replaced: List[ProcessedFile] =
+              replaceTextEngine.replaceBlocks(startBlockRegex,
+                                              endBlockRegex,
+                                              replacements,
+                                              updateDocFiles,
+                                              isFileSupported) match {
+                case Left(e) =>
+                  taskStreams.log.error(s"Error updating policy files")
+                  e.printStackTrace()
+                  Nil
+                case Right(l) => l
+              }
 
             val errorFiles = replaced.filter(_.status.failure).map(_.file.getAbsolutePath)
             if (errorFiles.nonEmpty) {
-              taskStreams.log.warn(printList("The following files where processed with errors:", errorFiles))
+              taskStreams.log.warn(
+                printList("The following files where processed with errors:", errorFiles))
             }
 
             replaced.filter(f => f.status.success && f.status.modified).map(_.file)
           } else Nil
 
-          val allFiles: List[File]                 = (policyFiles ++ modifiedDocFiles).map(_.getAbsolutePath).distinct.map(file)
+          val allFiles: List[File] =
+            (policyFiles ++ modifiedDocFiles).map(_.getAbsolutePath).distinct.map(file)
           val updateDocFilesCommitSetting: Boolean = orgUpdateDocFilesCommitSetting.value
           val commitMessage: String                = orgCommitMessageSetting.value
           val commitBranch: String                 = orgCommitBranchSetting.value
@@ -119,12 +127,14 @@ trait files {
                 case Right(Some(_)) =>
                   taskStreams.log.info("Files committed successfully")
                 case Right(None) =>
-                  taskStreams.log.info("No changes detected in docs and policy files. Skipping commit")
+                  taskStreams.log.info(
+                    "No changes detected in docs and policy files. Skipping commit")
                 case Left(e) =>
                   taskStreams.log.error(s"Error committing files")
                   e.printStackTrace()
               }
-            } else taskStreams.log.info("orgUpdateDocFilesCommitSetting set to `false`. Skipping commit")
+            } else
+              taskStreams.log.info("orgUpdateDocFilesCommitSetting set to `false`. Skipping commit")
           } else {
             taskStreams.log.info("No files to be committed")
           }
@@ -132,13 +142,12 @@ trait files {
       }.value
     )
 
-  private[this] def createPolicyFiles(
-      baseDir: File,
-      templatesDir: File,
-      targetDir: File,
-      isSnapshot: Boolean,
-      fileTypes: List[FileType],
-      log: Logger): List[File] = {
+  private[this] def createPolicyFiles(baseDir: File,
+                                      templatesDir: File,
+                                      targetDir: File,
+                                      isSnapshot: Boolean,
+                                      fileTypes: List[FileType],
+                                      log: Logger): List[File] = {
     val fh = new FileHelper
 
     val enforcedFiles = fileTypes.filter(ft => !ft.finalVersionOnly || !isSnapshot)
@@ -148,7 +157,9 @@ trait files {
       fileTypes <- fh.checkOrgFiles(baseDir, targetDir, enforcedFiles)
     } yield fileTypes) match {
       case Right(modifiedFileTypes) =>
-        log.info(printList("The following files where created and/or modified:", modifiedFileTypes.map(_.outputPath)))
+        log.info(
+          printList("The following files where created and/or modified:",
+                    modifiedFileTypes.map(_.outputPath)))
         modifiedFileTypes.map(f => baseDir / f.outputPath)
       case Left(e) =>
         log.error(s"Error creating files")

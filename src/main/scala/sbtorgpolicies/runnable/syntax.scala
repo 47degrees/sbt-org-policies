@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 47 Degrees, LLC. <http://www.47deg.com>
+ * Copyright 2017-2020 47 Degrees, LLC. <http://www.47deg.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,10 +42,9 @@ object syntax {
     def asRunnableItem: RunnableItemConfigScope[T] =
       asRunnableItem(allModules = false, aggregated = false, crossScalaVersions = false)
 
-    def asRunnableItem(
-        allModules: Boolean,
-        aggregated: Boolean,
-        crossScalaVersions: Boolean): RunnableItemConfigScope[T] =
+    def asRunnableItem(allModules: Boolean,
+                       aggregated: Boolean,
+                       crossScalaVersions: Boolean): RunnableItemConfigScope[T] =
       RunnableItemConfigScope(RunnableTask(taskKey), allModules, aggregated, crossScalaVersions)
 
   }
@@ -58,11 +57,13 @@ object syntax {
     def asRunnableItem: RunnableItemConfigScope[T] =
       asRunnableItem(allModules = false, aggregated = false, crossScalaVersions = false)
 
-    def asRunnableItem(
-        allModules: Boolean,
-        aggregated: Boolean,
-        crossScalaVersions: Boolean): RunnableItemConfigScope[T] =
-      RunnableItemConfigScope(RunnableSetSetting(setSetting), allModules, aggregated, crossScalaVersions)
+    def asRunnableItem(allModules: Boolean,
+                       aggregated: Boolean,
+                       crossScalaVersions: Boolean): RunnableItemConfigScope[T] =
+      RunnableItemConfigScope(RunnableSetSetting(setSetting),
+                              allModules,
+                              aggregated,
+                              crossScalaVersions)
 
   }
 
@@ -74,10 +75,9 @@ object syntax {
     def asRunnableItem: RunnableItemConfigScope[Unit] =
       asRunnableItem(allModules = false, aggregated = false, crossScalaVersions = false)
 
-    def asRunnableItem(
-        allModules: Boolean,
-        aggregated: Boolean,
-        crossScalaVersions: Boolean): RunnableItemConfigScope[Unit] =
+    def asRunnableItem(allModules: Boolean,
+                       aggregated: Boolean,
+                       crossScalaVersions: Boolean): RunnableItemConfigScope[Unit] =
       RunnableItemConfigScope(RunnableProcess(command), allModules, aggregated, crossScalaVersions)
 
     def asCmd: String =

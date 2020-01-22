@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 47 Degrees, LLC. <http://www.47deg.com>
+ * Copyright 2017-2020 47 Degrees, LLC. <http://www.47deg.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,7 +81,8 @@ package object io {
     }
 
     def write(file: File, content: String, charset: Charset = Charset.forName("UTF-8")): Unit = {
-      val writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false), charset))
+      val writer = new BufferedWriter(
+        new OutputStreamWriter(new FileOutputStream(file, false), charset))
       writer.write(content)
       writer.close()
     }

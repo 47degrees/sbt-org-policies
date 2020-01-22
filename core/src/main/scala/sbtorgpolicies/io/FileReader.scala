@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 47 Degrees, LLC. <http://www.47deg.com>
+ * Copyright 2017-2020 47 Degrees, LLC. <http://www.47deg.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,14 +60,14 @@ class FileReader {
     Either
       .catchNonFatal {
         @tailrec
-        def findAllFiles(
-            in: List[File],
-            isFileSupported: (File) => Boolean,
-            isDirSupported: (File) => Boolean,
-            processedFiles: List[File] = Nil,
-            processedDirs: List[String] = Nil): List[File] = {
+        def findAllFiles(in: List[File],
+                         isFileSupported: (File) => Boolean,
+                         isDirSupported: (File) => Boolean,
+                         processedFiles: List[File] = Nil,
+                         processedDirs: List[String] = Nil): List[File] = {
 
-          val allFiles: List[File] = processedFiles ++ in.filter(f => f.exists && f.isFile && isFileSupported(f))
+          val allFiles: List[File] = processedFiles ++ in.filter(f =>
+            f.exists && f.isFile && isFileSupported(f))
 
           in.filter { f =>
             f.isDirectory &&
@@ -77,12 +77,11 @@ class FileReader {
             case Nil => allFiles
             case list =>
               val subFiles = list.flatMap(_.listFiles().toList)
-              findAllFiles(
-                subFiles,
-                isFileSupported,
-                isDirSupported,
-                allFiles,
-                processedDirs ++ list.map(_.getCanonicalPath))
+              findAllFiles(subFiles,
+                           isFileSupported,
+                           isDirSupported,
+                           allFiles,
+                           processedDirs ++ list.map(_.getCanonicalPath))
           }
         }
 
@@ -90,14 +89,15 @@ class FileReader {
       }
       .leftMap(e => IOException(s"Error fetching files recursively", Some(e)))
 
-  def fetchDirsRecursively(in: List[File], isDirSupported: (File) => Boolean = defaultValidDirs): IOResult[List[File]] =
+  def fetchDirsRecursively(
+      in: List[File],
+      isDirSupported: (File) => Boolean = defaultValidDirs): IOResult[List[File]] =
     Either
       .catchNonFatal {
         @tailrec
-        def findAllDirs(
-            in: List[File],
-            isDirSupported: (File) => Boolean,
-            processedDirs: List[File] = Nil): List[File] = {
+        def findAllDirs(in: List[File],
+                        isDirSupported: (File) => Boolean,
+                        processedDirs: List[File] = Nil): List[File] = {
 
           in.filter { f =>
             f.isDirectory &&

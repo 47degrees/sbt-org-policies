@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 47 Degrees, LLC. <http://www.47deg.com>
+ * Copyright 2017-2020 47 Degrees, LLC. <http://www.47deg.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,30 +32,32 @@ case class ReplaceableT[T](t: T) extends Replaceable {
 }
 
 case class ReplaceableList[T](list: List[T]) extends Replaceable {
-  override def asString: String = list.map(elem => s"* ${elem.asReplaceable.asString}").mkString("\n")
+  override def asString: String =
+    list.map(elem => s"* ${elem.asReplaceable.asString}").mkString("\n")
 }
 
-case class FileType(
-    mandatory: Boolean,
-    overWritable: Boolean,
-    finalVersionOnly: Boolean,
-    templatePath: String,
-    outputPath: String,
-    replacements: Replacements,
-    fileSections: List[FileSection] = Nil,
-    validations: List[ValidationFunction] = Nil)
+case class FileType(mandatory: Boolean,
+                    overWritable: Boolean,
+                    finalVersionOnly: Boolean,
+                    templatePath: String,
+                    outputPath: String,
+                    replacements: Replacements,
+                    fileSections: List[FileSection] = Nil,
+                    validations: List[ValidationFunction] = Nil)
 
-case class FileSection(
-    appendPosition: AppendPosition,
-    template: String,
-    replacements: Replacements,
-    shouldAppend: (String) => Boolean = _ => true)
+case class FileSection(appendPosition: AppendPosition,
+                       template: String,
+                       replacements: Replacements,
+                       shouldAppend: (String) => Boolean = _ => true)
 
 sealed trait AppendPosition
 case object AppendAtTheBeginning    extends AppendPosition
 case object AppendAtTheEnd          extends AppendPosition
 case class AppendAfter(line: Regex) extends AppendPosition
-case class ReplaceSection(from: Regex, to: Regex, insertIfNotFound: Boolean = true, defaultTop: Boolean = true)
+case class ReplaceSection(from: Regex,
+                          to: Regex,
+                          insertIfNotFound: Boolean = true,
+                          defaultTop: Boolean = true)
     extends AppendPosition
 
 case class NewReleaseSection(date: DateTime, version: String, changes: String)
