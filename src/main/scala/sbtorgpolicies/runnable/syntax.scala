@@ -42,9 +42,11 @@ object syntax {
     def asRunnableItem: RunnableItemConfigScope[T] =
       asRunnableItem(allModules = false, aggregated = false, crossScalaVersions = false)
 
-    def asRunnableItem(allModules: Boolean,
-                       aggregated: Boolean,
-                       crossScalaVersions: Boolean): RunnableItemConfigScope[T] =
+    def asRunnableItem(
+        allModules: Boolean,
+        aggregated: Boolean,
+        crossScalaVersions: Boolean
+    ): RunnableItemConfigScope[T] =
       RunnableItemConfigScope(RunnableTask(taskKey), allModules, aggregated, crossScalaVersions)
 
   }
@@ -57,13 +59,17 @@ object syntax {
     def asRunnableItem: RunnableItemConfigScope[T] =
       asRunnableItem(allModules = false, aggregated = false, crossScalaVersions = false)
 
-    def asRunnableItem(allModules: Boolean,
-                       aggregated: Boolean,
-                       crossScalaVersions: Boolean): RunnableItemConfigScope[T] =
-      RunnableItemConfigScope(RunnableSetSetting(setSetting),
-                              allModules,
-                              aggregated,
-                              crossScalaVersions)
+    def asRunnableItem(
+        allModules: Boolean,
+        aggregated: Boolean,
+        crossScalaVersions: Boolean
+    ): RunnableItemConfigScope[T] =
+      RunnableItemConfigScope(
+        RunnableSetSetting(setSetting),
+        allModules,
+        aggregated,
+        crossScalaVersions
+      )
 
   }
 
@@ -75,9 +81,11 @@ object syntax {
     def asRunnableItem: RunnableItemConfigScope[Unit] =
       asRunnableItem(allModules = false, aggregated = false, crossScalaVersions = false)
 
-    def asRunnableItem(allModules: Boolean,
-                       aggregated: Boolean,
-                       crossScalaVersions: Boolean): RunnableItemConfigScope[Unit] =
+    def asRunnableItem(
+        allModules: Boolean,
+        aggregated: Boolean,
+        crossScalaVersions: Boolean
+    ): RunnableItemConfigScope[Unit] =
       RunnableItemConfigScope(RunnableProcess(command), allModules, aggregated, crossScalaVersions)
 
     def asCmd: String =

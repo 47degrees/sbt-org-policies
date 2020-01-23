@@ -36,18 +36,19 @@ trait badgeArbitraries extends modelArbitratries {
         sbtBinaryVersion   <- Arbitrary.arbitrary[String]
         scalaJSV           <- Gen.option(scalaJSVArbitrary.arbitrary)
         license            <- Arbitrary.arbitrary[Option[License]]
-      } yield
-        BadgeInformation(owner,
-                         repo,
-                         branch,
-                         sbtPlugin,
-                         libOrg,
-                         libName,
-                         libVersion,
-                         scalaBinaryVersion,
-                         sbtBinaryVersion,
-                         scalaJSV,
-                         license)
+      } yield BadgeInformation(
+        owner,
+        repo,
+        branch,
+        sbtPlugin,
+        libOrg,
+        libName,
+        libVersion,
+        scalaBinaryVersion,
+        sbtBinaryVersion,
+        scalaJSV,
+        license
+      )
     }
 
   val scalaJSVArbitrary: Arbitrary[String] = {

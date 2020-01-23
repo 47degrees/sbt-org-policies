@@ -30,7 +30,8 @@ trait ValidationFunctions {
   def requiredStrings(list: List[String]): ValidationFunction = {
 
     def validateList(content: String, list: List[String])(
-        validateString: (String) => ValidationResult): ValidationResult =
+        validateString: (String) => ValidationResult
+    ): ValidationResult =
       list.map(validateString).combineAll
 
     content: String =>
@@ -40,9 +41,11 @@ trait ValidationFunctions {
       }
   }
 
-  def requiredSection(startRegExp: Regex,
-                      endRegExp: Regex,
-                      validation: ValidationFunction): ValidationFunction = {
+  def requiredSection(
+      startRegExp: Regex,
+      endRegExp: Regex,
+      validation: ValidationFunction
+  ): ValidationFunction = {
 
     case class Section(started: Boolean = false, ended: Boolean = false, lines: List[String] = Nil)
 
@@ -71,9 +74,11 @@ trait ValidationFunctions {
       }
   }
 
-  def validTravisFile(crossScalaVersions: Seq[String],
-                      scriptExpectedTasks: Seq[String],
-                      afterSuccessTasks: Seq[String]): ValidationFunction = {
+  def validTravisFile(
+      crossScalaVersions: Seq[String],
+      scriptExpectedTasks: Seq[String],
+      afterSuccessTasks: Seq[String]
+  ): ValidationFunction = {
 
     def validateCrossScalaVersions(content: String): ValidationResult = {
 
@@ -82,12 +87,15 @@ trait ValidationFunctions {
       else
         ValidationException(
           s".travis.yml is not valid, it doesn't contain all the " +
-            s"cross scala versions for this project: $crossScalaVersions").invalidNel
+            s"cross scala versions for this project: $crossScalaVersions"
+        ).invalidNel
     }
 
-    def validateTasks(content: String,
-                      section: String,
-                      expectedTasks: Seq[String]): ValidationResult = {
+    def validateTasks(
+        content: String,
+        section: String,
+        expectedTasks: Seq[String]
+    ): ValidationResult = {
       val tasksInTravisFile: List[String] = YamlOps.getFields(content, section).toList
 
       if (expectedTasks.forall(expectedTsk => tasksInTravisFile.exists(_.contains(expectedTsk))))
@@ -95,7 +103,8 @@ trait ValidationFunctions {
       else
         ValidationException(
           s".travis.yml is not valid, it doesn't contain all the " +
-            s"expected tasks in the $section section: $expectedTasks").invalidNel
+            s"expected tasks in the $section section: $expectedTasks"
+        ).invalidNel
     }
 
     content: String =>

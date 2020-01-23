@@ -30,19 +30,24 @@ import scala.util.matching.Regex
 trait files {
 
   val orgFilesSettings = Seq(
-    orgUpdateDocFilesSetting := List(baseDirectory.value / "docs",
-                                     baseDirectory.value / "README.md"),
+    orgUpdateDocFilesSetting := List(
+      baseDirectory.value / "docs",
+      baseDirectory.value / "README.md"
+    ),
     orgUpdateDocFilesCommitSetting := true,
     orgUpdateDocFilesReplacementsSetting := Map(
-      "\"\\d+\\.\\d+\\.\\d+\"(-SNAPSHOT)?" -> ("\"" + version.value + "\""))
+      "\"\\d+\\.\\d+\\.\\d+\"(-SNAPSHOT)?" -> ("\"" + version.value + "\"")
+    )
   )
 
   val orgFilesTasks =
     Seq(
       orgCreateFiles := Def.task {
-        onlyRootUnitTask(baseDirectory.value,
-                         (baseDirectory in LocalRootProject).value,
-                         streams.value.log) {
+        onlyRootUnitTask(
+          baseDirectory.value,
+          (baseDirectory in LocalRootProject).value,
+          streams.value.log
+        ) {
           createPolicyFiles(
             baseDir = (baseDirectory in LocalRootProject).value,
             templatesDir = orgTemplatesDirectorySetting.value,
@@ -55,9 +60,11 @@ trait files {
         }
       }.value,
       orgUpdateDocFiles := Def.task {
-        onlyRootUnitTask(baseDirectory.value,
-                         (baseDirectory in LocalRootProject).value,
-                         streams.value.log) {
+        onlyRootUnitTask(
+          baseDirectory.value,
+          (baseDirectory in LocalRootProject).value,
+          streams.value.log
+        ) {
 
           val taskStreams: TaskStreams = streams.value
           val baseDir: File            = (baseDirectory in LocalRootProject).value
@@ -86,11 +93,13 @@ trait files {
             }
 
             val replaced: List[ProcessedFile] =
-              replaceTextEngine.replaceBlocks(startBlockRegex,
-                                              endBlockRegex,
-                                              replacements,
-                                              updateDocFiles,
-                                              isFileSupported) match {
+              replaceTextEngine.replaceBlocks(
+                startBlockRegex,
+                endBlockRegex,
+                replacements,
+                updateDocFiles,
+                isFileSupported
+              ) match {
                 case Left(e) =>
                   taskStreams.log.error(s"Error updating policy files")
                   e.printStackTrace()
@@ -101,7 +110,8 @@ trait files {
             val errorFiles = replaced.filter(_.status.failure).map(_.file.getAbsolutePath)
             if (errorFiles.nonEmpty) {
               taskStreams.log.warn(
-                printList("The following files where processed with errors:", errorFiles))
+                printList("The following files where processed with errors:", errorFiles)
+              )
             }
 
             replaced.filter(f => f.status.success && f.status.modified).map(_.file)
@@ -128,7 +138,8 @@ trait files {
                   taskStreams.log.info("Files committed successfully")
                 case Right(None) =>
                   taskStreams.log.info(
-                    "No changes detected in docs and policy files. Skipping commit")
+                    "No changes detected in docs and policy files. Skipping commit"
+                  )
                 case Left(e) =>
                   taskStreams.log.error(s"Error committing files")
                   e.printStackTrace()
@@ -142,12 +153,14 @@ trait files {
       }.value
     )
 
-  private[this] def createPolicyFiles(baseDir: File,
-                                      templatesDir: File,
-                                      targetDir: File,
-                                      isSnapshot: Boolean,
-                                      fileTypes: List[FileType],
-                                      log: Logger): List[File] = {
+  private[this] def createPolicyFiles(
+      baseDir: File,
+      templatesDir: File,
+      targetDir: File,
+      isSnapshot: Boolean,
+      fileTypes: List[FileType],
+      log: Logger
+  ): List[File] = {
     val fh = new FileHelper
 
     val enforcedFiles = fileTypes.filter(ft => !ft.finalVersionOnly || !isSnapshot)
@@ -158,8 +171,11 @@ trait files {
     } yield fileTypes) match {
       case Right(modifiedFileTypes) =>
         log.info(
-          printList("The following files where created and/or modified:",
-                    modifiedFileTypes.map(_.outputPath)))
+          printList(
+            "The following files where created and/or modified:",
+            modifiedFileTypes.map(_.outputPath)
+          )
+        )
         modifiedFileTypes.map(f => baseDir / f.outputPath)
       case Left(e) =>
         log.error(s"Error creating files")

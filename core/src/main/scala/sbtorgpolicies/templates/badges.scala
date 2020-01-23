@@ -21,17 +21,19 @@ import sbtorgpolicies.model.{ApacheLicense, License, MITLicense}
 
 object badges {
 
-  case class BadgeInformation(owner: String,
-                              repo: String,
-                              branch: String,
-                              sbtPlugin: Boolean,
-                              libOrg: String,
-                              libName: String,
-                              libVersion: String,
-                              scalaBinaryVersion: String,
-                              sbtBinaryVersion: String,
-                              scalaJSV: Option[String] = None,
-                              license: Option[License] = None)
+  case class BadgeInformation(
+      owner: String,
+      repo: String,
+      branch: String,
+      sbtPlugin: Boolean,
+      libOrg: String,
+      libName: String,
+      libVersion: String,
+      scalaBinaryVersion: String,
+      sbtBinaryVersion: String,
+      scalaJSV: Option[String] = None,
+      license: Option[License] = None
+  )
 
   case class BadgeIcon(title: String, icon: String, url: String)
 

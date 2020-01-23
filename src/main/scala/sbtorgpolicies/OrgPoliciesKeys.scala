@@ -37,15 +37,18 @@ sealed trait OrgPoliciesSettingsKeys {
 
   val orgAfterCISuccessCheckSetting: SettingKey[Boolean] =
     settingKey[Boolean](
-      "Defines the condition that the orgAfterCISuccess command will check before running the orgAfterCISuccessTaskListSetting list.")
+      "Defines the condition that the orgAfterCISuccess command will check before running the orgAfterCISuccessTaskListSetting list."
+    )
 
   val orgAfterCISuccessTaskListSetting: SettingKey[List[RunnableItemConfigScope[_]]] =
     settingKey[List[RunnableItemConfigScope[_]]](
-      "Defines the list of tasks that should be executed once the Continuous integration build has finished successfully.")
+      "Defines the list of tasks that should be executed once the Continuous integration build has finished successfully."
+    )
 
   val orgBadgeListSetting: SettingKey[List[BadgeBuilder]] =
     settingKey[List[BadgeBuilder]](
-      "Defines the list of badges that will be included in the README file.")
+      "Defines the list of badges that will be included in the README file."
+    )
 
   val orgCommitBranchSetting: SettingKey[String] =
     settingKey[String]("Defines the target git branch where policy files will be committed.")
@@ -58,14 +61,16 @@ sealed trait OrgPoliciesSettingsKeys {
 
   val orgEnforcedFilesSetting: SettingKey[List[FileType]] =
     settingKey[List[FileType]](
-      "List of files must exists and should be checked by the sbt-org-policies plugin.")
+      "List of files must exists and should be checked by the sbt-org-policies plugin."
+    )
 
   val orgGithubSetting: SettingKey[GitHubSettings] =
     settingKey[GitHubSettings]("General Organization Github Settings. 47 Degrees data by default.")
 
   val orgGithubTokenSetting: SettingKey[String] =
     settingKey[String](
-      "Environment variable name where the Github token will be stored. Default value: 'ORG_GITHUB_TOKEN'")
+      "Environment variable name where the Github token will be stored. Default value: 'ORG_GITHUB_TOKEN'"
+    )
 
   val orgGithubOpsSetting: SettingKey[GitHubOps] =
     settingKey[GitHubOps]("Github wrapper to interact with github4s and the Github API.")
@@ -82,7 +87,8 @@ sealed trait OrgPoliciesSettingsKeys {
   val orgScriptTaskListSetting: SettingKey[List[RunnableItemConfigScope[_]]] =
     settingKey[List[RunnableItemConfigScope[_]]](
       "Defines the list of tasks that should be executed to figure out whether the build is correct. " +
-        "By default, it'd be something like this: 'sbt clean coverage compile test coverageReport'")
+        "By default, it'd be something like this: 'sbt clean coverage compile test coverageReport'"
+    )
 
   val orgSupportedScalaJSVersion: SettingKey[Option[String]] =
     settingKey[Option[String]]("Defines the ScalaJS version supported. None by default")
@@ -92,19 +98,24 @@ sealed trait OrgPoliciesSettingsKeys {
 
   val orgTemplatesDirectorySetting: SettingKey[File] = settingKey[File](
     "Optional. Directory where are placed the different templates it'll be used. " +
-      "By default, it'll be the resourcesDirectory + '/org/templates'")
+      "By default, it'll be the resourcesDirectory + '/org/templates'"
+  )
 
   val orgUpdateDocFilesSetting: SettingKey[List[File]] =
     settingKey[List[File]](
-      "List of files and directories whose replace blocks will be replaced with the new values.")
+      "List of files and directories whose replace blocks will be replaced with the new values."
+    )
 
   val orgUpdateDocFilesCommitSetting: SettingKey[Boolean] =
     settingKey[Boolean](
-      "Determines if the files should be committed after the update. 'true' by default.")
+      "Determines if the files should be committed after the update. 'true' by default."
+    )
 
   val orgUpdateDocFilesReplacementsSetting: SettingKey[Map[String, String]] =
-    settingKey[Map[String, String]]("Replacements for the replace blocks. " +
-      "By default, the regular expression \"\\\\d+.\\\\d+.\\\\d+\" will be replaced by the project version.")
+    settingKey[Map[String, String]](
+      "Replacements for the replace blocks. " +
+        "By default, the regular expression \"\\\\d+.\\\\d+.\\\\d+\" will be replaced by the project version."
+    )
 }
 
 sealed trait OrgPoliciesTaskKeys {
@@ -115,14 +126,16 @@ sealed trait OrgPoliciesTaskKeys {
 
   val orgCreateFiles: TaskKey[Unit] =
     taskKey[Unit](
-      "Task to create the files that must exists in a project to accomplish the Organization's policies.")
+      "Task to create the files that must exists in a project to accomplish the Organization's policies."
+    )
 
   val orgFetchContributors: TaskKey[List[Dev]] =
     taskKey[List[Dev]]("Task to fetch the project's contributors.")
 
   val orgPublishReleaseTask: TaskKey[Unit] = taskKey[Unit](
     "This task allows to publish the artifact (publishSigned) in case of dealing with an snapshot, or, " +
-      "releasing a new version in any other case.")
+      "releasing a new version in any other case."
+  )
 
   val orgValidateFiles: TaskKey[Unit] =
     taskKey[Unit]("Validates all files according to a set of policy rules.")
@@ -130,7 +143,8 @@ sealed trait OrgPoliciesTaskKeys {
   val orgUpdateDocFiles: TaskKey[Unit] =
     taskKey[Unit](
       "Updates all replace blocks in the defined files and directories and commits both, " +
-        "the modified files and the policy files, only if `orgUpdateDocFilesCommitSetting` is `true`")
+        "the modified files and the policy files, only if `orgUpdateDocFilesCommitSetting` is `true`"
+    )
 
 }
 
@@ -150,12 +164,14 @@ sealed trait TaskKeysUtils {
     onlyRootTask[Unit](baseDir, rootDir, log, (): Unit)(functionTask)
 
   def onlyRootTask[T](baseDir: File, rootDir: File, log: Logger, defaultValue: T)(
-      functionTask: => T): T = {
+      functionTask: => T
+  ): T = {
     if (baseDir.getAbsolutePath == rootDir.getAbsolutePath) {
       functionTask
     } else {
       log.info(
-        s"Skipping task for module '${IO.relativize(rootDir, baseDir).getOrElse(baseDir.getName)}'")
+        s"Skipping task for module '${IO.relativize(rootDir, baseDir).getOrElse(baseDir.getName)}'"
+      )
       defaultValue
     }
   }
