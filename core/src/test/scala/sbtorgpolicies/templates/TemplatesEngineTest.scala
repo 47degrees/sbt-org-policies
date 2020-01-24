@@ -86,8 +86,7 @@ class TemplatesEngineTest extends TestOps {
       .replace("{{year}}", "2017")
       .replace("{{organizationName}}", "47 Degrees")
       .replace("{{organizationHomePage}}", "http://www.47deg.com")
-      .replace("{{contributors}}",
-               """* 47 Deg
+      .replace("{{contributors}}", """* 47 Deg
           |* Developers""".stripMargin.replace("\r", ""))
       .replace("{{special}}", "special char $")
 
@@ -228,9 +227,11 @@ class TemplatesEngineTest extends TestOps {
       templatesEngine.insertIn(originalContentWithoutSection, ReplaceSection(from, to), section)
     result2 shouldBe Right(expectedContent)
 
-    val result3 = templatesEngine.insertIn(originalContentWithoutSection,
-                                           ReplaceSection(from, to, insertIfNotFound = false),
-                                           section)
+    val result3 = templatesEngine.insertIn(
+      originalContentWithoutSection,
+      ReplaceSection(from, to, insertIfNotFound = false),
+      section
+    )
     result3 shouldBe Right(originalContentWithoutSection)
   }
 }

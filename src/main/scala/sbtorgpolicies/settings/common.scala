@@ -26,10 +26,12 @@ trait common {
   val orgCommonTasks =
     Seq(
       orgFetchContributors := Def.task {
-        onlyRootTask[List[Dev]](baseDirectory.value,
-                                (baseDirectory in LocalRootProject).value,
-                                streams.value.log,
-                                Nil) {
+        onlyRootTask[List[Dev]](
+          baseDirectory.value,
+          (baseDirectory in LocalRootProject).value,
+          streams.value.log,
+          Nil
+        ) {
           val ghOps = orgGithubOpsSetting.value
 
           (for {

@@ -66,9 +66,11 @@ object model {
     "-language:reflectiveCalls"
   )
 
-  lazy val scalacAdvancedOptions = Seq("-Ypartial-unification", // enable fix for SI-2712
-                                       "-Yliteral-types", // enable SIP-23 implementation
-                                       "-Xplugin-require:macroparadise")
+  lazy val scalacAdvancedOptions = Seq(
+    "-Ypartial-unification", // enable fix for SI-2712
+    "-Yliteral-types",       // enable SIP-23 implementation
+    "-Xplugin-require:macroparadise"
+  )
 
   /** Scalac strict compilation options.*/
   def scalacStrictOptions(scalaVersion: String) = {
@@ -91,12 +93,14 @@ object model {
     scalacCommonOptions ++ scalacLanguageOptions ++ scalacStrictOptions(scalaVersion)
 
   /** Github settings and related settings usually found in a Github README.*/
-  case class GitHubSettings(organization: String,
-                            project: String,
-                            organizationName: String,
-                            groupId: String,
-                            organizationHomePage: URL,
-                            organizationEmail: String) {
+  case class GitHubSettings(
+      organization: String,
+      project: String,
+      organizationName: String,
+      groupId: String,
+      organizationHomePage: URL,
+      organizationEmail: String
+  ) {
     def home: String         = s"https://github.com/$organization/$project"
     def homePage: URL        = IO.url(s"https://$organization.github.io/$project/")
     def repo: String         = s"git@github.com:$organization/$project.git"
@@ -116,9 +120,9 @@ object model {
   case class Dev(id: String, name: Option[String] = None, url: Option[String] = None) {
     def pomExtra: xml.NodeSeq =
       <developer>
-        <id>{ id }</id>
-        { name.fold(xml.NodeSeq.Empty)(x => <name>{x}</name>) }
-        <url>http://github.com/{ id }</url>
+        <id>{id}</id>
+        {name.fold(xml.NodeSeq.Empty)(x => <name>{x}</name>)}
+        <url>http://github.com/{id}</url>
       </developer>
   }
 

@@ -92,9 +92,11 @@ class FileWriter {
     } yield paths
   }
 
-  def copyJARResourcesTo(jarUrl: URL,
-                         output: String,
-                         filter: String = ""): Either[IOException, Unit] =
+  def copyJARResourcesTo(
+      jarUrl: URL,
+      output: String,
+      filter: String = ""
+  ): Either[IOException, Unit] =
     Either
       .catchNonFatal {
         output.fixPath.toFile.mkdir()
@@ -105,9 +107,11 @@ class FileWriter {
         Stream.continually(zipIn.getNextEntry).takeWhile(_ != null).foreach { entry =>
           val newFile = IO.file(output + File.separator + entry.getName)
 
-          (entry.isDirectory,
-           !newFile.exists() &&
-             newFile.getAbsolutePath.startsWith(s"$output$filter")) match {
+          (
+            entry.isDirectory,
+            !newFile.exists() &&
+              newFile.getAbsolutePath.startsWith(s"$output$filter")
+          ) match {
             case (true, true) => createDir(newFile)
             case (true, _)    =>
             case (false, true) =>
@@ -125,7 +129,8 @@ class FileWriter {
         }
       }
       .leftMap(e =>
-        IOException(s"Error copying resources from $jarUrl to directory $output", Some(e)))
+        IOException(s"Error copying resources from $jarUrl to directory $output", Some(e))
+      )
 }
 
 object FileWriter extends FileWriter
