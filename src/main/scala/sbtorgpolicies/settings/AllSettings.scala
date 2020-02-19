@@ -107,7 +107,6 @@ trait AllSettings
    */
   lazy val pgpSettings = Seq(
     pgpPassphrase := Some(getEnvVar("PGP_PASSPHRASE").getOrElse("").toCharArray),
-    gpgCommand := gpgFolder,
     pgpPublicRing := file(s"$gpgFolder/pubring.gpg"),
     pgpSecretRing := file(s"$gpgFolder/secring.gpg")
   )
