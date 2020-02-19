@@ -21,6 +21,7 @@ pgpPassphrase := Some(Option(System.getenv().get("PGP_PASSPHRASE")).getOrElse(""
 pgpPublicRing := file(s"$gpgFolder/pubring.gpg")
 pgpSecretRing := file(s"$gpgFolder/secring.gpg")
 Global / gpgCommand := "gpg"
+usePgpKeyHex("99E76A8A1D1E27FF")
 
 ThisBuild / parallelExecution := false
 Global / cancelable := true
