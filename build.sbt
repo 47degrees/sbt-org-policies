@@ -17,10 +17,9 @@ lazy val `org-policies-core` = (project in file("core"))
     buildInfoPackage := "sbtorgpolicies",
   )
 
-pgpPassphrase := Some(Option(System.getenv().get("PGP_PASSPHRASE")).getOrElse("").toCharArray)
-//pgpKeyRing := Some(file(s"$gpgFolder/pubring.gpg"))
+pgpPassphrase := Some(sys.env.getOrElse("PGP_PASSPHRASE", "").toCharArray)
 Global / gpgCommand := "gpg"
-usePgpKeyHex("00DD4E68B6B8ACA56BA79E1199E76A8A1D1E27FF")
+//usePgpKeyHex("00DD4E68B6B8ACA56BA79E1199E76A8A1D1E27FF")
 
 ThisBuild / parallelExecution := false
 Global / cancelable := true

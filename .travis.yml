@@ -29,8 +29,7 @@ before_install:
   - if [ "$TRAVIS_BRANCH" = "signing" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then
       openssl aes-256-cbc -K $encrypted_7c61f7d7bb76_key -iv $encrypted_7c61f7d7bb76_iv
       -in secring.gpg.enc -out secring.gpg -d;
-      mkdir -p ~/.gnupg;
-      cp ./*ring.gpg ~/.gnupg;
+      gpg --import --batch --passphrase "$PGP_PASSPHRASE" secring.gpg
     fi
   - rm -rf $HOME/.ivy2/cache/scala_2.12/sbt_1.0/com.47deg/sbt-org-policies
 
