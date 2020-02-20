@@ -100,15 +100,11 @@ trait AllSettings
     )).toSeq
   )
 
-  lazy val gpgFolder: String = getEnvVar("PGP_FOLDER") getOrElse "."
-
   /**
    * Common PGP settings, needed to sign the artifacts when publishing them.
    */
   lazy val pgpSettings = Seq(
-    pgpPassphrase := Some(getEnvVar("PGP_PASSPHRASE").getOrElse("").toCharArray),
-    pgpPublicRing := file(s"$gpgFolder/pubring.gpg"),
-    pgpSecretRing := file(s"$gpgFolder/secring.gpg")
+    pgpPassphrase := sys.env.get("PGP_PASSPHRASE").map(_.toCharArray)
   )
 
   /** Settings to make the module not published*/
