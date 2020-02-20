@@ -18,9 +18,9 @@ lazy val `org-policies-core` = (project in file("core"))
   )
 
 pgpPassphrase := Some(Option(System.getenv().get("PGP_PASSPHRASE")).getOrElse("").toCharArray)
-//pgpKeyRing := Some(file(s"$gpgFolder/pubring.gpg"))
-Global / gpgCommand := "gpg"
-usePgpKeyHex("00DD4E68B6B8ACA56BA79E1199E76A8A1D1E27FF")
+pgpPublicRing := file(s"$gpgFolder/pubring.gpg")
+pgpSecretRing := file(s"$gpgFolder/secring.gpg")
+useGpg := false
 
 ThisBuild / parallelExecution := false
 Global / cancelable := true
