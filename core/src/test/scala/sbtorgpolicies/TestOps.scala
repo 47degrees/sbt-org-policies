@@ -17,12 +17,13 @@
 package sbtorgpolicies
 
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FunSuite, Matchers}
 import org.scalatestplus.scalacheck.Checkers
 
 import scala.language.implicitConversions
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
 
-trait TestOps extends FunSuite with Matchers with Checkers with MockFactory {
+trait TestOps extends AnyFunSuite with Matchers with Checkers with MockFactory {
 
   implicit def anyEq[A](a: A): AnyEq[A] = new AnyEq[A](a)
 
