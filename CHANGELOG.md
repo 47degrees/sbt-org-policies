@@ -1,5 +1,25 @@
 # Changelog
 
+## 02/24/2020 - Version 0.13.1
+
+Release changes:
+
+* Update sbt-org-policies to 0.12.3 ([#1241](https://github.com/47deg/sbt-org-policies/pull/1241))
+* Replace tut by mdoc ([#1243](https://github.com/47deg/sbt-org-policies/pull/1243))
+* Handle renamed compiler flag in Scala 2.13 ([#1245](https://github.com/47deg/sbt-org-policies/pull/1245))
+* Update sbt to 1.3.8 ([#1246](https://github.com/47deg/sbt-org-policies/pull/1246))
+* Update scalacheck-toolbox-datetime to 0.3.2 ([#1247](https://github.com/47deg/sbt-org-policies/pull/1247))
+* Stop incorrectly setting the gpg command to "." ([#1249](https://github.com/47deg/sbt-org-policies/pull/1249))
+* Release 0.12.4 ([#1250](https://github.com/47deg/sbt-org-policies/pull/1250))
+* Set the PGP signing key ([#1251](https://github.com/47deg/sbt-org-policies/pull/1251))
+* Release 0.12.5 ([#1252](https://github.com/47deg/sbt-org-policies/pull/1252))
+* Import the secret key into gpg before signing artifacts ([#1253](https://github.com/47deg/sbt-org-policies/pull/1253))
+* Release 0.13.0 ([#1254](https://github.com/47deg/sbt-org-policies/pull/1254))
+* Update sbt-org-policies to 0.13.0 ([#1255](https://github.com/47deg/sbt-org-policies/pull/1255))
+* Add scalatest plus dependency ([#1257](https://github.com/47deg/sbt-org-policies/pull/1257))
+* Release 0.13.1 ([#1258](https://github.com/47deg/sbt-org-policies/pull/1258))
+
+
 ## 02/20/2020 - Version 0.13.0
 
 Release changes:
