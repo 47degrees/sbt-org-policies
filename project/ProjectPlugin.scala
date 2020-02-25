@@ -28,7 +28,8 @@ object ProjectPlugin extends AutoPlugin {
       val scalacheck: String        = "1.14.3"
       val scalacheckToolbox: String = "0.3.2"
       val scalamock: String         = "4.4.0"
-      val scalatest: String         = "3.0.8"
+      val scalatest: String         = "3.1.1"
+      val scalatestPlus: String     = "3.1.1.1"
       val scalaxml: String          = "1.2.0"
     }
 
@@ -92,6 +93,7 @@ object ProjectPlugin extends AutoPlugin {
         %%("cats-laws", V.cats)                          % Test,
         %%("scalacheck", V.scalacheck)                   % Test,
         %%("scalatest", V.scalatest)                     % Test,
+        %%("scalatestPlus", V.scalatestPlus)             % Test,
         %%("scheckToolboxDatetime", V.scalacheckToolbox) % Test,
         %%("scalamock", V.scalamock)                     % Test
       )
