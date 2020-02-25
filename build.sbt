@@ -1,4 +1,5 @@
 import sbt.Keys._
+import com.jsuereth.sbtpgp.PgpKeys.gpgCommand
 
 lazy val `sbt-org-policies` = (project in file("."))
   .enablePlugins(SbtPlugin)
@@ -16,9 +17,8 @@ lazy val `org-policies-core` = (project in file("core"))
     buildInfoPackage := "sbtorgpolicies",
   )
 
-pgpPassphrase := Some(Option(System.getenv().get("PGP_PASSPHRASE")).getOrElse("").toCharArray)
-pgpPublicRing := file(s"$gpgFolder/pubring.gpg")
-pgpSecretRing := file(s"$gpgFolder/secring.gpg")
+pgpPassphrase := sys.env.get("PGP_PASSPHRASE").map(_.toCharArray)
+Global / gpgCommand := "gpg"
 
 ThisBuild / parallelExecution := false
 Global / cancelable := true

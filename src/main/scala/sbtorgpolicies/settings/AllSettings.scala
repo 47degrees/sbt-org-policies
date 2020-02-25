@@ -92,20 +92,19 @@ trait AllSettings
     credentials ++= (for {
       username <- getEnvVar("SONATYPE_USERNAME")
       password <- getEnvVar("SONATYPE_PASSWORD")
-    } yield
-      Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", username, password)).toSeq
+    } yield Credentials(
+      "Sonatype Nexus Repository Manager",
+      "oss.sonatype.org",
+      username,
+      password
+    )).toSeq
   )
-
-  lazy val gpgFolder: String = getEnvVar("PGP_FOLDER") getOrElse "."
 
   /**
    * Common PGP settings, needed to sign the artifacts when publishing them.
    */
   lazy val pgpSettings = Seq(
-    pgpPassphrase := Some(getEnvVar("PGP_PASSPHRASE").getOrElse("").toCharArray),
-    gpgCommand := gpgFolder,
-    pgpPublicRing := file(s"$gpgFolder/pubring.gpg"),
-    pgpSecretRing := file(s"$gpgFolder/secring.gpg")
+    pgpPassphrase := sys.env.get("PGP_PASSPHRASE").map(_.toCharArray)
   )
 
   /** Settings to make the module not published*/
@@ -134,7 +133,8 @@ trait AllSettings
     jsEnv := new org.scalajs.jsenv.nodejs.NodeJSEnv(),
     // batch mode decreases the amount of memory needed to compile scala.js code
     scalaJSOptimizerOptions := scalaJSOptimizerOptions.value.withBatchMode(
-      getEnvVar("TRAVIS").isDefined)
+      getEnvVar("TRAVIS").isDefined
+    )
   )
 
   /**
@@ -172,7 +172,8 @@ trait AllSettings
     homepage := Some(url(orgGithubSetting.value.home)),
     licenses += orgLicenseSetting.value,
     scmInfo := Some(
-      ScmInfo(url(orgGithubSetting.value.home), "scm:git:" + orgGithubSetting.value.repo)),
+      ScmInfo(url(orgGithubSetting.value.home), "scm:git:" + orgGithubSetting.value.repo)
+    ),
     apiURL := Some(url(orgGithubSetting.value.api)),
     releaseCrossBuild := true,
     releasePublishArtifactsAction := PgpKeys.publishSigned.value,
@@ -181,7 +182,9 @@ trait AllSettings
     pomIncludeRepository := Function.const(false),
     publishTo := sonatypePublishToBundle.value,
     autoAPIMappings := true,
-    pomExtra := <developers> { (orgMaintainersSetting.value ++ orgContributorsSetting.value).map(_.pomExtra) } </developers>
+    pomExtra := <developers> {
+      (orgMaintainersSetting.value ++ orgContributorsSetting.value).map(_.pomExtra)
+    } </developers>
   )
 
   /** Common coverage settings, with minimum coverage defaulting to 80.*/
@@ -203,15 +206,16 @@ trait AllSettings
   lazy val warnUnusedImport = Seq(
     scalacOptions ++= {
       CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((2, 10)) =>
-          Seq()
-        case Some((2, n)) if n >= 11 =>
+        case Some((2, 11)) | Some((2, 12)) =>
           Seq("-Ywarn-unused-import")
+        case Some((2, n)) if n >= 13 =>
+          Seq("-Ywarn-unused:imports")
+        case _ =>
+          Nil
       }
     },
-    //use this when activator moved to 13.9
-    // scalacOptions in (Compile, console) -= "-Ywarn-unused-import",
-    scalacOptions in (Compile, console) ~= { _.filterNot("-Ywarn-unused-import" == _) },
+    scalacOptions in (Compile, console) -= "-Ywarn-unused-import",
+    scalacOptions in (Compile, console) -= "-Ywarn-unused:imports",
     scalacOptions in (Test, console) := { scalacOptions in (Compile, console) }.value
   )
 

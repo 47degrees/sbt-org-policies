@@ -20,13 +20,13 @@ object ProjectPlugin extends AutoPlugin {
 
     lazy val V = new {
       val base64: String            = "0.2.9"
-      val cats: String              = "2.1.0"
-      val github4s: String          = "0.21.0"
+      val cats: String              = "2.1.1"
+      val github4s: String          = "0.20.1"
       val moultingyaml: String      = "0.4.1"
       val scala212: String          = "2.12.10"
       val scala213: String          = "2.13.1"
       val scalacheck: String        = "1.14.3"
-      val scalacheckToolbox: String = "0.3.1"
+      val scalacheckToolbox: String = "0.3.2"
       val scalamock: String         = "4.4.0"
       val scalatest: String         = "3.0.8"
       val scalaxml: String          = "1.2.0"
@@ -50,7 +50,6 @@ object ProjectPlugin extends AutoPlugin {
       addSbtPlugin(%%("sbt-scoverage", true)),
       addSbtPlugin(%%("sbt-scalajs", true)),
       addSbtPlugin(%%("sbt-header", "3.0.2", true)),
-      addSbtPlugin(%%("tut-plugin", true)),
       addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.3.0"),
       scriptedLaunchOpts := {
         scriptedLaunchOpts.value ++

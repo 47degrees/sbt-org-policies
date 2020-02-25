@@ -50,8 +50,10 @@ trait GitHubArbitraries {
   } toList
 
   def genGHResponse[T](gen: Gen[T]): Gen[GHResponse[T]] =
-    Gen.oneOf(genGHException.map(_.asLeft[GHResult[T]]),
-              gen.map(v => GHResult(v, 200, Map.empty).asRight[GHException]))
+    Gen.oneOf(
+      genGHException.map(_.asLeft[GHResult[T]]),
+      gen.map(v => GHResult(v, 200, Map.empty).asRight[GHException])
+    )
 
   val genGHException: Gen[GHException] = {
     val message = "Generated Exception"
@@ -90,15 +92,14 @@ trait GitHubArbitraries {
       maybeBlog     <- Gen.option(genURL)
       maybeLocation <- Gen.option(Gen.alphaStr)
       maybeBio      <- Gen.option(Gen.alphaStr)
-    } yield
-      user.copy(
-        name = maybeName,
-        email = maybeEmail,
-        company = maybeCompany,
-        blog = maybeBlog,
-        location = maybeLocation,
-        bio = maybeBio
-      )
+    } yield user.copy(
+      name = maybeName,
+      email = maybeEmail,
+      company = maybeCompany,
+      blog = maybeBlog,
+      location = maybeLocation,
+      bio = maybeBio
+    )
   }
 
   val genSimpleAndFullUserLists: Gen[(GHResponse[List[User]], List[GHResponse[User]])] =
@@ -160,28 +161,28 @@ trait GitHubArbitraries {
       uploadUrl   <- genURL
       tarballUrl  <- genURL
       zipballUrl  <- genURL
-    } yield
-      Release(
-        id = id,
-        tag_name = tag,
-        target_commitish = target,
-        name = name,
-        body = body,
-        draft = draft,
-        prerelease = prerelease,
-        created_at = createdAt,
-        published_at = publishedAt,
-        author = author,
-        url = url,
-        html_url = htmlUrl,
-        assets_url = assetsUrl,
-        upload_url = uploadUrl,
-        tarball_url = tarballUrl,
-        zipball_url = zipballUrl
-      )
+    } yield Release(
+      id = id,
+      tag_name = tag,
+      target_commitish = target,
+      name = name,
+      body = body,
+      draft = draft,
+      prerelease = prerelease,
+      created_at = createdAt,
+      published_at = publishedAt,
+      author = author,
+      url = url,
+      html_url = htmlUrl,
+      assets_url = assetsUrl,
+      upload_url = uploadUrl,
+      tarball_url = tarballUrl,
+      zipball_url = zipballUrl
+    )
 
   def genPullRequest(
-      genMergedAt: Gen[Option[String]] = Gen.option(genDateTimeString)): Gen[PullRequest] =
+      genMergedAt: Gen[Option[String]] = Gen.option(genDateTimeString)
+  ): Gen[PullRequest] =
     for {
       id        <- Gen.posNum[Int]
       number    <- Gen.posNum[Int]
@@ -194,24 +195,23 @@ trait GitHubArbitraries {
       updatedAt <- Gen.option(genDateTimeString)
       closedAt  <- Gen.option(genDateTimeString)
       mergedAt  <- genMergedAt
-    } yield
-      PullRequest(
-        id = id,
-        number = number,
-        state = state,
-        title = title,
-        body = Some(body),
-        locked = locked,
-        html_url = url,
-        created_at = createdAt,
-        updated_at = updatedAt,
-        closed_at = closedAt,
-        merged_at = mergedAt,
-        base = None,
-        user = None,
-        assignee = None,
-        head = None
-      )
+    } yield PullRequest(
+      id = id,
+      number = number,
+      state = state,
+      title = title,
+      body = Some(body),
+      locked = locked,
+      html_url = url,
+      created_at = createdAt,
+      updated_at = updatedAt,
+      closed_at = closedAt,
+      merged_at = mergedAt,
+      base = None,
+      user = None,
+      assignee = None,
+      head = None
+    )
 
   val genCommit: Gen[Commit] =
     for {

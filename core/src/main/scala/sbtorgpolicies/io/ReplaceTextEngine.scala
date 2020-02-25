@@ -31,26 +31,32 @@ class ReplaceTextEngine {
   import FileReader._
   import FileWriter._
 
-  final def replaceBlocks(startBlockRegex: Regex,
-                          endBlockRegex: Regex,
-                          replacements: Map[String, String],
-                          in: List[File],
-                          isFileSupported: (File) => Boolean): IOResult[List[ProcessedFile]] =
+  final def replaceBlocks(
+      startBlockRegex: Regex,
+      endBlockRegex: Regex,
+      replacements: Map[String, String],
+      in: List[File],
+      isFileSupported: (File) => Boolean
+  ): IOResult[List[ProcessedFile]] =
     fetchFilesRecursively(in, isFileSupported) map { files =>
       files.map(replaceBlocksInFile(Some(startBlockRegex), Some(endBlockRegex), replacements, _))
     }
 
-  final def replaceTexts(replacements: Map[String, String],
-                         in: List[File],
-                         isFileSupported: (File) => Boolean): IOResult[List[ProcessedFile]] =
+  final def replaceTexts(
+      replacements: Map[String, String],
+      in: List[File],
+      isFileSupported: (File) => Boolean
+  ): IOResult[List[ProcessedFile]] =
     fetchFilesRecursively(in, isFileSupported) map { files =>
       files.map(replaceBlocksInFile(None, None, replacements, _))
     }
 
-  private[this] def replaceBlocksInFile(startBlockRegex: Option[Regex],
-                                        endBlockRegex: Option[Regex],
-                                        replacements: Map[String, String],
-                                        in: File): ProcessedFile = {
+  private[this] def replaceBlocksInFile(
+      startBlockRegex: Option[Regex],
+      endBlockRegex: Option[Regex],
+      replacements: Map[String, String],
+      in: File
+  ): ProcessedFile = {
 
     val result: IOResult[Boolean] = for {
       content <- getFileContent(in.getAbsolutePath)
@@ -67,11 +73,13 @@ class ReplaceTextEngine {
   }
 
   @tailrec
-  private[this] final def replaceContent(unprocessed: String,
-                                         startBlockRegex: Option[Regex],
-                                         endBlockRegex: Option[Regex],
-                                         replacements: Map[String, String],
-                                         replaced: String = ""): String = {
+  private[this] final def replaceContent(
+      unprocessed: String,
+      startBlockRegex: Option[Regex],
+      endBlockRegex: Option[Regex],
+      replacements: Map[String, String],
+      replaced: String = ""
+  ): String = {
 
     case class TextBlock(startEnd: Int, text: String, endStart: Int, endEnd: Int)
 
@@ -79,10 +87,13 @@ class ReplaceTextEngine {
       (startR.findFirstMatchIn(unprocessed), endR.findFirstMatchIn(unprocessed)) match {
         case (Some(startMatch), Some(endMatch)) if startMatch.end < endMatch.start =>
           Some(
-            TextBlock(startMatch.end,
-                      unprocessed.subStr(startMatch.end, endMatch.start),
-                      endMatch.start,
-                      endMatch.end))
+            TextBlock(
+              startMatch.end,
+              unprocessed.subStr(startMatch.end, endMatch.start),
+              endMatch.start,
+              endMatch.end
+            )
+          )
         case _ => None
       }
 
@@ -101,18 +112,21 @@ class ReplaceTextEngine {
         }
         val newContent = unprocessed.subStr(0, textBlock.startEnd) + replaced + unprocessed.subStr(
           textBlock.endStart,
-          textBlock.endEnd)
+          textBlock.endEnd
+        )
         (newContent, textBlock.endEnd)
       }
 
     tryToReplace match {
       case None => replaced + unprocessed
       case Some((replacedBlock, endPosition)) =>
-        replaceContent(unprocessed.subStr(endPosition),
-                       startBlockRegex,
-                       endBlockRegex,
-                       replacements,
-                       replaced + replacedBlock)
+        replaceContent(
+          unprocessed.subStr(endPosition),
+          startBlockRegex,
+          endBlockRegex,
+          replacements,
+          replaced + replacedBlock
+        )
     }
   }
 
