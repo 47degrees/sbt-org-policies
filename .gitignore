@@ -6,5 +6,5 @@ target/
 deploy_key
 .DS_Store
 output/*
-/secring.gpg
+secret_key.asc
 /shading/
