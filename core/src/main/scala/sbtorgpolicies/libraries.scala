@@ -26,7 +26,7 @@ object libraries {
     "fetch"           -> "1.0.0-RC1",
     "freestyle"       -> "0.8.2",
     "frees-cassandra" -> "0.1.1",
-    "github4s"        -> "0.20.1",
+    "github4s"        -> "0.21.0",
     "org-policies"    -> sbtorgpolicies.BuildInfo.version,
     "scheckToolbox"   -> "0.2.5"
   )

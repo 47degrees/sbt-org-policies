@@ -184,17 +184,18 @@ trait GitHubArbitraries {
       genMergedAt: Gen[Option[String]] = Gen.option(genDateTimeString)
   ): Gen[PullRequest] =
     for {
-      id        <- Gen.posNum[Int]
-      number    <- Gen.posNum[Int]
-      state     <- Gen.oneOf("open", "closed")
-      title     <- Gen.alphaStr
-      body      <- Gen.alphaStr
-      locked    <- Gen.oneOf(true, false)
-      url       <- genURL
-      createdAt <- genDateTimeString
-      updatedAt <- Gen.option(genDateTimeString)
-      closedAt  <- Gen.option(genDateTimeString)
-      mergedAt  <- genMergedAt
+      id             <- Gen.posNum[Int]
+      number         <- Gen.posNum[Int]
+      state          <- Gen.oneOf("open", "closed")
+      title          <- Gen.alphaStr
+      body           <- Gen.alphaStr
+      locked         <- Gen.oneOf(true, false)
+      url            <- genURL
+      createdAt      <- genDateTimeString
+      updatedAt      <- Gen.option(genDateTimeString)
+      closedAt       <- Gen.option(genDateTimeString)
+      mergedAt       <- genMergedAt
+      mergeCommitSha <- Gen.option(Gen.identifier)
     } yield PullRequest(
       id = id,
       number = number,
@@ -207,6 +208,7 @@ trait GitHubArbitraries {
       updated_at = updatedAt,
       closed_at = closedAt,
       merged_at = mergedAt,
+      merge_commit_sha = mergeCommitSha,
       base = None,
       user = None,
       assignee = None,
