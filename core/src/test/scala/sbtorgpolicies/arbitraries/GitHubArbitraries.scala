@@ -24,7 +24,7 @@ import com.fortysevendeg.scalacheck.datetime.instances.joda._
 import com.fortysevendeg.scalacheck.datetime.joda.GenJoda._
 import com.fortysevendeg.scalacheck.datetime.GenDateTime.genDateTimeWithinRange
 import github4s.GithubResponses._
-import github4s.free.domain._
+import github4s.domain._
 import org.joda.time._
 import org.joda.time.format._
 import org.scalacheck.{Arbitrary, Gen}
@@ -119,9 +119,10 @@ trait GitHubArbitraries {
   def genRef(refPrefix: String): Gen[Ref] =
     for {
       ref       <- Gen.alphaStr
+      nodeId    <- Gen.alphaStr
       url       <- genURL
       refObject <- genRefObject
-    } yield Ref(s"$refPrefix$ref", url, refObject)
+    } yield Ref(s"$refPrefix$ref", nodeId, url, refObject)
 
   def genNonEmptyListRef(refPrefix: String): Gen[NonEmptyList[Ref]] =
     for {
