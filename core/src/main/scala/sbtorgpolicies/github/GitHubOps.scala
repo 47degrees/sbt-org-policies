@@ -368,7 +368,9 @@ class GitHubOps[F[_]: ConcurrentEffect: Timer](
     def findReference(refs: NonEmptyList[Ref]): EitherT[F, GitHubException, Ref] =
       refs.find(_.ref == s"refs/heads/$branch") match {
         case Some(ref) => EitherT.rightT(ref)
-        case None      => EitherT.leftT(GitHubException(s"Branch $branch not found"))
+        case None =>
+          val e = UnexpectedException(s"Branch $branch not found")
+          EitherT.leftT(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
       }
 
     run(gh.gitData.getReference(owner, repo, s"heads/$branch")).flatMap(findReference)

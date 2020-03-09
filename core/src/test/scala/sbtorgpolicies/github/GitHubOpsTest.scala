@@ -18,77 +18,91 @@ package sbtorgpolicies.github
 
 import java.io.File
 
-import cats.data.NonEmptyList
-import cats.free.Free
+import cats.data.{EitherT, NonEmptyList}
+import cats.effect.{ContextShift, IO, Timer}
 import cats.syntax.either._
 import github4s.GithubResponses.{GHException, GHResponse, GHResult, UnexpectedException}
-import github4s.app.GitHub4s
 import github4s._
-import github4s.free.domain._
+import github4s.algebras._
+import github4s.domain._
 import org.scalacheck.Prop._
 import sbtorgpolicies.TestOps
 import sbtorgpolicies.arbitraries.GitHubArbitraries._
 import sbtorgpolicies.exceptions.{GitHubException, IOException, OrgPolicyException}
 import sbtorgpolicies.io.FileReader
 
+import scala.concurrent.ExecutionContext
+
 class GitHubOpsTest extends TestOps {
 
-  def newGitHubOps: (GitHubOps, FileReader, GHGitData, GHPullRequests, GHRepos, GHUsers) = {
+  def newGitHubOps: (
+      GitHubOps[IO],
+      FileReader,
+      GitData[IO],
+      PullRequests[IO],
+      Repositories[IO],
+      Users[IO]
+  ) = {
+
+    implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
+    implicit val ec: ExecutionContext = ExecutionContext.global
+    implicit val t: Timer[IO]         = IO.timer(ExecutionContext.global)
 
     val fileReaderMock: FileReader = stub[FileReader]
 
-    val ghGitData: GHGitData           = stub[GHGitData]
-    val ghPullRequests: GHPullRequests = stub[GHPullRequests]
-    val ghRepos: GHRepos               = stub[GHRepos]
-    val ghUsers: GHUsers               = stub[GHUsers]
+    val ghGitData: GitData[IO]           = stub[GitData[IO]]
+    val ghPullRequests: PullRequests[IO] = stub[PullRequests[IO]]
+    val ghRepos: Repositories[IO]        = stub[Repositories[IO]]
+    val ghUsers: Users[IO]               = stub[Users[IO]]
 
-    val githubMock: Github = new Github() {
-      override lazy val users: GHUsers               = ghUsers
-      override lazy val repos: GHRepos               = ghRepos
-      override lazy val gitData: GHGitData           = ghGitData
-      override lazy val pullRequests: GHPullRequests = ghPullRequests
+    val githubMock: Github[IO] = new Github[IO](None, None) {
+      override lazy val users: Users[IO]               = ghUsers
+      override lazy val repos: Repositories[IO]        = ghRepos
+      override lazy val gitData: GitData[IO]           = ghGitData
+      override lazy val pullRequests: PullRequests[IO] = ghPullRequests
     }
 
-    val gitHubOps = new GitHubOps(owner, repo, None, fileReaderMock) {
-      override val gh: Github = githubMock
+    val gitHubOps = new GitHubOps[IO](owner, repo, None, fileReaderMock) {
+      override val gh: Github[IO] = githubMock
     }
     (gitHubOps, fileReaderMock, ghGitData, ghPullRequests, ghRepos, ghUsers)
   }
 
-  def toLeftResult[T](e: GHException): Either[GitHubException, T] =
-    Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
+  def toLeftResult[T](e: GHException): Either[OrgPolicyException, T] =
+    Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)): OrgPolicyException)
 
   test("GithubOps.fetchContributors works as expected") {
     val property = forAll(genSimpleAndFullUserLists) {
       case (list1: GHResponse[List[User]], list2: List[GHResponse[User]]) =>
         val (gitHubOps, _, _, _, ghRepos, ghUsers) = newGitHubOps
         (ghRepos.listContributors _)
-          .when(*, *, *)
-          .returns(Free.pure[GitHub4s, GHResponse[List[User]]](list1))
+          .when(*, *, *, *)
+          .returns(IO.pure(list1))
 
         list1 match {
           case Right(r) =>
             r.result.zip(list2) foreach {
               case (user1, response) =>
                 (ghUsers.get _)
-                  .when(user1.login)
-                  .returns(Free.pure[GitHub4s, GHResponse[User]](response))
+                  .when(user1.login, *)
+                  .returns(IO.pure(response))
             }
           case Left(_) =>
         }
 
-        val result: Either[GitHubException, List[User]] = gitHubOps.fetchContributors
+        val result: EitherT[IO, OrgPolicyException, List[User]] =
+          gitHubOps.fetchContributors.leftMap[OrgPolicyException](identity)
 
         (list1.left.toOption, list2.find(_.isLeft).flatMap(_.left.toOption)) match {
           case (Some(e), _) =>
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case (_, Some(e)) =>
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case _ =>
             val resultList = list2.collect {
               case Right(gHResult) => gHResult.result
             }
-            result shouldBeEq Right(resultList)
+            result.value.unsafeRunSync() shouldBeEq Right(resultList)
         }
     }
 
@@ -109,12 +123,12 @@ class GitHubOpsTest extends TestOps {
         }
 
         (ghGitData.getReference _)
-          .when(*, *, *)
-          .returns(Free.pure[GitHub4s, GHResponse[NonEmptyList[Ref]]](nelRefResponse))
+          .when(*, *, *, *)
+          .returns(IO.pure(nelRefResponse))
 
         (ghGitData.getCommit _)
-          .when(*, *, *)
-          .returns(Free.pure[GitHub4s, GHResponse[RefCommit]](refCommitResponse))
+          .when(*, *, *, *)
+          .returns(IO.pure(refCommitResponse))
 
         val maybeParentCommit: Option[String] =
           nelRefResponse.toOption.map(_.result.head.`object`.sha)
@@ -145,11 +159,11 @@ class GitHubOpsTest extends TestOps {
             val response: GHResponse[NonEmptyList[Content]] =
               GHResult(NonEmptyList(content, Nil), 200, Map.empty).asRight
             (ghRepos.getContents _)
-              .when(owner, repo, s1, maybeParentCommit)
-              .returns(Free.pure[GitHub4s, GHResponse[NonEmptyList[Content]]](response))
+              .when(owner, repo, s1, maybeParentCommit, *)
+              .returns(IO.pure(response))
         }
 
-        val result: Either[OrgPolicyException, Option[Ref]] =
+        val result: EitherT[IO, OrgPolicyException, Option[Ref]] =
           gitHubOps.commitFiles(
             baseDir,
             branch,
@@ -159,14 +173,14 @@ class GitHubOpsTest extends TestOps {
 
         (nelRefResponse, refCommitResponse) match {
           case (Left(e), _) =>
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case (Right(gHResult), _) if !gHResult.result.exists(_.ref == s"refs/heads/$branch") =>
             val e = UnexpectedException(s"Branch $branch not found")
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case (_, Left(e)) =>
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case _ =>
-            result shouldBeEq Right(None)
+            result.value.unsafeRunSync() shouldBeEq Right(None)
         }
 
     }
@@ -193,39 +207,37 @@ class GitHubOpsTest extends TestOps {
         }
 
         (ghGitData.getReference _)
-          .when(*, *, *)
-          .returns(Free.pure[GitHub4s, GHResponse[NonEmptyList[Ref]]](nelRefR))
+          .when(*, *, *, *)
+          .returns(IO.pure(nelRefR))
 
         (ghGitData.getCommit _)
-          .when(*, *, *)
-          .returns(Free.pure[GitHub4s, GHResponse[RefCommit]](refCommitR))
+          .when(*, *, *, *)
+          .returns(IO.pure(refCommitR))
 
         val maybeParentCommit: Option[String] = nelRefR.toOption.map(_.result.head.`object`.sha)
 
         filesAndContents foreach {
           case (s1, _) =>
             (ghRepos.getContents _)
-              .when(owner, repo, s1, maybeParentCommit)
+              .when(owner, repo, s1, maybeParentCommit, *)
               .returns(
-                Free.pure[GitHub4s, GHResponse[NonEmptyList[Content]]](
-                  UnexpectedException("Not Found").asLeft
-                )
+                IO.pure(UnexpectedException("Not Found").asLeft)
               )
         }
 
         (ghGitData.createTree _)
-          .when(*, *, *, *)
-          .returns(Free.pure[GitHub4s, GHResponse[TreeResult]](treeResultR))
+          .when(*, *, *, *, *)
+          .returns(IO.pure(treeResultR))
 
         (ghGitData.createCommit _)
-          .when(*, *, *, *, *, *)
-          .returns(Free.pure[GitHub4s, GHResponse[RefCommit]](createCommitR))
+          .when(*, *, *, *, *, *, *)
+          .returns(IO.pure(createCommitR))
 
         (ghGitData.updateReference _)
-          .when(*, *, *, *, *)
-          .returns(Free.pure[GitHub4s, GHResponse[Ref]](updateReferenceR))
+          .when(*, *, *, *, *, *)
+          .returns(IO.pure(updateReferenceR))
 
-        val result: Either[OrgPolicyException, Option[Ref]] =
+        val result: EitherT[IO, OrgPolicyException, Option[Ref]] =
           gitHubOps.commitFiles(
             baseDir,
             branch,
@@ -235,21 +247,21 @@ class GitHubOpsTest extends TestOps {
 
         (nelRefR, refCommitR, treeResultR, createCommitR, updateReferenceR) match {
           case (Left(e), _, _, _, _) =>
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case (Right(gHResult), _, _, _, _)
               if !gHResult.result.exists(_.ref == s"refs/heads/$branch") =>
             val e = UnexpectedException(s"Branch $branch not found")
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case (_, Left(e), _, _, _) =>
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case (_, _, Left(e), _, _) =>
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case (_, _, _, Left(e), _) =>
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case (_, _, _, _, Left(e)) =>
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case _ =>
-            result shouldBeEq Right(None)
+            result shouldBeEq EitherT.rightT(None)
         }
     }
 
@@ -264,7 +276,7 @@ class GitHubOpsTest extends TestOps {
 
     (fileReader.getFileContent _).when(*).returns(ioException.asLeft)
 
-    val result: Either[OrgPolicyException, Option[Ref]] =
+    val result: EitherT[IO, OrgPolicyException, Option[Ref]] =
       gitHubOps.commitFiles(
         baseDir,
         branch,
@@ -272,7 +284,7 @@ class GitHubOpsTest extends TestOps {
         filesAndContents.map(t => new File(baseDir, t._1))
       )
 
-    result shouldBe ioException.asLeft
+    result.value.unsafeRunSync() shouldBe ioException.asLeft
 
   }
 
@@ -282,12 +294,12 @@ class GitHubOpsTest extends TestOps {
         val (gitHubOps, _, ghGitData, _, ghRepos, _) = newGitHubOps
 
         (ghGitData.getReference _)
-          .when(*, *, *)
-          .returns(Free.pure[GitHub4s, GHResponse[NonEmptyList[Ref]]](nelRefResponse))
+          .when(*, *, *, *)
+          .returns(IO.pure(nelRefResponse))
 
         (ghGitData.getCommit _)
-          .when(*, *, *)
-          .returns(Free.pure[GitHub4s, GHResponse[RefCommit]](refCommitResponse))
+          .when(*, *, *, *)
+          .returns(IO.pure(refCommitResponse))
 
         val maybeParentCommit: Option[String] =
           nelRefResponse.toOption.map(_.result.head.`object`.sha)
@@ -318,23 +330,25 @@ class GitHubOpsTest extends TestOps {
             val response: GHResponse[NonEmptyList[Content]] =
               GHResult(NonEmptyList(content, Nil), 200, Map.empty).asRight
             (ghRepos.getContents _)
-              .when(owner, repo, s1, maybeParentCommit)
-              .returns(Free.pure[GitHub4s, GHResponse[NonEmptyList[Content]]](response))
+              .when(owner, repo, s1, maybeParentCommit, *)
+              .returns(IO.pure(response))
         }
 
-        val result: Either[OrgPolicyException, Option[Ref]] =
-          gitHubOps.commitFilesAndContents(branch, sampleMessage, filesAndContents)
+        val result: EitherT[IO, OrgPolicyException, Option[Ref]] =
+          gitHubOps
+            .commitFilesAndContents(branch, sampleMessage, filesAndContents)
+            .leftMap[OrgPolicyException](identity)
 
         (nelRefResponse, refCommitResponse) match {
           case (Left(e), _) =>
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case (Right(gHResult), _) if !gHResult.result.exists(_.ref == s"refs/heads/$branch") =>
             val e = UnexpectedException(s"Branch $branch not found")
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case (_, Left(e)) =>
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case _ =>
-            result shouldBeEq Right(None)
+            result shouldBeEq EitherT.rightT(None)
         }
     }
 
@@ -353,58 +367,58 @@ class GitHubOpsTest extends TestOps {
         val (gitHubOps, _, ghGitData, _, ghRepos, _) = newGitHubOps
 
         (ghGitData.getReference _)
-          .when(*, *, *)
-          .returns(Free.pure[GitHub4s, GHResponse[NonEmptyList[Ref]]](nelRefR))
+          .when(*, *, *, *)
+          .returns(IO.pure(nelRefR))
 
         (ghGitData.getCommit _)
-          .when(*, *, *)
-          .returns(Free.pure[GitHub4s, GHResponse[RefCommit]](refCommitR))
+          .when(*, *, *, *)
+          .returns(IO.pure(refCommitR))
 
         val maybeParentCommit: Option[String] = nelRefR.toOption.map(_.result.head.`object`.sha)
 
         filesAndContents foreach {
           case (s1, _) =>
             (ghRepos.getContents _)
-              .when(owner, repo, s1, maybeParentCommit)
+              .when(owner, repo, s1, maybeParentCommit, *)
               .returns(
-                Free.pure[GitHub4s, GHResponse[NonEmptyList[Content]]](
-                  UnexpectedException("Not Found").asLeft
-                )
+                IO.pure(UnexpectedException("Not Found").asLeft)
               )
         }
 
         (ghGitData.createTree _)
-          .when(*, *, *, *)
-          .returns(Free.pure[GitHub4s, GHResponse[TreeResult]](treeResultR))
+          .when(*, *, *, *, *)
+          .returns(IO.pure(treeResultR))
 
         (ghGitData.createCommit _)
-          .when(*, *, *, *, *, *)
-          .returns(Free.pure[GitHub4s, GHResponse[RefCommit]](createCommitR))
+          .when(*, *, *, *, *, *, *)
+          .returns(IO.pure(createCommitR))
 
         (ghGitData.updateReference _)
-          .when(*, *, *, *, *)
-          .returns(Free.pure[GitHub4s, GHResponse[Ref]](updateReferenceR))
+          .when(*, *, *, *, *, *)
+          .returns(IO.pure(updateReferenceR))
 
-        val result: Either[OrgPolicyException, Option[Ref]] =
-          gitHubOps.commitFilesAndContents(branch, sampleMessage, filesAndContents)
+        val result: EitherT[IO, OrgPolicyException, Option[Ref]] =
+          gitHubOps
+            .commitFilesAndContents(branch, sampleMessage, filesAndContents)
+            .leftMap[OrgPolicyException](identity)
 
         (nelRefR, refCommitR, treeResultR, createCommitR, updateReferenceR) match {
           case (Left(e), _, _, _, _) =>
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case (Right(gHResult), _, _, _, _)
               if !gHResult.result.exists(_.ref == s"refs/heads/$branch") =>
             val e = UnexpectedException(s"Branch $branch not found")
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case (_, Left(e), _, _, _) =>
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case (_, _, Left(e), _, _) =>
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case (_, _, _, Left(e), _) =>
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case (_, _, _, _, Left(e)) =>
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case _ =>
-            result shouldBeEq Right(None)
+            result shouldBeEq EitherT.rightT(None)
         }
     }
 
@@ -416,16 +430,17 @@ class GitHubOpsTest extends TestOps {
       val (gitHubOps, _, ghGitData, _, _, _) = newGitHubOps
 
       (ghGitData.getReference _)
-        .when(owner, repo, ref)
-        .returns(Free.pure[GitHub4s, GHResponse[NonEmptyList[Ref]]](refResponse))
+        .when(owner, repo, ref, *)
+        .returns(IO.pure(refResponse))
 
-      val result: Either[GitHubException, NonEmptyList[Ref]] = gitHubOps.fetchReference(ref)
+      val result: EitherT[IO, OrgPolicyException, NonEmptyList[Ref]] =
+        gitHubOps.fetchReference(ref).leftMap[OrgPolicyException](identity)
 
       refResponse match {
         case Left(e) =>
-          result shouldBeEq toLeftResult(e)
+          result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
         case Right(gHResult) =>
-          result shouldBeEq Right(gHResult.result)
+          result.value.unsafeRunSync() shouldBeEq Right(gHResult.result)
       }
 
     }
@@ -457,51 +472,51 @@ class GitHubOpsTest extends TestOps {
         }
 
         (ghGitData.getReference _)
-          .when(*, *, *)
-          .returns(Free.pure[GitHub4s, GHResponse[NonEmptyList[Ref]]](nelRefR))
+          .when(*, *, *, *)
+          .returns(IO.pure(nelRefR))
 
         (ghGitData.getCommit _)
-          .when(*, *, *)
-          .returns(Free.pure[GitHub4s, GHResponse[RefCommit]](refCommitR))
+          .when(*, *, *, *)
+          .returns(IO.pure(refCommitR))
 
         (ghGitData.createBlob _)
-          .when(*, *, *, *)
-          .returns(Free.pure[GitHub4s, GHResponse[RefInfo]](refInfoR))
+          .when(*, *, *, *, *)
+          .returns(IO.pure(refInfoR))
 
         (ghGitData.createTree _)
-          .when(*, *, *, *)
-          .returns(Free.pure[GitHub4s, GHResponse[TreeResult]](treeResultR))
+          .when(*, *, *, *, *)
+          .returns(IO.pure(treeResultR))
 
         (ghGitData.createCommit _)
-          .when(*, *, *, *, *, *)
-          .returns(Free.pure[GitHub4s, GHResponse[RefCommit]](createCommitR))
+          .when(*, *, *, *, *, *, *)
+          .returns(IO.pure(createCommitR))
 
         (ghGitData.updateReference _)
-          .when(*, *, *, *, *)
-          .returns(Free.pure[GitHub4s, GHResponse[Ref]](updateReferenceR))
+          .when(*, *, *, *, *, *)
+          .returns(IO.pure(updateReferenceR))
 
-        val result: Either[OrgPolicyException, Ref] =
+        val result: EitherT[IO, OrgPolicyException, Ref] =
           gitHubOps.commitDir(branch, sampleMessage, baseDir)
 
         (nelRefR, refCommitR, refInfoR, treeResultR, createCommitR, updateReferenceR) match {
           case (Left(e), _, _, _, _, _) =>
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case (Right(gHResult), _, _, _, _, _)
               if !gHResult.result.exists(_.ref == s"refs/heads/$branch") =>
             val e = UnexpectedException(s"Branch $branch not found")
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case (_, Left(e), _, _, _, _) =>
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case (_, _, Left(e), _, _, _) =>
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case (_, _, _, Left(e), _, _) =>
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case (_, _, _, _, Left(e), _) =>
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case (_, _, _, _, _, Left(e)) =>
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case (_, _, _, _, _, Right(r)) =>
-            result shouldBeEq r.result.asRight
+            result shouldBeEq EitherT.rightT(r.result)
         }
     }
     check(property)
@@ -509,18 +524,16 @@ class GitHubOpsTest extends TestOps {
   }
 
   test("GithubOps.commitDir should return an error when the file reader returns an error") {
-
     val (gitHubOps, fileReader, _, _, _, _) = newGitHubOps
 
     val ioException: IOException = IOException("Test error")
 
     (fileReader.fetchDirsRecursively _).when(*, *).returns(ioException.asLeft)
 
-    val result: Either[OrgPolicyException, Ref] =
+    val result: EitherT[IO, OrgPolicyException, Ref] =
       gitHubOps.commitDir(branch, sampleMessage, baseDir)
 
-    result.isLeft shouldBe true
-
+    result.value.unsafeRunSync().isLeft shouldBe true
   }
 
   test("GithubOps.createTagRelease works as expected") {
@@ -534,39 +547,41 @@ class GitHubOpsTest extends TestOps {
         val (gitHubOps, _, ghGitData, _, ghRepos, _) = newGitHubOps
 
         (ghGitData.getReference _)
-          .when(*, *, *)
-          .returns(Free.pure[GitHub4s, GHResponse[NonEmptyList[Ref]]](nelRefResponse))
+          .when(*, *, *, *)
+          .returns(IO.pure(nelRefResponse))
 
         (ghGitData.createTag _)
-          .when(*, *, *, *, *, *, *)
-          .returns(Free.pure[GitHub4s, GHResponse[Tag]](tagResponse))
+          .when(*, *, *, *, *, *, *, *)
+          .returns(IO.pure(tagResponse))
 
         (ghGitData.createReference _)
-          .when(*, *, *, *)
-          .returns(Free.pure[GitHub4s, GHResponse[Ref]](refResponse))
+          .when(*, *, *, *, *)
+          .returns(IO.pure(refResponse))
 
         (ghRepos.createRelease _)
-          .when(*, *, *, *, *, *, *, *)
-          .returns(Free.pure[GitHub4s, GHResponse[Release]](releaseResponse))
+          .when(*, *, *, *, *, *, *, *, *)
+          .returns(IO.pure(releaseResponse))
 
-        val result: Either[GitHubException, Release] =
-          gitHubOps.createTagRelease(branch, tag, sampleMessage, releaseDescription)
+        val result: EitherT[IO, OrgPolicyException, Release] =
+          gitHubOps
+            .createTagRelease(branch, tag, sampleMessage, releaseDescription)
+            .leftMap[OrgPolicyException](identity)
 
         (nelRefResponse, tagResponse, refResponse, releaseResponse) match {
           case (Left(e), _, _, _) =>
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case (Right(gHResult), _, _, _)
               if !gHResult.result.exists(_.ref == s"refs/heads/$branch") =>
             val e = UnexpectedException(s"Branch $branch not found")
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case (_, Left(e), _, _) =>
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case (_, _, Left(e), _) =>
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case (_, _, _, Left(e)) =>
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case (_, _, _, Right(gHResult)) =>
-            result shouldBeEq Right(gHResult.result)
+            result shouldBeEq EitherT.rightT(gHResult.result)
         }
     }
 
@@ -581,23 +596,25 @@ class GitHubOpsTest extends TestOps {
       val (gitHubOps, _, _, ghPullRequests, ghRepos, _) = newGitHubOps
 
       (ghRepos.listCommits _)
-        .when(*, *, *, *, *, *, *, *)
-        .returns(
-          Free.pure[GitHub4s, GHResponse[List[Commit]]](Right(GHResult(Nil, 200, Map.empty)))
-        )
+        .when(*, *, *, *, *, *, *, *, *)
+        .returns(IO.pure(Right(GHResult(Nil, 200, Map.empty))))
 
-      (ghPullRequests.list _)
-        .when(*, *, *, *)
-        .returns(Free.pure[GitHub4s, GHResponse[List[PullRequest]]](prResponse))
+      (ghPullRequests.listPullRequests _)
+        .when(*, *, *, *, *)
+        .returns(IO.pure(prResponse))
 
-      val result: Either[GitHubException, List[PullRequest]] =
-        gitHubOps.latestPullRequests(branch, "", "")
+      val result: EitherT[IO, OrgPolicyException, List[PullRequest]] =
+        gitHubOps
+          .latestPullRequests(branch, "", "")
+          .leftMap[OrgPolicyException](identity)
 
       prResponse match {
         case Right(gHResult) =>
-          result.map(_.toSet) shouldBeEq Right(gHResult.result.filter(_.merged_at.nonEmpty).toSet)
+          result.map(_.toSet).value.unsafeRunSync() shouldBeEq Right(
+            gHResult.result.filter(_.merged_at.nonEmpty).toSet
+          )
         case Left(e) =>
-          result shouldBeEq toLeftResult(e)
+          result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
       }
     }
     check(property)
@@ -612,23 +629,27 @@ class GitHubOpsTest extends TestOps {
         val (gitHubOps, _, _, ghPullRequests, ghRepos, _) = newGitHubOps
 
         (ghRepos.listCommits _)
-          .when(*, *, *, *, *, *, *, *)
-          .returns(Free.pure[GitHub4s, GHResponse[List[Commit]]](commitsResponse))
+          .when(*, *, *, *, *, *, *, *, *)
+          .returns(IO.pure(commitsResponse))
 
-        (ghPullRequests.list _)
-          .when(*, *, *, *)
-          .returns(Free.pure[GitHub4s, GHResponse[List[PullRequest]]](prResponse))
+        (ghPullRequests.listPullRequests _)
+          .when(*, *, *, *, *)
+          .returns(IO.pure(prResponse))
 
-        val result: Either[GitHubException, List[PullRequest]] =
-          gitHubOps.latestPullRequests(branch, "", nonExistingMessage)
+        val result: EitherT[IO, OrgPolicyException, List[PullRequest]] =
+          gitHubOps
+            .latestPullRequests(branch, "", nonExistingMessage)
+            .leftMap[OrgPolicyException](identity)
 
         (commitsResponse, prResponse) match {
           case (Left(e), _) =>
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case (_, Left(e)) =>
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case (Right(_), Right(gHResult)) =>
-            result.map(_.toSet) shouldBeEq Right(gHResult.result.filter(_.merged_at.nonEmpty).toSet)
+            result.map(_.toSet).value.unsafeRunSync() shouldBeEq Right(
+              gHResult.result.filter(_.merged_at.nonEmpty).toSet
+            )
         }
     }
     check(property)
@@ -657,27 +678,29 @@ class GitHubOpsTest extends TestOps {
         }
 
         (ghRepos.listCommits _)
-          .when(*, *, *, *, *, *, *, *)
-          .returns(Free.pure[GitHub4s, GHResponse[List[Commit]]](newCommitsResponse))
+          .when(*, *, *, *, *, *, *, *, *)
+          .returns(IO.pure(newCommitsResponse))
 
-        (ghPullRequests.list _)
-          .when(*, *, *, *)
-          .returns(Free.pure[GitHub4s, GHResponse[List[PullRequest]]](prResponse))
+        (ghPullRequests.listPullRequests _)
+          .when(*, *, *, *, *)
+          .returns(IO.pure(prResponse))
 
-        val result: Either[GitHubException, List[PullRequest]] =
-          gitHubOps.latestPullRequests(branch, "", nonExistingMessage)
+        val result: EitherT[IO, OrgPolicyException, List[PullRequest]] =
+          gitHubOps
+            .latestPullRequests(branch, "", nonExistingMessage)
+            .leftMap[OrgPolicyException](identity)
 
         (commitsResponse, prResponse) match {
           case (Left(e), _) =>
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case (_, Left(e)) =>
-            result shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
           case (Right(_), Right(gHResult)) =>
             val expected =
               gHResult.result
                 .filter(_.merged_at.exists(s => dateTimeFormat.parseDateTime(s).isAfter(date2015)))
                 .toSet
-            result.map(_.toSet) shouldBeEq Right(expected)
+            result.map(_.toSet).value.unsafeRunSync() shouldBeEq Right(expected)
         }
     }
     check(property)
@@ -687,26 +710,24 @@ class GitHubOpsTest extends TestOps {
     val property = forAll { refResponse: GHResponse[NonEmptyList[Ref]] =>
       val (gitHubOps, _, ghGitData, _, _, _) = newGitHubOps
 
-      import syntax._
-
       (ghGitData.getReference _)
-        .when(owner, repo, ref)
-        .returns(Free.pure[GitHub4s, GHResponse[NonEmptyList[Ref]]](refResponse))
+        .when(owner, repo, ref, *)
+        .returns(IO.pure(refResponse))
 
-      val result: Either[GitHubException, Ref] = gitHubOps.fetchHeadCommit(branch).execE
+      val result: EitherT[IO, OrgPolicyException, Ref] =
+        gitHubOps.fetchHeadCommit(branch).leftMap[OrgPolicyException](identity)
 
       refResponse match {
         case Left(e) =>
-          result shouldBeEq toLeftResult(e)
+          result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
         case Right(gHResult) if gHResult.result.exists(_.ref == s"refs/heads/$branch") =>
-          result shouldBeEq Right(gHResult.result.head)
+          result.value.unsafeRunSync() shouldBeEq Right(gHResult.result.head)
         case _ =>
           val e = UnexpectedException(s"Branch $branch not found")
-          result shouldBeEq toLeftResult(e)
+          result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
       }
     }
 
     check(property)
   }
-
 }
