@@ -19,7 +19,7 @@ package sbtorgpolicies.github
 import java.io.File
 
 import cats.data.{EitherT, NonEmptyList}
-import cats.effect.{ConcurrentEffect, Sync}
+import cats.effect.{ConcurrentEffect, Sync, Timer}
 import cats.implicits._
 import com.github.marklister.base64.Base64._
 import github4s.Github
@@ -30,8 +30,9 @@ import sbtorgpolicies.github.config._
 import sbtorgpolicies.io.{FileReader, IO => FIO, IOResult}
 
 import scala.concurrent.ExecutionContext
+import scala.concurrent.duration._
 
-class GitHubOps[F[_]: ConcurrentEffect](
+class GitHubOps[F[_]: ConcurrentEffect: Timer](
     owner: String,
     repo: String,
     accessToken: Option[String],
@@ -215,8 +216,11 @@ class GitHubOps[F[_]: ConcurrentEffect](
         )
 
       def createTreeDataSha(filePath: String, array: Array[Byte]): EitherT[F, GitHubException, TreeData] =
-        run(ghWithRateLimit.gitData.createBlob(owner, repo, array.toBase64, Some("base64")))
-          .map(refInfo => TreeDataSha(filePath, blobMode, blobType, refInfo.sha))
+        for {
+          gh <- EitherT.right(ghWithRateLimit)
+          res <- run(gh.gitData.createBlob(owner, repo, array.toBase64, Some("base64")))
+            .map(refInfo => TreeDataSha(filePath, blobMode, blobType, refInfo.sha))
+        } yield res
 
       def createTreeDataBlob(filePath: String, array: Array[Byte]): EitherT[F, GitHubException, TreeData] =
         EitherT.rightT(TreeDataBlob(filePath, blobMode, blobType, new String(array)): TreeData)
@@ -247,12 +251,16 @@ class GitHubOps[F[_]: ConcurrentEffect](
         baseTreeSha: Option[String],
         treeData: List[TreeData]
     ): EitherT[F, GitHubException, TreeResult] =
-      run(ghWithRateLimit.gitData.createTree(owner, repo, baseTreeSha, treeData))
+      for {
+        gh <- EitherT.right(ghWithRateLimit)
+        res <- run(gh.gitData.createTree(owner, repo, baseTreeSha, treeData))
+      } yield res
 
     def createCommit(treeSha: String, parentCommit: String): EitherT[F, GitHubException, RefCommit] =
-      run(
-        ghWithRateLimit.gitData.createCommit(owner, repo, message, treeSha, List(parentCommit), author = None)
-      )
+      for {
+        gh <- EitherT.right(ghWithRateLimit)
+        res <- run(gh.gitData.createCommit(owner, repo, message, treeSha, List(parentCommit), author = None))
+      } yield res
 
     def parentCommitSha: EitherT[F, GitHubException, String] = commitSha match {
       case Some(sha) => EitherT.rightT(sha)
@@ -347,12 +355,7 @@ class GitHubOps[F[_]: ConcurrentEffect](
     }
   )
 
-  // TODO: refactor
-  def ghWithRateLimit: Github[F] = {
-    // Due to GitHub abuse rate limits, we should wait 1 sec between each request
-    // https://developer.github.com/guides/best-practices-for-integrators/#dealing-with-abuse-rate-limits
-    Thread.sleep(1000)
-    gh
-  }
-
+  // Due to GitHub abuse rate limits, we should wait 1 sec between each request
+  // https://developer.github.com/guides/best-practices-for-integrators/#dealing-with-abuse-rate-limits
+  def ghWithRateLimit: F[Github[F]] = Timer[F].sleep(1.second).as(gh)
 }
