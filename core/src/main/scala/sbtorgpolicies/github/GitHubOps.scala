@@ -27,7 +27,7 @@ import github4s.GithubResponses._
 import github4s.domain._
 import sbtorgpolicies.exceptions.{GitHubException, IOException, OrgPolicyException}
 import sbtorgpolicies.github.config._
-import sbtorgpolicies.io.{FileReader, IO => FIO, IOResult}
+import sbtorgpolicies.io.{FileReader, IO => FIO}
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
@@ -62,14 +62,19 @@ class GitHubOps[F[_]: ConcurrentEffect: Timer](
       files: List[File]
   ): EitherT[F, OrgPolicyException, Option[Ref]] = {
 
-    def relativePath(file: File): String = FIO.relativize(baseDir, file).getOrElse(file.getName)
+    def relativePath(file: File): F[String] =
+      Sync[F].delay(FIO.relativize(baseDir, file).getOrElse(file.getName))
 
-    def readFileContents: IOResult[List[(String, String)]] =
+    def readFileContents: EitherT[F, IOException, List[(String, String)]] =
       files.traverse { file =>
-        fileReader.getFileContent(file.getAbsolutePath).tupleLeft(relativePath(file))
+        for {
+          path <- EitherT.right(Sync[F].delay(file.getAbsolutePath()))
+          content <- EitherT(Sync[F].delay(fileReader.getFileContent(path)))
+          relativePath <- EitherT.right(relativePath(file))
+        } yield (content, relativePath)
       }
 
-    EitherT.fromEither[F](readFileContents)
+    readFileContents
       .leftMap[OrgPolicyException](identity)
       .flatMap { filesAndContents =>
         commitFilesAndContents(branch, message, filesAndContents)
@@ -155,11 +160,10 @@ class GitHubOps[F[_]: ConcurrentEffect: Timer](
   }
 
   def commitDir(branch: String, message: String, dir: File): EitherT[F, OrgPolicyException, Ref] =
-    fileReader.fetchDirsRecursively(List(dir)) match {
-      case Right(Nil) => EitherT.leftT(IOException(s"Nothing to commit in dir ${dir.getAbsolutePath}"))
-      case Right(head :: list) => commitDir(branch, message, dir, NonEmptyList(head, list))
+    EitherT(Sync[F].delay(fileReader.fetchDirsRecursively(List(dir)))).flatMap {
+      case Nil => EitherT.leftT(IOException(s"Nothing to commit in dir ${dir.getAbsolutePath}"))
+      case h :: t => commitDir(branch, message, dir, NonEmptyList(h, t))
         .leftMap[OrgPolicyException](identity)
-      case Left(e) => EitherT.leftT(e)
     }
 
   def commitDir(
@@ -203,15 +207,13 @@ class GitHubOps[F[_]: ConcurrentEffect: Timer](
     def createTreeDataList(files: List[File]): EitherT[F, GitHubException, List[TreeData]] = {
 
       def readFileAsGithub4sResponse(file: File): EitherT[F, GitHubException, Array[Byte]] =
-        EitherT.fromEither[F] {
-          fileReader
-            .getFileBytes(file)
-            .leftMap(e => GitHubException(e.getMessage))
+        EitherT {
+          Sync[F].delay(fileReader.getFileBytes(file).leftMap(e => GitHubException(e.getMessage)))
         }
 
       def path(file: File): EitherT[F, GitHubException, String] =
-        EitherT.fromOption[F](
-          FIO.relativize(baseDir, file),
+        EitherT.fromOptionF(
+          Sync[F].delay(FIO.relativize(baseDir, file)),
           GitHubException(s"Can't determine path for ${file.getAbsolutePath}")
         )
 
