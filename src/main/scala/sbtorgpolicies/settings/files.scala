@@ -16,6 +16,7 @@
 
 package sbtorgpolicies.settings
 
+import cats.effect.IO
 import sbt.Keys._
 import sbt._
 import sbtorgpolicies.OrgPoliciesKeys._
@@ -122,18 +123,21 @@ trait files {
           val updateDocFilesCommitSetting: Boolean = orgUpdateDocFilesCommitSetting.value
           val commitMessage: String                = orgCommitMessageSetting.value
           val commitBranch: String                 = orgCommitBranchSetting.value
-          val ghOps: GitHubOps                     = orgGithubOpsSetting.value
+          val ghOps: GitHubOps[IO]                 = orgGithubOpsSetting.value
 
           if (allFiles.nonEmpty) {
             if (updateDocFilesCommitSetting) {
               taskStreams.log.info(printList("Committing files", allFiles.map(_.getAbsolutePath)))
 
-              ghOps.commitFiles(
-                baseDir = baseDir,
-                branch = commitBranch,
-                message = s"$commitMessage [ci skip]",
-                files = allFiles
-              ) match {
+              ghOps
+                .commitFiles(
+                  baseDir = baseDir,
+                  branch = commitBranch,
+                  message = s"$commitMessage [ci skip]",
+                  files = allFiles
+                )
+                .value
+                .unsafeRunSync() match {
                 case Right(Some(_)) =>
                   taskStreams.log.info("Files committed successfully")
                 case Right(None) =>

@@ -17,7 +17,8 @@
 package sbtorgpolicies
 
 import sbt._
-import sbtorgpolicies.github.GitHubOps
+import sbtorgpolicies.github.GitHubOpsIO
+import sbtorgpolicies.io.{IO => FIO}
 import sbtorgpolicies.model._
 import sbtorgpolicies.runnable._
 import sbtorgpolicies.templates.FileType
@@ -72,8 +73,8 @@ sealed trait OrgPoliciesSettingsKeys {
       "Environment variable name where the Github token will be stored. Default value: 'ORG_GITHUB_TOKEN'"
     )
 
-  val orgGithubOpsSetting: SettingKey[GitHubOps] =
-    settingKey[GitHubOps]("Github wrapper to interact with github4s and the Github API.")
+  val orgGithubOpsSetting: SettingKey[GitHubOpsIO] =
+    settingKey[GitHubOpsIO]("Github wrapper to interact with github4s and the Github API.")
 
   val orgLicenseSetting: SettingKey[License] =
     settingKey[License]("Organization License Setting.")
@@ -170,7 +171,7 @@ sealed trait TaskKeysUtils {
       functionTask
     } else {
       log.info(
-        s"Skipping task for module '${IO.relativize(rootDir, baseDir).getOrElse(baseDir.getName)}'"
+        s"Skipping task for module '${FIO.relativize(rootDir, baseDir).getOrElse(baseDir.getName)}'"
       )
       defaultValue
     }

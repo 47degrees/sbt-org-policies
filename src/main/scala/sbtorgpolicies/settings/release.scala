@@ -16,6 +16,7 @@
 
 package sbtorgpolicies.settings
 
+import cats.effect.IO
 import org.joda.time.{DateTime, DateTimeZone}
 import sbt.Keys.{baseDirectory, packageOptions, version}
 import sbt.Package.ManifestAttributes
@@ -28,7 +29,7 @@ import sbtrelease.ReleasePlugin.autoImport.ReleaseKeys._
 import sbtrelease.ReleasePlugin.autoImport._
 import sbtrelease.ReleaseStateTransformations._
 import sbtrelease.{Utilities, Vcs}
-import github4s.free.domain.Ref
+import github4s.domain.Ref
 
 trait release {
   import Utilities._
@@ -63,12 +64,12 @@ trait release {
   }
 
   lazy val orgTagRelease: ReleaseStep = { st: State =>
-    val ghOps: GitHubOps = st.extract.get(orgGithubOpsSetting)
+    val ghOps: GitHubOps[IO] = st.extract.get(orgGithubOpsSetting)
 
     def checkTagDoesNotExist(tag: String): Unit = {
       // This returns a list of tags that start with the given tag name.
       // We have to filter to get only the exact tag we are looking for.
-      val refs = ghOps.fetchReference(s"tags/$tag")
+      val refs = ghOps.fetchReference(s"tags/$tag").value.unsafeRunSync()
       if (refs.fold[List[Ref]](_ => Nil, _.filter(_.ref.endsWith(tag))).nonEmpty) {
         sys.error("Tag [%s] already exists. Aborting release!" format tag)
       }
@@ -81,7 +82,10 @@ trait release {
     val file   = st.extract.get(releaseVersionFile)
 
     val releaseDescription =
-      ghOps.latestPullRequests(branch, file.getName, orgVersionCommitMessage) match {
+      ghOps
+        .latestPullRequests(branch, file.getName, orgVersionCommitMessage)
+        .value
+        .unsafeRunSync() match {
         case Right(Nil) => s"* $tagComment"
         case Right(list) =>
           list map { pr =>
@@ -107,8 +111,8 @@ trait release {
   }
 
   lazy val orgUpdateChangeLog: ReleaseStep = { st: State =>
-    val ghOps: GitHubOps = st.extract.get(orgGithubOpsSetting)
-    val fh               = new FileHelper
+    val ghOps: GitHubOps[IO] = st.extract.get(orgGithubOpsSetting)
+    val fh                   = new FileHelper
 
     val (_, comment)    = st.extract.runTask(releaseTagComment, st)
     val branch          = st.extract.get(orgCommitBranchSetting)
@@ -127,12 +131,15 @@ trait release {
       _ <- fh.createResources(orgTemplatesDir, orgTargetDir)
       fileType = ChangelogFileType(DateTime.now(DateTimeZone.UTC), vs._1, comment)
       _ <- fh.checkOrgFiles(baseDir, orgTargetDir, List(fileType))
-      maybeRef <- ghOps.commitFiles(
-        baseDir = baseDir,
-        branch = branch,
-        message = s"$commitMessage [ci skip]",
-        files = List(new File(baseDir, fileType.outputPath))
-      )
+      maybeRef <- ghOps
+        .commitFiles(
+          baseDir = baseDir,
+          branch = branch,
+          message = s"$commitMessage [ci skip]",
+          files = List(new File(baseDir, fileType.outputPath))
+        )
+        .value
+        .unsafeRunSync()
     } yield maybeRef) match {
       case Right(Some(_)) =>
         st.log.info("Update Change Log was finished successfully")
@@ -147,10 +154,10 @@ trait release {
   }
 
   lazy val orgCommitNextVersion: ReleaseStep = { st: State =>
-    val ghOps: GitHubOps = st.extract.get(orgGithubOpsSetting)
-    val file             = st.extract.get(releaseVersionFile)
-    val branch           = st.extract.get(orgCommitBranchSetting)
-    val baseDir          = st.extract.get(baseDirectory in LocalRootProject)
+    val ghOps: GitHubOps[IO] = st.extract.get(orgGithubOpsSetting)
+    val file                 = st.extract.get(releaseVersionFile)
+    val branch               = st.extract.get(orgCommitBranchSetting)
+    val baseDir              = st.extract.get(baseDirectory in LocalRootProject)
 
     val vs = st
       .get(versions)
@@ -160,7 +167,7 @@ trait release {
 
     val commitMessage = s"$orgVersionCommitMessage to ${vs._2}"
 
-    ghOps.commitFiles(baseDir, branch, commitMessage, List(file)) match {
+    ghOps.commitFiles(baseDir, branch, commitMessage, List(file)).value.unsafeRunSync() match {
       case Right(Some(_)) =>
         st.log.info("Next version was committed successfully")
       case Right(None) =>
