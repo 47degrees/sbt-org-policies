@@ -35,7 +35,7 @@ trait common {
           val ghOps = orgGithubOpsSetting.value
 
           (for {
-            list <- ghOps.fetchContributors
+            list <- ghOps.fetchContributors.value.unsafeRunSync()
             maintainersIds = orgMaintainersSetting.value.map(_.id)
             filteredDevs = list
               .map(user => Dev(user.login, user.name, user.blog))

@@ -19,7 +19,7 @@ package sbtorgpolicies.github
 import java.io.File
 
 import cats.data.{EitherT, NonEmptyList}
-import cats.effect.{ConcurrentEffect, Sync, Timer}
+import cats.effect.{ConcurrentEffect, IO, Sync, Timer}
 import cats.implicits._
 import com.github.marklister.base64.Base64._
 import github4s.Github
@@ -32,6 +32,14 @@ import sbtorgpolicies.io.{FileReader, IO => FIO}
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
 
+class GitHubOpsIO(
+    owner: String,
+    repo: String,
+    accessToken: Option[String],
+    fileReader: FileReader = FileReader
+)(implicit ec: ExecutionContext, ce: ConcurrentEffect[IO], t: Timer[IO])
+    extends GitHubOps[IO](owner, repo, accessToken, fileReader)
+
 class GitHubOps[F[_]: ConcurrentEffect: Timer](
     owner: String,
     repo: String,
@@ -39,7 +47,7 @@ class GitHubOps[F[_]: ConcurrentEffect: Timer](
     fileReader: FileReader = FileReader
 )(implicit ec: ExecutionContext) {
 
-  val gh: Github[F] = Github[F](accessToken)
+  val gh: Github[F]                = Github[F](accessToken)
   val headers: Map[String, String] = Map("user-agent" -> "sbt-org-policies")
 
   def fetchContributors: EitherT[F, GitHubException, List[User]] = {
@@ -68,8 +76,8 @@ class GitHubOps[F[_]: ConcurrentEffect: Timer](
     def readFileContents: EitherT[F, IOException, List[(String, String)]] =
       files.traverse { file =>
         for {
-          path <- EitherT.right(Sync[F].delay(file.getAbsolutePath()))
-          content <- EitherT(Sync[F].delay(fileReader.getFileContent(path)))
+          path         <- EitherT.right(Sync[F].delay(file.getAbsolutePath()))
+          content      <- EitherT(Sync[F].delay(fileReader.getFileContent(path)))
           relativePath <- EitherT.right(relativePath(file))
         } yield (content, relativePath)
       }
@@ -91,7 +99,9 @@ class GitHubOps[F[_]: ConcurrentEffect: Timer](
     def fetchBaseTreeSha(commitSha: String): EitherT[F, GitHubException, RefCommit] =
       run(gh.gitData.getCommit(owner, repo, commitSha))
 
-    def fetchFilesContents(commitSha: String): EitherT[F, GitHubException, List[(String, Option[String])]] = {
+    def fetchFilesContents(
+        commitSha: String
+    ): EitherT[F, GitHubException, List[(String, Option[String])]] = {
       def fetchFileContents(
           path: String,
           commitSha: String
@@ -126,7 +136,10 @@ class GitHubOps[F[_]: ConcurrentEffect: Timer](
       run(gh.gitData.createTree(owner, repo, Some(baseTreeSha), treeData))
     }
 
-    def createCommit(treeSha: String, baseCommitSha: String): EitherT[F, GitHubException, RefCommit] =
+    def createCommit(
+        treeSha: String,
+        baseCommitSha: String
+    ): EitherT[F, GitHubException, RefCommit] =
       run(gh.gitData.createCommit(owner, repo, message, treeSha, List(baseCommitSha), None))
 
     def commitFilesIfChanged(
@@ -162,8 +175,9 @@ class GitHubOps[F[_]: ConcurrentEffect: Timer](
   def commitDir(branch: String, message: String, dir: File): EitherT[F, OrgPolicyException, Ref] =
     EitherT(Sync[F].delay(fileReader.fetchDirsRecursively(List(dir)))).flatMap {
       case Nil => EitherT.leftT(IOException(s"Nothing to commit in dir ${dir.getAbsolutePath}"))
-      case h :: t => commitDir(branch, message, dir, NonEmptyList(h, t))
-        .leftMap[OrgPolicyException](identity)
+      case h :: t =>
+        commitDir(branch, message, dir, NonEmptyList(h, t))
+          .leftMap[OrgPolicyException](identity)
     }
 
   def commitDir(
@@ -198,9 +212,11 @@ class GitHubOps[F[_]: ConcurrentEffect: Timer](
   ): EitherT[F, GitHubException, RefCommit] = {
 
     def fetchBaseTreeSha: EitherT[F, GitHubException, Option[RefCommit]] =
-      commitSha.map { sha =>
-        run(gh.gitData.getCommit(owner, repo, sha)).map(Option.apply)
-      }.getOrElse(EitherT.rightT(none[RefCommit]))
+      commitSha
+        .map { sha =>
+          run(gh.gitData.getCommit(owner, repo, sha)).map(Option.apply)
+        }
+        .getOrElse(EitherT.rightT(none[RefCommit]))
 
     def getAllFiles: List[File] = Option(dirToCommit.listFiles()).toList.flatten.filter(_.isFile)
 
@@ -217,14 +233,20 @@ class GitHubOps[F[_]: ConcurrentEffect: Timer](
           GitHubException(s"Can't determine path for ${file.getAbsolutePath}")
         )
 
-      def createTreeDataSha(filePath: String, array: Array[Byte]): EitherT[F, GitHubException, TreeData] =
+      def createTreeDataSha(
+          filePath: String,
+          array: Array[Byte]
+      ): EitherT[F, GitHubException, TreeData] =
         for {
           gh <- EitherT.right(ghWithRateLimit)
           res <- run(gh.gitData.createBlob(owner, repo, array.toBase64, Some("base64")))
             .map(refInfo => TreeDataSha(filePath, blobMode, blobType, refInfo.sha))
         } yield res
 
-      def createTreeDataBlob(filePath: String, array: Array[Byte]): EitherT[F, GitHubException, TreeData] =
+      def createTreeDataBlob(
+          filePath: String,
+          array: Array[Byte]
+      ): EitherT[F, GitHubException, TreeData] =
         EitherT.rightT(TreeDataBlob(filePath, blobMode, blobType, new String(array)): TreeData)
 
       def createTreeData(
@@ -254,19 +276,24 @@ class GitHubOps[F[_]: ConcurrentEffect: Timer](
         treeData: List[TreeData]
     ): EitherT[F, GitHubException, TreeResult] =
       for {
-        gh <- EitherT.right(ghWithRateLimit)
+        gh  <- EitherT.right(ghWithRateLimit)
         res <- run(gh.gitData.createTree(owner, repo, baseTreeSha, treeData))
       } yield res
 
-    def createCommit(treeSha: String, parentCommit: String): EitherT[F, GitHubException, RefCommit] =
+    def createCommit(
+        treeSha: String,
+        parentCommit: String
+    ): EitherT[F, GitHubException, RefCommit] =
       for {
         gh <- EitherT.right(ghWithRateLimit)
-        res <- run(gh.gitData.createCommit(owner, repo, message, treeSha, List(parentCommit), author = None))
+        res <- run(
+          gh.gitData.createCommit(owner, repo, message, treeSha, List(parentCommit), author = None)
+        )
       } yield res
 
     def parentCommitSha: EitherT[F, GitHubException, String] = commitSha match {
       case Some(sha) => EitherT.rightT(sha)
-      case None => fetchHeadCommit(branch).map(_.`object`.sha)
+      case None      => fetchHeadCommit(branch).map(_.`object`.sha)
     }
 
     for {
@@ -318,7 +345,9 @@ class GitHubOps[F[_]: ConcurrentEffect: Timer](
         .map(findCommit)
     }
 
-    def fetchPullRequests(maybeDate: Option[String]): EitherT[F, GitHubException, List[PullRequest]] = {
+    def fetchPullRequests(
+        maybeDate: Option[String]
+    ): EitherT[F, GitHubException, List[PullRequest]] = {
       def orderAndFilter(list: List[PullRequest]): List[PullRequest] = {
         val date = maybeDate.getOrElse("")
         list.mapFilter(pr => pr.merged_at.filter(_ > date).as(pr)).reverse

@@ -16,6 +16,7 @@
 
 package sbtorgpolicies.settings
 
+import cats.effect.{ContextShift, IO, Timer}
 import de.heikoseeberger.sbtheader.AutomateHeaderPlugin
 import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport.{
   headerLicense,
@@ -30,13 +31,18 @@ import sbtorgpolicies.runnable.SetSetting
 import sbt.Keys._
 import sbt._
 import sbtorgpolicies.OrgPoliciesKeys._
-import sbtorgpolicies.github.GitHubOps
+import sbtorgpolicies.github.GitHubOpsIO
 import sbtorgpolicies.model._
 import sbtorgpolicies.runnable.syntax._
 import sbtorgpolicies.templates._
 import sbtorgpolicies.templates.badges._
 
+import scala.concurrent.ExecutionContext
+
 trait DefaultSettings extends AllSettings {
+  lazy implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
+  lazy implicit val ec: ExecutionContext = ExecutionContext.global
+  lazy implicit val timer: Timer[IO]     = IO.timer(ExecutionContext.global)
 
   lazy val orgDefaultSettings: Seq[Setting[_]] =
     orgCommonDefaultSettings ++
@@ -67,7 +73,7 @@ trait DefaultSettings extends AllSettings {
       organizationEmail = "hello@47deg.com"
     ),
     orgGithubTokenSetting := "ORG_GITHUB_TOKEN",
-    orgGithubOpsSetting := new GitHubOps(
+    orgGithubOpsSetting := new GitHubOpsIO(
       orgGithubSetting.value.organization,
       orgGithubSetting.value.project,
       getEnvVar(orgGithubTokenSetting.value)
