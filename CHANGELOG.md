@@ -1,5 +1,20 @@
 # Changelog
 
+## 03/13/2020 - Version 0.13.2
+
+Release changes:
+
+* Update sbt-org-policies to 0.13.1 ([#1259](https://github.com/47degrees/sbt-org-policies/pull/1259))
+* Update cats-core, cats-laws to 2.1.1 ([#1261](https://github.com/47degrees/sbt-org-policies/pull/1261))
+* Update scalatest to 3.1.1 ([#1260](https://github.com/47degrees/sbt-org-policies/pull/1260))
+* Update sbt-pgp to 2.0.1 ([#1225](https://github.com/47degrees/sbt-org-policies/pull/1225))
+* Update github4s to 0.21.0 ([#1224](https://github.com/47degrees/sbt-org-policies/pull/1224))
+* Update github4s to 0.22.0 ([#1263](https://github.com/47degrees/sbt-org-policies/pull/1263))
+* Update scalacheck-toolbox-datetime to 0.3.3 ([#1264](https://github.com/47degrees/sbt-org-policies/pull/1264))
+* Migrates from 47deg to 47degrees GH organization ([#1265](https://github.com/47degrees/sbt-org-policies/pull/1265))
+* Releases 0.13.2 on new Organization ([#1266](https://github.com/47degrees/sbt-org-policies/pull/1266))
+
+
 ## 02/24/2020 - Version 0.13.1
 
 Release changes:
