@@ -9,6 +9,7 @@ import sbtorgpolicies.runnable.syntax._
 import sbtorgpolicies.templates.badges._
 import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 import sbtrelease.ReleasePlugin.autoImport._
+import sbtorgpolicies.model.GitHubSettings
 
 object ProjectPlugin extends AutoPlugin {
 
@@ -106,6 +107,14 @@ object ProjectPlugin extends AutoPlugin {
   private[this] val artifactSettings = Seq(
     scalaVersion := V.scala212,
     crossScalaVersions := Seq(V.scala212),
+    orgGithubSetting := GitHubSettings(
+      organization = "47degrees",
+      project = (name in LocalRootProject).value,
+      organizationName = "47 Degrees",
+      groupId = "com.47deg",
+      organizationHomePage = url("http://47deg.com"),
+      organizationEmail = "hello@47deg.com"
+    ),
     scalaOrganization := "org.scala-lang",
     startYear := Some(2017),
     orgBadgeListSetting := List(
