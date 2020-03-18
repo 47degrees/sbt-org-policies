@@ -51,14 +51,12 @@ trait GitHubArbitraries {
 
   def genGHResponse[T](gen: Gen[T]): Gen[GHResponse[T]] =
     Gen.oneOf(
-      genGHException.map(_.asLeft[GHResult[T]]),
-      gen.map(v => GHResult(v, 200, Map.empty).asRight[GHException])
+      genGHException.map(e => GHResponse(e.asLeft[T], 500, Map.empty)),
+      gen.map(v => GHResponse(v.asRight[GHException], 200, Map.empty))
     )
 
-  val genGHException: Gen[GHException] = {
-    val message = "Generated Exception"
-    Gen.oneOf(JsonParsingException(message, """{"val": "value"}"""), UnexpectedException(message))
-  }
+  val genGHException: Gen[GHException] =
+    Gen.const(JsonParsingException("Generated exception", """{"val": "value"}"""))
 
   val genEmail: Gen[String] =
     for {
@@ -108,6 +106,12 @@ trait GitHubArbitraries {
       list1 <- genGHResponse(Gen.listOfN(n, genSimpleUser))
       list2 <- Gen.listOfN(n, genGHResponse(genFullUser))
     } yield (list1, list2)
+
+  val genRefInfo: Gen[RefInfo] =
+    for {
+      sha <- Gen.identifier
+      url <- genURL
+    } yield RefInfo(sha, url)
 
   val genRefObject: Gen[RefObject] =
     for {
@@ -233,8 +237,8 @@ trait GitHubArbitraries {
       url       <- genURL
       refAuthor <- genRefAuthor
       message   <- Gen.alphaStr.filter(_ != nonExistingMessage)
-      tree      <- genRefObject
-      parents   <- Gen.listOf(genRefObject)
+      tree      <- genRefInfo
+      parents   <- Gen.listOf(genRefInfo)
     } yield RefCommit(sha, url, refAuthor, refAuthor, message, tree, parents)
 
   val genTreeDataResult: Gen[TreeDataResult] =
@@ -298,7 +302,7 @@ trait GitHubArbitraries {
   }
 
   implicit val ghResponseRefObjectArbitrary: Arbitrary[GHResponse[RefInfo]] = Arbitrary {
-    genGHResponse(genRefObject)
+    genGHResponse(genRefInfo)
   }
 
 }
