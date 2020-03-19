@@ -1,5 +1,17 @@
 # Changelog
 
+## 03/19/2020 - Version 0.13.3
+
+Release changes:
+
+* Update sbt-org-policies to 0.13.2 ([#1268](https://github.com/47degrees/sbt-org-policies/pull/1268))
+* Update scala-xml to 1.3.0 ([#1269](https://github.com/47degrees/sbt-org-policies/pull/1269))
+* Mergify: configuration update ([#1270](https://github.com/47degrees/sbt-org-policies/pull/1270))
+* Fixes commit files method ([#1271](https://github.com/47degrees/sbt-org-policies/pull/1271))
+* Update github4s ([#1272](https://github.com/47degrees/sbt-org-policies/pull/1272))
+* Trigger 0.13.3 release ([#1273](https://github.com/47degrees/sbt-org-policies/pull/1273))
+
+
 ## 03/13/2020 - Version 0.13.2
 
 Release changes:
