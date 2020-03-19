@@ -79,7 +79,7 @@ class GitHubOps[F[_]: ConcurrentEffect: Timer](
           path         <- EitherT.right(Sync[F].delay(file.getAbsolutePath()))
           content      <- EitherT(Sync[F].delay(fileReader.getFileContent(path)))
           relativePath <- EitherT.right(relativePath(file))
-        } yield (content, relativePath)
+        } yield (relativePath, content)
       }
 
     readFileContents
@@ -105,10 +105,11 @@ class GitHubOps[F[_]: ConcurrentEffect: Timer](
       def fetchFileContents(
           path: String,
           commitSha: String
-      ): EitherT[F, GitHubException, (String, Option[String])] =
-        run(
+      ): EitherT[F, GitHubException, (String, Option[String])] = {
+        runOption(
           gh.repos.getContents(owner = owner, repo = repo, path = path, ref = Some(commitSha))
-        ).map(res => res.map(content => path -> content.content).head)
+        ).map(res => path -> res.flatMap(_.head.content))
+      }
 
       filesAndContents.map(_._1).traverse(fetchFileContents(_, commitSha))
     }
@@ -369,8 +370,9 @@ class GitHubOps[F[_]: ConcurrentEffect: Timer](
       refs.find(_.ref == s"refs/heads/$branch") match {
         case Some(ref) => EitherT.rightT(ref)
         case None =>
-          val e = UnexpectedException(s"Branch $branch not found")
-          EitherT.leftT(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
+          EitherT.leftT(
+            GitHubException(s"GitHub returned an error: Branch $branch not found", None)
+          )
       }
 
     run(gh.gitData.getReference(owner, repo, s"heads/$branch")).flatMap(findReference)
@@ -381,8 +383,18 @@ class GitHubOps[F[_]: ConcurrentEffect: Timer](
 
   def run[A](f: F[GHResponse[A]]): EitherT[F, GitHubException, A] = EitherT(
     Sync[F].attempt(f).map {
-      case Right(Right(r)) => Right(r.result)
-      case Right(Left(e)) =>
+      case Right(GHResponse(Right(r), _, _)) => Right(r)
+      case Right(GHResponse(Left(e), _, _)) =>
+        Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
+      case Left(e) => Left(GitHubException("Error making request to GitHub", Some(e)))
+    }
+  )
+
+  def runOption[A](f: F[GHResponse[A]]): EitherT[F, GitHubException, Option[A]] = EitherT(
+    Sync[F].attempt(f).map {
+      case Right(GHResponse(Right(r), _, _))  => r.some.asRight[GitHubException]
+      case Right(GHResponse(Left(e), 404, _)) => none[A].asRight[GitHubException]
+      case Right(GHResponse(Left(e), _, _)) =>
         Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)))
       case Left(e) => Left(GitHubException("Error making request to GitHub", Some(e)))
     }

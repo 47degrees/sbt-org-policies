@@ -21,7 +21,8 @@ import java.io.File
 import cats.data.{EitherT, NonEmptyList}
 import cats.effect.{ContextShift, IO, Timer}
 import cats.syntax.either._
-import github4s.GithubResponses.{GHException, GHResponse, GHResult, UnexpectedException}
+import cats.syntax.option._
+import github4s.GithubResponses.{GHException, GHResponse, JsonParsingException}
 import github4s._
 import github4s.algebras._
 import github4s.domain._
@@ -68,20 +69,20 @@ class GitHubOpsTest extends TestOps {
     (gitHubOps, fileReaderMock, ghGitData, ghPullRequests, ghRepos, ghUsers)
   }
 
-  def toLeftResult[T](e: GHException): Either[OrgPolicyException, T] =
-    Left(GitHubException(s"GitHub returned an error: ${e.getMessage}", Some(e)): OrgPolicyException)
+  def toLeftResult[T](message: String, e: Option[GHException]): Either[OrgPolicyException, T] =
+    Left(GitHubException(s"GitHub returned an error: $message", e): OrgPolicyException)
 
   test("GithubOps.fetchContributors works as expected") {
     val property = forAll(genSimpleAndFullUserLists) {
-      case (list1: GHResponse[List[User]], list2: List[GHResponse[User]]) =>
+      case (list: GHResponse[List[User]], list2: List[GHResponse[User]]) =>
         val (gitHubOps, _, _, _, ghRepos, ghUsers) = newGitHubOps
         (ghRepos.listContributors _)
           .when(*, *, *, *)
-          .returns(IO.pure(list1))
+          .returns(IO.pure(list))
 
-        list1 match {
+        list.result match {
           case Right(r) =>
-            r.result.zip(list2) foreach {
+            r.zip(list2) foreach {
               case (user1, response) =>
                 (ghUsers.get _)
                   .when(user1.login, *)
@@ -93,14 +94,14 @@ class GitHubOpsTest extends TestOps {
         val result: EitherT[IO, OrgPolicyException, List[User]] =
           gitHubOps.fetchContributors.leftMap[OrgPolicyException](identity)
 
-        (list1.left.toOption, list2.find(_.isLeft).flatMap(_.left.toOption)) match {
+        (list.result.left.toOption, list2.find(_.result.isLeft).flatMap(_.result.left.toOption)) match {
           case (Some(e), _) =>
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, e.some)
           case (_, Some(e)) =>
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, e.some)
           case _ =>
-            val resultList = list2.collect {
-              case Right(gHResult) => gHResult.result
+            val resultList = list2.map(_.result).collect {
+              case Right(gHResult) => gHResult
             }
             result.value.unsafeRunSync() shouldBeEq Right(resultList)
         }
@@ -131,7 +132,7 @@ class GitHubOpsTest extends TestOps {
           .returns(IO.pure(refCommitResponse))
 
         val maybeParentCommit: Option[String] =
-          nelRefResponse.toOption.map(_.result.head.`object`.sha)
+          nelRefResponse.result.toOption.map(_.head.`object`.sha)
 
         val contents = filesAndContents.map {
           case (s1, s2) =>
@@ -157,7 +158,7 @@ class GitHubOpsTest extends TestOps {
         contents foreach {
           case (s1, content) =>
             val response: GHResponse[NonEmptyList[Content]] =
-              GHResult(NonEmptyList(content, Nil), 200, Map.empty).asRight
+              GHResponse(NonEmptyList(content, Nil).asRight[GHException], 200, Map.empty)
             (ghRepos.getContents _)
               .when(owner, repo, s1, maybeParentCommit, *)
               .returns(IO.pure(response))
@@ -171,14 +172,14 @@ class GitHubOpsTest extends TestOps {
             filesAndContents.map(t => new File(baseDir, t._1))
           )
 
-        (nelRefResponse, refCommitResponse) match {
+        (nelRefResponse.result, refCommitResponse.result) match {
           case (Left(e), _) =>
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
-          case (Right(gHResult), _) if !gHResult.result.exists(_.ref == s"refs/heads/$branch") =>
-            val e = UnexpectedException(s"Branch $branch not found")
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, e.some)
+          case (Right(gHResult), _) if !gHResult.exists(_.ref == s"refs/heads/$branch") =>
+            val e = JsonParsingException(s"Branch $branch not found", """{"val": "value"}""")
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, None)
           case (_, Left(e)) =>
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, None)
           case _ =>
             result.value.unsafeRunSync() shouldBeEq Right(None)
         }
@@ -214,14 +215,20 @@ class GitHubOpsTest extends TestOps {
           .when(*, *, *, *)
           .returns(IO.pure(refCommitR))
 
-        val maybeParentCommit: Option[String] = nelRefR.toOption.map(_.result.head.`object`.sha)
+        val maybeParentCommit: Option[String] = nelRefR.result.toOption.map(_.head.`object`.sha)
 
         filesAndContents foreach {
           case (s1, _) =>
             (ghRepos.getContents _)
               .when(owner, repo, s1, maybeParentCommit, *)
               .returns(
-                IO.pure(UnexpectedException("Not Found").asLeft)
+                IO.pure(
+                  GHResponse(
+                    JsonParsingException("Not Found", """{"val": "value"}""").asLeft,
+                    500,
+                    Map.empty
+                  )
+                )
               )
         }
 
@@ -245,21 +252,26 @@ class GitHubOpsTest extends TestOps {
             filesAndContents.map(t => new File(baseDir, t._1))
           )
 
-        (nelRefR, refCommitR, treeResultR, createCommitR, updateReferenceR) match {
+        (
+          nelRefR.result,
+          refCommitR.result,
+          treeResultR.result,
+          createCommitR.result,
+          updateReferenceR.result
+        ) match {
           case (Left(e), _, _, _, _) =>
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
-          case (Right(gHResult), _, _, _, _)
-              if !gHResult.result.exists(_.ref == s"refs/heads/$branch") =>
-            val e = UnexpectedException(s"Branch $branch not found")
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, e.some)
+          case (Right(gHResult), _, _, _, _) if !gHResult.exists(_.ref == s"refs/heads/$branch") =>
+            val e = JsonParsingException(s"Branch $branch not found", """{"val": "value"}""")
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, None)
           case (_, Left(e), _, _, _) =>
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, None)
           case (_, _, Left(e), _, _) =>
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, None)
           case (_, _, _, Left(e), _) =>
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, None)
           case (_, _, _, _, Left(e)) =>
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, None)
           case _ =>
             result shouldBeEq EitherT.rightT(None)
         }
@@ -302,7 +314,7 @@ class GitHubOpsTest extends TestOps {
           .returns(IO.pure(refCommitResponse))
 
         val maybeParentCommit: Option[String] =
-          nelRefResponse.toOption.map(_.result.head.`object`.sha)
+          nelRefResponse.result.toOption.map(_.head.`object`.sha)
 
         val contents = filesAndContents.map {
           case (s1, s2) =>
@@ -328,7 +340,7 @@ class GitHubOpsTest extends TestOps {
         contents foreach {
           case (s1, content) =>
             val response: GHResponse[NonEmptyList[Content]] =
-              GHResult(NonEmptyList(content, Nil), 200, Map.empty).asRight
+              GHResponse(NonEmptyList(content, Nil).asRight[GHException], 200, Map.empty)
             (ghRepos.getContents _)
               .when(owner, repo, s1, maybeParentCommit, *)
               .returns(IO.pure(response))
@@ -339,14 +351,14 @@ class GitHubOpsTest extends TestOps {
             .commitFilesAndContents(branch, sampleMessage, filesAndContents)
             .leftMap[OrgPolicyException](identity)
 
-        (nelRefResponse, refCommitResponse) match {
+        (nelRefResponse.result, refCommitResponse.result) match {
           case (Left(e), _) =>
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
-          case (Right(gHResult), _) if !gHResult.result.exists(_.ref == s"refs/heads/$branch") =>
-            val e = UnexpectedException(s"Branch $branch not found")
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, e.some)
+          case (Right(gHResult), _) if !gHResult.exists(_.ref == s"refs/heads/$branch") =>
+            val e = JsonParsingException(s"Branch $branch not found", """{"val": "value"}""")
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, None)
           case (_, Left(e)) =>
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, None)
           case _ =>
             result shouldBeEq EitherT.rightT(None)
         }
@@ -374,14 +386,20 @@ class GitHubOpsTest extends TestOps {
           .when(*, *, *, *)
           .returns(IO.pure(refCommitR))
 
-        val maybeParentCommit: Option[String] = nelRefR.toOption.map(_.result.head.`object`.sha)
+        val maybeParentCommit: Option[String] = nelRefR.result.toOption.map(_.head.`object`.sha)
 
         filesAndContents foreach {
           case (s1, _) =>
             (ghRepos.getContents _)
               .when(owner, repo, s1, maybeParentCommit, *)
               .returns(
-                IO.pure(UnexpectedException("Not Found").asLeft)
+                IO.pure(
+                  GHResponse(
+                    JsonParsingException("Not Found", """{"val": "value"}""").asLeft,
+                    500,
+                    Map.empty
+                  )
+                )
               )
         }
 
@@ -402,21 +420,26 @@ class GitHubOpsTest extends TestOps {
             .commitFilesAndContents(branch, sampleMessage, filesAndContents)
             .leftMap[OrgPolicyException](identity)
 
-        (nelRefR, refCommitR, treeResultR, createCommitR, updateReferenceR) match {
+        (
+          nelRefR.result,
+          refCommitR.result,
+          treeResultR.result,
+          createCommitR.result,
+          updateReferenceR.result
+        ) match {
           case (Left(e), _, _, _, _) =>
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
-          case (Right(gHResult), _, _, _, _)
-              if !gHResult.result.exists(_.ref == s"refs/heads/$branch") =>
-            val e = UnexpectedException(s"Branch $branch not found")
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, e.some)
+          case (Right(gHResult), _, _, _, _) if !gHResult.exists(_.ref == s"refs/heads/$branch") =>
+            val e = JsonParsingException(s"Branch $branch not found", """{"val": "value"}""")
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, None)
           case (_, Left(e), _, _, _) =>
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, None)
           case (_, _, Left(e), _, _) =>
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, None)
           case (_, _, _, Left(e), _) =>
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, None)
           case (_, _, _, _, Left(e)) =>
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, None)
           case _ =>
             result shouldBeEq EitherT.rightT(None)
         }
@@ -436,11 +459,11 @@ class GitHubOpsTest extends TestOps {
       val result: EitherT[IO, OrgPolicyException, NonEmptyList[Ref]] =
         gitHubOps.fetchReference(ref).leftMap[OrgPolicyException](identity)
 
-      refResponse match {
+      refResponse.result match {
         case Left(e) =>
-          result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
+          result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, e.some)
         case Right(gHResult) =>
-          result.value.unsafeRunSync() shouldBeEq Right(gHResult.result)
+          result.value.unsafeRunSync() shouldBeEq Right(gHResult)
       }
 
     }
@@ -498,25 +521,32 @@ class GitHubOpsTest extends TestOps {
         val result: EitherT[IO, OrgPolicyException, Ref] =
           gitHubOps.commitDir(branch, sampleMessage, baseDir)
 
-        (nelRefR, refCommitR, refInfoR, treeResultR, createCommitR, updateReferenceR) match {
+        (
+          nelRefR.result,
+          refCommitR.result,
+          refInfoR.result,
+          treeResultR.result,
+          createCommitR.result,
+          updateReferenceR.result
+        ) match {
           case (Left(e), _, _, _, _, _) =>
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, e.some)
           case (Right(gHResult), _, _, _, _, _)
-              if !gHResult.result.exists(_.ref == s"refs/heads/$branch") =>
-            val e = UnexpectedException(s"Branch $branch not found")
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
+              if !gHResult.exists(_.ref == s"refs/heads/$branch") =>
+            val e = JsonParsingException(s"Branch $branch not found", """{"val": "value"}""")
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, None)
           case (_, Left(e), _, _, _, _) =>
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, None)
           case (_, _, Left(e), _, _, _) =>
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, None)
           case (_, _, _, Left(e), _, _) =>
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, None)
           case (_, _, _, _, Left(e), _) =>
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, None)
           case (_, _, _, _, _, Left(e)) =>
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, None)
           case (_, _, _, _, _, Right(r)) =>
-            result shouldBeEq EitherT.rightT(r.result)
+            result shouldBeEq EitherT.rightT(r)
         }
     }
     check(property)
@@ -567,21 +597,20 @@ class GitHubOpsTest extends TestOps {
             .createTagRelease(branch, tag, sampleMessage, releaseDescription)
             .leftMap[OrgPolicyException](identity)
 
-        (nelRefResponse, tagResponse, refResponse, releaseResponse) match {
+        (nelRefResponse.result, tagResponse.result, refResponse.result, releaseResponse.result) match {
           case (Left(e), _, _, _) =>
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
-          case (Right(gHResult), _, _, _)
-              if !gHResult.result.exists(_.ref == s"refs/heads/$branch") =>
-            val e = UnexpectedException(s"Branch $branch not found")
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, e.some)
+          case (Right(gHResult), _, _, _) if !gHResult.exists(_.ref == s"refs/heads/$branch") =>
+            val e = JsonParsingException(s"Branch $branch not found", """{"val": "value"}""")
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, None)
           case (_, Left(e), _, _) =>
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, None)
           case (_, _, Left(e), _) =>
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, None)
           case (_, _, _, Left(e)) =>
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, None)
           case (_, _, _, Right(gHResult)) =>
-            result shouldBeEq EitherT.rightT(gHResult.result)
+            result shouldBeEq EitherT.rightT(gHResult)
         }
     }
 
@@ -597,7 +626,7 @@ class GitHubOpsTest extends TestOps {
 
       (ghRepos.listCommits _)
         .when(*, *, *, *, *, *, *, *, *)
-        .returns(IO.pure(Right(GHResult(Nil, 200, Map.empty))))
+        .returns(IO.pure(GHResponse(Nil.asRight[GHException], 200, Map.empty)))
 
       (ghPullRequests.listPullRequests _)
         .when(*, *, *, *, *)
@@ -608,13 +637,13 @@ class GitHubOpsTest extends TestOps {
           .latestPullRequests(branch, "", "")
           .leftMap[OrgPolicyException](identity)
 
-      prResponse match {
+      prResponse.result match {
         case Right(gHResult) =>
           result.map(_.toSet).value.unsafeRunSync() shouldBeEq Right(
-            gHResult.result.filter(_.merged_at.nonEmpty).toSet
+            gHResult.filter(_.merged_at.nonEmpty).toSet
           )
         case Left(e) =>
-          result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
+          result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, e.some)
       }
     }
     check(property)
@@ -641,14 +670,14 @@ class GitHubOpsTest extends TestOps {
             .latestPullRequests(branch, "", nonExistingMessage)
             .leftMap[OrgPolicyException](identity)
 
-        (commitsResponse, prResponse) match {
+        (commitsResponse.result, prResponse.result) match {
           case (Left(e), _) =>
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, e.some)
           case (_, Left(e)) =>
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, e.some)
           case (Right(_), Right(gHResult)) =>
             result.map(_.toSet).value.unsafeRunSync() shouldBeEq Right(
-              gHResult.result.filter(_.merged_at.nonEmpty).toSet
+              gHResult.filter(_.merged_at.nonEmpty).toSet
             )
         }
     }
@@ -673,9 +702,8 @@ class GitHubOpsTest extends TestOps {
           author_url = None
         )
 
-        val newCommitsResponse = commitsResponse map { ghResult =>
-          ghResult.copy(result = commit :: ghResult.result)
-        }
+        val newCommitsResponse =
+          commitsResponse.copy(result = commitsResponse.result.map(list => commit :: list))
 
         (ghRepos.listCommits _)
           .when(*, *, *, *, *, *, *, *, *)
@@ -690,14 +718,14 @@ class GitHubOpsTest extends TestOps {
             .latestPullRequests(branch, "", nonExistingMessage)
             .leftMap[OrgPolicyException](identity)
 
-        (commitsResponse, prResponse) match {
+        (commitsResponse.result, prResponse.result) match {
           case (Left(e), _) =>
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, e.some)
           case (_, Left(e)) =>
-            result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
+            result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, e.some)
           case (Right(_), Right(gHResult)) =>
             val expected =
-              gHResult.result
+              gHResult
                 .filter(_.merged_at.exists(s => dateTimeFormat.parseDateTime(s).isAfter(date2015)))
                 .toSet
             result.map(_.toSet).value.unsafeRunSync() shouldBeEq Right(expected)
@@ -717,14 +745,14 @@ class GitHubOpsTest extends TestOps {
       val result: EitherT[IO, OrgPolicyException, Ref] =
         gitHubOps.fetchHeadCommit(branch).leftMap[OrgPolicyException](identity)
 
-      refResponse match {
+      refResponse.result match {
         case Left(e) =>
-          result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
-        case Right(gHResult) if gHResult.result.exists(_.ref == s"refs/heads/$branch") =>
-          result.value.unsafeRunSync() shouldBeEq Right(gHResult.result.head)
+          result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, e.some)
+        case Right(gHResult) if gHResult.exists(_.ref == s"refs/heads/$branch") =>
+          result.value.unsafeRunSync() shouldBeEq Right(gHResult.head)
         case _ =>
-          val e = UnexpectedException(s"Branch $branch not found")
-          result.value.unsafeRunSync() shouldBeEq toLeftResult(e)
+          val e = JsonParsingException(s"Branch $branch not found", """{"val": "value"}""")
+          result.value.unsafeRunSync() shouldBeEq toLeftResult(e.getMessage, None)
       }
     }
 
