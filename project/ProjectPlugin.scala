@@ -73,7 +73,8 @@ object ProjectPlugin extends AutoPlugin {
         if (sbtPlugin.value) releaseStepCommandAndRemaining("^ test") else runTest,
         orgTagRelease,
         orgUpdateChangeLog,
-        if (sbtPlugin.value) releaseStepCommandAndRemaining("^ publishSigned") else publishArtifacts,
+        if (sbtPlugin.value) releaseStepCommandAndRemaining("^ publishSigned")
+        else publishArtifacts,
         releaseStepCommandAndRemaining("sonatypeBundleRelease"),
         setNextVersion,
         orgCommitNextVersion,
