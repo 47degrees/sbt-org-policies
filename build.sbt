@@ -14,7 +14,7 @@ lazy val `org-policies-core` = (project in file("core"))
   .settings(coreSettings: _*)
   .settings(
     buildInfoKeys := Seq(name, version, scalaVersion, sbtVersion),
-    buildInfoPackage := "sbtorgpolicies",
+    buildInfoPackage := "sbtorgpolicies"
   )
 
 pgpPassphrase := sys.env.get("PGP_PASSPHRASE").map(_.toCharArray)
@@ -22,3 +22,5 @@ Global / gpgCommand := "gpg"
 
 ThisBuild / parallelExecution := false
 Global / cancelable := true
+
+addCommandAlias("ci-test", "scalafmtCheck; scalafmtSbtCheck; test; publishLocal; scripted")
