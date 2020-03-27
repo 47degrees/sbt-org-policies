@@ -60,10 +60,3 @@ tags
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-
-### sbt-fix ###
-# Scalafix & Scalafmt configuration files are automatically downloaded by `sbt-fix`
-# https://github.com/47degrees/sbt-fix
-
-.scalafix.conf
-.scalafmt.conf
