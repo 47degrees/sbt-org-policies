@@ -24,3 +24,4 @@ ThisBuild / parallelExecution := false
 Global / cancelable := true
 
 addCommandAlias("ci-test", "scalafmtCheck; scalafmtSbtCheck; test; publishLocal; scripted")
+addCommandAlias("ci-docs", "compile")
