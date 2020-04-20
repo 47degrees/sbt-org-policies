@@ -15,6 +15,7 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN }}
       REQUIRES_JEKYLL_CI: ${{secrets.REQUIRES_JEKYLL_CI}}
+      REQUIRES_CODECOV: ${{secrets.REQUIRES_CODECOV}}
     steps:
       - name: Checkout project
         uses: actions/checkout@v2
