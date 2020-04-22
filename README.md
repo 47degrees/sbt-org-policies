@@ -10,7 +10,7 @@
 
 **sbt-org-policies** was an SBT plugin that used to enforce some organization policies and sharing settings across all the Scala projects. However, with Github actions, as well as other fantastic sbt plugins like sbt-ci-release, sbt-mdoc, sbt-github, ... you can achieve the same in a more natural, and maintainable way. We recommend using that approach.
 
-47 Degrees has therefore discontinued the development and maintenance of this library. The source code is left here for those interesting in studying it.
+47 Degrees has therefore discontinued the development and maintenance of this library. The source code is left here for those interested in studying it.
 
 ## Installation
 
