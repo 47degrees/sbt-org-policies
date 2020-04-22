@@ -4,9 +4,13 @@
 [![Maven Central](https://img.shields.io/badge/maven%20central-0.13.3-green.svg)](https://repo1.maven.org/maven2/com/47deg/sbt-org-policies_2.12_1.0) [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/47degrees/sbt-org-policies/master/LICENSE) [![GitHub Issues](https://img.shields.io/github/issues/47degrees/sbt-org-policies.svg)](https://github.com/47degrees/sbt-org-policies/issues)
 
 [comment]: # (End Badges)
-# sbt-org-policies
+# sbt-org-policies (ABANDONED)
 
-**sbt-org-policies** is just an SBT plugin that enforces you with some organization policies and settings across all your projects.
+### DEPRECATION NOTICE
+
+**sbt-org-policies** was an SBT plugin that used to enforce some organization policies and sharing settings across all the Scala projects. However, with Github actions, as well as other fantastic sbt plugins like sbt-ci-release, sbt-mdoc, sbt-github, ... you can achieve the same in a more natural, and maintainable way. We recommend using that approach.
+
+47 Degrees has therefore discontinued the development and maintenance of this library. The source code is left here for those interested in studying it.
 
 ## Installation
 
